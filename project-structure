@@ -1,0 +1,40 @@
+/workout-tracker-app
+│
+├── /backend                     # Backend server
+│   ├── /node_modules            # Node.js modules
+│   ├── /config                  # Server configuration files
+│   ├── /controllers             # Controller files to handle API requests
+│   ├── /models                  # Database models
+│   ├── /routes                  # API route definitions
+│   ├── /middlewares             # Middleware functions
+│   ├── /utils                   # Utility functions and helpers
+│   ├── app.js                   # Entry point for the backend application
+│   └── package.json             # Node.js dependencies and scripts
+│
+├── /web-frontend                # Web frontend (React)
+│   ├── /node_modules            # Node.js modules
+│   ├── /public                  # Public files, like index.html
+│   ├── /src                     # Source files
+│   │   ├── /components          # Reusable React components
+│   │   ├── /pages               # Components representing pages
+│   │   ├── /services            # Services for API communication
+│   │   ├── /hooks               # Custom React hooks
+│   │   ├── /context             # Contexts for state management
+│   │   ├── App.js               # Main React application component
+│   │   └── index.js             # Entry point for the web application
+│   └── package.json             # Node.js dependencies and scripts
+│
+├── /mobile-frontend             # Mobile frontend (React Native)
+│   ├── /node_modules            # Node.js modules
+│   ├── /assets                  # Assets (images, fonts, etc.)
+│   ├── /src                     # Source files
+│   │   ├── /components          # Reusable React Native components
+│   │   ├── /screens             # Components representing screens
+│   │   ├── /services            # Services for API communication
+│   │   ├── /hooks               # Custom React hooks
+│   │   ├── /navigation          # Navigation related components
+│   │   ├── App.js               # Main React Native application component
+│   │   └── index.js             # Entry point for the mobile application
+│   └── package.json             # Node.js dependencies and scripts
+│
+└── README.md                    # Project overview and instructions
