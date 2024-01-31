@@ -1,3 +1,5 @@
+BEGIN;
+
 CREATE TABLE IF NOT EXISTS public.users
 (
     user_id serial,
@@ -14,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.user_exercises
     exercise_name character varying(255) NOT NULL,
     muscle_group_id integer,
     PRIMARY KEY (exercise_id),
-    CONSTRAINT "ExerciseID" UNIQUE (exercise_id)
+    CONSTRAINT "exercise_id" UNIQUE (exercise_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.user_workouts
@@ -22,6 +24,9 @@ CREATE TABLE IF NOT EXISTS public.user_workouts
     workout_id serial,
     user_id integer NOT NULL,
     workout_name character varying(255),
+    workout_day_type character varying(50),
+    plan_type character varying(50),
+    difficulty_level character varying(50),
     PRIMARY KEY (workout_id)
 );
 
@@ -34,7 +39,7 @@ CREATE TABLE IF NOT EXISTS public.user_sets
     weight integer,
     "Notes" text,
     PRIMARY KEY (set_id),
-    CONSTRAINT "ExerciseID" UNIQUE (exercise_id)
+    CONSTRAINT "exercise_id" UNIQUE (exercise_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.exercise_catalog
