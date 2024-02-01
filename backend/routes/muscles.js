@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
-// Get muscles
+// GET all muscles
 router.get('/muscles', async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM muscle_groups');
@@ -12,7 +12,32 @@ router.get('/muscles', async (req, res) => {
   }
 });
 
-// Add a muscle
+// GET a specific muscle by ID
+router.get('/muscles/:id', async (req, res) => {
+  const { id } = req.params; // Extract the ID from the route parameters
+
+  try {
+    // Query to fetch the muscle with the specified ID
+    const { rows } = await db.query(
+      'SELECT * FROM muscle_groups WHERE muscle_group_id = $1',
+      [parseInt(id)]
+    );
+
+    if (rows.length === 0) {
+      // If no muscle is found with the given ID, return a 404 Not Found response
+      return res.status(404).json({ message: 'Muscle not found' });
+    }
+
+    // If a muscle is found, return it in the response
+    res.json(rows[0]);
+  } catch (error) {
+    // Log the error and return a 500 Internal Server Error response if an error occurs
+    console.error('Error fetching muscle:', error);
+    res.status(500).json({ message: 'Error fetching muscle' });
+  }
+});
+
+// POST a muscle
 router.post('/muscles', async (req, res) => {
   try {
     const { muscle_group } = req.body;
@@ -26,7 +51,7 @@ router.post('/muscles', async (req, res) => {
   }
 });
 
-// Update a muscle
+// PUT a muscle
 router.put('/muscles/:id', async (req, res) => {
   try {
     const { id } = req.params;
