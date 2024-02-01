@@ -5,12 +5,14 @@ const app = express();
 app.use(express.json());
 
 // Import routes
-const imageMetadataRoutes = require('./routes/image_metadata');
+const imageRoutes = require('./routes/images');
 const musclesRoutes = require('./routes/muscles');
+const equipmentsRoutes = require('./routes/equipment_catalog');
 
 // Use your routes with a base path
-app.use('/api', imageMetadataRoutes);
+app.use('/api', imageRoutes);
 app.use('/api', musclesRoutes);
+app.use('/api', equipmentsRoutes);
 
 // Your existing setup and routes...
 
