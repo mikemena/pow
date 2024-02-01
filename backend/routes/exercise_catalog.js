@@ -45,13 +45,13 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
 router.post('/exercise-catalog', async (req, res) => {
   try {
-    const { exercise } = req.body;
+    const { exercise_name } = req.body;
     const { muscle_id } = req.body;
     const { equipment_id } = req.body;
     const { image_id } = req.body;
     const { rows } = await db.query(
       'INSERT INTO exercise_catalog (exercise_name, muscle_group_id, equipment_id, exercise_image_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [exercise, muscle_id, equipment_id, image_id]
+      [exercise_name, muscle_id, equipment_id, image_id]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -64,7 +64,7 @@ router.post('/exercise-catalog', async (req, res) => {
 router.put('/exercise-catalog/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { exercise_name, muscle_id, equipment_id, exercise_image_id } =
+    const { exercise_name, muscle_group_id, equipment_id, exercise_image_id } =
       req.body;
 
     // Construct the update part of the query based on provided fields
@@ -78,9 +78,9 @@ router.put('/exercise-catalog/:id', async (req, res) => {
       queryValues.push(exercise_name);
     }
 
-    if (muscle_id !== undefined) {
-      updateParts.push(`muscle_id = $${queryIndex++}`);
-      queryValues.push(muscle_id);
+    if (muscle_group_id !== undefined) {
+      updateParts.push(`muscle_group_id = $${queryIndex++}`);
+      queryValues.push(muscle_group_id);
     }
 
     if (equipment_id !== undefined) {
