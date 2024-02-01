@@ -8,11 +8,13 @@ app.use(express.json());
 const imageRoutes = require('./routes/images');
 const musclesRoutes = require('./routes/muscles');
 const equipmentsRoutes = require('./routes/equipment_catalog');
+const exerciseCatalogRoutes = require('./routes/exercise_catalog');
 
 // Use your routes with a base path
 app.use('/api', imageRoutes);
 app.use('/api', musclesRoutes);
 app.use('/api', equipmentsRoutes);
+app.use('/api', exerciseCatalogRoutes);
 
 // Your existing setup and routes...
 
