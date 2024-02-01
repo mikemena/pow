@@ -6,7 +6,7 @@ const db = require('../config/db');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, './images/'); // Make sure the './images/' directory exists in your project
+    cb(null, './images/');
   },
   filename: function (req, file, cb) {
     cb(
@@ -34,7 +34,7 @@ router.post('/images', upload.single('image'), async (req, res) => {
     // Assuming 'upload_date' can be set to the current timestamp in PostgreSQL
     // 'checksum' is not directly available from req.file; you would need additional logic to calculate it
     const { rows } = await db.query(
-      'INSERT INTO image_metadata (file_path, file_name, content_type, file_size, upload_date) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *',
+      'INSERT INTO image_metadata (file_path, image_name, content_type, file_size, upload_date) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP) RETURNING *',
       [path, filename, mimetype, size]
     );
     console.log(req.file);
