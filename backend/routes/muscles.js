@@ -30,14 +30,39 @@ router.post('/muscles', async (req, res) => {
 router.put('/muscles/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { muscle_group } = req.body;
-    const { rows } = await db.query(
-      'UPDATE muscle_groups SET name = $1, muscle_group = $2 WHERE id = $3 RETURNING *',
-      [muscle_group, id]
-    );
-    if (rows.length === 0) {
-      return res.status(404).send('Equipment not found.');
+    const { muscle_group_name, muscle_group_image_id } = req.body;
+
+    // Construct the update part of the query based on provided fields
+    const updateParts = [];
+    const queryValues = [];
+    let queryIndex = 1;
+
+    if (muscle_group_name !== undefined) {
+      updateParts.push(`muscle_group_name = $${queryIndex++}`);
+      queryValues.push(muscle_group_name);
     }
+
+    if (muscle_group_image_id !== undefined) {
+      updateParts.push(`muscle_group_image_id = $${queryIndex++}`);
+      queryValues.push(muscle_group_image_id);
+    }
+
+    queryValues.push(id); // For the WHERE condition
+
+    if (updateParts.length === 0) {
+      return res.status(400).send('No update fields provided.');
+    }
+
+    const queryString = `UPDATE muscle_groups SET ${updateParts.join(
+      ', '
+    )} WHERE muscle_group_id = $${queryIndex} RETURNING *`;
+
+    const { rows } = await db.query(queryString, queryValues);
+
+    if (rows.length === 0) {
+      return res.status(404).send('Muscle not found.');
+    }
+
     res.status(200).json(rows[0]);
   } catch (error) {
     res.status(500).send(error.message);
