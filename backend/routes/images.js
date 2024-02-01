@@ -27,6 +27,7 @@ router.post('/images', upload.single('image'), async (req, res) => {
   }
 
   const imageDescription = req.body.description;
+  const imageStatus = req.body.status;
 
   try {
     // metadata from the uploaded file
@@ -37,8 +38,8 @@ router.post('/images', upload.single('image'), async (req, res) => {
     // 'checksum' is not directly available from req.file; you would need additional logic to calculate it
     console.log('Image description: ', imageDescription);
     const { rows } = await db.query(
-      'INSERT INTO image_metadata (description, file_path, image_name, content_type, file_size, upload_date) VALUES ($1, $2, $3, $4, $5, CURRENT_TIMESTAMP) RETURNING *',
-      [imageDescription, path, filename, mimetype, size]
+      'INSERT INTO image_metadata (description, status, file_path, image_name, content_type, file_size, upload_date) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP) RETURNING *',
+      [imageDescription, imageStatus, path, filename, mimetype, size]
     );
     console.log(req.file);
     console.log(req.body);
@@ -46,6 +47,7 @@ router.post('/images', upload.single('image'), async (req, res) => {
       message: 'Image uploaded successfully',
       file: {
         description: imageDescription,
+        status: imageStatus,
         path,
         filename,
         mimetype,
