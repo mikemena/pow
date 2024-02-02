@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const saltRounds = 10;
 const db = require('../config/db');
 
-// GET all users
+// Endpoint to get all users
+
 router.get('/users', async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM users');
@@ -14,7 +15,8 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// GET a specific user by ID
+// Endpoint to get a specific user by ID
+
 router.get('/users/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
@@ -39,6 +41,7 @@ router.get('/users/:id', async (req, res) => {
 });
 
 // Endpoint to create a user
+
 router.post('/users', async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -100,7 +103,7 @@ router.put('/users/:id', async (req, res) => {
   }
 });
 
-// Delete user
+// Endpoint to delete a user
 
 router.delete('/users/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
