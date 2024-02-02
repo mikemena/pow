@@ -10,6 +10,7 @@ const musclesRoutes = require('./routes/muscles');
 const equipmentsRoutes = require('./routes/equipment_catalog');
 const exerciseCatalogRoutes = require('./routes/exercise_catalog');
 const usersRoutes = require('./routes/users');
+const userWorkoutsRoutes = require('./routes/user_workouts');
 
 // Use your routes with a base path
 app.use('/api', imageRoutes);
@@ -17,6 +18,7 @@ app.use('/api', musclesRoutes);
 app.use('/api', equipmentsRoutes);
 app.use('/api', exerciseCatalogRoutes);
 app.use('/api', usersRoutes);
+app.use('/api', userWorkoutsRoutes);
 
 // Your existing setup and routes...
 
