@@ -142,7 +142,7 @@ router.delete('/workouts/:id', async (req, res) => {
   } catch (error) {
     // Log the error and return a 500 Internal Server Error response if an error occurs
     console.error('Error deleting workout:', error);
-    res.status(500).json({ message: 'Error deleting muscle' });
+    res.status(500).json({ message: 'Error deleting workout' });
   }
 });
 
