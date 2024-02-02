@@ -101,4 +101,28 @@ router.put('/equipments/:id', async (req, res) => {
   }
 });
 
+// Delete equipment
+
+router.delete('/equipments/:id', async (req, res) => {
+  const { id } = req.params; // Extract the ID from the route parameters
+
+  try {
+    const { rowCount } = await db.query(
+      'DELETE FROM equipment_catalog WHERE equipment_id = $1',
+      [id]
+    );
+
+    if (rowCount > 0) {
+      res.status(200).json({ message: 'Equipment deleted successfully' });
+    } else {
+      // If no muscle was found and deleted, return a 404 Not Found response
+      res.status(404).json({ message: 'Equipment not found' });
+    }
+  } catch (error) {
+    // Log the error and return a 500 Internal Server Error response if an error occurs
+    console.error('Error deleting equipment:', error);
+    res.status(500).json({ message: 'Error deleting equipment' });
+  }
+});
+
 module.exports = router;

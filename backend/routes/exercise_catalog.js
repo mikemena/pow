@@ -114,4 +114,28 @@ router.put('/exercise-catalog/:id', async (req, res) => {
   }
 });
 
+// Delete exercise
+
+router.delete('/exercise-catalog/:id', async (req, res) => {
+  const { id } = req.params; // Extract the ID from the route parameters
+
+  try {
+    const { rowCount } = await db.query(
+      'DELETE FROM exercise_catalog WHERE exercise_id = $1',
+      [id]
+    );
+
+    if (rowCount > 0) {
+      res.status(200).json({ message: 'Exercise deleted successfully' });
+    } else {
+      // If no muscle was found and deleted, return a 404 Not Found response
+      res.status(404).json({ message: 'Exercise not found' });
+    }
+  } catch (error) {
+    // Log the error and return a 500 Internal Server Error response if an error occurs
+    console.error('Error deleting exercise:', error);
+    res.status(500).json({ message: 'Error deleting exercise' });
+  }
+});
+
 module.exports = router;
