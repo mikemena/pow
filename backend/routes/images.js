@@ -72,6 +72,30 @@ router.get('/images', async (req, res) => {
   }
 });
 
+// Endpoint to get one image and its metadata by ID
+router.get('/images/:id', async (req, res) => {
+  const { id } = req.params; // Extract the ID from the route parameters
+
+  try {
+    const { rows } = await db.query(
+      'SELECT * FROM image_metadata WHERE image_id = $1',
+      [id]
+    );
+
+    if (rows.length === 0) {
+      // If no image metadata is found with the given ID, return a 404 Not Found response
+      return res.status(404).json({ message: 'Image metadata not found' });
+    }
+
+    // If image metadata is found, return it in the response
+    res.json(rows[0]);
+  } catch (error) {
+    // Log the error and return a 500 Internal Server Error response if an error occurs
+    console.error('Error fetching image metadata:', error);
+    res.status(500).json({ message: 'Error fetching image metadata' });
+  }
+});
+
 // Endpoint for deleting an image metadata entry by ID
 
 router.delete('/images/:id', async (req, res) => {
