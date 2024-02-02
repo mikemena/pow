@@ -4,6 +4,11 @@ const db = require('../config/db');
 
 // Endpoint to get the workout history for a given user, month/year
 
+const getLastDayOfMonth = (year, month) => {
+  // Month in JavaScript Date is 0-indexed (0 = January, 11 = December)
+  return new Date(year, month, 0).getDate();
+};
+
 router.get('/workout-history/:user_id/:year/:month', async (req, res) => {
   const { user_id, year, month } = req.params;
 
@@ -11,9 +16,12 @@ router.get('/workout-history/:user_id/:year/:month', async (req, res) => {
     // Pad the month with a zero if it is a single digit
     const monthPadded = month.padStart(2, '0');
 
+    // Calculate the last day of the month
+    const lastDay = getLastDayOfMonth(year, monthPadded);
+
     // Define the start and end of the month
     const startDate = `${year}-${monthPadded}-01`;
-    const endDate = `${year}-${monthPadded}-31`; // This assumes all months have 31 days which is not true, you might need to calculate the last day of the month based on the year and month
+    const endDate = `${year}-${monthPadded}-${lastDay}`;
 
     // Fetch workout history for the user within the specified month and year
     const { rows } = await db.query(
