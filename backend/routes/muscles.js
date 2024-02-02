@@ -40,10 +40,10 @@ router.get('/muscles/:id', async (req, res) => {
 // POST a muscle
 router.post('/muscles', async (req, res) => {
   try {
-    const { muscle_group } = req.body;
+    const { muscle_group, muscle_group_image_id } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO muscle_groups (muscle_group_name) VALUES ($1) RETURNING *',
-      [muscle_group]
+      'INSERT INTO muscle_groups (muscle_group_name, muscle_group_image_id) VALUES ($1, $2) RETURNING *',
+      [muscle_group, muscle_group_image_id]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
