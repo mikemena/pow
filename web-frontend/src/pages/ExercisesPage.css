@@ -1,0 +1,22 @@
+.exercises-container {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(100px, 1fr)
+  ); /* Creates a responsive grid */
+  gap: 20px;
+  padding: 20px;
+}
+
+/* src/pages/ExercisesPage.css */
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(120px, 1fr)
+  ); /* Adjust minmax() as needed */
+  gap: 20px; /* Space between items */
+  padding: 20px; /* Padding around the grid */
+  justify-items: center; /* Center items horizontally */
+  align-items: center; /* Center items vertically */
+}
