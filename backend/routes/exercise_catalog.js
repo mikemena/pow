@@ -6,7 +6,13 @@ const db = require('../config/db');
 
 router.get('/exercise-catalog', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM exercise_catalog');
+    const { rows } = await db.query(`
+    SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+    FROM exercise_catalog ec
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+    JOIN image_metadata im ON ec.exercise_image_id = im.image_id;
+  `);
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -20,11 +26,14 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
+    const exerciseQuery = `SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+    FROM exercise_catalog ec
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    WHERE exercise_id = $1`;
 
-    const { rows } = await db.query(
-      'SELECT * FROM exercise_catalog WHERE exercise_id = $1',
-      [parseInt(id)]
-    );
+    const { rows } = await db.query(exerciseQuery, [parseInt(id)]);
 
     if (rows.length === 0) {
       // If no exercise is found with the given ID, return a 404 Not Found response
@@ -38,6 +47,48 @@ router.get('/exercise-catalog/:id', async (req, res) => {
     // Log the error and return a 500 Internal Server Error response if an error occurs
     console.error('Error fetching exercise:', error);
     res.status(500).json({ message: 'Error fetching exercise' });
+  }
+});
+
+// Endpoint to get exercises by specific muscle id
+
+router.get('/exercise-catalog/muscles/:muscleId', async (req, res) => {
+  try {
+    const { muscleId } = req.params;
+    const query = `
+    SELECT ec.exercise_id, ec.exercise_name, ec.muscle_group_id, mg.muscle_group_name, ec.equipment_id, eq.equipment_name, im.file_path
+    FROM exercise_catalog ec
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    WHERE ec.muscle_group_id = $1;
+    `;
+    const { rows } = await db.query(query, [muscleId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching exercises by muscle:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+// Endpoint to get exercises by specific equipment id
+
+router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
+  try {
+    const { equipmentId } = req.params;
+    const query = `
+    SELECT ec.exercise_id, ec.exercise_name, ec.muscle_group_id, mg.muscle_group_name, ec.equipment_id, eq.equipment_name, im.file_path
+    FROM exercise_catalog ec
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    WHERE ec.equipment_id = $1;
+    `;
+    const { rows } = await db.query(query, [equipmentId]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error fetching equipment by muscle:', error);
+    res.status(500).send('Internal Server Error');
   }
 });
 
