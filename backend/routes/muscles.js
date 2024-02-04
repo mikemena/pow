@@ -5,7 +5,10 @@ const db = require('../config/db');
 // GET all muscles
 router.get('/muscles', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM muscle_groups');
+    const { rows } =
+      await db.query(`SELECT m.muscle_group_id, m.muscle_group_name, i.file_path
+    FROM muscle_groups m
+    LEFT JOIN image_metadata i ON m.muscle_group_image_id = i.image_id;`);
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -19,7 +22,10 @@ router.get('/muscles/:id', async (req, res) => {
   try {
     // Query to fetch the muscle with the specified ID
     const { rows } = await db.query(
-      'SELECT * FROM muscle_groups WHERE muscle_group_id = $1',
+      `SELECT m.muscle_group_id, m.muscle_group_name, i.file_path
+      FROM muscle_groups m
+      LEFT JOIN image_metadata i ON m.muscle_group_image_id = i.image_id
+      WHERE muscle_group_id = $1`,
       [parseInt(id)]
     );
 
