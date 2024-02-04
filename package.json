@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "start": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix ./web-frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
