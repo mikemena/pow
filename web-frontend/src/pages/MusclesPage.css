@@ -1,0 +1,33 @@
+/* MuscleGroupsPage.css */
+.muscle-groups-container {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(120px, 1fr)
+  ); /* Creates a flexible number of columns */
+  gap: 20px; /* Space between grid items */
+  padding: 20px; /* Padding around the entire grid */
+  justify-items: center; /* Center items horizontally in their grid cells */
+}
+
+/* muscleGroup.css */
+.muscle-group {
+  cursor: pointer;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.muscle-group:hover {
+  transform: scale(1.05);
+}
+
+.muscle-group img {
+  width: 100%; /* Make images responsive within their containers */
+  max-width: 80px; /* Maximum image size */
+  height: auto;
+  border-radius: 50%;
+}
+
+.muscle-group p {
+  margin-top: 8px; /* Adjust as needed */
+}

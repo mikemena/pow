@@ -1,11 +1,18 @@
+// src/App.js
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import MusclesPage from './pages/MusclesPage';
+import ExercisesPage from './pages/ExercisePage';
 import './App.css';
-import ExercisesPage from './pages/ExercisesPage';
 
 function App() {
   return (
-    <div className='App'>
-      <ExercisesPage />
-    </div>
+    <Router>
+      <Routes>
+        <Route path='/' element={<MusclesPage />} />
+        <Route path='/exercises/:muscle' element={<ExercisesPage />} />
+      </Routes>
+    </Router>
   );
 }
 

@@ -1,0 +1,62 @@
+[
+  {
+    "name": "Triceps",
+    "id": "triceps",
+    "image": "/assets/images/muscles/triceps.png"
+  },
+  {
+    "name": "Chest",
+    "id": "chest",
+    "image": "/assets/images/muscles/chest.png"
+  },
+  {
+    "name": "Shoulders",
+    "id": "shoulders",
+    "image": "/assets/images/muscles/shoulders.png"
+  },
+  {
+    "name": "Biceps",
+    "id": "biceps",
+    "image": "/assets/images/muscles/biceps.png"
+  },
+  {
+    "name": "Core",
+    "id": "core",
+    "image": "/assets/images/muscles/core.png"
+  },
+  {
+    "name": "Back",
+    "id": "back",
+    "image": "/assets/images/muscles/back.png"
+  },
+  {
+    "name": "Forearm",
+    "id": "forearm",
+    "image": "/assets/images/muscles/forearms.png"
+  },
+  {
+    "name": "Upper Legs",
+    "id": "upperlegs",
+    "image": "/assets/images/muscles/upper_legs.png"
+  },
+  {
+    "name": "Glues",
+    "id": "glutes",
+    "image": "/assets/images/muscles/glutes.png"
+  },
+  {
+    "name": "Lower Legs",
+    "id": "lowerlegs",
+    "image": "/assets/images/muscles/lower_legs.png"
+  },
+  {
+    "name": "Cardio",
+    "id": "cardio",
+    "image": "/assets/images/muscles/cardio.png"
+  },
+  {
+    "name": "All Exercies",
+    "id": "all",
+    "image": "/assets/images/muscles/all.png"
+  }
+]

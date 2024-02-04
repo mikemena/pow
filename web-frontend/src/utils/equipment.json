@@ -1,0 +1,67 @@
+[
+  {
+    "name": "All",
+    "id": "all",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Bands",
+    "id": "bands",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Barbell",
+    "id": "barbell",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Bench",
+    "id": "bench",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Body Only",
+    "id": "body",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Dumbbell",
+    "id": "dumbbell",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Exercise Ball",
+    "id": "exerciseball",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "EZ-Bar",
+    "id": "ezbar",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Kettlebell",
+    "id": "kettlebell",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Machine - Cardio",
+    "id": "machinecardio",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Machine - Strength",
+    "id": "machinestrength",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Pull Bar",
+    "id": "pullbar",
+    "image": "/assets/images/muscles/x.png"
+  },
+  {
+    "name": "Weight Plate",
+    "id": "weightplate",
+    "image": "/assets/images/muscles/x.png"
+  }
+]
