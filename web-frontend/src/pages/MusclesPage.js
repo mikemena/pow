@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import MuscleGroup from '../components/MuscleGroup/MuscleGroup';
 import './MusclesPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const MusclesPage = () => {
   const [muscles, setMuscles] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMuscles = async () => {
@@ -18,16 +21,23 @@ const MusclesPage = () => {
     fetchMuscles();
   }, []);
 
+  // Function to handle click even on a muscle group
+  const handleMuscleClick = muscle => {
+    // navigate(`/exercises/${muscleId}`);
+    navigate('/exercises', {
+      state: { selectedMuscle: muscle.muscle_group_id }
+    });
+  };
+
   return (
-    <div>
+    <div className='muscles-container'>
       {muscles.map(muscle => (
-        <div key={muscle.muscle_group_id}>
-          <h3>{muscle.muscle_group_name}</h3>
-          <img
-            src={`http://localhost:9025/${muscle.file_path}`}
-            alt={muscle.muscle_group_name}
-          />
-        </div>
+        <MuscleGroup
+          key={muscle.muscle_group_id}
+          name={muscle.muscle_group_name}
+          image={`http://localhost:9025/${muscle.file_path}`}
+          onClick={() => handleMuscleClick(muscle.muscle_group_id)}
+        />
       ))}
     </div>
   );

@@ -1,8 +1,10 @@
 // src/pages/ExercisesListPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 const ExercisesListPage = () => {
+  const location = useLocation();
+  const { muscleID } = location.state;
   const { muscle, equipment } = useParams();
   const [selectedMuscle, setSelectedMuscle] = useState(muscle || 'all');
   const [selectedEquipment, setSelectedEquipment] = useState(
