@@ -1,8 +1,15 @@
+const cors = require('cors');
 const express = require('express');
 const app = express();
+const path = require('path');
 
 // Middleware to parse JSON bodies
 app.use(express.json());
+
+// Serve static files from the images directory
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
+app.use(cors({ origin: 'http://localhost:3000' })); // Only allow requests only from frontend
 
 // Import routes
 const imageRoutes = require('./routes/images');
