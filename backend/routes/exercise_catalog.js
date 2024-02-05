@@ -2,6 +2,30 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
+// Endpoint to get an exercise by name containing a string
+
+router.get('/exercise-catalog/search', async (req, res) => {
+  // Get the search query from the URL query string
+  const searchQuery = req.query.q || ''; // Use an empty string as a default if no query is provided
+
+  try {
+    const query = `
+      SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+      FROM exercise_catalog ec
+      JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
+      JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+      JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+      WHERE LOWER(ec.exercise_name) LIKE LOWER($1);
+    `;
+    // The '%' symbols are wildcards for any number of characters
+    const { rows } = await db.query(query, [`%${searchQuery}%`]);
+    res.json(rows);
+  } catch (error) {
+    console.error('Error searching exercises:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 // Endpoint to get all exercises in the catalog
 
 router.get('/exercise-catalog', async (req, res) => {

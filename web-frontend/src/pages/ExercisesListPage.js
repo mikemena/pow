@@ -1,44 +1,46 @@
 // src/pages/ExercisesListPage.js
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import SearchBar from '../components/SearchBar/SearchBar';
 
 const ExercisesListPage = () => {
-  const location = useLocation();
-  const { muscleID } = location.state;
-  const { muscle, equipment } = useParams();
-  const [selectedMuscle, setSelectedMuscle] = useState(muscle || 'all');
-  const [selectedEquipment, setSelectedEquipment] = useState(
-    equipment || 'all'
-  );
   const [exercises, setExercises] = useState([]);
-  const navigate = useNavigate();
-
-  // Function to update the exercises list based on the selected muscle and equipment
-  const updateExerciseList = (muscle, equipment) => {
-    // Fetch the exercises from the API based on the filters
-    // Update the state with the new list of exercises
-  };
+  const location = useLocation();
+  const [selectedMuscle, setSelectedMuscle] = useState('all');
+  const [selectedEquipment, setSelectedEquipment] = useState('all');
 
   // Effect to fetch exercises when the component mounts or when filters change
   useEffect(() => {
-    updateExerciseList(selectedMuscle, selectedEquipment);
-  }, [selectedMuscle, selectedEquipment]);
+    // Check if a muscle was passed in the location state
+    const muscle = location.state?.selectedMuscle;
+    setSelectedMuscle(muscle);
 
-  const handleMuscleChange = newMuscle => {
-    setSelectedMuscle(newMuscle);
-    updateExerciseList(newMuscle, selectedEquipment);
+    const fetchExercises = async () => {
+      try {
+        // Make an API call to fetch exercises for the selected muscle
+        // If no muscle is selected, fetch all exercises or handle accordingly
+        const response = await fetch(
+          `http://localhost:9025/api/exercises/muscles/${muscle}`
+        );
+        const data = await response.json();
+        setExercises(data);
+      } catch (error) {
+        console.error('Failed to fetch exercises:', error);
+      }
+    };
+
+    if (muscle) {
+      fetchExercises();
+    }
+  }, [location.state]);
+
+  const handleSearch = query => {
+    setSearchQuery(query);
   };
 
-  const handleEquipmentChange = newEquipment => {
-    setSelectedEquipment(newEquipment);
-    updateExerciseList(selectedMuscle, newEquipment);
-  };
-
-  // Render the exercise list with filters
   return (
     <div>
-      {/* Render dropdown or modal for selecting muscle and equipment */}
-      {/* Render the alphabetically categorized exercise list */}
+      <SearchBar onSearch={handleSearch} />
     </div>
   );
 };

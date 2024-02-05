@@ -25,7 +25,7 @@ const MusclesPage = () => {
   const handleMuscleClick = muscle => {
     // navigate(`/exercises/${muscleId}`);
     navigate('/exercises', {
-      state: { selectedMuscle: muscle.muscle_group_id }
+      state: { selectedMuscle: muscle.muscle_group_name }
     });
   };
 
