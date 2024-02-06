@@ -19,13 +19,13 @@ function ExerciseFilters() {
         fetchUrl='http://localhost:9025/api/equipments'
         defaultOption='Any Equipment'
         onSelect={handleEquipmentSelect}
-        className='equipment-select-button'
+        className='select-button'
       />
       <FilterDropdown
         fetchUrl='http://localhost:9025/api/muscles'
         defaultOption='Any Muscle'
         onSelect={handleMuscleSelect}
-        className='muscle-select-button'
+        className='select-button'
       />
       {/* ... other filters */}
     </div>
