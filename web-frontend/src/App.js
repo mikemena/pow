@@ -10,7 +10,7 @@ function App() {
     <Router>
       <Routes>
         <Route path='/' element={<MusclesPage />} />
-        <Route path='/exercises/:muscle' element={<ExercisesListPage />} />
+        <Route path='/exercises' element={<ExercisesListPage />} />
         <Route path='/exercises/:muscle?/:equipment? component={ExercisePage}' />
       </Routes>
     </Router>

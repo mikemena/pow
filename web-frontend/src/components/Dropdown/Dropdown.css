@@ -1,0 +1,18 @@
+.dropdown {
+  margin: 20px;
+}
+
+.dropdown-list {
+  list-style-type: none;
+}
+
+.dropdown-item {
+  font-size: 14pt;
+  color: rgb(49, 49, 49);
+  padding: 5px;
+}
+
+.dropdown-item:hover {
+  font-size: 16pt;
+  font-weight: bold;
+}

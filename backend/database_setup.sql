@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS public.users
 CREATE TABLE IF NOT EXISTS public.user_exercises
 (
     exercise_id serial,
-    exercise_name character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
     muscle_group_id integer,
     PRIMARY KEY (exercise_id),
     CONSTRAINT "ExerciseID" UNIQUE (exercise_id)
@@ -48,10 +48,10 @@ CREATE TABLE IF NOT EXISTS public.user_sets
 CREATE TABLE IF NOT EXISTS public.exercise_catalog
 (
     exercise_id serial,
-    exercise_name character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
     muscle_group_id integer,
     equipment_id integer,
-    exercise_image_id integer,
+    image_id integer,
     PRIMARY KEY (exercise_id)
 );
 
@@ -84,16 +84,16 @@ CREATE TABLE IF NOT EXISTS public.workout_history
 CREATE TABLE IF NOT EXISTS public.muscle_groups
 (
     muscle_group_id serial,
-    muscle_group_name character varying(255) NOT NULL,
-    muscle_group_image_id integer,
+    name character varying(255) NOT NULL,
+    image_id integer,
     PRIMARY KEY (muscle_group_id)
 );
 
 CREATE TABLE IF NOT EXISTS public.equipment_catalog
 (
     equipment_id serial,
-    "equipment_name " character varying(255) NOT NULL,
-    equipment_image_id integer,
+    "name " character varying(255) NOT NULL,
+    image_id integer,
     PRIMARY KEY (equipment_id)
 );
 
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS public.exercise_history
 (
     workout_id integer,
     exercise_id serial,
-    exercise_name character varying(255),
+    name character varying(255),
     muscle_group_id integer,
     PRIMARY KEY (exercise_id)
 );
@@ -140,7 +140,7 @@ ALTER TABLE IF EXISTS public.user_sets
 
 
 ALTER TABLE IF EXISTS public.exercise_catalog
-    ADD CONSTRAINT fk_exercise_image_id FOREIGN KEY (exercise_image_id)
+    ADD CONSTRAINT fk_image_id FOREIGN KEY (image_id)
     REFERENCES public.image_metadata (image_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
@@ -164,7 +164,7 @@ ALTER TABLE IF EXISTS public.exercise_catalog
 
 
 ALTER TABLE IF EXISTS public.muscle_groups
-    ADD CONSTRAINT fk_muscle_group_image_id FOREIGN KEY (muscle_group_image_id)
+    ADD CONSTRAINT fk_image_id FOREIGN KEY (image_id)
     REFERENCES public.image_metadata (image_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION
@@ -172,7 +172,7 @@ ALTER TABLE IF EXISTS public.muscle_groups
 
 
 ALTER TABLE IF EXISTS public.equipment_catalog
-    ADD CONSTRAINT fk_equipment_image_id FOREIGN KEY (equipment_image_id)
+    ADD CONSTRAINT fk_image_id FOREIGN KEY (image_id)
     REFERENCES public.image_metadata (image_id) MATCH SIMPLE
     ON UPDATE NO ACTION
     ON DELETE NO ACTION

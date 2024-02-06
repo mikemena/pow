@@ -41,15 +41,15 @@ router.get('/equipments/:id', async (req, res) => {
 router.post('/equipments', async (req, res) => {
   console.log(req.body);
   try {
-    const { equipment_name } = req.body;
+    const { name } = req.body;
     console.log(
       'Executing query:',
-      'INSERT INTO equipment_catalog (equipment_name) VALUES ($1) RETURNING *'
+      'INSERT INTO equipment_catalog (name) VALUES ($1) RETURNING *'
     );
 
     const { rows } = await db.query(
-      'INSERT INTO equipment_catalog (equipment_name) VALUES ($1) RETURNING *',
-      [equipment_name]
+      'INSERT INTO equipment_catalog (name) VALUES ($1) RETURNING *',
+      [name]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -62,21 +62,21 @@ router.post('/equipments', async (req, res) => {
 router.put('/equipments/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { equipment_name, equipment_name_image_id } = req.body;
+    const { name, image_id } = req.body;
 
     // Construct the update part of the query based on provided fields
     const updateParts = [];
     const queryValues = [];
     let queryIndex = 1;
 
-    if (equipment_name !== undefined) {
-      updateParts.push(`equipment_name = $${queryIndex++}`);
-      queryValues.push(equipment_name);
+    if (name !== undefined) {
+      updateParts.push(`name = $${queryIndex++}`);
+      queryValues.push(name);
     }
 
-    if (equipment_name_image_id !== undefined) {
-      updateParts.push(`equipment_name_image_id = $${queryIndex++}`);
-      queryValues.push(equipment_name_image_id);
+    if (name_image_id !== undefined) {
+      updateParts.push(`image_id = $${queryIndex++}`);
+      queryValues.push(image_id);
     }
 
     queryValues.push(id); // For the WHERE condition

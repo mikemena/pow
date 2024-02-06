@@ -10,12 +10,12 @@ router.get('/exercise-catalog/search', async (req, res) => {
 
   try {
     const query = `
-      SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+      SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
       FROM exercise_catalog ec
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-      JOIN image_metadata im ON ec.exercise_image_id = im.image_id
-      WHERE LOWER(ec.exercise_name) LIKE LOWER($1);
+      JOIN image_metadata im ON ec.image_id = im.image_id
+      WHERE LOWER(ec.name) LIKE LOWER($1);
     `;
     // The '%' symbols are wildcards for any number of characters
     const { rows } = await db.query(query, [`%${searchQuery}%`]);
@@ -31,11 +31,11 @@ router.get('/exercise-catalog/search', async (req, res) => {
 router.get('/exercise-catalog', async (req, res) => {
   try {
     const { rows } = await db.query(`
-    SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+    SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.exercise_image_id = im.image_id;
+    JOIN image_metadata im ON ec.image_id = im.image_id;
   `);
     res.json(rows);
   } catch (error) {
@@ -50,11 +50,11 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
-    const exerciseQuery = `SELECT ec.exercise_id, ec.exercise_name, mg.muscle_group_name, eq.equipment_name, im.file_path
+    const exerciseQuery = `SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    JOIN image_metadata im ON ec.image_id = im.image_id
     WHERE exercise_id = $1`;
 
     const { rows } = await db.query(exerciseQuery, [parseInt(id)]);
@@ -80,11 +80,11 @@ router.get('/exercise-catalog/muscles/:muscleId', async (req, res) => {
   try {
     const { muscleId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.exercise_name, ec.muscle_group_id, mg.muscle_group_name, ec.equipment_id, eq.equipment_name, im.file_path
+    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name, ec.equipment_id, eq.name, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    JOIN image_metadata im ON ec.image_id = im.image_id
     WHERE ec.muscle_group_id = $1;
     `;
     const { rows } = await db.query(query, [muscleId]);
@@ -101,11 +101,11 @@ router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
   try {
     const { equipmentId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.exercise_name, ec.muscle_group_id, mg.muscle_group_name, ec.equipment_id, eq.equipment_name, im.file_path
+    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name, ec.equipment_id, eq.name, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.exercise_image_id = im.image_id
+    JOIN image_metadata im ON ec.image_id = im.image_id
     WHERE ec.equipment_id = $1;
     `;
     const { rows } = await db.query(query, [equipmentId]);
@@ -120,13 +120,13 @@ router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
 
 router.post('/exercise-catalog', async (req, res) => {
   try {
-    const { exercise_name } = req.body;
+    const { name } = req.body;
     const { muscle_id } = req.body;
     const { equipment_id } = req.body;
     const { image_id } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO exercise_catalog (exercise_name, muscle_group_id, equipment_id, exercise_image_id) VALUES ($1, $2, $3, $4) RETURNING *',
-      [exercise_name, muscle_id, equipment_id, image_id]
+      'INSERT INTO exercise_catalog (name, muscle_group_id, equipment_id, image_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [name, muscle_id, equipment_id, image_id]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -139,8 +139,7 @@ router.post('/exercise-catalog', async (req, res) => {
 router.put('/exercise-catalog/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { exercise_name, muscle_group_id, equipment_id, exercise_image_id } =
-      req.body;
+    const { name, muscle_group_id, equipment_id, image_id } = req.body;
 
     // Construct the update part of the query based on provided fields
 
@@ -148,9 +147,9 @@ router.put('/exercise-catalog/:id', async (req, res) => {
     const queryValues = [];
     let queryIndex = 1;
 
-    if (exercise_name !== undefined) {
-      updateParts.push(`exercise_name = $${queryIndex++}`);
-      queryValues.push(exercise_name);
+    if (name !== undefined) {
+      updateParts.push(`name = $${queryIndex++}`);
+      queryValues.push(name);
     }
 
     if (muscle_group_id !== undefined) {
@@ -162,9 +161,9 @@ router.put('/exercise-catalog/:id', async (req, res) => {
       updateParts.push(`equipment_id = $${queryIndex++}`);
       queryValues.push(equipment_id);
     }
-    if (exercise_image_id !== undefined) {
-      updateParts.push(`exercise_image_id = $${queryIndex++}`);
-      queryValues.push(exercise_image_id);
+    if (image_id !== undefined) {
+      updateParts.push(`image_id = $${queryIndex++}`);
+      queryValues.push(image_id);
     }
 
     queryValues.push(id); // For the WHERE condition

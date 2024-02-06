@@ -1,0 +1,25 @@
+.equipment-select-button {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+  padding: 5px 20px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 45%;
+}
+
+.button-orange {
+  background-color: orange;
+  color: white;
+  font-size: 16px;
+  font-weight: 300;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}

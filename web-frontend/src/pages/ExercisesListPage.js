@@ -1,27 +1,28 @@
-// src/pages/ExercisesListPage.js
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import SearchBar from '../components/SearchBar/SearchBar';
+import ExerciseFilters from '../components/ExerciseFilters/ExerciseFilters';
+import './ExercisesList.css';
 
 const ExercisesListPage = () => {
   const [exercises, setExercises] = useState([]);
   const location = useLocation();
-  const [selectedMuscle, setSelectedMuscle] = useState('all');
-  const [selectedEquipment, setSelectedEquipment] = useState('all');
+  const [searchQuery, setSearchQuery] = useState(''); // Add searchQuery state
 
   // Effect to fetch exercises when the component mounts or when filters change
   useEffect(() => {
-    // Check if a muscle was passed in the location state
     const muscle = location.state?.selectedMuscle;
-    setSelectedMuscle(muscle);
 
     const fetchExercises = async () => {
       try {
-        // Make an API call to fetch exercises for the selected muscle
-        // If no muscle is selected, fetch all exercises or handle accordingly
-        const response = await fetch(
-          `http://localhost:9025/api/exercises/muscles/${muscle}`
-        );
+        let apiUrl = `http://localhost:9025/api/exercises/muscles/${muscle}`;
+
+        // Add searchQuery to the API URL if it's not empty
+        if (searchQuery) {
+          apiUrl += `?q=${searchQuery}`;
+        }
+
+        const response = await fetch(apiUrl);
         const data = await response.json();
         setExercises(data);
       } catch (error) {
@@ -29,10 +30,10 @@ const ExercisesListPage = () => {
       }
     };
 
-    if (muscle) {
+    if (muscle !== 'all') {
       fetchExercises();
     }
-  }, [location.state]);
+  }, [location.state, searchQuery]);
 
   const handleSearch = query => {
     setSearchQuery(query);
@@ -40,7 +41,15 @@ const ExercisesListPage = () => {
 
   return (
     <div>
+      <h1 className='page_title'>Exercises</h1>
       <SearchBar onSearch={handleSearch} />
+      <ExerciseFilters />
+      {/* Render the list of exercises based on the 'exercises' state */}
+      <ul>
+        {exercises.map(exercise => (
+          <li key={exercise.id}>{exercise.name}</li>
+        ))}
+      </ul>
     </div>
   );
 };

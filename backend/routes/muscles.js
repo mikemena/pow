@@ -6,9 +6,9 @@ const db = require('../config/db');
 router.get('/muscles', async (req, res) => {
   try {
     const { rows } =
-      await db.query(`SELECT m.muscle_group_id, m.muscle_group_name, i.file_path
+      await db.query(`SELECT m.muscle_group_id, m.name, i.file_path
     FROM muscle_groups m
-    LEFT JOIN image_metadata i ON m.muscle_group_image_id = i.image_id;`);
+    LEFT JOIN image_metadata i ON m.image_id = i.image_id;`);
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -22,9 +22,9 @@ router.get('/muscles/:id', async (req, res) => {
   try {
     // Query to fetch the muscle with the specified ID
     const { rows } = await db.query(
-      `SELECT m.muscle_group_id, m.muscle_group_name, i.file_path
+      `SELECT m.muscle_group_id, m.name, i.file_path
       FROM muscle_groups m
-      LEFT JOIN image_metadata i ON m.muscle_group_image_id = i.image_id
+      LEFT JOIN image_metadata i ON m.image_id = i.image_id
       WHERE muscle_group_id = $1`,
       [parseInt(id)]
     );
@@ -46,10 +46,10 @@ router.get('/muscles/:id', async (req, res) => {
 // POST a muscle
 router.post('/muscles', async (req, res) => {
   try {
-    const { muscle_group, muscle_group_image_id } = req.body;
+    const { muscle_group, image_id } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO muscle_groups (muscle_group_name, muscle_group_image_id) VALUES ($1, $2) RETURNING *',
-      [muscle_group, muscle_group_image_id]
+      'INSERT INTO muscle_groups (name, image_id) VALUES ($1, $2) RETURNING *',
+      [muscle_group, image_id]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -61,21 +61,21 @@ router.post('/muscles', async (req, res) => {
 router.put('/muscles/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { muscle_group_name, muscle_group_image_id } = req.body;
+    const { name, image_id } = req.body;
 
     // Construct the update part of the query based on provided fields
     const updateParts = [];
     const queryValues = [];
     let queryIndex = 1;
 
-    if (muscle_group_name !== undefined) {
-      updateParts.push(`muscle_group_name = $${queryIndex++}`);
-      queryValues.push(muscle_group_name);
+    if (name !== undefined) {
+      updateParts.push(`name = $${queryIndex++}`);
+      queryValues.push(name);
     }
 
-    if (muscle_group_image_id !== undefined) {
-      updateParts.push(`muscle_group_image_id = $${queryIndex++}`);
-      queryValues.push(muscle_group_image_id);
+    if (image_id !== undefined) {
+      updateParts.push(`image_id = $${queryIndex++}`);
+      queryValues.push(image_id);
     }
 
     queryValues.push(id); // For the WHERE condition

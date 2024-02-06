@@ -25,7 +25,7 @@ const MusclesPage = () => {
   const handleMuscleClick = muscle => {
     // navigate(`/exercises/${muscleId}`);
     navigate('/exercises', {
-      state: { selectedMuscle: muscle.muscle_group_name }
+      state: { selectedMuscle: muscle.name }
     });
   };
 
@@ -34,7 +34,7 @@ const MusclesPage = () => {
       {muscles.map(muscle => (
         <MuscleGroup
           key={muscle.muscle_group_id}
-          name={muscle.muscle_group_name}
+          name={muscle.name}
           image={`http://localhost:9025/${muscle.file_path}`}
           onClick={() => handleMuscleClick(muscle.muscle_group_id)}
         />
