@@ -10,7 +10,7 @@ router.get('/exercise-catalog/search', async (req, res) => {
 
   try {
     const query = `
-      SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
+      SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
       FROM exercise_catalog ec
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
@@ -31,7 +31,7 @@ router.get('/exercise-catalog/search', async (req, res) => {
 router.get('/exercise-catalog', async (req, res) => {
   try {
     const { rows } = await db.query(`
-    SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
+    SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
@@ -50,7 +50,7 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
-    const exerciseQuery = `SELECT ec.exercise_id, ec.name, mg.name, eq.name, im.file_path
+    const exerciseQuery = `SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
@@ -80,7 +80,7 @@ router.get('/exercise-catalog/muscles/:muscleId', async (req, res) => {
   try {
     const { muscleId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name, ec.equipment_id, eq.name, im.file_path
+    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
@@ -101,7 +101,7 @@ router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
   try {
     const { equipmentId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name, ec.equipment_id, eq.name, im.file_path
+    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id

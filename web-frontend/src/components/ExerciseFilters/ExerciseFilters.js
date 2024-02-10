@@ -1,16 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import FilterDropdown from '../FilterDropdown/FilterDropdown';
 
 function ExerciseFilters() {
-  // State for the selected muscle and equipment could be managed here or higher up
-  // if needed across multiple components.
+  const [selectedEquipment, setSelectedEquipment] = useState('All');
+  const [selectedMuscle, setSelectedMuscle] = useState('All');
 
   const handleEquipmentSelect = selectedEquipment => {
-    // Handle selection logic for equipment
+    setSelectedEquipment(selectedEquipment);
   };
 
   const handleMuscleSelect = selectedMuscle => {
-    // Handle selection logic for muscle
+    setSelectedMuscle(selectedMuscle);
   };
 
   return (
@@ -19,13 +19,15 @@ function ExerciseFilters() {
         fetchUrl='http://localhost:9025/api/equipments'
         defaultOption='Any Equipment'
         onSelect={handleEquipmentSelect}
-        className='select-button'
+        className='select-exercise-button'
+        value={selectedEquipment}
       />
       <FilterDropdown
         fetchUrl='http://localhost:9025/api/muscles'
         defaultOption='Any Muscle'
         onSelect={handleMuscleSelect}
-        className='select-button'
+        className='select-exercise-button'
+        value={selectedMuscle}
       />
       {/* ... other filters */}
     </div>

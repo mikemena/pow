@@ -74,7 +74,7 @@ router.put('/equipments/:id', async (req, res) => {
       queryValues.push(name);
     }
 
-    if (name_image_id !== undefined) {
+    if (image_id !== undefined) {
       updateParts.push(`image_id = $${queryIndex++}`);
       queryValues.push(image_id);
     }
