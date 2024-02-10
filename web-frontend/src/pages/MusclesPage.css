@@ -6,6 +6,6 @@
 
 .muscle-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* Creates four columns */
+  grid-template-columns: repeat(4, 1fr); /* Creates 4 columns */
   grid-gap: 10px; /* Adjust the gap between items */
 }

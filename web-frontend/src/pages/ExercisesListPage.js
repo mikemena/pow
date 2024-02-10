@@ -22,7 +22,7 @@ const ExercisesListPage = () => {
   }
 
   return (
-    <div>
+    <div className='exercise-page'>
       <h1 className='page_title'>Exercises</h1>
       <SearchBar />
       <ExerciseFilters />
