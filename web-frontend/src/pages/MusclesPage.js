@@ -30,15 +30,17 @@ const MusclesPage = () => {
   };
 
   return (
-    <div className='muscles-container'>
-      {muscles.map(muscle => (
-        <MuscleGroup
-          key={muscle.muscle_group_id}
-          name={muscle.name}
-          image={`http://localhost:9025/${muscle.file_path}`}
-          onClick={() => handleMuscleClick(muscle.muscle_group_id)}
-        />
-      ))}
+    <div className='muscle-page'>
+      <div className='muscle-container'>
+        {muscles.map(muscle => (
+          <MuscleGroup
+            key={muscle.muscle_group_id}
+            name={muscle.name}
+            image={`http://localhost:9025/${muscle.file_path}`}
+            onClick={() => handleMuscleClick(muscle.muscle_group_id)}
+          />
+        ))}
+      </div>
     </div>
   );
 };

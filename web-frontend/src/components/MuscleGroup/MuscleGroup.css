@@ -1,34 +1,38 @@
-.muscle-group {
+.muscle {
   cursor: pointer;
   text-align: center;
   margin: 10px;
   padding: 10px;
   transition: transform 0.2s;
+  color: var(--text-color);
 }
 
-.muscle-group:hover {
+.muscle:hover {
   transform: scale(1.05);
+  color: var(--secondary-color);
 }
 
-.muscle-group img {
+.muscle img {
   width: 80px; /* Default size */
   height: auto;
   margin-bottom: 8px;
   border-radius: 50%;
 }
 
-.muscle-group p {
+.muscle-title {
   margin: 0;
+  margin-bottom: 5px;
+  padding-bottom: 5px;
   font-size: 16px;
 }
 
 /* Responsive styling for smaller screens */
 @media (max-width: 600px) {
-  .muscle-group img {
+  .muscle img {
     width: 60px; /* Smaller size for mobile */
   }
 
-  .muscle-group p {
+  .muscle-title {
     font-size: 14px; /* Slightly smaller text for mobile */
   }
 }
