@@ -1,31 +1,21 @@
 .exercise-filters {
   display: flex;
-  flex-wrap: wrap; /* Allows buttons to wrap to the next line on small screens */
-  justify-content: center; /* Centers buttons */
-  gap: 10px; /* Adds space between buttons */
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 10px;
+  color: var(--primary-color);
 }
 
 .select-exercise-button {
   flex: 1;
   margin: 0 5px;
   font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 385px;
+  width: 350px;
   height: 40px;
-}
-
-.button-orange {
-  background-color: orange;
-  color: white;
-  font-size: 16px;
-  font-weight: 300;
 }
 
 .search-bar input {
   width: 90%;
   padding: 10px;
   font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
 }

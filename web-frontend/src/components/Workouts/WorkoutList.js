@@ -6,6 +6,7 @@ const WorkoutList = ({ onChange }) => {
     <div className='workout-container'>
       <div>
         <h2 className='workout-title'>Chest</h2>
+        <p className='workout-description'>some description</p>
       </div>
     </div>
   );

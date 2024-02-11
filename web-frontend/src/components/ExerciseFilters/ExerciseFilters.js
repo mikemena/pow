@@ -16,7 +16,6 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
         onSelect={onMuscleChange}
         className='select-exercise-button'
       />
-      {/* ... other filters */}
     </div>
   );
 }

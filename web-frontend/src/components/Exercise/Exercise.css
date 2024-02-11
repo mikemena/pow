@@ -8,12 +8,10 @@
 .exercise {
   display: flex;
   align-items: flex-start;
-  margin: 10px 0 20px 10px;
+  margin: 20px 0 10px 20px;
   padding: 10px;
   border-radius: 5px;
-  background-color: var(--background-color);
-  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-  width: 90%;
+  background-color: var(--card-color);
 }
 
 .exercise-image {
@@ -25,7 +23,7 @@
 .exercise-title {
   font-weight: 800;
   font-size: 14pt;
-  color: var(--font-color);
+  color: var(--background-color);
 }
 
 .exercise-muscle {
