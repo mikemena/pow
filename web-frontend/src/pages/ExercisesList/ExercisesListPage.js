@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Exercise from '../components/Exercise/Exercise';
-import SearchBar from '../components/SearchBar/SearchBar';
-import ExerciseFilters from '../components/ExerciseFilters/ExerciseFilters';
+import Exercise from '../../components/Exercise/Exercise';
+import SearchBar from '../../components/SearchBar/SearchBar';
+import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import './ExercisesList.css';
 
 const ExercisesListPage = () => {
