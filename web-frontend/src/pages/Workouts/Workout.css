@@ -1,1 +1,28 @@
+.template-header {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  gap: 10px;
+  color: var(--primary-color);
+  margin: 20px 0 10px 20px;
+}
 
+.select-exercise-button {
+  margin-left: auto;
+  flex: 1;
+  margin: 20px 0 10px 20px;
+  font-size: 16px;
+  width: 350px;
+}
+
+.start-workout-button {
+  flex-grow: 1;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.template-header {
+  display: flex;
+  justify-content: space-between; /* Aligns children to the far left and far right */
+  align-items: center;
+}

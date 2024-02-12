@@ -1,0 +1,31 @@
+.workout-container {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap; /* Allow the child elements to wrap */
+  gap: 20px; /* Adjust the gap size as needed */
+  margin: 20px 0 10px 20px;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.workout {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Gap between elements inside a workout div */
+  flex: 1; /* Allows the div to grow and fill the available space */
+  padding: 10px;
+  background-color: var(--card-color);
+  border-radius: 4px;
+  height: 250px;
+}
+
+.workout-title {
+  font-weight: 800;
+  font-size: 14pt;
+  color: var(--primary-color);
+}
+
+.workout-description {
+  font-size: 12pt;
+  color: var(--background-color);
+}
