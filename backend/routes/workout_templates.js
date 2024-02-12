@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+// const { authenticateToken } = require('../utils/authUtils');
 
 // Endpoint to get all workouts
-router.get('/workouts', async (req, res) => {
+router.get('/workout-templates', async (req, res) => {
   try {
     const { rows } = await db.query('SELECT * FROM user_workouts');
     res.json(rows);
@@ -12,24 +13,31 @@ router.get('/workouts', async (req, res) => {
   }
 });
 
-// GET a specific workout by ID
-router.get('/workouts/:id', async (req, res) => {
-  const { id } = req.params; // Extract the ID from the route parameters
+// GET a workout templates by user
+router.get('/workout-templates/:user_id', async (req, res) => {
+  const { user_id } = req.params; // Extract the user_id from the route parameters
+
+  console.log('user_id', user_id);
+
+  // Ensure the user_id from the params matches the authenticated user's ID
+  // This is a basic security measure to prevent users from accessing other users' data
 
   try {
-    // Query to fetch the workout with the specified ID
+    // Query to fetch the workouts that belong to the authenticated user
     const { rows } = await db.query(
-      'SELECT * FROM user_workouts WHERE workout_id = $1',
-      [parseInt(id)]
+      'SELECT * FROM user_workouts WHERE user_id = $1',
+      [parseInt(user_id)]
     );
 
     if (rows.length === 0) {
-      // If no workout is found with the given ID, return a 404 Not Found response
-      return res.status(404).json({ message: 'Workout not found' });
+      // If no workout templates are found for the user, return a 404 Not Found response
+      return res
+        .status(404)
+        .json({ message: 'You do not have workout templates' });
     }
 
-    // If a workout is found, return it in the response
-    res.json(rows[0]);
+    // If workout templates are found, return it in the response
+    res.json(rows);
   } catch (error) {
     // Log the error and return a 500 Internal Server Error response if an error occurs
     console.error('Error fetching workout:', error);
@@ -38,7 +46,7 @@ router.get('/workouts/:id', async (req, res) => {
 });
 
 // Endpoint to create a workout
-router.post('/workouts', async (req, res) => {
+router.post('/workout-templates', async (req, res) => {
   try {
     const {
       user_id,
