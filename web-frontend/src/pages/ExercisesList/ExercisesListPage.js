@@ -74,7 +74,7 @@ const ExercisesListPage = () => {
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-      <div>
+      <div className='exercise-list'>
         {filteredExercises.map(exercise => (
           <Exercise
             key={exercise.id}

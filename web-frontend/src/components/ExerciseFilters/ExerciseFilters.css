@@ -4,6 +4,7 @@
   justify-content: flex-start;
   gap: 10px;
   color: var(--primary-color);
+  margin: 20px 0 10px 20px;
 }
 
 .select-exercise-button {
