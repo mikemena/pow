@@ -1,22 +1,14 @@
-.workout-container {
-  display: flex;
-  align-items: flex-start;
-  flex-wrap: wrap; /* Allow the child elements to wrap */
-  gap: 20px; /* Adjust the gap size as needed */
-  margin: 20px 0 10px 20px;
-  padding: 10px;
-  border-radius: 5px;
-}
-
 .workout {
   display: flex;
-  flex-direction: column;
-  gap: 10px; /* Gap between elements inside a workout div */
-  flex: 1; /* Allows the div to grow and fill the available space */
-  padding: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  padding: 20px;
+  gap: 10px;
+  width: 500px;
   background-color: var(--card-color);
   border-radius: 4px;
   height: 250px;
+  border-style: solid;
 }
 
 .workout-title {
@@ -28,4 +20,25 @@
 .workout-description {
   font-size: 12pt;
   color: var(--background-color);
+}
+
+.template-section {
+  display: flex; /* Establishes a flex container */
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.template-section p {
+  margin-right: 10px; /* Adds some space between the two paragraphs */
+  white-space: nowrap; /* Prevents the text from wrapping */
+}
+
+.template-section-text {
+  font-weight: 500;
+  color: var(--light-text-color);
+}
+
+.template-section-title {
+  font-weight: 800;
+  color: var(--dark-text-color);
 }

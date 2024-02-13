@@ -1,37 +1,35 @@
 import React from 'react';
 import './WorkoutList.css';
 
-const WorkoutList = ({ onChange }) => {
+const WorkoutList = ({
+  workout_id,
+  name,
+  day_type,
+  plan_type,
+  difficulty_level
+}) => {
   return (
-    <div className='workout-container'>
-      <div className='workout'>
-        <h2 className='workout-title'>Chest</h2>
-        <p className='workout-description'>
-          Barbell Flat Bench, Dumbbell Flys, Incline Flat Bench Press
-        </p>
+    <div key={workout_id} className='workout'>
+      <div className='workout-title'>
+        <h2 className='workout-title'>{name}</h2>
       </div>
-      <div className='workout'>
-        <h2 className='workout-title'>Shoulders</h2>
-        <p className='workout-description'>some description</p>
+      <div className='template-section'>
+        <p className='template-section-title'>Day Type</p>
+        <p className='template-section-text'>{day_type}</p>
       </div>
+      <div className='template-section'>
+        <p className='template-section-title'>Plan Type</p>
+        <p className='template-section-text'>{plan_type}</p>
+      </div>
+      <div className='template-section'>
+        <p className='template-section-title'>Difficulty Level</p>
+        <p className='template-section-text'>{difficulty_level}</p>
+      </div>
+      <p className='workout-description'>
+        Some details about the workout go here.
+      </p>
     </div>
   );
 };
 
 export default WorkoutList;
-
-
-export default function Exercise({ id, name, muscle, equipment, image }) {
-  return (
-    <div key={id} className='exercise'>
-      <img src={image} alt={name} className='exercise-image' />
-      <div className='exercise-details'>
-        <p className='exercise-title'>
-          {name} ({equipment})
-        </p>
-        <p className='exercise-muscle'>{muscle} </p>
-      </div>
-    </div>
-  );
-}
-

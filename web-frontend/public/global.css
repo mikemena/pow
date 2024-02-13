@@ -52,13 +52,6 @@ textarea {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
-  display: flex;
-  justify-content: column;
-  align-items: center;
-  /* min-height: 100vh; */
-}
-
 a {
   font-weight: 500;
   color: #646cff;
@@ -102,7 +95,6 @@ input {
 }
 
 .page-layout {
-  flex: 1;
   padding: 35px;
   padding: 35px;
 }

@@ -4,7 +4,6 @@ import './Workout.css';
 import WorkoutList from '../../components/WorkoutList/WorkoutList';
 
 const WorkoutTemplatePage = () => {
-  const [templateName, setTemplateName] = useState('');
   const [workoutTemplates, setWorkoutTemplates] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
@@ -14,8 +13,7 @@ const WorkoutTemplatePage = () => {
       .then(response => response.json())
       .then(data => {
         setWorkoutTemplates(data);
-        setIsLoading(false); // Finish loading after fetching exercises
-        console.log(data);
+        setIsLoading(false);
       })
       .catch(error => {
         console.error('Failed to fetch workout templates:', error);
@@ -41,14 +39,15 @@ const WorkoutTemplatePage = () => {
         <h2 className='second-subtitle'>Templates</h2>
         <button onClick={handleCreateNewWorkout}>Create New Template</button>
       </div>
-      {}
-      <WorkoutList
-        key={workoutTemplates.workout_id}
-        name={workoutTemplates.workout_name}
-        day_type={workoutTemplates.workout_day_type}
-        plan_type={workoutTemplates.plan_type}
-        difficulty_level={workoutTemplates.difficulty_level}
-      />
+      {workoutTemplates.map(template => (
+        <WorkoutList
+          key={template.workout_id}
+          name={template.workout_name}
+          day_type={template.workout_day_type}
+          plan_type={template.plan_type}
+          difficulty_level={template.difficulty_level}
+        />
+      ))}
     </div>
   );
 };

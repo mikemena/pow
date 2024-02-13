@@ -66,7 +66,7 @@ router.post('/workout-templates', async (req, res) => {
 });
 
 // Endpoint to modify a workout
-router.put('/workouts/:id', async (req, res) => {
+router.put('/workout-templates/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const {
@@ -132,7 +132,7 @@ router.put('/workouts/:id', async (req, res) => {
 
 // Endpoint to delete a workout
 
-router.delete('/workouts/:id', async (req, res) => {
+router.delete('/workout-templates/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
   try {
