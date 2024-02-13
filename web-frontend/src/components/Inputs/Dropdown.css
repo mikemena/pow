@@ -1,17 +1,17 @@
-/* Dropdown.css */
 .dropdown-container {
   position: relative;
-  width: 200px; /* or any desired width */
+  width: 200px;
   font-family: Arial, sans-serif;
 }
 
 .dropdown-header {
   padding: 10px;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
+  background-color: var(--card-color);
   border-radius: 4px;
   cursor: pointer;
   position: relative;
+  color: var(--light-text-color);
+  font-size: 20px;
 }
 
 .dropdown-arrow {
@@ -21,10 +21,9 @@
 .dropdown-list {
   position: absolute;
   width: 100%;
-  background: #ffffff;
-  border: 1px solid #ccc;
+  background: var(--card-color);
   border-radius: 4px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 8px 16px 0px var(--dark-text-color);
   z-index: 1000;
   padding: 0;
   margin-top: 2px;
@@ -34,8 +33,9 @@
   list-style: none;
   padding: 10px;
   cursor: pointer;
+  color: var(--light-text-color);
 }
 
 .dropdown-item:hover {
-  background-color: #f0f0f0;
+  background-color: var(--dark-text-color);
 }

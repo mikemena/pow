@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/Inputs/Input';
 import Dropdown from '../../components/Inputs/Dropdown';
+import Button from '../../components/Inputs/Button';
 
 const CreateTemplatePage = () => {
   const [templateName, setTemplateName] = useState('');
@@ -11,16 +12,16 @@ const CreateTemplatePage = () => {
 
   const navigate = useNavigate();
 
-  const handlePlanTypeChange = e => {
-    setPlanType(e.target.value);
+  const handlePlanTypeChange = selectedPlanType => {
+    setPlanType(selectedPlanType);
   };
 
-  const handleDayTypeChange = e => {
-    setDayType(e.target.value);
+  const handleDayTypeChange = selectedDayType => {
+    setDayType(selectedDayType);
   };
 
-  const handleDifficultyChange = e => {
-    setDifficulty(e.target.value);
+  const handleDifficultyChange = selectedDifficulty => {
+    setDifficulty(selectedDifficulty);
   };
 
   const handleSaveTemplate = async event => {
@@ -48,39 +49,31 @@ const CreateTemplatePage = () => {
             value={templateName}
             onChange={e => setTemplateName(e.target.value)}
           />
-          <label htmlFor='plan-type'>Plan Type: </label>
-          <select
+          <Dropdown
+            id='day-type'
+            label='Workout Day Type'
+            options={['Day of Week', 'Numerical']}
+            onSelect={handleDayTypeChange}
+          />
+          <Dropdown
             id='plan-type'
-            value={planType}
-            onChange={handlePlanTypeChange}
-          >
-            <option value='General'>General</option>
-            <option value='Bulking'>Bulking</option>
-            <option value='Cutting'>Cutting</option>
-            <option value='Sport'>Sport</option>
-          </select>
-          <label htmlFor='plan-type'>Workout Day Type: </label>
-          <select id='day-type' value={dayType} onChange={handleDayTypeChange}>
-            <option value='Day of Week'>ay of Week</option>
-            <option value='Numerical'>Numerical</option>
-          </select>
-          <label htmlFor='difficulty-level'>Difficulty Level</label>
-          <select
+            label='Plan Type'
+            options={['General', 'Bulking', 'Cutting', 'Sport']}
+            onSelect={handlePlanTypeChange}
+          />
+
+          <Dropdown
             id='difficulty-level'
-            value={difficulty}
-            onChange={handleDifficultyChange}
-          >
-            <option value='Beginner'>Beginner</option>
-            <option value='Intermediate'>Intermediate</option>
-            <option value='Advance'>Advance</option>
-          </select>
+            label='Difficulty Level'
+            options={['Beginner', 'Intermediate', 'Advance']}
+            onSelect={handleDifficultyChange}
+          />
         </div>
+
         {/* Add form elements for exercise selection here */}
         <div>
-          <button type='submit'>Save Template</button>
-          <button type='cancel' onClick={handleCancel}>
-            Cancel
-          </button>
+          <Button onClick={handleSaveTemplate}>Save Template</Button>
+          <Button onClick={handleCancel}>Cancel</Button>
         </div>
       </form>
     </div>

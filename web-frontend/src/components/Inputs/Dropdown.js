@@ -11,9 +11,25 @@ const Dropdown = ({ label, options, onSelect }) => {
     onSelect(option);
   };
 
+  // Generate a unique ID for the dropdown to link the label and div
+  const dropdownId = `dropdown-${label.replace(/\s+/g, '-').toLowerCase()}`;
+
   return (
     <div className='dropdown-container'>
-      <div className='dropdown-header' onClick={() => setIsOpen(!isOpen)}>
+      {label && (
+        <label htmlFor={dropdownId} className='dropdown-label'>
+          {label}
+        </label>
+      )}
+      <div
+        className='dropdown-header'
+        id={dropdownId}
+        onClick={() => setIsOpen(!isOpen)}
+        tabIndex='0' // Make the div focusable
+        role='button' // ARIA role for better accessibility
+        aria-haspopup='listbox' // Indicates that the button has a popup listbox
+        aria-expanded={isOpen} // Indicates if the listbox is currently expanded
+      >
         {selectedOption} <span className='dropdown-arrow'>&#9660;</span>
       </div>
       {isOpen && (
