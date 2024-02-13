@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Workout.css';
-import WorkoutList from '../../components/WorkoutList/WorkoutList';
+import './TemplatePage.css';
+import TemplateGrid from '../../components/WorkoutTemplate/TemplateGrid';
 
 const WorkoutTemplatePage = () => {
   const [workoutTemplates, setWorkoutTemplates] = useState([]);
@@ -34,20 +34,16 @@ const WorkoutTemplatePage = () => {
     <div className='page-layout'>
       <h1 className='page-title'>Start Workout</h1>
       <h2 className='page-subtitle'>Quick Start</h2>
-      <button className='start-workout-button'>Start an Empty Workout</button>
+      <div id='start-empty-container'>
+        <button id='start-empty-button'>Start an Empty Workout</button>
+      </div>
       <div className='template-header'>
         <h2 className='second-subtitle'>Templates</h2>
         <button onClick={handleCreateNewWorkout}>Create New Template</button>
       </div>
-      {workoutTemplates.map(template => (
-        <WorkoutList
-          key={template.workout_id}
-          name={template.workout_name}
-          day_type={template.workout_day_type}
-          plan_type={template.plan_type}
-          difficulty_level={template.difficulty_level}
-        />
-      ))}
+      <div id='workout-grid'>
+        <TemplateGrid templates={workoutTemplates} />
+      </div>
     </div>
   );
 };

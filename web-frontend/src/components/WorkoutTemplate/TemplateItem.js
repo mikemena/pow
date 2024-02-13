@@ -1,5 +1,5 @@
 import React from 'react';
-import './WorkoutList.css';
+import './TemplateItem.css';
 
 const WorkoutList = ({
   workout_id,
@@ -9,7 +9,7 @@ const WorkoutList = ({
   difficulty_level
 }) => {
   return (
-    <div key={workout_id} className='workout'>
+    <div key={workout_id} id='workout'>
       <div className='workout-title'>
         <h2 className='workout-title'>{name}</h2>
       </div>

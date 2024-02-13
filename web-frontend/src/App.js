@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MusclesPage from './pages/Muscles/MusclesPage';
 import ExercisesListPage from './pages/ExercisesList/ExercisesListPage';
-import WorkoutPage from './pages/Workouts/Workout';
+import WorkoutPage from './pages/WorkoutTemplates/TemplatePage';
 import CreateWorkout from './components/CreateWorkout/CreateWorkout';
 import './App.css';
 
