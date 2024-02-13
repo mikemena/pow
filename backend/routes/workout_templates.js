@@ -17,8 +17,6 @@ router.get('/workout-templates', async (req, res) => {
 router.get('/workout-templates/:user_id', async (req, res) => {
   const { user_id } = req.params; // Extract the user_id from the route parameters
 
-  console.log('user_id', user_id);
-
   // Ensure the user_id from the params matches the authenticated user's ID
   // This is a basic security measure to prevent users from accessing other users' data
 

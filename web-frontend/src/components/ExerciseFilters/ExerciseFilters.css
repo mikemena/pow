@@ -10,9 +10,7 @@
 .select-exercise-button {
   flex: 1;
   margin: 0 5px;
-  font-size: 16px;
   width: 350px;
-  height: 40px;
 }
 
 .search-bar input {
