@@ -39,7 +39,9 @@ const WorkoutTemplatePage = () => {
       </div>
       <div className='template-header'>
         <h2 className='second-subtitle'>Templates</h2>
-        <button onClick={handleCreateNewWorkout}>Create New Template</button>
+        <button id='create-new-template-btn' onClick={handleCreateNewWorkout}>
+          Create New Template
+        </button>
       </div>
       <div id='workout-grid'>
         <TemplateGrid templates={workoutTemplates} />

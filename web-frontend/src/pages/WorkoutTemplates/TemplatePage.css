@@ -25,12 +25,13 @@
 #start-empty-container {
   display: flex;
   padding: 0;
+  width: 92%;
+  padding-right: 20px;
   margin: 20px 0 10px 25px;
 }
 
 #start-empty-container button {
   flex-grow: 1;
-  width: 100%;
   box-sizing: border-box;
 }
 
@@ -38,4 +39,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+#create-new-template-btn {
+  padding-right: 25px;
+  margin-right: 62px;
 }
