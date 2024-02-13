@@ -69,6 +69,7 @@ const ExercisesListPage = () => {
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Exercises</h1>
+
       <SearchBar onChange={handleSearch} />
       <ExerciseFilters
         onMuscleChange={handleMuscleChange}

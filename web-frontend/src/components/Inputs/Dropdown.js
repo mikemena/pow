@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import './Dropdown.css';
 
-const Dropdown = ({ label, options, fetchUrl, onSelect }) => {
+const Dropdown = ({ label, options, fetchUrl, onSelect, defaultOption }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dynamicOptions, setDynamicOptions] = useState(options);
-  const [selectedOption, setSelectedOption] = useState(options[0] || '');
+  const [selectedOption, setSelectedOption] = useState(defaultOption);
 
   useEffect(() => {
     if (!fetchUrl) return;
@@ -15,19 +15,20 @@ const Dropdown = ({ label, options, fetchUrl, onSelect }) => {
       .then(data => {
         const fetchedOptions = data.map(item => item.name); // Customize this as needed
         setDynamicOptions(fetchedOptions);
-        if (!selectedOption && fetchedOptions.length > 0) {
-          setSelectedOption(fetchedOptions[0]);
+        if (!selectedOption || selectedOption === defaultOption) {
+          setSelectedOption(
+            fetchedOptions.length > 0 ? fetchedOptions[0] : defaultOption
+          );
         }
       })
       .catch(error => console.error('Failed to fetch options:', error));
-  }, [fetchUrl]);
+  }, [fetchUrl, defaultOption, selectedOption]);
 
   const handleSelectOption = option => {
     setSelectedOption(option);
     setIsOpen(false);
     onSelect(option);
   };
-
   // Use dynamicOptions if fetchUrl is provided, otherwise use static options
   const finalOptions = fetchUrl ? dynamicOptions : options;
 
@@ -54,7 +55,7 @@ const Dropdown = ({ label, options, fetchUrl, onSelect }) => {
       </div>
       {isOpen && (
         <ul className='dropdown-list'>
-          {options.map((option, index) => (
+          {finalOptions.map((option, index) => (
             <li
               key={index}
               className='dropdown-item'

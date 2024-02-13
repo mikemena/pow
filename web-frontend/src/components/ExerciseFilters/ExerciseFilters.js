@@ -6,13 +6,13 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
     <div className='exercise-filters'>
       <Dropdown
         label='Equipment'
-        options='http://localhost:9025/api/equipments'
+        fetchUrl='http://localhost:9025/api/equipments'
         defaultOption='Any Equipment'
         onSelect={onEquipmentChange}
       />
       <Dropdown
         label='Muscle'
-        options='http://localhost:9025/api/muscles'
+        fetchUrl='http://localhost:9025/api/muscles'
         defaultOption='Any Muscle'
         onSelect={onMuscleChange}
       />
