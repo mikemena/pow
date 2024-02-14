@@ -1,16 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/Inputs/Input';
 import Dropdown from '../../components/Inputs/Dropdown';
 import Button from '../../components/Inputs/Button';
+import SearchBar from '../../components/SearchBar/SearchBar';
+import Exercise from '../../components/Exercise/Exercise';
+import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 
 const CreateTemplatePage = () => {
   const [templateName, setTemplateName] = useState('');
   const [planType, setPlanType] = useState('General');
   const [dayType, setDayType] = useState('Day of Week');
   const [difficulty, setDifficulty] = useState('Intermediate');
+  const [selectedExercises, setSelectedExercises] = useState([]);
+  const [exercises, setExercises] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMuscle, setSelectedMuscle] = useState('');
+  const [selectedEquipment, setSelectedEquipment] = useState('');
+  const [filteredExercises, setFilteredExercises] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetch('http://localhost:9025/api/exercise-catalog')
+      .then(response => response.json())
+      .then(data => {
+        setExercises(data);
+        setFilteredExercises(data);
+        setIsLoading(false); // Finish loading after fetching exercises
+        console.log(data);
+      })
+      .catch(error => {
+        console.error('Failed to fetch exercises:', error);
+        setIsLoading(false); // Finish loading even if there was an error
+      });
+  }, []);
+
+  useEffect(() => {
+    const filterExercises = () => {
+      let filtered = exercises;
+      if (selectedMuscle && selectedMuscle !== 'All') {
+        filtered = filtered.filter(
+          exercise => exercise.muscle === selectedMuscle
+        );
+      }
+      if (selectedEquipment && selectedEquipment !== 'All') {
+        filtered = filtered.filter(
+          exercise => exercise.equipment === selectedEquipment
+        );
+      }
+      if (searchTerm) {
+        filtered = filtered.filter(exercise =>
+          exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+      }
+      setFilteredExercises(filtered);
+    };
+    filterExercises();
+  }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  const handleSearch = value => {
+    setSearchTerm(value);
+  };
+
+  const handleMuscleChange = value => {
+    setSelectedMuscle(value);
+  };
+
+  const handleEquipmentChange = value => {
+    setSelectedEquipment(value);
+  };
 
   const handlePlanTypeChange = selectedPlanType => {
     setPlanType(selectedPlanType);
@@ -81,8 +145,28 @@ const CreateTemplatePage = () => {
             onSelect={handleDifficultyChange}
           />
         </div>
-
-        {/* Add form elements for exercise selection here */}
+        <SearchBar onChange={handleSearch} />
+        <ExerciseFilters
+          onMuscleChange={handleMuscleChange}
+          onEquipmentChange={handleEquipmentChange}
+        />
+        {filteredExercises.map(exercise => (
+          <Exercise
+            key={exercise.id}
+            id={exercise.id}
+            name={exercise.name}
+            muscle={exercise.muscle}
+            equipment={exercise.equipment}
+            image={`http://localhost:9025/${exercise.file_path}`}
+            selectable
+            onSelect={() =>
+              handleExerciseSelect(
+                exercise.id,
+                !selectedExercises.includes(exercise.id)
+              )
+            }
+          />
+        ))}
         <div>
           <Button onClick={handleSaveTemplate}>Save Template</Button>
           <Button onClick={handleCancel}>Cancel</Button>
