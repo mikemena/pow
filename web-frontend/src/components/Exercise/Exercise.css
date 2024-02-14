@@ -8,10 +8,18 @@
 .exercise {
   display: flex;
   align-items: flex-start;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: border-color 0.3s;
   margin: 20px 0 10px 20px;
   padding: 10px;
   border-radius: 5px;
   background-color: var(--card-color);
+}
+.exercise.selected {
+  border-color: var(
+    --primary-color
+  ); /* Change to your preferred color for indicating selection */
 }
 
 .exercise-image {

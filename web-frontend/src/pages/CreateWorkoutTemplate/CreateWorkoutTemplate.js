@@ -39,6 +39,18 @@ const CreateTemplatePage = () => {
     navigate('/workouts');
   };
 
+  const handleExerciseSelect = (exerciseId, isSelected) => {
+    setSelectedExercises(prevSelectedExercises => {
+      if (isSelected) {
+        // Add the exercise to the list if it's selected and not already included
+        return [...prevSelectedExercises, exerciseId];
+      } else {
+        // Remove the exercise from the list if it's unselected
+        return prevSelectedExercises.filter(id => id !== exerciseId);
+      }
+    });
+  };
+
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Create New Template</h1>
