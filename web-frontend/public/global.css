@@ -106,7 +106,9 @@ label {
 .page-layout {
   padding: 35px;
   padding: 35px;
-  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  width: 900px;
 }
 
 .page-title {

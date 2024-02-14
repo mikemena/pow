@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Exercise from '../../components/Exercise/Exercise';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
-import './ExercisesList.css';
+import './ExercisesListPage.css';
 
 const ExercisesListPage = () => {
   const [exercises, setExercises] = useState([]);

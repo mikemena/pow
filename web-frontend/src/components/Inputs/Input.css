@@ -16,7 +16,7 @@
 
 .material-input input:focus,
 .material-input input:not(:placeholder-shown) {
-  border-bottom: 2px solid var(--primary-color); /* Focus color */
+  border-bottom: 2px solid var(--primary-color);
 }
 
 .material-input label {
@@ -25,7 +25,7 @@
   left: 0;
   padding-left: 5px;
   color: var(--light-text-color);
-  font-size: 16px;
+  font-size: 18px;
   transition: all 0.2s ease-out;
   pointer-events: none;
 }
@@ -33,6 +33,6 @@
 .material-input input:focus + label,
 .material-input input:not(:placeholder-shown) + label {
   transform: translateY(-150%);
-  font-size: 14px;
-  color: var(--primary-color); /* Focus color */
+  font-size: 16px;
+  color: var(--primary-color);
 }

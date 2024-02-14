@@ -3,7 +3,7 @@ import Dropdown from '../../components/Inputs/Dropdown';
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   return (
-    <div className='exercise-filters'>
+    <div id='exercise-filters'>
       <Dropdown
         label='Equipment'
         fetchUrl='http://localhost:9025/api/equipments'
