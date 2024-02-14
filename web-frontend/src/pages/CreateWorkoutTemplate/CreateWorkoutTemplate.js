@@ -115,6 +115,8 @@ const CreateTemplatePage = () => {
     });
   };
 
+  console.log(planType, dayType, difficulty, selectedExercises);
+
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Create New Template</h1>
