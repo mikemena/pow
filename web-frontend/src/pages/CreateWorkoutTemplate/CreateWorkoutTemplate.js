@@ -90,12 +90,41 @@ const CreateTemplatePage = () => {
 
   const handleSaveTemplate = async event => {
     event.preventDefault();
-    // Perform the POST API call to save the new template
-    // Replace with your actual API call logic
-    // ...
 
-    // After saving, redirect back to the WorkoutPage
-    navigate('/workouts');
+    const templateData = {
+      user_id: 2, // Assuming you have a way to get the current user's ID
+      workout_name: templateName,
+      workout_day_type: dayType,
+      plan_type: planType,
+      difficulty_level: difficulty,
+      exercises: selectedExercises
+    };
+
+    try {
+      const response = await fetch(
+        'http://localhost:9025/api/workout-templates',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(templateData)
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error('Something went wrong with saving the template');
+      }
+
+      // Assuming the backend responds with the created template, you could use it here if needed
+      // const savedTemplate = await response.json();
+
+      // After saving, redirect back to the WorkoutPage
+      navigate('/workouts');
+    } catch (error) {
+      console.error('Failed to save the template:', error);
+      // Here, you could set an error state and display it to the user if you wish
+    }
   };
 
   const handleCancel = () => {
