@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './TemplateItem.css';
+import Accordion from '../Accordion/Accordion';
 
 const WorkoutList = ({
   workout_id,
@@ -8,8 +9,14 @@ const WorkoutList = ({
   plan_type,
   difficulty_level
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleAccordion = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div key={workout_id} id='workout'>
+    <div key={workout_id} id='workout' onClick={toggleAccordion}>
       <div className='workout-title'>
         <h2 className='workout-title'>{name}</h2>
       </div>
@@ -25,9 +32,13 @@ const WorkoutList = ({
         <p className='template-section-title'>Difficulty Level</p>
         <p className='template-section-text'>{difficulty_level}</p>
       </div>
-      <p className='workout-description'>
-        Some details about the workout go here.
-      </p>
+      {isOpen && (
+        <Accordion
+          onStart={() => console.log('Start Workout')}
+          onEdit={() => console.log('Edit Workout')}
+          onDelete={() => console.log('Delete Workout')}
+        />
+      )}
     </div>
   );
 };
