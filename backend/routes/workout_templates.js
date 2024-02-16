@@ -66,4 +66,35 @@ router.post('/workout-templates', async (req, res) => {
     client.release();
   }
 });
+
+// DELETE endpoint to remove a workout template
+router.delete('/workout-templates/:template_id', async (req, res) => {
+  const { template_id } = req.params;
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Remove associated exercises
+    await client.query('DELETE FROM user_exercises WHERE workout_id = $1', [
+      template_id
+    ]);
+
+    // Remove the workout template
+    await client.query('DELETE FROM user_workouts WHERE id = $1', [
+      template_id
+    ]);
+
+    await client.query('COMMIT');
+    res.status(200).send('Workout template removed successfully');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).send('Server error');
+  } finally {
+    client.release();
+  }
+});
+
 module.exports = router;

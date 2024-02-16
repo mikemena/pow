@@ -16,7 +16,12 @@ const WorkoutList = ({
   };
 
   return (
-    <div key={workout_id} className='workout' onClick={toggleAccordion}>
+    <div
+      key={workout_id}
+      className='workout'
+      onMouseEnter={toggleAccordion}
+      onMouseLeave={toggleAccordion}
+    >
       <div className='workout-title'>
         <h2 className='workout-title'>{name}</h2>
       </div>
