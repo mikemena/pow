@@ -32,13 +32,14 @@ const WorkoutList = ({
         <p className='template-section-title'>Difficulty Level</p>
         <p className='template-section-text'>{difficulty_level}</p>
       </div>
-      <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
+      {isOpen && (
         <Accordion
+          isOpen={isOpen}
           onStart={() => console.log('Start Workout')}
           onEdit={() => console.log('Edit Workout')}
           onDelete={() => console.log('Delete Workout')}
         />
-      </div>
+      )}
     </div>
   );
 };

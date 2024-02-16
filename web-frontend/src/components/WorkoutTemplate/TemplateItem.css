@@ -1,8 +1,10 @@
 .workout {
+  display: flex;
+  flex-direction: column;
   padding: 20px;
   gap: 10px;
   width: 350px;
-  height: 250px;
+  height: 230px;
   background-color: var(--card-color);
   border-radius: 4px;
 }
