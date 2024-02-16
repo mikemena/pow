@@ -82,12 +82,12 @@ router.delete('/workout-templates/:template_id', async (req, res) => {
     ]);
 
     // Remove the workout template
-    await client.query('DELETE FROM user_workouts WHERE id = $1', [
+    await client.query('DELETE FROM user_workouts WHERE workout_id = $1', [
       template_id
     ]);
 
     await client.query('COMMIT');
-    res.status(200).send('Workout template removed successfully');
+    res.status(204).send('Workout template removed successfully');
   } catch (err) {
     await client.query('ROLLBACK');
     console.error(err);

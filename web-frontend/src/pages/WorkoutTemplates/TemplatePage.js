@@ -36,6 +36,25 @@ const WorkoutTemplatePage = () => {
     navigate('/create-workout');
   };
 
+  const handleDelete = async template_id => {
+    console.log('template id from TemplatePage:', template_id);
+    try {
+      const response = await fetch(
+        `http://localhost:9025/api/workout-templates/${template_id}`,
+        {
+          method: 'DELETE'
+        }
+      );
+      if (response.status === 200) {
+        setWorkoutTemplates(currentWorkouts =>
+          currentWorkouts.filter(workout => workout.workout_id !== template_id)
+        );
+      }
+    } catch (error) {
+      console.error('Failed to delete workout:', error);
+    }
+  };
+
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Start Workout</h1>
@@ -48,7 +67,7 @@ const WorkoutTemplatePage = () => {
         <Button onClick={handleCreateNewWorkout}>Create New Template</Button>
       </div>
       <div id='workout-grid'>
-        <TemplateGrid templates={workoutTemplates} />
+        <TemplateGrid templates={workoutTemplates} onDelete={handleDelete} />
       </div>
     </div>
   );

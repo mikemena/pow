@@ -2,12 +2,13 @@ import React, { useState } from 'react';
 import './TemplateItem.css';
 import Accordion from '../Accordion/Accordion';
 
-const WorkoutList = ({
+const TemplateItems = ({
   workout_id,
   name,
   day_type,
   plan_type,
-  difficulty_level
+  difficulty_level,
+  onDelete
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -17,6 +18,7 @@ const WorkoutList = ({
 
   return (
     <div
+      workout_id={workout_id}
       key={workout_id}
       className='workout'
       onMouseEnter={toggleAccordion}
@@ -42,11 +44,17 @@ const WorkoutList = ({
           isOpen={isOpen}
           onStart={() => console.log('Start Workout')}
           onEdit={() => console.log('Edit Workout')}
-          onDelete={() => console.log('Delete Workout')}
+          onDelete={() => {
+            console.log(
+              'Workout ID from TemplateItems to delete (from WorkoutList):',
+              workout_id
+            ); // Log the ID here
+            onDelete(workout_id);
+          }}
         />
       )}
     </div>
   );
 };
 
-export default WorkoutList;
+export default TemplateItems;
