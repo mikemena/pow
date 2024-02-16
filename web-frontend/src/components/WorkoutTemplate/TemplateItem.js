@@ -16,7 +16,7 @@ const WorkoutList = ({
   };
 
   return (
-    <div key={workout_id} id='workout' onClick={toggleAccordion}>
+    <div key={workout_id} className='workout' onClick={toggleAccordion}>
       <div className='workout-title'>
         <h2 className='workout-title'>{name}</h2>
       </div>
@@ -32,13 +32,13 @@ const WorkoutList = ({
         <p className='template-section-title'>Difficulty Level</p>
         <p className='template-section-text'>{difficulty_level}</p>
       </div>
-      {isOpen && (
+      <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
         <Accordion
           onStart={() => console.log('Start Workout')}
           onEdit={() => console.log('Edit Workout')}
           onDelete={() => console.log('Delete Workout')}
         />
-      )}
+      </div>
     </div>
   );
 };

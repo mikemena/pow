@@ -1,0 +1,12 @@
+/* Initial state of the accordion content, hidden */
+.accordion-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease-out; /* Smooth transition for the height */
+}
+
+/* When accordion is open, we set a max-height large enough to show its content */
+/* You might need to adjust this value based on your content */
+.accordion-content.open {
+  max-height: 150px; /* Adjust based on your content's actual height */
+}
