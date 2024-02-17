@@ -49,6 +49,7 @@ const WorkoutTemplatePage = () => {
         setWorkoutTemplates(currentWorkouts =>
           currentWorkouts.filter(workout => workout.workout_id !== template_id)
         );
+        console.log('workoutTemplates:', workoutTemplates);
       }
     } catch (error) {
       console.error('Failed to delete workout:', error);
