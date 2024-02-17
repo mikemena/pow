@@ -2,6 +2,8 @@ import React from 'react';
 import './Accordion.css';
 
 const Accordion = ({ onStart, onEdit, onDelete, isOpen }) => {
+  console.log('onDelete prop in Accordion:', onDelete);
+
   return (
     <div className={`accordion-content ${isOpen ? 'open' : ''}`}>
       <button className='accordion-button' onClick={onStart}>

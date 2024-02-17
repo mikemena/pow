@@ -92,7 +92,7 @@ const CreateTemplatePage = () => {
     event.preventDefault();
 
     const templateData = {
-      user_id: 2, // Assuming you have a way to get the current user's ID
+      user_id: 2, // hardcoded for now, but should be the logged in user's ID
       workout_name: templateName,
       workout_day_type: dayType,
       plan_type: planType,

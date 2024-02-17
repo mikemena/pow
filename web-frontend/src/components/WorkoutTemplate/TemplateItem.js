@@ -16,6 +16,7 @@ const TemplateItems = ({
     setIsOpen(!isOpen);
   };
 
+  console.log('onDelete prop in TemplateItems:', onDelete);
   return (
     <div
       workout_id={workout_id}
@@ -45,10 +46,6 @@ const TemplateItems = ({
           onStart={() => console.log('Start Workout')}
           onEdit={() => console.log('Edit Workout')}
           onDelete={() => {
-            console.log(
-              'Workout ID from TemplateItems to delete (from WorkoutList):',
-              workout_id
-            ); // Log the ID here
             onDelete(workout_id);
           }}
         />
