@@ -13,7 +13,7 @@ router.get('/workout-templates/:user_id', async (req, res) => {
       [parseInt(user_id)]
     );
     if (workouts.rows.length === 0)
-      return res.status(404).json({ message: 'No workout templates found' });
+      return [res.status(404).json({ message: 'No workout templates found' })];
 
     for (const workout of workouts.rows) {
       const exercises = await pool.query(
