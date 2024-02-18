@@ -9,7 +9,6 @@ const TemplateItems = ({
   difficulty_level,
   onDelete
 }) => {
-  console.log('onDelete prop in TemplateItems:', onDelete);
   return (
     <div workout_id={workout_id} key={workout_id} className='workout'>
       <div className='workout-title'>

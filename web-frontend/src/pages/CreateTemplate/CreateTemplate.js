@@ -26,7 +26,6 @@ const CreateTemplatePage = () => {
     fetch('http://localhost:9025/api/exercise-catalog')
       .then(response => response.json())
       .then(data => {
-        console.log('this is the api data for exercises', data);
         setExercises(data);
         setFilteredExercises(data);
         setIsLoading(false); // Finish loading after fetching exercises
@@ -101,7 +100,6 @@ const CreateTemplatePage = () => {
         exercise_id: exerciseId
       }))
     };
-    console.log('JSON.stringify(templateData)', JSON.stringify(templateData));
     try {
       const response = await fetch(
         'http://localhost:9025/api/workout-templates',
@@ -182,12 +180,6 @@ const CreateTemplatePage = () => {
           onEquipmentChange={handleEquipmentChange}
         />
         {filteredExercises.map(exercise => {
-          // Log the details of each exercise being rendered
-          console.log('Rendering exercise:', {
-            id: exercise.exercise_id,
-            name: exercise.name
-          });
-
           return (
             <Exercise
               key={exercise.exercise_id}

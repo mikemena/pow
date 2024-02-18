@@ -37,7 +37,6 @@ const WorkoutTemplatePage = () => {
   };
 
   const handleDelete = async template_id => {
-    console.log('template id from TemplatePage:', template_id);
     try {
       const response = await fetch(
         `http://localhost:9025/api/workout-templates/${template_id}`,
@@ -49,7 +48,6 @@ const WorkoutTemplatePage = () => {
         setWorkoutTemplates(currentWorkouts =>
           currentWorkouts.filter(workout => workout.workout_id !== template_id)
         );
-        console.log('workoutTemplates:', workoutTemplates);
       }
     } catch (error) {
       console.error('Failed to delete workout:', error);
