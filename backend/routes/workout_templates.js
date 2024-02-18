@@ -17,7 +17,7 @@ router.get('/workout-templates/:user_id', async (req, res) => {
 
     for (const workout of workouts.rows) {
       const exercises = await pool.query(
-        'SELECT exercise_id FROM user_exercises WHERE workout_id = $1',
+        'SELECT exercise_id, catalog_exercise_id , workout_id FROM user_exercises WHERE workout_id = $1',
         [workout.id]
       );
       workout.exercises = exercises.rows.map(e => e.exercise_id);
@@ -51,8 +51,8 @@ router.post('/workout-templates', async (req, res) => {
 
     for (const exerciseId of exercises) {
       await client.query(
-        'INSERT INTO user_exercises (workout_id, exercise_id) VALUES ($1, $2)',
-        [workout.rows[0].id, exerciseId]
+        'INSERT INTO user_exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
+        [workout.rows[0].catalog_exercise_id, exerciseId]
       );
     }
 

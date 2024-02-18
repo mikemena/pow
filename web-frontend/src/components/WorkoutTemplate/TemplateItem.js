@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './TemplateItem.css';
-import Accordion from '../Accordion/Accordion';
 
 const TemplateItems = ({
   workout_id,
@@ -10,21 +9,9 @@ const TemplateItems = ({
   difficulty_level,
   onDelete
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleAccordion = () => {
-    setIsOpen(!isOpen);
-  };
-
   console.log('onDelete prop in TemplateItems:', onDelete);
   return (
-    <div
-      workout_id={workout_id}
-      key={workout_id}
-      className='workout'
-      onMouseEnter={toggleAccordion}
-      onMouseLeave={toggleAccordion}
-    >
+    <div workout_id={workout_id} key={workout_id} className='workout'>
       <div className='workout-title'>
         <h2 className='workout-title'>{name}</h2>
       </div>
@@ -40,16 +27,28 @@ const TemplateItems = ({
         <p className='template-section-title'>Difficulty Level</p>
         <p className='template-section-text'>{difficulty_level}</p>
       </div>
-      {isOpen && (
-        <Accordion
-          isOpen={isOpen}
-          onStart={() => console.log('Start Workout')}
-          onEdit={() => console.log('Edit Workout')}
-          onDelete={() => {
+      <div className='accordion-content'>
+        <button
+          className='accordion-button'
+          onClick={() => console.log('Start Workout')}
+        >
+          Start Workout
+        </button>
+        <button
+          className='accordion-button'
+          onClick={() => console.log('Edit Workout')}
+        >
+          Edit Workout
+        </button>
+        <button
+          className='accordion-button'
+          onClick={() => {
             onDelete(workout_id);
           }}
-        />
-      )}
+        >
+          Delete Workout
+        </button>
+      </div>
     </div>
   );
 };

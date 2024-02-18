@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import MusclesPage from './pages/Muscles/MusclesPage';
 import ExercisesListPage from './pages/ExercisesList/ExercisesListPage';
 import WorkoutPage from './pages/WorkoutTemplates/TemplatePage';
-import CreateWorkout from './pages/CreateWorkoutTemplate/CreateWorkoutTemplate';
+import CreateWorkout from './pages/CreateTemplate/CreateTemplate';
 import './App.css';
 
 function App() {

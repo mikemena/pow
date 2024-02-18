@@ -78,7 +78,7 @@ const ExercisesListPage = () => {
       <div className='exercise-list'>
         {filteredExercises.map(exercise => (
           <Exercise
-            key={exercise.id}
+            key={exercise.exercise_id}
             name={exercise.name}
             muscle={exercise.muscle}
             equipment={exercise.equipment}

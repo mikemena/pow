@@ -2,7 +2,7 @@ import React from 'react';
 import TemplateItems from './TemplateItem';
 import './TemplateGrid.css';
 
-const WorkoutTemplateGrid = ({ templates, onDelete }) => {
+const WorkoutTemplateGrid = ({ templates, onDelete, workout_id }) => {
   // Check if 'templates' is an array and has items
   if (Array.isArray(templates) && templates.length > 0) {
     return (

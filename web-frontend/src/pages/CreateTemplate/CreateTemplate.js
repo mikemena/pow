@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Input from '../../components/Inputs/Input';
 import Dropdown from '../../components/Inputs/Dropdown';
@@ -26,10 +26,10 @@ const CreateTemplatePage = () => {
     fetch('http://localhost:9025/api/exercise-catalog')
       .then(response => response.json())
       .then(data => {
+        console.log('this is the api data for exercises', data);
         setExercises(data);
         setFilteredExercises(data);
         setIsLoading(false); // Finish loading after fetching exercises
-        console.log(data);
       })
       .catch(error => {
         console.error('Failed to fetch exercises:', error);
@@ -99,7 +99,7 @@ const CreateTemplatePage = () => {
       difficulty_level: difficulty,
       exercises: selectedExercises
     };
-
+    console.log('JSON.stringify(templateData)', JSON.stringify(templateData));
     try {
       const response = await fetch(
         'http://localhost:9025/api/workout-templates',
@@ -181,23 +181,32 @@ const CreateTemplatePage = () => {
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        {filteredExercises.map(exercise => (
-          <Exercise
-            key={exercise.id}
-            id={exercise.id}
-            name={exercise.name}
-            muscle={exercise.muscle}
-            equipment={exercise.equipment}
-            image={`http://localhost:9025/${exercise.file_path}`}
-            selectable
-            onSelect={() =>
-              handleExerciseSelect(
-                exercise.id,
-                !selectedExercises.includes(exercise.id)
-              )
-            }
-          />
-        ))}
+        {filteredExercises.map(exercise => {
+          // Log the details of each exercise being rendered
+          console.log('Rendering exercise:', {
+            id: exercise.exercise_id,
+            name: exercise.name
+          });
+
+          return (
+            <Exercise
+              key={exercise.exercise_id}
+              id={exercise.exercise_id}
+              name={exercise.name}
+              muscle={exercise.muscle}
+              equipment={exercise.equipment}
+              image={`http://localhost:9025/${exercise.file_path}`}
+              selectable
+              onSelect={() =>
+                handleExerciseSelect(
+                  exercise.exercise_id,
+                  !selectedExercises.includes(exercise.exercise_id)
+                )
+              }
+            />
+          );
+        })}
+
         <div>
           <Button onClick={handleSaveTemplate}>Save Template</Button>
           <Button onClick={handleCancel}>Cancel</Button>

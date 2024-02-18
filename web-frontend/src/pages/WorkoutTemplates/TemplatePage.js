@@ -36,18 +36,18 @@ const WorkoutTemplatePage = () => {
     navigate('/create-workout');
   };
 
-  const handleDelete = async workout_id => {
-    console.log('template id from TemplatePage:', workout_id);
+  const handleDelete = async template_id => {
+    console.log('template id from TemplatePage:', template_id);
     try {
       const response = await fetch(
-        `http://localhost:9025/api/workout-templates/${workout_id}`,
+        `http://localhost:9025/api/workout-templates/${template_id}`,
         {
           method: 'DELETE'
         }
       );
-      if (response.status === 200) {
+      if (response.status === 204) {
         setWorkoutTemplates(currentWorkouts =>
-          currentWorkouts.filter(workout => workout.workout_id !== workout_id)
+          currentWorkouts.filter(workout => workout.workout_id !== template_id)
         );
         console.log('workoutTemplates:', workoutTemplates);
       }
