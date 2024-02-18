@@ -49,10 +49,12 @@ router.post('/workout-templates', async (req, res) => {
       [user_id, workout_name, workout_day_type, plan_type, difficulty_level]
     );
 
-    for (const exerciseId of exercises) {
+    const workoutId = workout.rows[0].workout_id;
+
+    for (const { exercise_id } of exercises) {
       await client.query(
         'INSERT INTO user_exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
-        [workout.rows[0].catalog_exercise_id, exerciseId]
+        [workoutId, exercise_id]
       );
     }
 

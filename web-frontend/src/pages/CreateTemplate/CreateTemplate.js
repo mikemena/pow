@@ -12,7 +12,7 @@ const CreateTemplatePage = () => {
   const [planType, setPlanType] = useState('General');
   const [dayType, setDayType] = useState('Day of Week');
   const [difficulty, setDifficulty] = useState('Intermediate');
-  const [selectedExercises, setSelectedExercises] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState(new Set());
   const [exercises, setExercises] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
@@ -97,7 +97,9 @@ const CreateTemplatePage = () => {
       workout_day_type: dayType,
       plan_type: planType,
       difficulty_level: difficulty,
-      exercises: selectedExercises
+      exercises: Array.from(selectedExercises).map(exerciseId => ({
+        exercise_id: exerciseId
+      }))
     };
     console.log('JSON.stringify(templateData)', JSON.stringify(templateData));
     try {
@@ -132,19 +134,17 @@ const CreateTemplatePage = () => {
     navigate('/workouts');
   };
 
-  const handleExerciseSelect = (exerciseId, isSelected) => {
+  const handleExerciseSelect = exerciseId => {
     setSelectedExercises(prevSelectedExercises => {
-      if (isSelected) {
-        // Add the exercise to the list if it's selected and not already included
-        return [...prevSelectedExercises, exerciseId];
+      const newSelectedExercises = new Set(prevSelectedExercises);
+      if (newSelectedExercises.has(exerciseId)) {
+        newSelectedExercises.delete(exerciseId);
       } else {
-        // Remove the exercise from the list if it's unselected
-        return prevSelectedExercises.filter(id => id !== exerciseId);
+        newSelectedExercises.add(exerciseId);
       }
+      return newSelectedExercises;
     });
   };
-
-  console.log(planType, dayType, difficulty, selectedExercises);
 
   return (
     <div className='page-layout'>
@@ -196,13 +196,8 @@ const CreateTemplatePage = () => {
               muscle={exercise.muscle}
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
-              selectable
-              onSelect={() =>
-                handleExerciseSelect(
-                  exercise.exercise_id,
-                  !selectedExercises.includes(exercise.exercise_id)
-                )
-              }
+              isSelected={selectedExercises.has(exercise.exercise_id)}
+              onSelect={() => handleExerciseSelect(exercise.exercise_id)}
             />
           );
         })}
