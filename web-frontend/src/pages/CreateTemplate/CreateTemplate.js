@@ -137,6 +137,7 @@ const CreateTemplatePage = () => {
             label='Template Name'
             value={templateName}
             onChange={e => setTemplateName(e.target.value)}
+            sx={{ width: 850 }}
           />
           <Dropdown
             id='day-type'
