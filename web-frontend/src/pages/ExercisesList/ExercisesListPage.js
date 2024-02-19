@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Exercise from '../../components/Exercise/Exercise';
 import SearchBar from '../../components/SearchBar/SearchBar';
+import ExerciseList from '../../components/ExerciseList/ExerciseList';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import './ExercisesListPage.css';
 
@@ -10,22 +10,6 @@ const ExercisesListPage = () => {
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
   const [filteredExercises, setFilteredExercises] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    fetch('http://localhost:9025/api/exercise-catalog')
-      .then(response => response.json())
-      .then(data => {
-        setExercises(data);
-        setFilteredExercises(data);
-        setIsLoading(false); // Finish loading after fetching exercises
-        console.log(data);
-      })
-      .catch(error => {
-        console.error('Failed to fetch exercises:', error);
-        setIsLoading(false); // Finish loading even if there was an error
-      });
-  }, []);
 
   useEffect(() => {
     const filterExercises = () => {
@@ -48,11 +32,7 @@ const ExercisesListPage = () => {
       setFilteredExercises(filtered);
     };
     filterExercises();
-  }, [searchTerm, selectedMuscle, selectedEquipment]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
   const handleSearch = value => {
     setSearchTerm(value);
@@ -69,23 +49,16 @@ const ExercisesListPage = () => {
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Exercises</h1>
-
       <SearchBar onChange={handleSearch} />
       <ExerciseFilters
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-      <div className='exercise-list'>
-        {filteredExercises.map(exercise => (
-          <Exercise
-            key={exercise.exercise_id}
-            name={exercise.name}
-            muscle={exercise.muscle}
-            equipment={exercise.equipment}
-            image={`http://localhost:9025/${exercise.file_path}`}
-          />
-        ))}
-      </div>
+      <ExerciseList
+        searchTerm={searchTerm}
+        selectedMuscle={selectedMuscle}
+        selectedEquipment={selectedEquipment}
+      />
     </div>
   );
 };

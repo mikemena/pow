@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Input from '../../components/Inputs/Input';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Dropdown from '../../components/Inputs/Dropdown';
-import Button from '../../components/Inputs/Button';
+import Button from '@mui/material/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
-import Exercise from '../../components/Exercise/Exercise';
+import ExerciseList from '../../components/ExerciseList/ExerciseList';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 
 const CreateTemplatePage = () => {
@@ -14,27 +15,12 @@ const CreateTemplatePage = () => {
   const [difficulty, setDifficulty] = useState('Intermediate');
   const [selectedExercises, setSelectedExercises] = useState(new Set());
   const [exercises, setExercises] = useState([]);
+  const [filteredExercises, setFilterExercises] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [filteredExercises, setFilteredExercises] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    fetch('http://localhost:9025/api/exercise-catalog')
-      .then(response => response.json())
-      .then(data => {
-        setExercises(data);
-        setFilteredExercises(data);
-        setIsLoading(false); // Finish loading after fetching exercises
-      })
-      .catch(error => {
-        console.error('Failed to fetch exercises:', error);
-        setIsLoading(false); // Finish loading even if there was an error
-      });
-  }, []);
 
   useEffect(() => {
     const filterExercises = () => {
@@ -54,14 +40,10 @@ const CreateTemplatePage = () => {
           exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
         );
       }
-      setFilteredExercises(filtered);
+      setFilterExercises(filtered);
     };
     filterExercises();
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   const handleSearch = value => {
     setSearchTerm(value);
@@ -149,7 +131,9 @@ const CreateTemplatePage = () => {
       <h1 className='page-title'>Create New Template</h1>
       <form onSubmit={handleSaveTemplate}>
         <div>
-          <Input
+          <TextField
+            id='template-name-input'
+            variant='filled'
             label='Template Name'
             value={templateName}
             onChange={e => setTemplateName(e.target.value)}
@@ -179,25 +163,19 @@ const CreateTemplatePage = () => {
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        {filteredExercises.map(exercise => {
-          return (
-            <Exercise
-              key={exercise.exercise_id}
-              id={exercise.exercise_id}
-              name={exercise.name}
-              muscle={exercise.muscle}
-              equipment={exercise.equipment}
-              image={`http://localhost:9025/${exercise.file_path}`}
-              isSelected={selectedExercises.has(exercise.exercise_id)}
-              onSelect={() => handleExerciseSelect(exercise.exercise_id)}
-            />
-          );
-        })}
-
-        <div>
-          <Button onClick={handleSaveTemplate}>Save Template</Button>
-          <Button onClick={handleCancel}>Cancel</Button>
-        </div>
+        <ExerciseList
+          searchTerm={searchTerm}
+          selectedMuscle={selectedMuscle}
+          selectedEquipment={selectedEquipment}
+        />
+        <Stack direction='row' spacing={2}>
+          <Button variant='contained' onClick={handleSaveTemplate}>
+            Save Template
+          </Button>
+          <Button variant='contained' onClick={handleCancel}>
+            Cancel
+          </Button>
+        </Stack>
       </form>
     </div>
   );
