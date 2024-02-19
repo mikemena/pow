@@ -1,34 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import useFetchData from '../../hooks/useFetchData';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
-  const [equipments, setEquipments] = useState([]);
-  const [muscles, setMuscles] = useState([]);
+  const {
+    data: muscles,
+    isLoading: isLoadingMuscles,
+    error: errorMuscles
+  } = useFetchData('http://localhost:9025/api/muscles');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Fetch equipment catalog
-        const equipmentResponse = await fetch(
-          'http://localhost:9025/api/equipments'
-        );
-        const equipmentCatalog = await equipmentResponse.json();
-        setEquipments(equipmentCatalog);
+  const {
+    data: equipments,
+    isLoading: isLoadingEquipments,
+    error: errorEquipments
+  } = useFetchData('http://localhost:9025/api/equipments');
 
-        // Fetch muscle catalog
-        const musclesResponse = await fetch(
-          'http://localhost:9025/api/muscles'
-        );
-        const musclesCatalog = await musclesResponse.json();
-        setMuscles(musclesCatalog);
-      } catch (error) {
-        console.error('Failed to fetch data:', error);
-      }
-    };
-    fetchData();
-  }, []); // Empty dependency array means this runs once on mount
+  // Loading indicator or error message for equipments
+  if (isLoadingEquipments) return <CircularProgress />;
+  if (errorEquipments)
+    return <div>Error loading equipments: {errorEquipments}</div>;
+
+  // Loading indicator or error message for muscles
+  if (isLoadingMuscles) return <CircularProgress />;
+  if (errorMuscles) return <div>Error loading equipments: {errorMuscles}</div>;
 
   return (
     <Stack direction='row' spacing={2}>
@@ -41,6 +38,7 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             InputProps={{ ...params.InputProps, type: 'search' }}
           />
         )}
+        sx={{ width: 250 }}
         onChange={(event, newValue) => {
           onMuscleChange(newValue);
         }}
@@ -54,6 +52,7 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             InputProps={{ ...params.InputProps, type: 'search' }}
           />
         )}
+        sx={{ width: 250 }}
         onChange={(event, newValue) => {
           onEquipmentChange(newValue);
         }}

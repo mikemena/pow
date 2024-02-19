@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import SearchBar from '../../components/SearchBar/SearchBar';
+import ExerciseSearch from '../../components/SearchBar/SearchBar';
 import ExerciseList from '../../components/ExerciseList/ExerciseList';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import './ExercisesListPage.css';
@@ -49,7 +49,7 @@ const ExercisesListPage = () => {
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Exercises</h1>
-      <SearchBar onChange={handleSearch} />
+      <ExerciseSearch onChange={handleSearch} />
       <ExerciseFilters
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}

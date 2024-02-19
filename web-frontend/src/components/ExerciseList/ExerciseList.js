@@ -1,32 +1,14 @@
-import React, { useState, useEffect } from 'react';
 import Exercise from '../../components/Exercise/Exercise';
 import Stack from '@mui/material/Stack';
+import useFetchData from '../../hooks/useFetchData';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const ExercisesList = ({ onSelect, selectedMuscle, selectedEquipment }) => {
-  const [exercises, setExercises] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        // Fetch exercises catalog
-        const response = await fetch(
-          'http://localhost:9025/api/exercise-catalog'
-        );
-        if (!response.ok) throw new Error('Failed to fetch');
-        const data = await response.json();
-        setExercises(data);
-      } catch (error) {
-        setError(error.message);
-        console.error('Failed to fetch data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
+  const {
+    data: exercises,
+    isLoading,
+    error
+  } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   const filteredExercises = exercises.filter(exercise => {
     return (
@@ -35,8 +17,9 @@ const ExercisesList = ({ onSelect, selectedMuscle, selectedEquipment }) => {
     );
   });
 
-  if (isLoading) return <div>Loading exercises...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // Loading indicator or error message for exercises
+  if (isLoading) return <CircularProgress />;
+  if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
     <div className='page-layout'>
