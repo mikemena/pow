@@ -117,11 +117,13 @@ const CreateTemplatePage = () => {
 
   const handleSelectExercise = exerciseId => {
     setSelectedExercises(prevSelected => {
-      if (prevSelected.has(exerciseId)) {
-        return prevSelected.filter(id => id !== exerciseId);
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(exerciseId)) {
+        newSelected.delete(exerciseId); //remove the exercise if it's already selected
       } else {
-        return [...prevSelected, exerciseId];
+        newSelected.add(exerciseId);
       }
+      return newSelected;
     });
   };
 
@@ -167,7 +169,7 @@ const CreateTemplatePage = () => {
           onEquipmentChange={handleEquipmentChange}
         />
         <Stack direction='column' spacing={2}>
-          {exercises.map(exercise => (
+          {filteredExercises.map(exercise => (
             <Exercise
               key={exercise.exercise_id}
               name={exercise.name}
