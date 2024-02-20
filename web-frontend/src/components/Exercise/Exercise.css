@@ -1,40 +1,33 @@
-.exercise-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin: 0 0 0 10px;
+.card {
+  font-family: 'Arial', sans-serif;
+  width: 250px;
+  border: 1px solid #585858;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  text-align: center;
 }
-
-.exercise {
-  display: flex;
-  align-items: flex-start;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin: 20px 0 10px 20px;
-  padding: 10px;
-  border-radius: 5px;
-  background-color: var(--card-color);
+.card-image {
+  width: 100%;
+  display: block;
 }
-.exercise.selected {
-  border-color: var(
-    --primary-color
-  ); /* Change to your preferred color for indicating selection */
+.card-body {
+  padding: 15px;
+  background-color: #f4f4f4;
 }
-
-.exercise-image {
-  width: 100px;
-  height: 100px;
-  margin-right: 20px;
+.card-title {
+  margin: 10px 0;
+  font-size: 24px;
+  color: #d5d5d5;
 }
-
-.exercise-title {
-  font-weight: 800;
-  font-size: 14pt;
-  color: var(--background-color);
+.card-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 15px;
 }
-
-.exercise-muscle {
-  font-size: 12pt;
-  color: var(--secondary-color);
+.card-text {
+  font-size: 16px;
+  color: #777;
+  line-height: 1.5;
 }

@@ -1,29 +1,27 @@
-import React from 'react';
-import TextField from '@mui/material/TextField';
-import Stack from '@mui/material/Stack';
-import Autocomplete from '@mui/material/Autocomplete';
+import React, { useState } from 'react';
 
 export default function ExerciseSearch({ exercises = [], onChange }) {
+  const [inputValue, setInputValue] = useState('');
+  const handleInputChange = event => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    onChange(newValue); // Call the provided onChange function with the new value
+  };
   return (
-    <Stack spacing={2} sx={{ width: 300 }}>
-      <Autocomplete
-        freeSolo
+    <div className='search-bar-container'>
+      <input
+        list='exercises'
         id='exercise-search'
-        disableClearable
-        options={exercises.map(exercise => exercise.name)}
-        onInputChange={(event, newValue) => onChange(newValue)}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label='Search input'
-            InputProps={{
-              ...params.InputProps,
-              type: 'search'
-            }}
-            sx={{ width: 850 }}
-          />
-        )}
+        onChange={handleInputChange}
+        value={inputValue}
+        type='search'
+        placeholder='Search Exercise Names'
       />
-    </Stack>
+      <datalist id='exercises'>
+        {exercises.map((exercise, index) => (
+          <option key={index} value={exercise.name} />
+        ))}
+      </datalist>
+    </div>
   );
 }

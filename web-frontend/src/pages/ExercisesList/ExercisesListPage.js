@@ -5,7 +5,6 @@ import Stack from '@mui/material/Stack';
 import CircularProgress from '@mui/material/CircularProgress';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
-import './ExercisesListPage.css';
 
 const ExercisesListPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
