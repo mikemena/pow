@@ -5,7 +5,8 @@ import TextField from '@mui/material/TextField';
 import Dropdown from '../../components/Inputs/Dropdown';
 import Button from '@mui/material/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
-import ExerciseList from '../../components/ExerciseList/ExerciseList';
+import Exercise from '../../components/Exercise/Exercise';
+import CircularProgress from '@mui/material/CircularProgress';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
 
@@ -114,17 +115,18 @@ const CreateTemplatePage = () => {
     navigate('/workouts');
   };
 
-  const handleExerciseSelect = exerciseId => {
-    setSelectedExercises(prevSelectedExercises => {
-      const newSelectedExercises = new Set(prevSelectedExercises);
-      if (newSelectedExercises.has(exerciseId)) {
-        newSelectedExercises.delete(exerciseId);
+  const handleSelectExercise = exerciseId => {
+    setSelectedExercises(prevSelected => {
+      if (prevSelected.has(exerciseId)) {
+        return prevSelected.filter(id => id !== exerciseId);
       } else {
-        newSelectedExercises.add(exerciseId);
+        return [...prevSelected, exerciseId];
       }
-      return newSelectedExercises;
     });
   };
+
+  if (isLoading) return <CircularProgress />;
+  if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
     <div className='page-layout'>
@@ -164,12 +166,19 @@ const CreateTemplatePage = () => {
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        <ExerciseList
-          exercises={filteredExercises}
-          isLoading={isLoading}
-          onSelect={handleExerciseSelect}
-          onError={error}
-        />
+        <Stack direction='column' spacing={2}>
+          {exercises.map(exercise => (
+            <Exercise
+              key={exercise.exercise_id}
+              name={exercise.name}
+              muscle={exercise.muscle}
+              equipment={exercise.equipment}
+              image={`http://localhost:9025/${exercise.file_path}`}
+              isSelected={selectedExercises.has(exercise.id)}
+              onClick={() => handleSelectExercise(exercise.id)}
+            />
+          ))}
+        </Stack>
         <Stack direction='row' spacing={2}>
           <Button variant='contained' onClick={handleSaveTemplate}>
             Save Template

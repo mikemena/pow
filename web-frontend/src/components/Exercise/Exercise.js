@@ -1,29 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './Exercise.css';
 
 export default function Exercise({
-  id,
   name,
   muscle,
   equipment,
   image,
-  onSelect
+  onClick,
+  isSelected
 }) {
-  const [isSelected, setIsSelected] = useState(false);
-
-  const toggleSelect = () => {
-    const newSelectedState = !isSelected;
-    setIsSelected(newSelectedState);
-    if (onSelect) {
-      onSelect(id, newSelectedState);
-    }
-  };
-
+  const className = isSelected ? 'selected' : '';
   return (
-    <div
-      className={`exercise ${isSelected ? 'selected' : ''}`}
-      onClick={toggleSelect}
-    >
+    <div className={className} onClick={onClick}>
       <img src={image} alt={name} className='exercise-image' />
       <div className='exercise-details'>
         <p className='exercise-title'>
