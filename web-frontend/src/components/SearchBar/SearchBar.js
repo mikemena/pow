@@ -11,7 +11,7 @@ export default function ExerciseSearch({ exercises = [], onChange }) {
         id='exercise-search'
         disableClearable
         options={exercises.map(exercise => exercise.name)}
-        onChange={(event, newValue) => onChange(newValue)}
+        onInputChange={(event, newValue) => onChange(newValue)}
         renderInput={params => (
           <TextField
             {...params}

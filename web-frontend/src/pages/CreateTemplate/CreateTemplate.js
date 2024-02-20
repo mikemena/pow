@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -7,6 +7,7 @@ import Button from '@mui/material/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import ExerciseList from '../../components/ExerciseList/ExerciseList';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
+import useFetchData from '../../hooks/useFetchData';
 
 const CreateTemplatePage = () => {
   const [templateName, setTemplateName] = useState('');
@@ -14,35 +15,34 @@ const CreateTemplatePage = () => {
   const [dayType, setDayType] = useState('Day of Week');
   const [difficulty, setDifficulty] = useState('Intermediate');
   const [selectedExercises, setSelectedExercises] = useState(new Set());
-  const [exercises, setExercises] = useState([]);
-  const [filteredExercises, setFilterExercises] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const filterExercises = () => {
-      let filtered = exercises;
-      if (selectedMuscle && selectedMuscle !== 'All') {
-        filtered = filtered.filter(
-          exercise => exercise.muscle === selectedMuscle
-        );
-      }
-      if (selectedEquipment && selectedEquipment !== 'All') {
-        filtered = filtered.filter(
-          exercise => exercise.equipment === selectedEquipment
-        );
-      }
-      if (searchTerm) {
-        filtered = filtered.filter(exercise =>
-          exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      setFilterExercises(filtered);
-    };
-    filterExercises();
+  const {
+    data: exercises,
+    isLoading,
+    error
+  } = useFetchData('http://localhost:9025/api/exercise-catalog');
+
+  const filteredExercises = useMemo(() => {
+    console.log('Current Search Term: ', searchTerm); // Debugging line
+    return exercises.filter(exercise => {
+      const matchesMuscle =
+        !selectedMuscle ||
+        selectedMuscle === 'All' ||
+        exercise.muscle === selectedMuscle;
+      const matchesEquipment =
+        !selectedEquipment ||
+        selectedEquipment === 'All' ||
+        exercise.equipment === selectedEquipment;
+      const matchesSearchTerm =
+        !searchTerm ||
+        exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesMuscle && matchesEquipment && matchesSearchTerm;
+    });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
   const handleSearch = value => {
@@ -165,9 +165,10 @@ const CreateTemplatePage = () => {
           onEquipmentChange={handleEquipmentChange}
         />
         <ExerciseList
-          searchTerm={searchTerm}
-          selectedMuscle={selectedMuscle}
-          selectedEquipment={selectedEquipment}
+          exercises={filteredExercises}
+          isLoading={isLoading}
+          onSelect={handleExerciseSelect}
+          onError={error}
         />
         <Stack direction='row' spacing={2}>
           <Button variant='contained' onClick={handleSaveTemplate}>

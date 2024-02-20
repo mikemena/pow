@@ -1,41 +1,41 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import ExerciseSearch from '../../components/SearchBar/SearchBar';
 import ExerciseList from '../../components/ExerciseList/ExerciseList';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
+import useFetchData from '../../hooks/useFetchData';
 import './ExercisesListPage.css';
 
 const ExercisesListPage = () => {
-  const [exercises, setExercises] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [filteredExercises, setFilteredExercises] = useState([]);
 
-  useEffect(() => {
-    const filterExercises = () => {
-      let filtered = exercises;
-      if (selectedMuscle && selectedMuscle !== 'All') {
-        filtered = filtered.filter(
-          exercise => exercise.muscle === selectedMuscle
-        );
-      }
-      if (selectedEquipment && selectedEquipment !== 'All') {
-        filtered = filtered.filter(
-          exercise => exercise.equipment === selectedEquipment
-        );
-      }
-      if (searchTerm) {
-        filtered = filtered.filter(exercise =>
-          exercise.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-      }
-      setFilteredExercises(filtered);
-    };
-    filterExercises();
+  const {
+    data: exercises,
+    isLoading,
+    error
+  } = useFetchData('http://localhost:9025/api/exercise-catalog');
+
+  const filteredExercises = useMemo(() => {
+    console.log('Current Search Term: ', searchTerm); // Debugging line
+    return exercises.filter(exercise => {
+      const matchesMuscle =
+        !selectedMuscle ||
+        selectedMuscle === 'All' ||
+        exercise.muscle === selectedMuscle;
+      const matchesEquipment =
+        !selectedEquipment ||
+        selectedEquipment === 'All' ||
+        exercise.equipment === selectedEquipment;
+      const matchesSearchTerm =
+        !searchTerm ||
+        exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesMuscle && matchesEquipment && matchesSearchTerm;
+    });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
-  const handleSearch = value => {
-    setSearchTerm(value);
+  const handleSearch = newValue => {
+    setSearchTerm(newValue);
   };
 
   const handleMuscleChange = value => {
@@ -46,18 +46,23 @@ const ExercisesListPage = () => {
     setSelectedEquipment(value);
   };
 
+  const onSelect = exercise => {
+    // Handle exercise selection logic here
+  };
+
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Exercises</h1>
-      <ExerciseSearch onChange={handleSearch} />
+      <ExerciseSearch onChange={handleSearch} exercises={exercises} />
       <ExerciseFilters
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
       <ExerciseList
-        searchTerm={searchTerm}
-        selectedMuscle={selectedMuscle}
-        selectedEquipment={selectedEquipment}
+        exercises={filteredExercises}
+        isLoading={isLoading}
+        onSelect={onSelect}
+        onError={error}
       />
     </div>
   );
