@@ -6,7 +6,6 @@ import Dropdown from '../../components/Inputs/Dropdown';
 import Button from '@mui/material/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
-import CircularProgress from '@mui/material/CircularProgress';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
 
@@ -127,7 +126,7 @@ const CreateTemplatePage = () => {
     });
   };
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (

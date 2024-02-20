@@ -1,9 +1,6 @@
 import React from 'react';
-import Autocomplete from '@mui/material/Autocomplete';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import useFetchData from '../../hooks/useFetchData';
-import CircularProgress from '@mui/material/CircularProgress';
+import './ExerciseFilters.css';
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   const {
@@ -19,45 +16,48 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   } = useFetchData('http://localhost:9025/api/equipments');
 
   // Loading indicator or error message for equipments
-  if (isLoadingEquipments) return <CircularProgress />;
+  if (isLoadingEquipments) return <div>loading...</div>;
   if (errorEquipments)
     return <div>Error loading equipments: {errorEquipments}</div>;
 
   // Loading indicator or error message for muscles
-  if (isLoadingMuscles) return <CircularProgress />;
+  if (isLoadingMuscles) return <div>loading...</div>;
   if (errorMuscles) return <div>Error loading equipments: {errorMuscles}</div>;
 
   return (
-    <Stack direction='row' spacing={2}>
-      <Autocomplete
-        options={muscles.map(option => option.name)}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label='Muscle'
-            InputProps={{ ...params.InputProps, type: 'search' }}
-          />
-        )}
-        sx={{ width: 250 }}
-        onChange={(event, newValue) => {
-          onMuscleChange(newValue);
-        }}
-      />
-      <Autocomplete
-        options={equipments.map(option => option.name)}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label='Equipment'
-            InputProps={{ ...params.InputProps, type: 'search' }}
-          />
-        )}
-        sx={{ width: 250 }}
-        onChange={(event, newValue) => {
-          onEquipmentChange(newValue);
-        }}
-      />
-    </Stack>
+    <div className='exercise-filters-container'>
+      <div className='exercise-filter'>
+        {/* <label htmlFor='muscle-search'>Muscle</label> */}
+        <input
+          list='muscles'
+          id='muscle-search'
+          type='search'
+          onChange={event => onMuscleChange(event.target.value)}
+          placeholder='Search Muscles'
+        />
+        <datalist id='muscles'>
+          {muscles.map((option, index) => (
+            <option key={index} value={option.name} />
+          ))}
+        </datalist>
+      </div>
+
+      <div className='exercise-filter'>
+        {/* <label htmlFor='equipment-search'>Equipment</label> */}
+        <input
+          list='equipments'
+          id='equipment-search'
+          type='search'
+          onChange={event => onEquipmentChange(event.target.value)}
+          placeholder='Search Equipment'
+        />
+        <datalist id='equipments'>
+          {equipments.map((option, index) => (
+            <option key={index} value={option.name} />
+          ))}
+        </datalist>
+      </div>
+    </div>
   );
 }
 

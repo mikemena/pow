@@ -1,0 +1,8 @@
+.exercise-filters-container {
+  display: flex;
+  gap: 16px;
+}
+
+.exercise-filter {
+  width: 50%;
+}
