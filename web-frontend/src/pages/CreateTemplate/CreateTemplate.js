@@ -5,6 +5,7 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
+import './CreateTemplate.css';
 
 const CreateTemplatePage = () => {
   const [templateName, setTemplateName] = useState('');
@@ -126,6 +127,10 @@ const CreateTemplatePage = () => {
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
+  const dayTypes = ['Day of Week', 'Numerical'];
+  const planTypes = ['General', 'Bulking', 'Cutting', 'Sport'];
+  const difficultyLevels = ['Beginner', 'Intermediate', 'Advance'];
+
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Create New Template</h1>
@@ -135,37 +140,62 @@ const CreateTemplatePage = () => {
             <input
               type='text'
               class='full-width-input'
-              placeholder='Enter text here'
+              placeholder='Enter Workname Name'
               value={templateName}
               onChange={e => setTemplateName(e.target.value)}
             />
           </div>
-          <Dropdown
-            id='day-type'
-            label='Workout Day Type'
-            options={['Day of Week', 'Numerical']}
-            onSelect={handleDayTypeChange}
-          />
-          <Dropdown
-            id='plan-type'
-            label='Plan Type'
-            options={['General', 'Bulking', 'Cutting', 'Sport']}
-            onSelect={handlePlanTypeChange}
-          />
 
-          <Dropdown
-            id='difficulty-level'
-            label='Difficulty Level'
-            options={['Beginner', 'Intermediate', 'Advance']}
-            onSelect={handleDifficultyChange}
-          />
+          <div className='template-detail-container'>
+            <div className='template-detail'>
+              <select
+                id='day-type'
+                onSelect={handleDayTypeChange}
+                placeholder='Select Day Type'
+              >
+                <option value=''>Select Day Type</option>
+                {dayTypes.map((option, index) => (
+                  <option key={index} value={option.name}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='template-detail'>
+              <select
+                id='plan-type'
+                onChange={event => handlePlanTypeChange(event.target.value)}
+                placeholder='Select Plan Type'
+              >
+                <option value=''>Select Plan Type</option>
+                {planTypes.map((option, index) => (
+                  <option key={index} value={option.name}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='template-detail'>
+              <select
+                id='difficulty-level'
+                onChange={event => handleDifficultyChange(event.target.value)}
+              >
+                <option value=''>Select Difficulty Level</option>
+                {difficultyLevels.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
         </div>
         <SearchBar onChange={handleSearch} />
         <ExerciseFilters
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        <div direction='column' spacing={2}>
+        <div className='exercise-container'>
           {filteredExercises.map(exercise => (
             <Exercise
               key={exercise.exercise_id}
