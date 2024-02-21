@@ -78,10 +78,8 @@ button {
 }
 button:hover {
   border-color: var(--secondary-color);
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  background-color: var(--primary-color);
+  border: 2px solid var(--primary-color);
 }
 
 input,

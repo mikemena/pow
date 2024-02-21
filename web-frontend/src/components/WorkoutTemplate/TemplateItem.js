@@ -1,6 +1,4 @@
 import React from 'react';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
 import './TemplateItem.css';
 
 const TemplateItems = ({
@@ -28,31 +26,28 @@ const TemplateItems = ({
         <p className='template-section-title'>Difficulty Level</p>
         <p className='template-section-text'>{difficulty_level}</p>
       </div>
-      <Stack direction='row' spacing={1} className='accordion-content'>
-        <Button
-          variant='contained'
-          className='accordion-button'
+      <div className='accordion-content'>
+        <button
+          className='button-class'
           onClick={() => console.log('Start Workout')}
         >
-          Start Workout
-        </Button>
-        <Button
-          variant='contained'
-          className='accordion-button'
+          Start
+        </button>
+        <button
+          className='button-class'
           onClick={() => console.log('Edit Workout')}
         >
-          Edit Workout
-        </Button>
-        <Button
-          variant='contained'
-          className='accordion-button'
+          Edit
+        </button>
+        <button
+          className='button-class'
           onClick={() => {
             onDelete(workout_id);
           }}
         >
-          Delete Workout
-        </Button>
-      </Stack>
+          Delete
+        </button>
+      </div>
     </div>
   );
 };

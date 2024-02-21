@@ -1,9 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Dropdown from '../../components/Inputs/Dropdown';
-import Button from '@mui/material/Button';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
@@ -134,14 +131,15 @@ const CreateTemplatePage = () => {
       <h1 className='page-title'>Create New Template</h1>
       <form onSubmit={handleSaveTemplate}>
         <div>
-          <TextField
-            id='template-name-input'
-            variant='filled'
-            label='Template Name'
-            value={templateName}
-            onChange={e => setTemplateName(e.target.value)}
-            sx={{ width: 850 }}
-          />
+          <div class='input-container'>
+            <input
+              type='text'
+              class='full-width-input'
+              placeholder='Enter text here'
+              value={templateName}
+              onChange={e => setTemplateName(e.target.value)}
+            />
+          </div>
           <Dropdown
             id='day-type'
             label='Workout Day Type'
@@ -167,7 +165,7 @@ const CreateTemplatePage = () => {
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        <Stack direction='column' spacing={2}>
+        <div direction='column' spacing={2}>
           {filteredExercises.map(exercise => (
             <Exercise
               key={exercise.exercise_id}
@@ -179,15 +177,15 @@ const CreateTemplatePage = () => {
               onClick={() => handleSelectExercise(exercise.id)}
             />
           ))}
-        </Stack>
-        <Stack direction='row' spacing={2}>
-          <Button variant='contained' onClick={handleSaveTemplate}>
+        </div>
+        <div className='button-container'>
+          <button id='save-template-button' onClick={handleSaveTemplate}>
             Save Template
-          </Button>
-          <Button variant='contained' onClick={handleCancel}>
+          </button>
+          <button id='cancel-template-button' onClick={handleCancel}>
             Cancel
-          </Button>
-        </Stack>
+          </button>
+        </div>
       </form>
     </div>
   );

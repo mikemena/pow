@@ -1,8 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import ExerciseSearch from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
-import Stack from '@mui/material/Stack';
-import CircularProgress from '@mui/material/CircularProgress';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
 
@@ -47,7 +45,7 @@ const ExercisesListPage = () => {
     setSelectedEquipment(value);
   };
 
-  if (isLoading) return <CircularProgress />;
+  if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
@@ -58,7 +56,7 @@ const ExercisesListPage = () => {
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-      <Stack direction='column' spacing={2}>
+      <div direction='column' spacing={2}>
         {filteredExercises.map(exercise => (
           <Exercise
             key={exercise.exercise_id}
@@ -69,7 +67,7 @@ const ExercisesListPage = () => {
             onClick={() => console.log('Exercise clicked:', exercise.name)}
           />
         ))}
-      </Stack>
+      </div>
     </div>
   );
 };

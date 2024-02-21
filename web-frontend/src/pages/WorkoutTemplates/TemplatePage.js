@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TemplatePage.css';
 import TemplateGrid from '../../components/WorkoutTemplate/TemplateGrid';
-import Button from '@mui/material/Button';
 
 const WorkoutTemplatePage = () => {
   const [workoutTemplates, setWorkoutTemplates] = useState([]);
@@ -59,15 +58,11 @@ const WorkoutTemplatePage = () => {
       <h1 className='page-title'>Start Workout</h1>
       <h2 className='page-subtitle'>Quick Start</h2>
       <div id='start-empty-container'>
-        <Button variant='contained' onClick={handleEmptyWorkout}>
-          Start an Empty Workout
-        </Button>
+        <button onClick={handleEmptyWorkout}>Start an Empty Workout</button>
       </div>
       <div className='template-header'>
         <h2 className='second-subtitle'>Templates</h2>
-        <Button variant='contained' onClick={handleCreateNewWorkout}>
-          Create New Template
-        </Button>
+        <button onClick={handleCreateNewWorkout}>Create New Template</button>
       </div>
       <div id='workout-grid'>
         <TemplateGrid templates={workoutTemplates} onDelete={handleDelete} />

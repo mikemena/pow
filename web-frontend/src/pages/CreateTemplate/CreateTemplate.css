@@ -1,0 +1,10 @@
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+  width: 100%;
+}
+
+#save-template-button {
+  width: 50%;
+}
