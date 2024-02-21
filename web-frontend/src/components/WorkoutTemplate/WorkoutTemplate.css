@@ -1,0 +1,36 @@
+.workout-template {
+  font-family: 'Arial', sans-serif;
+  width: 275px;
+  border: 1px solid #585858;
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px;
+  text-align: center;
+}
+
+.wortkout-title {
+  margin: 10px 0;
+  font-size: 24px;
+  color: #d5d5d5;
+}
+
+.template-section {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.template-section-title {
+  margin-right: 10px;
+}
+
+.template-section-text {
+  font-weight: 500;
+  color: #d5d5d5;
+}
+
+.workout-template-actions-container {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
