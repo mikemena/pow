@@ -3,6 +3,7 @@ import ExerciseSearch from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
+import './ExerciseListPage.css';
 
 const ExercisesListPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -56,7 +57,7 @@ const ExercisesListPage = () => {
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-      <div direction='column' spacing={2}>
+      <div className='exercise-container'>
         {filteredExercises.map(exercise => (
           <Exercise
             key={exercise.exercise_id}
