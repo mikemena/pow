@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Dropdown from '../../components/Inputs/Dropdown';
 import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
@@ -26,7 +25,6 @@ const CreateTemplatePage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   const filteredExercises = useMemo(() => {
-    console.log('Current Search Term: ', searchTerm); // Debugging line
     return exercises.filter(exercise => {
       const matchesMuscle =
         !selectedMuscle ||
