@@ -92,6 +92,23 @@ select {
   margin: 10px;
 }
 
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('./assets/images/caret-down-sharp.svg');
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 12px;
+  padding-right: 30px;
+  border: 1px solid var(--light-text-color);
+}
+
+/* For Internet Explorer */
+select::-ms-expand {
+  display: none;
+}
+
 input::placeholder {
   font-size: 16px;
   color: var(--light-text-color);
