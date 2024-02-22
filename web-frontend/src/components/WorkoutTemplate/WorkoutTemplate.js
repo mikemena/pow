@@ -13,8 +13,8 @@ const WorkoutTemplate = ({
   return (
     <div className='workout-template'>
       <div workout_id={workout_id} key={workout_id} className='workout'>
-        <div className='workout-title'>
-          <h2 className='workout-title'>{name}</h2>
+        <div className='template-title'>
+          <h2 className='template-title-text'>{name}</h2>
         </div>
         <div className='template-section'>
           <p className='template-section-title'>Day Type</p>
@@ -29,9 +29,12 @@ const WorkoutTemplate = ({
           <p className='template-section-text'>{difficulty_level}</p>
         </div>
         <div className='template-section'>
-          <p className='template-section-exercises'>Exercises</p>
+          <p className='template-section-title'>Exercises</p>
           <p className='template-section-text'>
-            {exercises.map(exercise => exercise.exercise_name).join(', ')}
+            {exercises
+              .filter(exercise => exercise.exercise_name)
+              .map(exercise => exercise.exercise_name)
+              .join(', ')}
           </p>
         </div>
         <div className='workout-template-actions-container'>

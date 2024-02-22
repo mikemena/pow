@@ -1,36 +1,65 @@
 .workout-template {
   font-family: 'Arial', sans-serif;
-  width: 300px;
-  border: 1px solid #585858;
+  width: 450px;
+
+  background-color: var(--light-card);
+  border: 1px solid var(--light-grey);
   border-radius: 4px;
   overflow: hidden;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin: 20px;
+  box-shadow: 0 4px 8px var(--light-text-color);
+  margin: 10px 10px 10px 0;
   text-align: center;
+  padding: 0 10px 0 10px;
 }
 
-.wortkout-title {
+@media (max-width: 768px) {
+  .workout-template {
+    width: 100%; /* Make the card take full width on smaller screens */
+    margin: 10px 0; /* Adjust margin for vertical stacking */
+  }
+}
+
+.template-title {
   margin: 10px 0;
-  font-size: 24px;
-  color: #d5d5d5;
+}
+
+.template-title-text {
+  color: var(--dark-text-color);
 }
 
 .template-section {
   display: flex;
-  justify-content: flex-start;
+  align-items: flex-start;
+  margin-bottom: 10px; /* Add space between each row */
 }
 
 .template-section-title {
+  flex-shrink: 0;
+  width: 140px;
+  text-align: left;
   margin-right: 10px;
+  white-space: nowrap;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-text-color);
 }
 
 .template-section-text {
   font-weight: 500;
-  color: #d5d5d5;
+  text-align: left;
+  white-space: pre-line;
+  flex-grow: 1;
+  flex-basis: calc(100% - 160px);
+  color: var(--dark-text-color);
 }
 
 .workout-template-actions-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: stretch;
   padding: 10px;
+}
+
+.workout-template-actions-container button {
+  flex: 1; /* This will cause each button to take up equal space */
+  margin: 0 5px; /* Adjust the margin as needed for spacing between buttons */
 }

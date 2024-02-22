@@ -61,7 +61,7 @@ const WorkoutTemplatePage = () => {
         <button onClick={handleEmptyWorkout}>Start an Empty Workout</button>
       </div>
       <div id='template-header-container'>
-        <h2 className='second-subtitle'>Templates</h2>
+        <h2 className='section-title'>Templates</h2>
         <button onClick={handleCreateNewWorkout}>Create New Template</button>
       </div>
       <div id='workout-template-container'>
