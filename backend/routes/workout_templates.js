@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-// const db = require('../config/db');
 const { pool } = require('../config/db');
 
 // Endpoint to get all workouts for given user
+
 router.get('/workout-templates/:user_id', async (req, res) => {
   const { user_id } = req.params;
 
@@ -47,6 +47,7 @@ router.get('/workout-templates/:user_id', async (req, res) => {
 });
 
 // POST endpoint to create a workout with selected exercises
+
 router.post('/workout-templates', async (req, res) => {
   const {
     user_id,
@@ -86,8 +87,8 @@ router.post('/workout-templates', async (req, res) => {
 });
 
 // DELETE endpoint to remove a workout template
+
 router.delete('/workout-templates/:template_id', async (req, res) => {
-  console.log(req.params);
   const { template_id } = req.params;
 
   const client = await pool.connect();
@@ -111,6 +112,55 @@ router.delete('/workout-templates/:template_id', async (req, res) => {
 
     await client.query('COMMIT');
     res.status(204).send('Workout template removed successfully');
+  } catch (err) {
+    await client.query('ROLLBACK');
+    console.error(err);
+    res.status(500).send('Server error');
+  } finally {
+    client.release();
+  }
+});
+
+// PUT endpoint to update a workout template
+router.put('/workout-templates/:template_id', async (req, res) => {
+  const { template_id } = req.params;
+  const {
+    workout_name,
+    workout_day_type,
+    plan_type,
+    difficulty_level,
+    exercises
+  } = req.body;
+
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    // Update the workout template details
+
+    await client.query(
+      'UPDATE user_workouts SET workout_name = $1, workout_day_type = $2, plan_type = $3, difficulty_level = $4 WHERE workout_id = $5',
+      [workout_name, workout_day_type, plan_type, difficulty_level, template_id]
+    );
+
+    // Remove all existing exercise associations
+
+    await client.query('DELETE FROM user_exercises WHERE workout_id = $1', [
+      template_id
+    ]);
+
+    // Insert new exercise associations
+
+    for (const exerciseId of exercises) {
+      await client.query(
+        'INSERT INTO user_exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
+        [template_id, exerciseId]
+      );
+    }
+
+    await client.query('COMMIT');
+    res.status(200).send('Workout template updated successfully');
   } catch (err) {
     await client.query('ROLLBACK');
     console.error(err);
