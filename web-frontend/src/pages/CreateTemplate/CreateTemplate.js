@@ -201,8 +201,9 @@ const CreateTemplatePage = () => {
               muscle={exercise.muscle}
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
-              isSelected={selectedExercises.has(exercise.id)}
-              onClick={() => handleSelectExercise(exercise.id)}
+              isSelectable={true} // Make the exercise selectable in this context
+              isSelected={selectedExercises.has(exercise.exercise_id)}
+              onClick={() => handleSelectExercise(exercise.exercise_id)}
             />
           ))}
         </div>

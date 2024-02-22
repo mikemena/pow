@@ -65,6 +65,7 @@ const ExercisesListPage = () => {
             muscle={exercise.muscle}
             equipment={exercise.equipment}
             image={`http://localhost:9025/${exercise.file_path}`}
+            isSelectable={false} // Make the exercise selectable in this context
             onClick={() => console.log('Exercise clicked:', exercise.name)}
           />
         ))}

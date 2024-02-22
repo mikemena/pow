@@ -7,17 +7,18 @@ export default function Exercise({
   equipment,
   image,
   onClick,
+  isSelectable,
   isSelected
 }) {
-  const className = isSelected ? 'selected card' : 'card';
+  const exerciseClass = isSelected ? 'exercise selected' : 'exercise';
   return (
-    <div className={className} onClick={onClick}>
-      <img src={image} alt={name} className='card-image' />
+    <div className={exerciseClass} onClick={isSelectable ? onClick : undefined}>
+      <img src={image} alt={name} className='exercise-image' />
       <div className='exercise-details'>
-        <p className='card-title'>
+        <p className='exercise-title'>
           {name} ({equipment})
         </p>
-        <p className='card-subtitle'>{muscle} </p>
+        <p className='exercise-subtitle'>{muscle} </p>
       </div>
     </div>
   );

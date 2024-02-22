@@ -1,11 +1,13 @@
 :root {
   --primary-color: #43a36d;
   --secondary-color: #ff793f;
-  --background-color: #fffefc;
-  --dark-text-color: #232b2b;
-  --light-text-color: #fffefc;
+  --background-color: #eeeeee;
+  --dark-text-color: #2b2b2b;
+  --light-text-color: #eeeeee;
   --card-color: #414a4c;
   --alt-text-color: #e74c3c;
+  --dark-background: #2b2b2b;
+  --light-background: #eeeeee;
 }
 
 /* Reset all margins and paddings */
@@ -45,7 +47,7 @@ textarea {
   font-weight: 400;
   color-scheme: light dark;
   color: var(--text-color);
-  background-color: #353839;
+  background-color: var(--dark-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

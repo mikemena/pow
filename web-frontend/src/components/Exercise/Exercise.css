@@ -1,4 +1,4 @@
-.card {
+.exercise {
   font-family: 'Arial', sans-serif;
   width: 250px;
   border: 1px solid #585858;
@@ -8,26 +8,34 @@
   margin: 20px;
   text-align: center;
 }
-.card-image {
+.exercise-image {
   width: 100%;
   display: block;
 }
-.card-body {
+.exercise-body {
   padding: 15px;
   background-color: #f4f4f4;
 }
-.card-title {
+.exercise-title {
   margin: 10px 0;
   font-size: 24px;
   color: #d5d5d5;
 }
-.card-subtitle {
+.exercise-subtitle {
   font-size: 18px;
   color: #666;
   margin-bottom: 15px;
 }
-.card-text {
+.exercise-text {
   font-size: 16px;
   color: #777;
   line-height: 1.5;
+}
+
+.exercise.selectable {
+  cursor: pointer; /* Indicates the item is clickable */
+}
+
+.exercise.selected {
+  border: 2px solid var(--primary-color); /* Change as needed */
 }
