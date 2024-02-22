@@ -7,7 +7,8 @@ const WorkoutTemplate = ({
   name,
   day_type,
   plan_type,
-  difficulty_level
+  difficulty_level,
+  exercises
 }) => {
   return (
     <div className='workout-template'>
@@ -26,6 +27,12 @@ const WorkoutTemplate = ({
         <div className='template-section'>
           <p className='template-section-title'>Difficulty Level</p>
           <p className='template-section-text'>{difficulty_level}</p>
+        </div>
+        <div className='template-section'>
+          <p className='template-section-exercises'>Exercises</p>
+          <p className='template-section-text'>
+            {exercises.map(exercise => exercise.exercise_name).join(', ')}
+          </p>
         </div>
         <div className='workout-template-actions-container'>
           <button

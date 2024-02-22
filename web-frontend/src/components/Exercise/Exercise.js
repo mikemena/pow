@@ -13,7 +13,10 @@ export default function Exercise({
   const exerciseClass = isSelected ? 'exercise selected' : 'exercise';
   return (
     <div className={exerciseClass} onClick={isSelectable ? onClick : undefined}>
-      <img src={image} alt={name} className='exercise-image' />
+      <div className='image-container'>
+        <img src={image} alt={name} className='exercise-image' />
+        <div className='glass'></div>
+      </div>
       <div className='exercise-details'>
         <p className='exercise-title'>
           {name} ({equipment})

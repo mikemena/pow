@@ -8,10 +8,18 @@
   margin: 20px;
   text-align: center;
 }
+
+.image-container {
+  position: relative;
+  width: 250px;
+  display: block;
+  overflow: hidden;
+}
 .exercise-image {
   width: 100%;
   display: block;
 }
+
 .exercise-body {
   padding: 15px;
   background-color: #f4f4f4;
@@ -30,6 +38,15 @@
   font-size: 16px;
   color: #777;
   line-height: 1.5;
+}
+
+.exercise-details {
+  max-width: 250px;
+  padding: 1rem;
+  color: white;
+  border-width: 1px;
+  border-style: solid;
+  border-image: linear-gradient(to bottom, #eeeeee, rgba(0, 0, 0, 0)) 1 100%;
 }
 
 .exercise.selectable {

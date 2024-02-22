@@ -72,6 +72,7 @@ const WorkoutTemplatePage = () => {
             plan_type={template.plan_type}
             day_type={template.workout_day_type}
             difficulty_level={template.difficulty_level}
+            exercises={template.exercises}
             onDelete={handleDelete}
           />
         ))}

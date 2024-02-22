@@ -12,15 +12,31 @@ router.get('/workout-templates/:user_id', async (req, res) => {
       'SELECT * FROM user_workouts WHERE user_id = $1',
       [parseInt(user_id)]
     );
+    //Log after retrieving workouts
+    console.log('Workouts fetched:', workouts.rows);
+
     if (workouts.rows.length === 0)
-      return [res.status(404).json({ message: 'No workout templates found' })];
+      return res.status(404).json({ message: 'No workout templates found' });
 
     for (const workout of workouts.rows) {
       const exercises = await pool.query(
-        'SELECT exercise_id, catalog_exercise_id , workout_id FROM user_exercises WHERE workout_id = $1',
-        [workout.id]
+        'select ue.exercise_id, ue.catalog_exercise_id, ec.name as exercise_name,ue.workout_id from user_exercises ue LEFT JOIN exercise_catalog ec on ue.catalog_exercise_id = ec.exercise_id WHERE workout_id = $1',
+        [workout.workout_id]
       );
-      workout.exercises = exercises.rows.map(e => e.exercise_id);
+
+      // Log after fetching exercises for a workout
+      console.log(
+        `Exercises for workout ${workout.workout_id}:`,
+        exercises.rows
+      );
+
+      workout.exercises = exercises.rows.map(e => ({
+        exercise_id: e.exercise_id,
+        exercise_name: e.exercise_name,
+        catalog_exercise_id: e.catalog_exercise_id
+      }));
+      // Log after modifying the workout object
+      console.log(`Workout with exercises ${workout.workout_id}:`, workout);
     }
 
     res.json(workouts.rows);
