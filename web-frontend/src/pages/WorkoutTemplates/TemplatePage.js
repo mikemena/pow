@@ -36,6 +36,7 @@ const WorkoutTemplatePage = () => {
   };
 
   const handleDelete = async template_id => {
+    console.log('Attempting to delete template with ID:', template_id);
     try {
       const response = await fetch(
         `http://localhost:9025/api/workout-templates/${template_id}`,
@@ -67,6 +68,7 @@ const WorkoutTemplatePage = () => {
       <div id='workout-template-container'>
         {workoutTemplates.map(template => (
           <WorkoutTemplate
+            workout_id={template.workout_id}
             key={template.workout_id}
             name={template.workout_name}
             plan_type={template.plan_type}

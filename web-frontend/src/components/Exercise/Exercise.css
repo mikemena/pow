@@ -43,7 +43,7 @@
 
 .exercise-details {
   max-width: 250px;
-  padding: 1rem;
+  padding: 0.5rem;
   color: var(--light-text-color);
   border-width: 1px;
   border-style: solid;

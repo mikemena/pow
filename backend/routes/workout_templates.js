@@ -87,14 +87,19 @@ router.post('/workout-templates', async (req, res) => {
 
 // DELETE endpoint to remove a workout template
 router.delete('/workout-templates/:template_id', async (req, res) => {
+  console.log(req.params);
   const { template_id } = req.params;
 
   const client = await pool.connect();
 
   try {
+    console.log('Received template_id:', template_id);
     await client.query('BEGIN');
 
     // Remove associated exercises
+    if (!template_id) {
+      return res.status(400).send('No template ID provided');
+    }
     await client.query('DELETE FROM user_exercises WHERE workout_id = $1', [
       template_id
     ]);
