@@ -48,7 +48,16 @@ const WorkoutTemplate = ({
           <button
             className='button-class'
             onClick={() => {
-              onEdit(workout_id);
+              const workout = {
+                workout_id,
+                name,
+                day_type,
+                plan_type,
+                difficulty_level,
+                exercises
+              };
+
+              onEdit(workout);
             }}
           >
             Edit

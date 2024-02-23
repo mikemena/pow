@@ -7,7 +7,6 @@ import useFetchData from '../../hooks/useFetchData';
 import './EditTemplate.css';
 
 const EditTemplatePage = ({ workoutData }) => {
-  console.log('workoutData:', workoutData);
   const [templateName, setTemplateName] = useState(
     workoutData.workout_name || ''
   );

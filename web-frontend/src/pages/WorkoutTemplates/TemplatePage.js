@@ -53,7 +53,7 @@ const WorkoutTemplatePage = () => {
     }
   };
 
-  const handleEdit = ({ workout }) => {
+  const handleEdit = workout => {
     navigate(`/edit-workout/${workout.workout_id}`, { state: { workout } });
   };
 
