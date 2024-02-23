@@ -60,5 +60,6 @@
 }
 
 .exercise.selected {
-  border: 4px solid var(--light-card); /* Change as needed */
+  border: 2px solid var(--alt-text-color); /* Change as needed */
+  border-style: dotted;
 }
