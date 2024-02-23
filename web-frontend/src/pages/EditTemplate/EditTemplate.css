@@ -29,7 +29,6 @@
   flex-wrap: wrap; /* Allows children to wrap to the next line if there's not enough space */
   gap: 10px; /* Adds some space between the child elements */
   justify-content: center; /* Centers the child elements horizontally */
-  padding: 10px; /* Adds some padding inside the container */
 }
 
 .template-detail {

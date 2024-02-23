@@ -1,6 +1,6 @@
 .exercise {
   font-family: 'Arial', sans-serif;
-  width: 250px;
+  width: 225px;
   background-color: var(--light-card);
   border-radius: 4px;
   overflow: hidden;
@@ -11,7 +11,7 @@
 
 .image-container {
   position: relative;
-  width: 250px;
+  width: 225px;
   display: block;
   overflow: hidden;
 }
@@ -33,7 +33,7 @@
 .exercise-subtitle {
   font-size: 18px;
   color: #666;
-  margin-bottom: 15px;
+  margin-bottom: 5px;
 }
 .exercise-text {
   font-size: 16px;

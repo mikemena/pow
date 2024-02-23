@@ -112,31 +112,25 @@
 
 /* Responsive design */
 @media (max-width: 768px) {
-  .nav-links {
-    flex-direction: column;
-    width: 100%;
-    height: auto;
-    background-color: #333;
-    display: none; /* Hidden by default, can be toggled with JavaScript */
-  }
-
-  .nav-links li {
+  /* .nav-links li {
     text-align: center;
     padding: 10px;
-  }
+  } */
 
-  .nav-item {
+  /* .nav-item {
     display: block;
-  }
+  } */
 
-  .navbar {
+  /* .navbar {
     flex-direction: column;
     height: auto;
-  }
+  } */
 }
 
 /* Adjust hover and active styles for mobile if necessary */
 .nav-item:hover,
 .nav-item:active {
-  color: #fff; /* Adjusted color for better visibility on mobile */
+  color: var(
+    --alt-text-color
+  ); /* Adjusted color for better visibility on mobile */
 }
