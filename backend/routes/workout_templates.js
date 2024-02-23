@@ -12,8 +12,6 @@ router.get('/workout-templates/:user_id', async (req, res) => {
       'SELECT * FROM user_workouts WHERE user_id = $1',
       [parseInt(user_id)]
     );
-    //Log after retrieving workouts
-    console.log('Workouts fetched:', workouts.rows);
 
     if (workouts.rows.length === 0)
       return res.status(404).json({ message: 'No workout templates found' });
@@ -25,10 +23,6 @@ router.get('/workout-templates/:user_id', async (req, res) => {
       );
 
       // Log after fetching exercises for a workout
-      console.log(
-        `Exercises for workout ${workout.workout_id}:`,
-        exercises.rows
-      );
 
       workout.exercises = exercises.rows.map(e => ({
         exercise_id: e.exercise_id,
@@ -94,7 +88,6 @@ router.delete('/workout-templates/:template_id', async (req, res) => {
   const client = await pool.connect();
 
   try {
-    console.log('Received template_id:', template_id);
     await client.query('BEGIN');
 
     // Remove associated exercises

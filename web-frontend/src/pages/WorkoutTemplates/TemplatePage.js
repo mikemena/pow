@@ -36,7 +36,6 @@ const WorkoutTemplatePage = () => {
   };
 
   const handleDelete = async template_id => {
-    console.log('Attempting to delete template with ID:', template_id);
     try {
       const response = await fetch(
         `http://localhost:9025/api/workout-templates/${template_id}`,
@@ -52,6 +51,10 @@ const WorkoutTemplatePage = () => {
     } catch (error) {
       console.error('Failed to delete workout:', error);
     }
+  };
+
+  const handleEdit = ({ workout }) => {
+    navigate(`/edit-workout/${workout.workout_id}`, { state: { workout } });
   };
 
   return (
@@ -76,6 +79,7 @@ const WorkoutTemplatePage = () => {
             difficulty_level={template.difficulty_level}
             exercises={template.exercises}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         ))}
       </div>

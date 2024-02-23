@@ -39,13 +39,8 @@ router.get('/equipments/:id', async (req, res) => {
 
 // POST a equipment
 router.post('/equipments', async (req, res) => {
-  console.log(req.body);
   try {
     const { name } = req.body;
-    console.log(
-      'Executing query:',
-      'INSERT INTO equipment_catalog (name) VALUES ($1) RETURNING *'
-    );
 
     const { rows } = await db.query(
       'INSERT INTO equipment_catalog (name) VALUES ($1) RETURNING *',

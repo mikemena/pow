@@ -4,14 +4,21 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
-import './CreateTemplate.css';
+import './EditTemplate.css';
 
-const CreateTemplatePage = () => {
-  const [templateName, setTemplateName] = useState('');
-  const [planType, setPlanType] = useState('General');
-  const [dayType, setDayType] = useState('Day of Week');
-  const [difficulty, setDifficulty] = useState('Intermediate');
-  const [selectedExercises, setSelectedExercises] = useState(new Set());
+const EditTemplatePage = ({ workoutData }) => {
+  console.log('workoutData:', workoutData);
+  const [templateName, setTemplateName] = useState(
+    workoutData.workout_name || ''
+  );
+  const [planType, setPlanType] = useState(workoutData.plan_type || '');
+  const [dayType, setDayType] = useState(workoutData.workout_day_type || '');
+  const [difficulty, setDifficulty] = useState(
+    workoutData.difficulty_level || ''
+  );
+  const [selectedExercises, setSelectedExercises] = useState(
+    new Set(workoutData.exercises || [])
+  );
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -69,40 +76,29 @@ const CreateTemplatePage = () => {
     event.preventDefault();
 
     const templateData = {
-      user_id: 2, // hardcoded for now, but should be the logged in user's ID
       workout_name: templateName,
       workout_day_type: dayType,
       plan_type: planType,
       difficulty_level: difficulty,
-      exercises: Array.from(selectedExercises).map(exerciseId => ({
-        exercise_id: exerciseId
-      }))
+      exercises: Array.from(selectedExercises)
     };
 
     try {
       const response = await fetch(
-        'http://localhost:9025/api/workout-templates',
+        `http://localhost:9025/api/workout-templates/${workoutData.workout_id}`,
         {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(templateData)
         }
       );
 
       if (!response.ok) {
-        throw new Error('Something went wrong with saving the template');
+        throw new Error('Something went wrong updating the template');
       }
-
-      // Assuming the backend responds with the created template, you could use it here if needed
-      // const savedTemplate = await response.json();
-
-      // After saving, redirect back to the WorkoutPage
       navigate('/workouts');
     } catch (error) {
-      console.error('Failed to save the template:', error);
-      // Here, you could set an error state and display it to the user if you wish
+      console.error('Failed to update the template:', error);
     }
   };
 
@@ -132,7 +128,7 @@ const CreateTemplatePage = () => {
 
   return (
     <div className='page-layout'>
-      <h1 className='page-title'>Create New Template</h1>
+      <h1 className='page-title'>Edit Template</h1>
       <form onSubmit={handleSaveTemplate}>
         <div>
           <div class='input-container'>
@@ -221,4 +217,4 @@ const CreateTemplatePage = () => {
   );
 };
 
-export default CreateTemplatePage;
+export default EditTemplatePage;

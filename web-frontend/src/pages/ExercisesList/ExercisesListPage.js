@@ -17,7 +17,6 @@ const ExercisesListPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   const filteredExercises = useMemo(() => {
-    console.log('Current Search Term: ', searchTerm); // Debugging line
     return exercises.filter(exercise => {
       const matchesMuscle =
         !selectedMuscle ||

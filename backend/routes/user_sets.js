@@ -92,8 +92,6 @@ router.put('/sets/:id', async (req, res) => {
     }
 
     queryValues.push(id); // For the WHERE condition
-    console.log('updateParts', updateParts);
-    console.log('length updateParts', updateParts.length);
     if (updateParts.length === 0) {
       return res.status(400).send('No update fields provided.');
     }

@@ -3,6 +3,7 @@ import './WorkoutTemplate.css';
 
 const WorkoutTemplate = ({
   onDelete,
+  onEdit,
   workout_id,
   name,
   day_type,
@@ -46,7 +47,9 @@ const WorkoutTemplate = ({
           </button>
           <button
             className='button-class'
-            onClick={() => console.log('Edit Workout')}
+            onClick={() => {
+              onEdit(workout_id);
+            }}
           >
             Edit
           </button>

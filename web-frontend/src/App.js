@@ -5,6 +5,7 @@ import MusclesPage from './pages/Muscles/MusclesPage';
 import ExercisesListPage from './pages/ExercisesList/ExercisesListPage';
 import WorkoutPage from './pages/WorkoutTemplates/TemplatePage';
 import CreateWorkout from './pages/CreateTemplate/CreateTemplate';
+import EditWorkout from './pages/EditTemplate/EditTemplate';
 import './App.css';
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
         <Route path='/exercises' element={<ExercisesListPage />} />
         <Route path='/workouts' element={<WorkoutPage />} />
         <Route path='/create-workout' element={<CreateWorkout />} />
+        <Route path='/edit-workout' element={<EditWorkout />} />
       </Routes>
     </Router>
   );

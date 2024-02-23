@@ -36,13 +36,12 @@ router.post('/images', upload.single('image'), async (req, res) => {
     // Insert metadata into the 'image_metadata' table
     // Assuming 'upload_date' can be set to the current timestamp in PostgreSQL
     // 'checksum' is not directly available from req.file; you would need additional logic to calculate it
-    console.log('Image description: ', description);
+
     const { rows } = await db.query(
       'INSERT INTO image_metadata (description, status, file_path, image_name, content_type, file_size, category, upload_date) VALUES ($1, $2, $3, $4, $5, $6, $7, CURRENT_TIMESTAMP) RETURNING *',
       [description, status, path, filename, mimetype, size, category]
     );
-    console.log(req.file);
-    console.log(req.body);
+
     res.json({
       message: 'Image uploaded successfully',
       file: {
