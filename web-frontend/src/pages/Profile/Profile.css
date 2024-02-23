@@ -1,0 +1,7 @@
+.profile {
+  padding: 35px;
+  margin-top: 35px;
+  margin-bottom: 20px;
+  font-size: 2rem;
+  color: var(--alt-text-color);
+}

@@ -4,6 +4,7 @@ import SearchBar from '../../components/SearchBar/SearchBar';
 import Exercise from '../../components/Exercise/Exercise';
 import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
+import Nav from '../../components/Nav/Nav';
 import './CreateTemplate.css';
 
 const CreateTemplatePage = () => {
@@ -132,6 +133,7 @@ const CreateTemplatePage = () => {
 
   return (
     <div className='page-layout'>
+      <Nav />
       <h1 className='page-title'>Create New Template</h1>
       <form onSubmit={handleSaveTemplate}>
         <div>

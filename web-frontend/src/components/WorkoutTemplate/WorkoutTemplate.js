@@ -1,4 +1,5 @@
 import React from 'react';
+import Navbar from '../Nav/Nav';
 import './WorkoutTemplate.css';
 
 const WorkoutTemplate = ({
@@ -13,6 +14,7 @@ const WorkoutTemplate = ({
 }) => {
   return (
     <div className='workout-template'>
+      <Navbar />
       <div workout_id={workout_id} key={workout_id} className='workout'>
         <div className='template-title'>
           <h2 className='template-title-text'>{name}</h2>

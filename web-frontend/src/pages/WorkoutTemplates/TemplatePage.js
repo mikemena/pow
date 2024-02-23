@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './TemplatePage.css';
 import WorkoutTemplate from '../../components/WorkoutTemplate/WorkoutTemplate';
+import Nav from '../../components/Nav/Nav';
 
 const WorkoutTemplatePage = () => {
   const [workoutTemplates, setWorkoutTemplates] = useState([]);
@@ -59,6 +60,7 @@ const WorkoutTemplatePage = () => {
 
   return (
     <div className='page-layout'>
+      <Nav />
       <h1 className='page-title'>Start Workout</h1>
       <h2 className='page-subtitle'>Quick Start</h2>
       <div id='start-empty-container'>
