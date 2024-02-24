@@ -16,6 +16,7 @@ const CreateTemplatePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
+  const [showDetails, setShowDetails] = useState(false);
 
   const navigate = useNavigate();
 
@@ -124,6 +125,14 @@ const CreateTemplatePage = () => {
     });
   };
 
+  const handleNextClick = () => {
+    setShowDetails(true); // This will trigger the slide-in of the details panel
+  };
+
+  const handleBackClick = () => {
+    setShowDetails(false);
+  }; // This will trigger the slide-out of the details panel
+
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
@@ -137,10 +146,10 @@ const CreateTemplatePage = () => {
       <h1 className='page-title'>Create New Template</h1>
       <form onSubmit={handleSaveTemplate}>
         <div>
-          <div class='input-container'>
+          <div className='input-container'>
             <input
               type='text'
-              class='full-width-input'
+              className='full-width-input'
               placeholder='Enter Workname Name'
               value={templateName}
               onChange={e => setTemplateName(e.target.value)}
@@ -196,20 +205,47 @@ const CreateTemplatePage = () => {
           onMuscleChange={handleMuscleChange}
           onEquipmentChange={handleEquipmentChange}
         />
-        <div className='exercise-container'>
-          {filteredExercises.map(exercise => (
-            <Exercise
-              key={exercise.exercise_id}
-              name={exercise.name}
-              muscle={exercise.muscle}
-              equipment={exercise.equipment}
-              image={`http://localhost:9025/${exercise.file_path}`}
-              isSelectable={true} // Make the exercise selectable in this context
-              isSelected={selectedExercises.has(exercise.exercise_id)}
-              onClick={() => handleSelectExercise(exercise.exercise_id)}
-            />
-          ))}
+
+        <div className='slide-container'>
+          <div
+            className={`exercise-container ${showDetails ? 'slide-out' : ''}`}
+          >
+            {filteredExercises.map(exercise => (
+              <Exercise
+                key={exercise.exercise_id}
+                name={exercise.name}
+                muscle={exercise.muscle}
+                equipment={exercise.equipment}
+                image={`http://localhost:9025/${exercise.file_path}`}
+                isSelectable={true} // Make the exercise selectable in this context
+                isSelected={selectedExercises.has(exercise.exercise_id)}
+                onClick={() => handleSelectExercise(exercise.exercise_id)}
+              />
+            ))}
+          </div>
+          {selectedExercises.size > 0 && !showDetails && (
+            <div className='next-arrow-container' onClick={handleNextClick}>
+              <div className='arrow'>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+            </div>
+          )}
+          <div className={`template-details ${showDetails ? 'slide-in' : ''}`}>
+            Details go here...
+            {showDetails && (
+              <div className='back-arrow-container' onClick={handleBackClick}>
+                <div className='back-arrow'>
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
+
         <div className='button-container'>
           <button id='save-template-button' onClick={handleSaveTemplate}>
             Save Template

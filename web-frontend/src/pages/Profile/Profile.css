@@ -5,3 +5,208 @@
   font-size: 2rem;
   color: var(--alt-text-color);
 }
+
+slide-container {
+  display: flex; /* Enables flex layout */
+  flex-direction: column; /* Stack children vertically */
+  align-items: center; /* Center children horizontally */
+  justify-content: flex-start; /* Align children to the start vertically */
+  width: 100%; /* Take full width of the container */
+  min-height: 100vh; /* Minimum height to take full viewport height */
+  margin-top: -20px; /* Adjust this value to offset any header/nav bar height */
+}
+
+.div-one {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 5px;
+  padding: 5px;
+  width: 100%;
+}
+.div-two {
+  width: 100%; /* Full width */
+}
+
+.exercise-container.slide-out {
+  animation-name: slideOutLeft;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards; /* Keeps the element in the final state after animation */
+}
+
+.exercise-container.slide-in {
+  animation-name: slideInLeft;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.template-details.slide-out {
+  animation-name: slideOutRight;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.template-detail-container {
+  display: flex; /* Enables flexbox layout for children */
+  flex-wrap: wrap; /* Allows children to wrap to the next line if there's not enough space */
+  gap: 10px; /* Adds some space between the child elements */
+  justify-content: center; /* Centers the child elements horizontally */
+}
+
+.template-detail {
+  display: none; /* Initially hidden */
+  transition: transform 0.5s ease-in-out;
+  will-change: transform;
+}
+
+.template-details.slide-in {
+  display: block; /* Show the element */
+  animation-name: slideInRight;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.template-detail select {
+  width: 100%; /* Makes select fill the parent .template-detail container */
+  padding: 5px; /* Adds some padding inside the select for better touch */
+  border: none;
+  border-radius: 5px; /* Optional: Rounds the corners of the select elements */
+}
+
+/* next arrow styles */
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform: rotate(-90deg);
+  cursor: pointer;
+}
+
+.arrow span {
+  display: block;
+  width: 4vw;
+  height: 4vw;
+  border-bottom: 10px solid var(--alt-text-color);
+  border-right: 10px solid var(--alt-text-color);
+  transform: rotate(45deg);
+  margin: -10px;
+  animation: animate 2s infinite;
+}
+
+.arrow span:nth-child(2) {
+  animation-delay: -0.2s;
+}
+
+.arrow span:nth-child(3) {
+  animation-delay: -0.4s;
+}
+
+/* arrow animation */
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) translate(-20px, -20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(45deg) translate(20px, 20px);
+  }
+}
+
+/* back arrow styles */
+
+.back-arrow-container {
+  position: fixed; /* Fixed position relative to the viewport */
+  top: 50%; /* Center vertically */
+  left: 50px; /* Position from the left side */
+  transform: translate(-50%, -50%); /* Center the arrow */
+  z-index: 100; /* Ensure it's above other content */
+  cursor: pointer;
+}
+
+.back-arrow {
+  position: absolute;
+  left: 50%;
+  transform: rotate(90deg) translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.back-arrow span {
+  display: block;
+  width: 4vw;
+  height: 4vw;
+  border-bottom: 10px solid var(--alt-text-color);
+  border-right: 10px solid var(--alt-text-color);
+  transform: rotate(45deg) translate(-50%, -50%);
+  margin: -10px;
+  animation: animate 2s infinite;
+}
+
+.back-arrow span:nth-child(2) {
+  animation-delay: -0.2s;
+}
+
+.back-arrow span:nth-child(3) {
+  animation-delay: -0.4s;
+}
+
+/* arrow animation */
+
+@keyframes animate {
+  0% {
+    opacity: 0;
+    transform: rotate(45deg) translate(-20px, -20px);
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: rotate(45deg) translate(20px, 20px);
+  }
+}
+
+/* slide in animation for going to exercise details */
+
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%); /* Slide out to the left */
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* slide out animation for going back to exercises */
+
+@keyframes slideInLeft {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
