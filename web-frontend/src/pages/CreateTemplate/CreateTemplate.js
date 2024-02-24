@@ -225,7 +225,7 @@ const CreateTemplatePage = () => {
           </div>
           {selectedExercises.size > 0 && !showDetails && (
             <div className='next-arrow-container' onClick={handleNextClick}>
-              <div className='arrow'>
+              <div className='next-arrow'>
                 <span></span>
                 <span></span>
                 <span></span>
@@ -233,7 +233,7 @@ const CreateTemplatePage = () => {
             </div>
           )}
           <div className={`template-details ${showDetails ? 'slide-in' : ''}`}>
-            Details go here...
+            Details go here...<p>some stuff to see if the alignment changes</p>
             {showDetails && (
               <div className='back-arrow-container' onClick={handleBackClick}>
                 <div className='back-arrow'>

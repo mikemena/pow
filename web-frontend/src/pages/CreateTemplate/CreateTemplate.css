@@ -16,14 +16,14 @@
 #save-template-button {
   width: 50%;
 }
-slide-container {
+.slide-container {
   display: flex; /* Enables flex layout */
   flex-direction: column; /* Stack children vertically */
   align-items: center; /* Center children horizontally */
   justify-content: flex-start; /* Align children to the start vertically */
   width: 100%; /* Take full width of the container */
   min-height: 100vh; /* Minimum height to take full viewport height */
-  margin-top: -20px; /* Adjust this value to offset any header/nav bar height */
+  margin-top: -20px;
 }
 
 .exercise-container {
@@ -67,6 +67,8 @@ slide-container {
   display: none; /* Initially hidden */
   transition: transform 0.5s ease-in-out;
   will-change: transform;
+  padding: 5px;
+  width: 100%;
 }
 
 .template-details.slide-in {
@@ -85,7 +87,19 @@ slide-container {
 
 /* next arrow styles */
 
-.arrow {
+.next-arrow-container {
+  padding-right: 50px;
+  margin-right: 50px;
+  position: fixed; /* Fixed position relative to the viewport */
+  top: 50%; /* Center vertically */
+  right: 0; /* Align to the right side of the viewport */
+  transform: translateY(
+    -50%
+  ); /* Offset the container by half its height to truly center it */
+  z-index: 100; /* Ensure it's above other content */
+}
+
+.next-arrow {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -94,7 +108,7 @@ slide-container {
   cursor: pointer;
 }
 
-.arrow span {
+.next-arrow span {
   display: block;
   width: 4vw;
   height: 4vw;
@@ -105,11 +119,11 @@ slide-container {
   animation: animate 2s infinite;
 }
 
-.arrow span:nth-child(2) {
+.next-arrow span:nth-child(2) {
   animation-delay: -0.2s;
 }
 
-.arrow span:nth-child(3) {
+.next-arrow span:nth-child(3) {
   animation-delay: -0.4s;
 }
 
@@ -132,12 +146,15 @@ slide-container {
 /* back arrow styles */
 
 .back-arrow-container {
+  padding-right: 50px;
+  margin-right: 50px;
   position: fixed; /* Fixed position relative to the viewport */
   top: 50%; /* Center vertically */
-  left: 50px; /* Position from the left side */
-  transform: translate(-50%, -50%); /* Center the arrow */
+  right: 0; /* Align to the right side of the viewport */
+  transform: translateY(
+    -50%
+  ); /* Offset the container by half its height to truly center it */
   z-index: 100; /* Ensure it's above other content */
-  cursor: pointer;
 }
 
 .back-arrow {
