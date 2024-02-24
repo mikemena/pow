@@ -17,17 +17,22 @@ const ProfilePage = () => {
     <div className='profile-page'>
       <Navbar />
       <div className='profile'>Profile Page Under Construction</div>
-      <div>
-        {!showDetails && (
-          <div className='div-one' onClick={handleNextClick}>
-            <div className='arrow'>
-              <span></span>
-              <span></span>
-              <span></span>
+
+      <div className='slide-container'>
+        <div className={`exercise-container ${showDetails ? 'slide-out' : ''}`}>
+          Exercises list goes here...
+          {!showDetails && (
+            <div className='next-arrow-container' onClick={handleNextClick}>
+              <div className='next-arrow'>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
             </div>
-          </div>
-        )}
-        <div className={`div-two ${showDetails ? 'slide-in' : ''}`}>
+          )}
+        </div>
+
+        <div className={`template-details ${showDetails ? 'slide-in' : ''}`}>
           Details go here...
           {showDetails && (
             <div className='back-arrow-container' onClick={handleBackClick}>
