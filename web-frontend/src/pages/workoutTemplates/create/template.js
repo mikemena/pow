@@ -16,7 +16,6 @@ const CreateTemplatePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [showDetails, setShowDetails] = useState(false);
 
   const navigate = useNavigate();
 
@@ -113,194 +112,123 @@ const CreateTemplatePage = () => {
     navigate('/workouts');
   };
 
-  const handleAddDetils = () => {
+  const handleAddDetails = () => {
     navigate('/create-workout-details');
-
-    const handleSelectExercise = exerciseId => {
-      setSelectedExercises(prevSelected => {
-        const newSelected = new Set(prevSelected);
-        if (newSelected.has(exerciseId)) {
-          newSelected.delete(exerciseId); //remove the exercise if it's already selected
-        } else {
-          newSelected.add(exerciseId);
-        }
-        return newSelected;
-      });
-    };
-
-    const handleNextClick = () => {
-      setShowDetails(true); // This will trigger the slide-in of the details panel
-    };
-
-    const handleBackClick = () => {
-      setShowDetails(false);
-    }; // This will trigger the slide-out of the details panel
-
-    if (isLoading) return <div>loading...</div>;
-    if (error) return <div>Error loading exercises: {error}</div>;
-
-    const dayTypes = ['Day of Week', 'Numerical'];
-    const planTypes = ['General', 'Bulking', 'Cutting', 'Sport'];
-    const difficultyLevels = ['Beginner', 'Intermediate', 'Advance'];
-
-    return (
-      <div className='page-layout'>
-        <Nav />
-        <h1 className='page-title'>Create New Template</h1>
-        <form onSubmit={handleSaveTemplate}>
-          <div>
-            <div className='input-container'>
-              <input
-                type='text'
-                className='full-width-input'
-                placeholder='Enter Workname Name'
-                value={templateName}
-                onChange={e => setTemplateName(e.target.value)}
-              />
-            </div>
-
-            <div className='template-detail-container'>
-              <div className='template-detail'>
-                <select
-                  id='day-type'
-                  onSelect={handleDayTypeChange}
-                  placeholder='Select Day Type'
-                >
-                  <option value=''>Select Day Type</option>
-                  {dayTypes.map((option, index) => (
-                    <option key={index} value={option.name}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='template-detail'>
-                <select
-                  id='plan-type'
-                  onChange={event => handlePlanTypeChange(event.target.value)}
-                  placeholder='Select Plan Type'
-                >
-                  <option value=''>Select Plan Type</option>
-                  {planTypes.map((option, index) => (
-                    <option key={index} value={option.name}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='template-detail'>
-                <select
-                  id='difficulty-level'
-                  onChange={event => handleDifficultyChange(event.target.value)}
-                >
-                  <option value=''>Select Difficulty Level</option>
-                  {difficultyLevels.map((option, index) => (
-                    <option key={index} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </div>
-          <SearchBar onChange={handleSearch} />
-          <ExerciseFilters
-            onMuscleChange={handleMuscleChange}
-            onEquipmentChange={handleEquipmentChange}
-          />
-
-          <div className='slide-container'>
-            <div
-              /* NOTE exercise container and template-details  need their own slide-out and slide-in class so that i can customize behavior*/
-              className={`exercise-container ${
-                showDetails
-                  ? 'exercise-container-slide-out'
-                  : 'exercise-container-slide-in'
-              }`}
-            >
-              {filteredExercises.map(exercise => (
-                <Exercise
-                  key={exercise.exercise_id}
-                  name={exercise.name}
-                  muscle={exercise.muscle}
-                  equipment={exercise.equipment}
-                  image={`http://localhost:9025/${exercise.file_path}`}
-                  isSelectable={true} // Make the exercise selectable in this context
-                  isSelected={selectedExercises.has(exercise.exercise_id)}
-                  onClick={() => handleSelectExercise(exercise.exercise_id)}
-                />
-              ))}
-            </div>
-            {selectedExercises.size > 0 && !showDetails && (
-              <div className='next-arrow-container' onClick={handleNextClick}>
-                <div className='next-arrow'>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            )}
-            <div
-              className={`template-details ${
-                showDetails
-                  ? 'template-details-slide-in'
-                  : 'template-details-slide-out'
-              }`}
-            >
-              {Array.from(selectedExercises).map(exerciseId => {
-                const exercise = exercises.find(
-                  ex => ex.exercise_id === exerciseId
-                );
-                return (
-                  <div key={exerciseId} className='exercise-entry'>
-                    <div className='exercise-header'>
-                      <img
-                        src={`http://localhost:9025/${exercise.file_path}`}
-                        alt={exercise.name}
-                      />
-                      <h3>{exercise.name}</h3>
-                    </div>
-                    <div className='sets-reps-container'>
-                      {/* Repeat this part for the number of sets */}
-                      <div className='set-entry'>
-                        <label>SET</label>
-                        <input type='number' defaultValue={1} min={1} />
-                        <label>LBS</label>
-                        <input type='number' defaultValue={10} min={0} />
-                        <label>REPS</label>
-                        <input type='number' defaultValue={8} min={1} />
-                        <button type='button'>+</button> {/* Increment set */}
-                        <button type='button'>Delete</button> {/* Remove set */}
-                      </div>
-                      {/* Repeat end */}
-                    </div>
-                  </div>
-                );
-              })}
-              {showDetails && (
-                <div className='back-arrow-container' onClick={handleBackClick}>
-                  <div className='back-arrow'>
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className='button-container'>
-            <button id='save-button' onClick={handleSaveTemplate}>
-              Add Workout Details
-            </button>
-            <button id='cancel-template-button' onClick={handleCancel}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    );
   };
+
+  const handleSelectExercise = exerciseId => {
+    setSelectedExercises(prevSelected => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(exerciseId)) {
+        newSelected.delete(exerciseId); //remove the exercise if it's already selected
+      } else {
+        newSelected.add(exerciseId);
+      }
+      return newSelected;
+    });
+  };
+
+  if (isLoading) return <div>loading...</div>;
+  if (error) return <div>Error loading exercises: {error}</div>;
+
+  const dayTypes = ['Day of Week', 'Numerical'];
+  const planTypes = ['General', 'Bulking', 'Cutting', 'Sport'];
+  const difficultyLevels = ['Beginner', 'Intermediate', 'Advance'];
+
+  return (
+    <div className='page-layout'>
+      <Nav />
+      <h1 className='page-title'>Create New Template</h1>
+      <form onSubmit={handleSaveTemplate}>
+        <div>
+          <div className='input-container'>
+            <input
+              type='text'
+              className='full-width-input'
+              placeholder='Enter Workname Name'
+              value={templateName}
+              onChange={e => setTemplateName(e.target.value)}
+            />
+          </div>
+
+          <div className='template-detail-container'>
+            <div className='template-detail'>
+              <select
+                id='day-type'
+                onChange={handleDayTypeChange}
+                placeholder='Select Day Type'
+              >
+                <option value=''>Select Day Type</option>
+                {dayTypes.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='template-detail'>
+              <select
+                id='plan-type'
+                onChange={event => handlePlanTypeChange(event.target.value)}
+                placeholder='Select Plan Type'
+              >
+                <option value=''>Select Plan Type</option>
+                {planTypes.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className='template-detail'>
+              <select
+                id='difficulty-level'
+                onChange={event => handleDifficultyChange(event.target.value)}
+              >
+                <option value=''>Select Difficulty Level</option>
+                {difficultyLevels.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+        <SearchBar onChange={handleSearch} />
+        <ExerciseFilters
+          onMuscleChange={handleMuscleChange}
+          onEquipmentChange={handleEquipmentChange}
+        />
+
+        <div className='exercise-container'>
+          {filteredExercises.map(exercise => (
+            <Exercise
+              key={exercise.exercise_id}
+              name={exercise.name}
+              muscle={exercise.muscle}
+              equipment={exercise.equipment}
+              image={`http://localhost:9025/${exercise.file_path}`}
+              isSelectable={true} // Make the exercise selectable in this context
+              isSelected={selectedExercises.has(exercise.exercise_id)}
+              onClick={() => handleSelectExercise(exercise.exercise_id)}
+            />
+          ))}
+        </div>
+        <div className='button-container'>
+          <button id='add-workout-details-button' onClick={handleAddDetails}>
+            Add Workout Details
+          </button>
+          <button id='save-workout-button' onClick={handleSaveTemplate}>
+            Save
+          </button>
+          <button id='cancel-workout-button' onClick={handleCancel}>
+            Cancel
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 };
 
 export default CreateTemplatePage;

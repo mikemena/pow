@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import Nav from '../../../components/Nav/Nav';
-import './template.css';
+import './templateDetails.css';
 
 const TemplateDetails = (
   templateName,
@@ -103,10 +103,10 @@ const TemplateDetails = (
           <button id='back-button' onClick={handleGoBack}>
             Go Back
           </button>
-          <button id='save-button' onClick={handleSaveTemplate}>
+          <button id='save-workout-button' onClick={handleSaveTemplate}>
             Save Workout
           </button>
-          <button id='cancel-button' onClick={handleCancel}>
+          <button id='cancel-workout-button' onClick={handleCancel}>
             Cancel
           </button>
         </div>
