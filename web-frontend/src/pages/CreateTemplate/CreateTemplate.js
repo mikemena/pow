@@ -233,7 +233,36 @@ const CreateTemplatePage = () => {
             </div>
           )}
           <div className={`template-details ${showDetails ? 'slide-in' : ''}`}>
-            Details go here...<p>some stuff to see if the alignment changes</p>
+            {Array.from(selectedExercises).map(exerciseId => {
+              const exercise = exercises.find(
+                ex => ex.exercise_id === exerciseId
+              );
+              return (
+                <div key={exerciseId} className='exercise-entry'>
+                  <div className='exercise-header'>
+                    <img
+                      src={`http://localhost:9025/${exercise.file_path}`}
+                      alt={exercise.name}
+                    />
+                    <h3>{exercise.name}</h3>
+                  </div>
+                  <div className='sets-reps-container'>
+                    {/* Repeat this part for the number of sets */}
+                    <div className='set-entry'>
+                      <label>SET</label>
+                      <input type='number' defaultValue={1} min={1} />
+                      <label>LBS</label>
+                      <input type='number' defaultValue={10} min={0} />
+                      <label>REPS</label>
+                      <input type='number' defaultValue={8} min={1} />
+                      <button type='button'>+</button> {/* Increment set */}
+                      <button type='button'>Delete</button> {/* Remove set */}
+                    </div>
+                    {/* Repeat end */}
+                  </div>
+                </div>
+              );
+            })}
             {showDetails && (
               <div className='back-arrow-container' onClick={handleBackClick}>
                 <div className='back-arrow'>

@@ -17,98 +17,78 @@
   width: 50%;
 }
 .slide-container {
-  display: flex; /* Enables flex layout */
-  flex-direction: column; /* Stack children vertically */
-  align-items: center; /* Center children horizontally */
-  justify-content: flex-start; /* Align children to the start vertically */
-  width: 100%; /* Take full width of the container */
-  min-height: 100vh; /* Minimum height to take full viewport height */
-  margin-top: -20px;
+  display: flex;
+  overflow: hidden;
 }
 
-.exercise-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 5px;
-  padding: 5px;
-  width: 100%;
-}
+.exercise-container,
 .template-details {
-  display: none; /* Initially hidden */
-  width: 100%; /* Full width */
-}
-
-.exercise-container.slide-out {
-  animation-name: slideOutLeft;
-  animation-duration: 0.5s;
-  animation-fill-mode: forwards; /* Keeps the element in the final state after animation */
-}
-
-.exercise-container.slide-in {
-  animation-name: slideInLeft;
-  animation-duration: 0.5s;
-  animation-fill-mode: forwards;
-}
-
-.template-details.slide-out {
-  animation-name: slideOutRight;
-  animation-duration: 0.5s;
-  animation-fill-mode: forwards;
-}
-
-.template-detail-container {
-  display: flex; /* Enables flexbox layout for children */
-  flex-wrap: wrap; /* Allows children to wrap to the next line if there's not enough space */
-  gap: 10px; /* Adds some space between the child elements */
-  justify-content: center; /* Centers the child elements horizontally */
-}
-
-.template-detail {
-  display: none; /* Initially hidden */
+  flex: 0 0 100%;
   transition: transform 0.5s ease-in-out;
-  will-change: transform;
-  padding: 5px;
+}
+
+.template-details {
+  position: absolute;
+  top: 100%; /* Adjust this value so it appears below your form */
+  left: 0;
   width: 100%;
+  padding: 20px;
+  transform: translateX(100%); /* Start off-screen */
+  transition: transform 0.5s ease-in-out; /* Smooth transition for sliding */
 }
 
-.template-details.slide-in {
-  display: block; /* Show the element */
-  animation-name: slideInRight;
-  animation-duration: 0.5s;
-  animation-fill-mode: forwards;
+.show-template-details {
+  display: block; /* Show the div */
+  animation: slideInRight 0.5s forwards; /* Your sliding animation */
 }
 
-.template-detail select {
+.template-details select {
   width: 100%; /* Makes select fill the parent .template-detail container */
   padding: 5px; /* Adds some padding inside the select for better touch */
   border: none;
   border-radius: 5px; /* Optional: Rounds the corners of the select elements */
 }
 
-/* next arrow styles */
+.slide-in {
+  animation: slideInRight 0.5s forwards;
+  transform: translateX(0);
+}
 
-.next-arrow-container {
-  padding-right: 50px;
-  margin-right: 50px;
-  position: fixed; /* Fixed position relative to the viewport */
-  top: 50%; /* Center vertically */
-  right: 0; /* Align to the right side of the viewport */
-  transform: translateY(
-    -50%
-  ); /* Offset the container by half its height to truly center it */
-  z-index: 100; /* Ensure it's above other content */
+/* Slide-out to the left for exercise-container */
+.slide-out {
+  transform: translateX(-100%); /* Move to the left */
+}
+
+/* arrow styles */
+
+.next-arrow-container,
+.back-arrow-container {
+  position: fixed;
+  top: 50%;
+  /* Adjust the right value for next and left for back if needed */
+  right: 0; /* for next arrow */
+  left: 0; /* for back arrow */
+  transform: translateY(-50%);
+  z-index: 100;
 }
 
 .next-arrow {
-  position: absolute;
+  position: fixed;
   top: 50%;
-  left: 50%;
+  right: 0;
   transform: translate(-50%, -50%);
   transform: rotate(-90deg);
-  cursor: pointer;
 }
 
-.next-arrow span {
+.back-arrow {
+  position: fixed;
+  top: 50%;
+  right: auto;
+  transform: rotate(90deg) translate(-50%, -50%);
+}
+
+.next-arrow span,
+.back-arrow span {
   display: block;
   width: 4vw;
   height: 4vw;
@@ -119,11 +99,13 @@
   animation: animate 2s infinite;
 }
 
-.next-arrow span:nth-child(2) {
+.next-arrow span:nth-child(2),
+.back-arrow span:nth-child(2) {
   animation-delay: -0.2s;
 }
 
-.next-arrow span:nth-child(3) {
+.next-arrow span:nth-child(3),
+.back-arrow span:nth-child(3) {
   animation-delay: -0.4s;
 }
 
@@ -144,60 +126,6 @@
 }
 
 /* back arrow styles */
-
-.back-arrow-container {
-  padding-right: 50px;
-  margin-right: 50px;
-  position: fixed; /* Fixed position relative to the viewport */
-  top: 50%; /* Center vertically */
-  right: 0; /* Align to the right side of the viewport */
-  transform: translateY(
-    -50%
-  ); /* Offset the container by half its height to truly center it */
-  z-index: 100; /* Ensure it's above other content */
-}
-
-.back-arrow {
-  position: absolute;
-  left: 50%;
-  transform: rotate(90deg) translate(-50%, -50%);
-  cursor: pointer;
-}
-
-.back-arrow span {
-  display: block;
-  width: 4vw;
-  height: 4vw;
-  border-bottom: 10px solid var(--alt-text-color);
-  border-right: 10px solid var(--alt-text-color);
-  transform: rotate(45deg) translate(-50%, -50%);
-  margin: -10px;
-  animation: animate 2s infinite;
-}
-
-.back-arrow span:nth-child(2) {
-  animation-delay: -0.2s;
-}
-
-.back-arrow span:nth-child(3) {
-  animation-delay: -0.4s;
-}
-
-/* arrow animation */
-
-@keyframes animate {
-  0% {
-    opacity: 0;
-    transform: rotate(45deg) translate(-20px, -20px);
-  }
-  50% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    transform: rotate(45deg) translate(20px, 20px);
-  }
-}
 
 /* slide in animation for going to exercise details */
 
@@ -237,4 +165,56 @@
   100% {
     transform: translateX(100%);
   }
+}
+
+/* style for exercise details */
+
+.exercise-entry {
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #fff;
+}
+
+.exercise-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.exercise-header img {
+  width: 100px; /* Adjust as needed */
+  margin-right: 10px;
+}
+
+.exercise-header h3 {
+  margin: 0;
+}
+
+.sets-reps-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.set-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.set-entry label {
+  margin-right: 5px;
+}
+
+.set-entry input[type='number'] {
+  width: 60px; /* Adjust as needed */
+  padding: 5px;
+  margin-right: 10px;
+}
+
+.set-entry button {
+  padding: 5px 10px;
+  margin-left: 5px;
 }

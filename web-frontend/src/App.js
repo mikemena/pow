@@ -8,6 +8,7 @@ import CreateWorkout from './pages/CreateTemplate/CreateTemplate';
 import EditWorkout from './pages/EditTemplate/EditTemplate';
 import ProgressPage from './pages/Progress/Progress';
 import ProfilePage from './pages//Profile/Profile';
+
 import './App.css';
 
 function App() {
