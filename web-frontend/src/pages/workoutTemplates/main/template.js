@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './TemplatePage.css';
-import WorkoutTemplate from '../../components/WorkoutTemplate/WorkoutTemplate';
-import Nav from '../../components/Nav/Nav';
+import WorkoutTemplate from '../../../components/WorkoutTemplate/WorkoutTemplate';
+import Nav from '../../../components/Nav/Nav';
+import './template.css';
 
 const WorkoutTemplatePage = () => {
   const [workoutTemplates, setWorkoutTemplates] = useState([]);

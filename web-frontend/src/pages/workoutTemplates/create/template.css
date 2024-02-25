@@ -17,46 +17,48 @@
   width: 50%;
 }
 .slide-container {
-  display: flex;
   overflow: hidden;
+  /* background-color: aquamarine; */
 }
 
 .exercise-container,
 .template-details {
-  flex: 0 0 100%;
   transition: transform 0.5s ease-in-out;
 }
 
 .template-details {
-  position: absolute;
-  top: 100%; /* Adjust this value so it appears below your form */
-  left: 0;
-  width: 100%;
-  padding: 20px;
   transform: translateX(100%); /* Start off-screen */
   transition: transform 0.5s ease-in-out; /* Smooth transition for sliding */
 }
 
-.show-template-details {
-  display: block; /* Show the div */
-  animation: slideInRight 0.5s forwards; /* Your sliding animation */
-}
+/* slide-in styles */
 
-.template-details select {
-  width: 100%; /* Makes select fill the parent .template-detail container */
-  padding: 5px; /* Adds some padding inside the select for better touch */
-  border: none;
-  border-radius: 5px; /* Optional: Rounds the corners of the select elements */
-}
-
-.slide-in {
+.exercise-container-slide-in {
   animation: slideInRight 0.5s forwards;
   transform: translateX(0);
+  display: flex;
+}
+.template-details-slide-in {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  padding: 20px 0;
+  margin: 0 10px;
+  animation: slideInRight 0.5s forwards;
+  transform: translateX(0);
+  display: flex;
+  top: 400px;
+  width: 600px;
 }
 
-/* Slide-out to the left for exercise-container */
-.slide-out {
-  transform: translateX(-100%); /* Move to the left */
+/* slide-out styles */
+
+.exercise-container-slide-out {
+  display: none;
+}
+
+.template-details-slide-out {
+  display: none;
 }
 
 /* arrow styles */

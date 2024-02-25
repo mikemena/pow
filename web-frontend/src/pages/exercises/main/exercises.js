@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import ExerciseSearch from '../../components/SearchBar/SearchBar';
-import Exercise from '../../components/Exercise/Exercise';
-import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
-import useFetchData from '../../hooks/useFetchData';
-import Nav from '../../components/Nav/Nav';
-import './ExerciseListPage.css';
+import ExerciseSearch from '../../../components/SearchBar/SearchBar';
+import Exercise from '../../../components/Exercise/Exercise';
+import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
+import useFetchData from '../../../hooks/useFetchData';
+import Nav from '../../../components/Nav/Nav';
+import './exercises.css';
 
 const ExercisesListPage = () => {
   const [searchTerm, setSearchTerm] = useState('');

@@ -1,6 +1,6 @@
 import React from 'react';
-import Navbar from '../../components/Nav/Nav';
-import './Progress.css';
+import Navbar from '../../../components/Nav/Nav';
+import './progress.css';
 
 const ProgressPage = () => {
   return (

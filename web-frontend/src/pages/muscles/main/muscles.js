@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import MuscleGroup from '../../components/MuscleGroup/MuscleGroup';
-import './MusclesPage.css';
+import MuscleGroup from '../../../components/MuscleGroup/MuscleGroup';
+import './muscles.css';
 import { useNavigate } from 'react-router-dom';
 
 const MusclesPage = () => {

@@ -1,10 +1,10 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchBar from '../../components/SearchBar/SearchBar';
-import Exercise from '../../components/Exercise/Exercise';
-import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
-import useFetchData from '../../hooks/useFetchData';
-import './EditTemplate.css';
+import SearchBar from '../../../components/SearchBar/SearchBar';
+import Exercise from '../../../components/Exercise/Exercise';
+import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
+import useFetchData from '../../../hooks/useFetchData';
+import './template.css';
 
 const EditTemplatePage = ({ workoutData }) => {
   const [templateName, setTemplateName] = useState(

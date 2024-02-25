@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Nav/Nav';
-import './Profile.css';
+import Navbar from '../../../components/Nav/Nav';
+import './profile.css';
 
 const ProfilePage = () => {
   const [showDetails, setShowDetails] = useState(false);

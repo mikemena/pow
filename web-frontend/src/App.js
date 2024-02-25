@@ -1,13 +1,13 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MusclesPage from './pages/Muscles/MusclesPage';
-import ExercisesListPage from './pages/ExercisesList/ExercisesListPage';
-import WorkoutPage from './pages/WorkoutTemplates/TemplatePage';
-import CreateWorkout from './pages/CreateTemplate/CreateTemplate';
-import EditWorkout from './pages/EditTemplate/EditTemplate';
-import ProgressPage from './pages/Progress/Progress';
-import ProfilePage from './pages//Profile/Profile';
+import MusclesPage from './pages/muscles/main/muscles';
+import ExercisesListPage from './pages/exercises/main/exercises';
+import WorkoutPage from './pages/workoutTemplates/main/template';
+import CreateWorkout from './pages/workoutTemplates/create/template';
+import EditWorkout from './pages/workoutTemplates/edit/template';
+import ProgressPage from './pages/progress/main/progress';
+import ProfilePage from './pages/profile/main/profile';
 
 import './App.css';
 
