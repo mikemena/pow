@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useWorkout } from '../../../contexts/workoutContext';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/SearchBar/SearchBar';
 import Exercise from '../../../components/Exercise/Exercise';
@@ -7,12 +8,13 @@ import useFetchData from '../../../hooks/useFetchData';
 import Nav from '../../../components/Nav/Nav';
 import './template.css';
 
-const CreateTemplatePage = () => {
-  const [templateName, setTemplateName] = useState('');
-  const [planType, setPlanType] = useState('General');
-  const [dayType, setDayType] = useState('Day of Week');
-  const [difficulty, setDifficulty] = useState('Intermediate');
-  const [selectedExercises, setSelectedExercises] = useState(new Set());
+const CreateTemplate = () => {
+  // const [templateName, setTemplateName] = useState('');
+  // const [planType, setPlanType] = useState('General');
+  // const [dayType, setDayType] = useState('Day of Week');
+  // const [difficulty, setDifficulty] = useState('Intermediate');
+  // const [selectedExercises, setSelectedExercises] = useState(new Set());
+  const { workout, setWorkout } = useWorkout();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -55,15 +57,15 @@ const CreateTemplatePage = () => {
   };
 
   const handlePlanTypeChange = selectedPlanType => {
-    setPlanType(selectedPlanType);
+    setWorkout(selectedPlanType);
   };
 
   const handleDayTypeChange = selectedDayType => {
-    setDayType(selectedDayType);
+    setWorkout(selectedDayType);
   };
 
   const handleDifficultyChange = selectedDifficulty => {
-    setDifficulty(selectedDifficulty);
+    setWorkout(selectedDifficulty);
   };
 
   const handleSaveTemplate = async event => {
@@ -71,11 +73,11 @@ const CreateTemplatePage = () => {
 
     const templateData = {
       user_id: 2, // hardcoded for now, but should be the logged in user's ID
-      workout_name: templateName,
-      workout_day_type: dayType,
-      plan_type: planType,
-      difficulty_level: difficulty,
-      exercises: Array.from(selectedExercises).map(exerciseId => ({
+      workout_name: workout.templateName,
+      workout_day_type: workout.dayType,
+      plan_type: workout.planType,
+      difficulty_level: workout.difficulty,
+      exercises: Array.from(workout.selectedExercises).map(exerciseId => ({
         exercise_id: exerciseId
       }))
     };
@@ -117,7 +119,7 @@ const CreateTemplatePage = () => {
   };
 
   const handleSelectExercise = exerciseId => {
-    setSelectedExercises(prevSelected => {
+    setWorkout(prevSelected => {
       const newSelected = new Set(prevSelected);
       if (newSelected.has(exerciseId)) {
         newSelected.delete(exerciseId); //remove the exercise if it's already selected
@@ -146,8 +148,8 @@ const CreateTemplatePage = () => {
               type='text'
               className='full-width-input'
               placeholder='Enter Workname Name'
-              value={templateName}
-              onChange={e => setTemplateName(e.target.value)}
+              value={workout.templateName}
+              onChange={e => setWorkout.templateName(e.target.value)}
             />
           </div>
 
@@ -210,7 +212,7 @@ const CreateTemplatePage = () => {
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
               isSelectable={true} // Make the exercise selectable in this context
-              isSelected={selectedExercises.has(exercise.exercise_id)}
+              isSelected={workout.selectedExercises.has(exercise.exercise_id)}
               onClick={() => handleSelectExercise(exercise.exercise_id)}
             />
           ))}
@@ -231,4 +233,4 @@ const CreateTemplatePage = () => {
   );
 };
 
-export default CreateTemplatePage;
+export default CreateTemplate;
