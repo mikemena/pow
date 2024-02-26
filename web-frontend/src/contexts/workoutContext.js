@@ -10,7 +10,7 @@ export const WorkoutProvider = ({ children }) => {
     planType: 'General',
     dayType: 'Day of Week',
     difficulty: 'Intermediate',
-    selectedExercises: new Set()
+    selectedExercises: []
   });
 
   return (

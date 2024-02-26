@@ -1,14 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useWorkout } from '../../../contexts/workoutContext';
 import Nav from '../../../components/Nav/Nav';
 import './templateDetails.css';
 
-const TemplateDetails = (
-  templateName,
-  dayType,
-  planType,
-  difficulty,
-  exercises
-) => {
+const TemplateDetails = () => {
+  const { workout } = useWorkout();
   const navigate = useNavigate();
 
   const handleSaveTemplate = async event => {
@@ -16,11 +12,11 @@ const TemplateDetails = (
 
     const templateData = {
       user_id: 2, // hardcoded for now, but should be the logged in user's ID
-      workout_name: templateName,
-      workout_day_type: dayType,
-      plan_type: planType,
-      difficulty_level: difficulty,
-      exercises: Array.from(exercises).map(exerciseId => ({
+      workout_name: workout.templateName,
+      workout_day_type: workout.dayType,
+      plan_type: workout.planType,
+      difficulty_level: workout.difficulty,
+      exercises: Array.from(workout.selectedExercises).map(exerciseId => ({
         exercise_id: exerciseId
       }))
     };
@@ -59,21 +55,19 @@ const TemplateDetails = (
 
   const handleGoBack = () => {
     // Redirect to the previous page
-    navigate(-1);
+    navigate('/create-workout');
   };
 
   return (
     <div className='page-layout'>
       <Nav />
-      <h1 className='page-title'>Create New Template</h1>
+      <h1 className='page-title'>Add Workout Details</h1>
       <form onSubmit={handleSaveTemplate}>
         <div className='template-details'>
-          {Array.from(exercises).map(exerciseId => {
-            const exercise = exercises.find(
-              ex => ex.exercise_id === exerciseId
-            );
-            return (
-              <div key={exerciseId} className='exercise-entry'>
+          {workout.selectedExercises
+            .filter(exercise => exercise.exercise_id && exercise.name)
+            .map(exercise => (
+              <div key={exercise.exercise_id} className='exercise-entry'>
                 <div className='exercise-header'>
                   <img
                     src={`http://localhost:9025/${exercise.file_path}`}
@@ -82,7 +76,6 @@ const TemplateDetails = (
                   <h3>{exercise.name}</h3>
                 </div>
                 <div className='sets-reps-container'>
-                  {/* Repeat this part for the number of sets */}
                   <div className='set-entry'>
                     <label>SET</label>
                     <input type='number' defaultValue={1} min={1} />
@@ -95,8 +88,7 @@ const TemplateDetails = (
                   </div>
                 </div>
               </div>
-            );
-          })}
+            ))}
         </div>
 
         <div className='button-container'>

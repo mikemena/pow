@@ -9,11 +9,6 @@ import Nav from '../../../components/Nav/Nav';
 import './template.css';
 
 const CreateTemplate = () => {
-  // const [templateName, setTemplateName] = useState('');
-  // const [planType, setPlanType] = useState('General');
-  // const [dayType, setDayType] = useState('Day of Week');
-  // const [difficulty, setDifficulty] = useState('Intermediate');
-  // const [selectedExercises, setSelectedExercises] = useState(new Set());
   const { workout, setWorkout } = useWorkout();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
@@ -57,15 +52,18 @@ const CreateTemplate = () => {
   };
 
   const handlePlanTypeChange = selectedPlanType => {
-    setWorkout(selectedPlanType);
+    setWorkout(prevWorkout => ({ ...prevWorkout, planType: selectedPlanType }));
   };
 
   const handleDayTypeChange = selectedDayType => {
-    setWorkout(selectedDayType);
+    setWorkout(prevWorkout => ({ ...prevWorkout, dayType: selectedDayType }));
   };
 
   const handleDifficultyChange = selectedDifficulty => {
-    setWorkout(selectedDifficulty);
+    setWorkout(prevWorkout => ({
+      ...prevWorkout,
+      difficulty: selectedDifficulty
+    }));
   };
 
   const handleSaveTemplate = async event => {
@@ -118,15 +116,27 @@ const CreateTemplate = () => {
     navigate('/create-workout-details');
   };
 
-  const handleSelectExercise = exerciseId => {
-    setWorkout(prevSelected => {
-      const newSelected = new Set(prevSelected);
-      if (newSelected.has(exerciseId)) {
-        newSelected.delete(exerciseId); //remove the exercise if it's already selected
+  const handleSelectExercise = exercise => {
+    setWorkout(prevWorkout => {
+      const existingIndex = prevWorkout.selectedExercises.findIndex(
+        ex => ex.exercise_id === exercise.exercise_id
+      );
+
+      let newSelectedExercises;
+      if (existingIndex >= 0) {
+        // Exercise is already selected, remove it
+        newSelectedExercises = prevWorkout.selectedExercises.filter(
+          (_, index) => index !== existingIndex
+        );
       } else {
-        newSelected.add(exerciseId);
+        // Exercise is not selected, add it
+        newSelectedExercises = [...prevWorkout.selectedExercises, exercise];
       }
-      return newSelected;
+
+      return {
+        ...prevWorkout,
+        selectedExercises: newSelectedExercises
+      };
     });
   };
 
@@ -149,7 +159,12 @@ const CreateTemplate = () => {
               className='full-width-input'
               placeholder='Enter Workname Name'
               value={workout.templateName}
-              onChange={e => setWorkout.templateName(e.target.value)}
+              onChange={e =>
+                setWorkout(prevWorkout => ({
+                  ...prevWorkout,
+                  templateName: e.target.value
+                }))
+              }
             />
           </div>
 
@@ -157,7 +172,7 @@ const CreateTemplate = () => {
             <div className='template-detail'>
               <select
                 id='day-type'
-                onChange={handleDayTypeChange}
+                onChange={e => handleDayTypeChange(e.target.value)}
                 placeholder='Select Day Type'
               >
                 <option value=''>Select Day Type</option>
@@ -171,7 +186,7 @@ const CreateTemplate = () => {
             <div className='template-detail'>
               <select
                 id='plan-type'
-                onChange={event => handlePlanTypeChange(event.target.value)}
+                onChange={e => handlePlanTypeChange(e.target.value)}
                 placeholder='Select Plan Type'
               >
                 <option value=''>Select Plan Type</option>
@@ -185,7 +200,7 @@ const CreateTemplate = () => {
             <div className='template-detail'>
               <select
                 id='difficulty-level'
-                onChange={event => handleDifficultyChange(event.target.value)}
+                onChange={e => handleDifficultyChange(e.target.value)}
               >
                 <option value=''>Select Difficulty Level</option>
                 {difficultyLevels.map((option, index) => (
@@ -212,8 +227,10 @@ const CreateTemplate = () => {
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
               isSelectable={true} // Make the exercise selectable in this context
-              isSelected={workout.selectedExercises.has(exercise.exercise_id)}
-              onClick={() => handleSelectExercise(exercise.exercise_id)}
+              isSelected={workout.selectedExercises.some(
+                ex => ex.exercise_id === exercise.exercise_id
+              )}
+              onClick={() => handleSelectExercise(exercise)}
             />
           ))}
         </div>
