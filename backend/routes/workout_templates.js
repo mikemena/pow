@@ -18,7 +18,7 @@ router.get('/workout-templates/:user_id', async (req, res) => {
 
     for (const workout of workouts.rows) {
       const exercises = await pool.query(
-        'select ue.exercise_id, ue.catalog_exercise_id, ec.name as exercise_name,ue.workout_id from user_exercises ue LEFT JOIN exercise_catalog ec on ue.catalog_exercise_id = ec.exercise_id WHERE workout_id = $1',
+        'select e.exercise_id, e.catalog_exercise_id, ec.name as exercise_name,e.workout_id, w.name as workout_name FROM workouts w LEFT JOIN exercises e on w.workout_id = e.workout_id LEFT JOIN exercise_catalog ec on ue.catalog_exercise_id = ec.exercise_id WHERE workout_id = $1',
         [workout.workout_id]
       );
 

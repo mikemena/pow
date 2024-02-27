@@ -59,6 +59,21 @@ const TemplateDetails = () => {
     navigate('/create-workout');
   };
 
+  // Function to handle the end of a drag event
+  const onDragEnd = result => {
+    const { destination, source } = result;
+    if (!destination) {
+      return;
+    }
+
+    const reorderedExercises = Array.from(workout.selectedExercises);
+    const [removed] = reorderedExercises.splice(source.index, 1);
+    reorderedExercises.splice(destination.index, 0, removed);
+
+    // Update the workout context or state with the reordered exercises
+    // useWorkout().setSelectedExercises(reorderedExercises); // This is an example. You'll need to implement the actual update logic based on your state management
+  };
+
   return (
     <div className='page-layout'>
       <Nav />
