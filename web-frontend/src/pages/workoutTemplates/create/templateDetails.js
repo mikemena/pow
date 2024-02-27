@@ -1,3 +1,4 @@
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useNavigate } from 'react-router-dom';
 import { useWorkout } from '../../../contexts/workoutContext';
 import Nav from '../../../components/Nav/Nav';
@@ -66,7 +67,7 @@ const TemplateDetails = () => {
         {workout.selectedExercises
           .filter(exercise => exercise.exercise_id && exercise.name)
           .map(exercise => (
-            <div key={exercise.exercise_id} className='template-detail'>
+            <div key={exercise.exercise_id} className='template-detail-card'>
               <div className='template-detail-header'>
                 <img
                   src={`http://localhost:9025/${exercise.file_path}`}
