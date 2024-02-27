@@ -30,6 +30,11 @@
   width: 100%;
 }
 
+.template-detail-delete-icon {
+  padding-right: 5px;
+  width: 50px;
+}
+
 .template-detail-field-container {
   display: flex;
   width: 100%;

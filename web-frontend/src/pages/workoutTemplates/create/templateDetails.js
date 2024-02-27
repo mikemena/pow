@@ -74,6 +74,13 @@ const TemplateDetails = () => {
                   className='template-detail-image'
                 />
                 <h3 className='template-detail-title'>{exercise.name}</h3>
+                <div>
+                  <img
+                    className='template-detail-delete-icon'
+                    src='http://localhost:3000/assets/images/remove.png'
+                    alt='delete exercise'
+                  />
+                </div>
               </div>
               <div className='template-detail-field-container'>
                 <label>Set</label>
