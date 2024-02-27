@@ -63,33 +63,34 @@ const TemplateDetails = () => {
       <Nav />
       <h1 className='page-title'>Add Workout Details</h1>
       <form onSubmit={handleSaveTemplate}>
-        <div className='template-details'>
-          {workout.selectedExercises
-            .filter(exercise => exercise.exercise_id && exercise.name)
-            .map(exercise => (
-              <div key={exercise.exercise_id} className='exercise-entry'>
-                <div className='exercise-header'>
-                  <img
-                    src={`http://localhost:9025/${exercise.file_path}`}
-                    alt={exercise.name}
-                  />
-                  <h3>{exercise.name}</h3>
-                </div>
-                <div className='sets-reps-container'>
-                  <div className='set-entry'>
-                    <label>SET</label>
-                    <input type='number' defaultValue={1} min={1} />
-                    <label>LBS</label>
-                    <input type='number' defaultValue={10} min={0} />
-                    <label>REPS</label>
-                    <input type='number' defaultValue={8} min={1} />
-                    <button type='button'>+</button> {/* Increment set */}
-                    <button type='button'>Delete</button> {/* Remove set */}
-                  </div>
-                </div>
+        {workout.selectedExercises
+          .filter(exercise => exercise.exercise_id && exercise.name)
+          .map(exercise => (
+            <div key={exercise.exercise_id} className='template-detail'>
+              <div className='template-detail-header'>
+                <img
+                  src={`http://localhost:9025/${exercise.file_path}`}
+                  alt={exercise.name}
+                  className='template-detail-image'
+                />
+                <h3 className='template-detail-title'>{exercise.name}</h3>
               </div>
-            ))}
-        </div>
+              <div className='template-detail-field-container'>
+                <label>Set</label>
+                <input type='number' defaultValue={1} min={1} />
+                <label>Lbs</label>
+                <input type='number' defaultValue={10} min={0} />
+                <label>Reps</label>
+                <input type='number' defaultValue={8} min={1} />
+                <button type='button' className='template-detail-add-button'>
+                  +
+                </button>
+                <button type='button' className='template-detail-remove-button'>
+                  -
+                </button>
+              </div>
+            </div>
+          ))}
 
         <div className='button-container'>
           <button id='back-button' onClick={handleGoBack}>
