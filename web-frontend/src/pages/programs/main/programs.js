@@ -73,13 +73,13 @@ const ProgramPage = () => {
       <div id='workout-template-container'>
         {programs.map(program => (
           <Program
-            workout_id={template.workout_id}
-            key={template.workout_id}
-            name={template.workout_name}
-            plan_type={template.plan_type}
-            day_type={template.workout_day_type}
-            difficulty_level={template.difficulty_level}
-            exercises={template.exercises}
+            program_id={program.program_id}
+            key={program.program_id}
+            name={program.name}
+            main_goal={program.main_goal}
+            day_type={program.workout_day_type}
+            days_per_week={program.days_per_week}
+            program_duration={program.program_duration}
             onDelete={handleDelete}
             onEdit={handleEdit}
           />

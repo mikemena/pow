@@ -1,21 +1,19 @@
-import React from 'react';
-import Navbar from '../Nav/Nav';
 import './Program.css';
 
 const Program = ({
   onDelete,
   onEdit,
-  workout_id,
+  program_id,
   name,
   day_type,
-  plan_type,
-  difficulty_level,
-  exercises
+  main_goal,
+  days_per_week,
+  program_duration,
+  workouts
 }) => {
   return (
-    <div className='workout-template'>
-      <Navbar />
-      <div workout_id={workout_id} key={workout_id} className='workout'>
+    <div className='program-container'>
+      <div program_id={program_id} key={program_id} className='program'>
         <div className='template-title'>
           <h2 className='template-title-text'>{name}</h2>
         </div>
