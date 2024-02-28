@@ -20,10 +20,9 @@ router.get('/sets/:id', async (req, res) => {
 
   try {
     // Query to fetch the set with the specified ID
-    const { rows } = await db.query(
-      'SELECT * FROM user_sets WHERE set_id = $1',
-      [parseInt(id)]
-    );
+    const { rows } = await db.query('SELECT * FROM sets WHERE set_id = $1', [
+      parseInt(id)
+    ]);
 
     if (rows.length === 0) {
       // If no set is found with the given ID, return a 404 Not Found response
@@ -45,7 +44,7 @@ router.post('/sets', async (req, res) => {
   try {
     const { workout_id, exercise_id, reps, weight, notes } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO user_workouts (workout_id,exercise_id,reps,weight,notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      'INSERT INTO workouts (workout_id,exercise_id,reps,weight,notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
       [workout_id, exercise_id, reps, weight, notes]
     );
     res.status(201).json(rows[0]);
@@ -96,7 +95,7 @@ router.put('/sets/:id', async (req, res) => {
       return res.status(400).send('No update fields provided.');
     }
 
-    const queryString = `UPDATE user_sets SET ${updateParts.join(
+    const queryString = `UPDATE sets SET ${updateParts.join(
       ', '
     )} WHERE set_id = $${queryIndex} RETURNING *`;
 
@@ -118,10 +117,9 @@ router.delete('/sets/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
   try {
-    const { rowCount } = await db.query(
-      'DELETE FROM user_sets WHERE set_id = $1',
-      [id]
-    );
+    const { rowCount } = await db.query('DELETE FROM sets WHERE set_id = $1', [
+      id
+    ]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Set deleted successfully' });

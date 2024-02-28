@@ -4,13 +4,13 @@ const { pool } = require('../config/db');
 
 // Endpoint to get all workouts for given user
 
-router.get('/workout-templates/:user_id', async (req, res) => {
-  const { user_id } = req.params;
+router.get('/workout-templates/:program_id', async (req, res) => {
+  const { program_id } = req.params;
 
   try {
     const workouts = await pool.query(
-      'SELECT * FROM user_workouts WHERE user_id = $1',
-      [parseInt(user_id)]
+      'SELECT * FROM workouts WHERE program_id = $1',
+      [parseInt(program_id)]
     );
 
     if (workouts.rows.length === 0)
@@ -43,29 +43,22 @@ router.get('/workout-templates/:user_id', async (req, res) => {
 // POST endpoint to create a workout with selected exercises
 
 router.post('/workout-templates', async (req, res) => {
-  const {
-    user_id,
-    workout_name,
-    workout_day_type,
-    plan_type,
-    difficulty_level,
-    exercises
-  } = req.body;
+  const { name, program_id } = req.body;
   const client = await pool.connect();
 
   try {
     await client.query('BEGIN');
     const workout = await client.query(
-      'INSERT INTO user_workouts (user_id, workout_name, workout_day_type, plan_type, difficulty_level) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [user_id, workout_name, workout_day_type, plan_type, difficulty_level]
+      'INSERT INTO workouts (name, program_id) VALUES ($1, $2) RETURNING *',
+      [name, program_id]
     );
 
     const workoutId = workout.rows[0].workout_id;
 
     for (const { exercise_id } of exercises) {
       await client.query(
-        'INSERT INTO user_exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
-        [workoutId, exercise_id]
+        'INSERT INTO exercises (workout_id, catalog_exercise_id, order) VALUES ($1, $2, $3)',
+        [workoutId, exercise_id, order]
       );
     }
 
@@ -94,12 +87,12 @@ router.delete('/workout-templates/:template_id', async (req, res) => {
     if (!template_id) {
       return res.status(400).send('No template ID provided');
     }
-    await client.query('DELETE FROM user_exercises WHERE workout_id = $1', [
+    await client.query('DELETE FROM exercises WHERE workout_id = $1', [
       template_id
     ]);
 
     // Remove the workout template
-    await client.query('DELETE FROM user_workouts WHERE workout_id = $1', [
+    await client.query('DELETE FROM workouts WHERE workout_id = $1', [
       template_id
     ]);
 
@@ -117,13 +110,7 @@ router.delete('/workout-templates/:template_id', async (req, res) => {
 // PUT endpoint to update a workout template
 router.put('/workout-templates/:template_id', async (req, res) => {
   const { template_id } = req.params;
-  const {
-    workout_name,
-    workout_day_type,
-    plan_type,
-    difficulty_level,
-    exercises
-  } = req.body;
+  const { name, program_id } = req.body;
 
   const client = await pool.connect();
 
@@ -133,13 +120,13 @@ router.put('/workout-templates/:template_id', async (req, res) => {
     // Update the workout template details
 
     await client.query(
-      'UPDATE user_workouts SET workout_name = $1, workout_day_type = $2, plan_type = $3, difficulty_level = $4 WHERE workout_id = $5',
+      'UPDATE workouts SET name = $1, program_id = $2 WHERE workout_id = $5',
       [workout_name, workout_day_type, plan_type, difficulty_level, template_id]
     );
 
     // Remove all existing exercise associations
 
-    await client.query('DELETE FROM user_exercises WHERE workout_id = $1', [
+    await client.query('DELETE FROM exercises WHERE workout_id = $1', [
       template_id
     ]);
 
@@ -147,7 +134,7 @@ router.put('/workout-templates/:template_id', async (req, res) => {
 
     for (const exerciseId of exercises) {
       await client.query(
-        'INSERT INTO user_exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
+        'INSERT INTO exercises (workout_id, catalog_exercise_id) VALUES ($1, $2)',
         [template_id, exerciseId]
       );
     }

@@ -17,6 +17,7 @@ const musclesRoutes = require('./routes/muscles');
 const equipmentsRoutes = require('./routes/equipment_catalog');
 const exerciseCatalogRoutes = require('./routes/exercise_catalog');
 const usersRoutes = require('./routes/users');
+const programRoutes = require('./routes/programs');
 const workoutTemplatesRoutes = require('./routes/workout_templates');
 const userSetsRoutes = require('./routes/user_sets');
 const userExercisesRoutes = require('./routes/user_exercises');
@@ -32,6 +33,7 @@ app.use('/api', workoutTemplatesRoutes);
 app.use('/api', userSetsRoutes);
 app.use('/api', userExercisesRoutes);
 app.use('/api', workoutHistoryRoutes);
+app.use('/api', programRoutes);
 
 // Your existing setup and routes...
 
