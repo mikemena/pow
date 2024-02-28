@@ -21,7 +21,7 @@ router.get('/programs/:user_id', async (req, res) => {
     for (const program of programs.rows) {
       const workouts = await pool.query(
         'SELECT * FROM workouts WHERE program_id = $1',
-        [program.id]
+        [program.program_id]
       );
 
       program.workouts = workouts.rows;
@@ -31,9 +31,9 @@ router.get('/programs/:user_id', async (req, res) => {
         const exercises = await pool.query(
           'SELECT e.*, ec.name as exercise_name ' +
             'FROM exercises e ' +
-            'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id ' +
+            'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.exercise_id ' +
             'WHERE e.workout_id = $1',
-          [workout.id]
+          [workout.workout_id]
         );
 
         workout.exercises = [];
@@ -41,7 +41,7 @@ router.get('/programs/:user_id', async (req, res) => {
         for (const exercise of exercises.rows) {
           const sets = await pool.query(
             'SELECT * FROM sets WHERE exercise_id = $1',
-            [exercise.id]
+            [exercise.exercise_id]
           );
 
           // Construct the full exercise object with sets
@@ -217,13 +217,13 @@ router.delete('/programs/:program_id', async (req, res) => {
 
     // Delete sets associated with the exercises in the workouts of the program
     await pool.query(
-      'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
+      'DELETE FROM sets WHERE exercise_id IN (SELECT exercise_id FROM exercises WHERE workout_id IN (SELECT workout_id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
     // Delete exercises associated with the workouts of the program
     await pool.query(
-      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
+      'DELETE FROM exercises WHERE workout_id IN (SELECT workout_id FROM workouts WHERE program_id = $1)',
       [program_id]
     );
 
@@ -233,7 +233,9 @@ router.delete('/programs/:program_id', async (req, res) => {
     ]);
 
     // Finally, delete the program itself
-    await pool.query('DELETE FROM programs WHERE id = $1', [program_id]);
+    await pool.query('DELETE FROM programs WHERE program_id = $1', [
+      program_id
+    ]);
 
     // If everything is fine, commit the transaction
     await pool.query('COMMIT');
