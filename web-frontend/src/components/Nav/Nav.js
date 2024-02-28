@@ -14,6 +14,11 @@ const Navbar = ({ theme, toggleTheme }) => {
       <img src={logoSvg} alt='POW' className='navbar-logo' />
       <ul className='nav-links'>
         <li>
+          <Link to='/programs' className='nav-item'>
+            Programs
+          </Link>
+        </li>
+        <li>
           <Link to='/workouts' className='nav-item'>
             Workouts
           </Link>

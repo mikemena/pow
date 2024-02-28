@@ -14,29 +14,29 @@ const Program = ({
   return (
     <div className='program-container'>
       <div program_id={program_id} key={program_id} className='program'>
-        <div className='template-title'>
-          <h2 className='template-title-text'>{name}</h2>
+        <div className='program-title'>
+          <h2 className='program-title-text'>{name}</h2>
         </div>
-        <div className='template-section'>
-          <p className='template-section-title'>Day Type</p>
-          <p className='template-section-text'>{day_type}</p>
+        <div className='program-section'>
+          <p className='program-section-title'>Main Goal</p>
+          <p className='program-section-text'>{main_goal}</p>
         </div>
-        <div className='template-section'>
-          <p className='template-section-title'>Plan Type</p>
-          <p className='template-section-text'>{plan_type}</p>
+        <div className='program-section'>
+          <p className='program-section-title'>Program Duration</p>
+          <p className='program-section-text'>{program_duration}</p>
         </div>
-        <div className='template-section'>
-          <p className='template-section-title'>Difficulty Level</p>
-          <p className='template-section-text'>{difficulty_level}</p>
+        <div className='program-section'>
+          <p className='program-section-title'>Days Per Week</p>
+          <p className='program-section-text'>{days_per_week}</p>
         </div>
-        <div className='template-section'>
-          <p className='template-section-title'>Exercises</p>
-          <p className='template-section-text'>
-            {exercises
-              .filter(exercise => exercise.exercise_name)
-              .map(exercise => exercise.exercise_name)
+        <div className='program-section'>
+          <p className='program-section-title'>Workouts</p>
+          {/* <p className='program-section-text'>
+            {workouts
+              .filter(workout => workout.name)
+              .map(workout => workout.name)
               .join(', ')}
-          </p>
+          </p> */}
         </div>
         <div className='workout-template-actions-container'>
           <button
@@ -49,12 +49,8 @@ const Program = ({
             className='button-class'
             onClick={() => {
               const workout = {
-                workout_id,
                 name,
-                day_type,
-                plan_type,
-                difficulty_level,
-                exercises
+                day_type
               };
 
               onEdit(workout);
@@ -65,7 +61,7 @@ const Program = ({
           <button
             className='button-class'
             onClick={() => {
-              onDelete(workout_id);
+              onDelete(program_id);
             }}
           >
             Delete

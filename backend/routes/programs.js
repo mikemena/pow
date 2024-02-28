@@ -46,7 +46,8 @@ router.get('/programs/:user_id', async (req, res) => {
 
           // Construct the full exercise object with sets
           workout.exercises.push({
-            exercise_id: exercise.id,
+            exercise_id: exercise.exercise_id,
+            exercise_name: exercise.exercise_name,
             order: exercise.order,
             catalog_exercise_id: exercise.catalog_exercise_id,
             sets: sets.rows // Add sets directly to the exercise object

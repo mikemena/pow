@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Program from '../../../components/Program/Program';
 import Nav from '../../../components/Nav/Nav';
-import './template.css';
+import './programs.css';
 
 const ProgramPage = () => {
   const [programs, setPrograms] = useState([]);
@@ -27,11 +27,6 @@ const ProgramPage = () => {
   }
 
   const handleCreateProgram = () => {
-    // Redirect to the create program page
-    navigate('/create-program');
-  };
-
-  const handleEmptyProgram = () => {
     // Redirect to the create program page
     navigate('/create-program');
   };
@@ -61,16 +56,12 @@ const ProgramPage = () => {
   return (
     <div className='page-layout'>
       <Nav />
-      <h1 className='page-title'>Start Workout</h1>
-      <h2 className='page-subtitle'>Quick Start</h2>
-      <div id='start-empty-container'>
-        <button onClick={handleEmptyProgram}>Start an Empty Workout</button>
-      </div>
-      <div id='template-header-container'>
-        <h2 className='section-title'>Templates</h2>
+      <h1 className='page-title'>My Programs</h1>
+      <div id='program-header-container'>
+        <h2 className='section-title'>Program</h2>
         <button onClick={handleCreateProgram}>Create New Program</button>
       </div>
-      <div id='workout-template-container'>
+      <div id='program-container'>
         {programs.map(program => (
           <Program
             program_id={program.program_id}
