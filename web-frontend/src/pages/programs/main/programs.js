@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Program from '../../../components/Program/Program';
-import Nav from '../../../components/Nav/Nav';
+
 import './programs.css';
 
 const ProgramPage = () => {
@@ -54,14 +54,13 @@ const ProgramPage = () => {
   };
 
   return (
-    <div className='page-layout'>
-      <Nav />
+    <div className='programs'>
       <h1 className='page-title'>My Programs</h1>
       <div id='program-header-container'>
         <h2 className='section-title'>Program</h2>
         <button onClick={handleCreateProgram}>Create New Program</button>
       </div>
-      <div id='program-container'>
+      <div id='programs-container'>
         {programs.map(program => (
           <Program
             program_id={program.program_id}
@@ -71,6 +70,7 @@ const ProgramPage = () => {
             day_type={program.workout_day_type}
             days_per_week={program.days_per_week}
             program_duration={program.program_duration}
+            workouts={program.workouts}
             onDelete={handleDelete}
             onEdit={handleEdit}
           />

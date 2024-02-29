@@ -1,7 +1,7 @@
 // src/App.js
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import MusclesPage from './pages/muscles/main/muscles';
+import HomePage from './pages/home/home';
 import ExercisesListPage from './pages/exercises/main/exercises';
 import WorkoutPage from './pages/workoutTemplates/main/template';
 import ProgramPage from './pages/programs/main/programs';
@@ -17,7 +17,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path='/' element={<MusclesPage />} />
+        <Route path='/' element={<HomePage />} />
         <Route path='/exercises' element={<ExercisesListPage />} />
         <Route path='/workouts' element={<WorkoutPage />} />
         <Route path='/create-workout' element={<CreateWorkout />} />

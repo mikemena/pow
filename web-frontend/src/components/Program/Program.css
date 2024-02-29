@@ -1,0 +1,50 @@
+.program-container {
+  background-color: #f5f5f5;
+  width: 550px;
+  box-shadow: 2.6px 5.3px 5.3px hsl(0deg 0% 0% / 0.42);
+  margin: 25px;
+}
+
+.program {
+  background-color: #f5f5f5;
+  width: 550px;
+}
+
+.program-title-text {
+  color: #555;
+  font-size: 22px;
+  margin-left: 28px;
+  padding-left: 28px;
+  width: 500px;
+  height: 75px;
+  font-family: courier, monospace;
+}
+
+.program-section {
+  color: #555;
+  font-size: 22px;
+  padding: 0 !important;
+  width: 548px;
+  font-family: courier, monospace;
+  border: 1px solid #dedede;
+}
+
+.program-section-content {
+  display: flex;
+  justify-content: space-between; /* Aligns one item to the left and the other to the right */
+  align-items: center; /* Optional: Aligns items vertically in the center */
+}
+
+.program-section-title,
+.program-section-text {
+  margin: 10px; /* Adds some spacing around the title and text */
+}
+
+.lines {
+  border-left: 1px solid #ffaa9f;
+  border-right: 1px solid #ffaa9f;
+  width: 2px;
+  float: left;
+  height: 100%;
+  margin-left: 40px;
+}

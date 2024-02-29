@@ -13,30 +13,39 @@ const Program = ({
 }) => {
   return (
     <div className='program-container'>
+      <div class='lines'></div>
       <div program_id={program_id} key={program_id} className='program'>
         <div className='program-title'>
           <h2 className='program-title-text'>{name}</h2>
         </div>
         <div className='program-section'>
-          <p className='program-section-title'>Main Goal</p>
-          <p className='program-section-text'>{main_goal}</p>
+          <div className='program-section-content'>
+            <p className='program-section-title'>Main Goal</p>
+            <p className='program-section-text'>{main_goal}</p>
+          </div>
         </div>
         <div className='program-section'>
-          <p className='program-section-title'>Program Duration</p>
-          <p className='program-section-text'>{program_duration}</p>
+          <div className='program-section-content'>
+            <p className='program-section-title'>Program Duration</p>
+            <p className='program-section-text'>{program_duration}</p>
+          </div>
         </div>
         <div className='program-section'>
-          <p className='program-section-title'>Days Per Week</p>
-          <p className='program-section-text'>{days_per_week}</p>
+          <div className='program-section-content'>
+            <p className='program-section-title'>Days Per Week</p>
+            <p className='program-section-text'>{days_per_week}</p>
+          </div>
         </div>
         <div className='program-section'>
-          <p className='program-section-title'>Workouts</p>
-          {/* <p className='program-section-text'>
+          <div className='program-section-content'>
+            <p className='program-section-title'>Workouts</p>
+          </div>
+          <p className='program-section-text'>
             {workouts
-              .filter(workout => workout.name)
-              .map(workout => workout.name)
+              .filter(workout => workout.exercises.exercise_name)
+              .map(workout => workout.exercises.exercise_name)
               .join(', ')}
-          </p> */}
+          </p>
         </div>
         <div className='workout-template-actions-container'>
           <button

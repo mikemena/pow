@@ -13,24 +13,10 @@
   --pure-white: #e8e8e8;
 }
 
-/* Reset all margins and paddings */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-/* Reset typography */
+html,
 body,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-p,
-ul,
-ol {
+#root {
+  height: 100%;
   margin: 0;
   padding: 0;
 }
@@ -64,10 +50,6 @@ a {
 }
 a:hover {
   color: #b63d3d;
-}
-
-h1 {
-  font-size: 3.2em;
 }
 
 button {
