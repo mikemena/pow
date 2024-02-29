@@ -55,21 +55,12 @@ const ProgramPage = () => {
 
   return (
     <div className='programs'>
-      <h1 className='page-title'>My Programs</h1>
       <div id='program-header-container'>
-        <h2 className='section-title'>Program</h2>
+        <h1 className='page-title'>My Programs</h1>
         <div id='container'>
-          <button class='learn-more'>
-            <span class='circle' aria-hidden='true'>
-              <span class='icon arrow'></span>
-            </span>
-            <span class='button-text'>Learn More</span>
-          </button>
-        </div>
-        <div className='button-container'>
-          <button id='new-program-button' onClick={handleCreateProgram}>
-            Create New Program
-          </button>
+          <div id='create-program-btn' onClick={handleCreateProgram}>
+            create
+          </div>
         </div>
       </div>
       <div id='programs-container'>

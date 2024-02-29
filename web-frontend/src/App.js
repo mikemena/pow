@@ -5,6 +5,7 @@ import HomePage from './pages/home/home';
 import ExercisesListPage from './pages/exercises/main/exercises';
 import WorkoutPage from './pages/workoutTemplates/main/template';
 import ProgramPage from './pages/programs/main/programs';
+import CreateProgramPage from './pages/programs/create/program';
 import CreateWorkout from './pages/workoutTemplates/create/template';
 import CreateWorkoutDetails from './pages/workoutTemplates/create/templateDetails';
 import EditWorkout from './pages/workoutTemplates/edit/template';
@@ -22,6 +23,7 @@ function App() {
         <Route path='/workouts' element={<WorkoutPage />} />
         <Route path='/create-workout' element={<CreateWorkout />} />
         <Route path='/programs' element={<ProgramPage />} />
+        <Route path='/create-program' element={<CreateProgramPage />} />
         <Route
           path='/create-workout-details'
           element={<CreateWorkoutDetails />}

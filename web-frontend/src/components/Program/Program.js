@@ -13,7 +13,7 @@ const Program = ({
 }) => {
   return (
     <div className='program-container'>
-      <div class='lines'></div>
+      <div className='lines'></div>
       <div program_id={program_id} key={program_id} className='program'>
         <div className='program-title'>
           <h2 className='program-title-text'>{name}</h2>
@@ -48,14 +48,11 @@ const Program = ({
           </p>
         </div>
         <div className='workout-template-actions-container'>
-          <button
-            className='button-class'
-            onClick={() => console.log('Start Workout')}
-          >
+          <div className='btn' onClick={() => console.log('Start Workout')}>
             Start
-          </button>
-          <button
-            className='button-class'
+          </div>
+          <div
+            className='btn'
             onClick={() => {
               const workout = {
                 name,
@@ -66,15 +63,15 @@ const Program = ({
             }}
           >
             Edit
-          </button>
-          <button
-            className='button-class'
+          </div>
+          <div
+            className='btn'
             onClick={() => {
               onDelete(program_id);
             }}
           >
             Delete
-          </button>
+          </div>
         </div>
       </div>
     </div>

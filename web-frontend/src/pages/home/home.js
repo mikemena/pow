@@ -11,6 +11,10 @@ const HomePage = () => {
     navigate('/programs');
   };
 
+  const navigateToCreateProgramPage = () => {
+    navigate('/create-program');
+  };
+
   const scrollToNextPage = () => {
     window.scrollTo({
       top: window.innerHeight,
@@ -34,14 +38,14 @@ const HomePage = () => {
     <div>
       <div className='full-viewport-div'>
         <h1 className='main-title'>Pr00f 0f W0rk</h1>
-        <div className='scroll-down-arrow' onClick={scrollToNextPage}>
+        <div className='arrow scroll-down' onClick={scrollToNextPage}>
           &#x2193; {/* Downwards arrow symbol, or use an icon */}
         </div>
       </div>
       <div className='container'>
         <div
           className={`child left ${activeDiv === 'div1' ? 'active' : ''}`}
-          onClick={() => handleClick('div1')}
+          onClick={navigateToCreateProgramPage}
           onMouseEnter={() => handleMouseEnter('div1')}
           onMouseLeave={handleMouseLeave}
         >

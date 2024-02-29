@@ -1,65 +1,53 @@
 .exercise {
-  font-family: 'Arial', sans-serif;
-  width: 225px;
-  background-color: var(--light-card);
-  border-radius: 4px;
-  overflow: hidden;
-  box-shadow: 0 4px 8px var(--light-card);
-  margin: 20px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccc;
+  padding: 1px;
+  margin-bottom: 8px;
 }
 
 .image-container {
-  position: relative;
-  width: 225px;
-  display: block;
+  flex-shrink: 0;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-}
-.exercise-image {
-  width: 100%;
-  display: block;
-  box-shadow: 0 0 15px 15px rgba(207, 212, 210, 0.5);
+  position: relative;
 }
 
-.exercise-body {
-  padding: 15px;
-  background-color: var(--light-text-color);
+.exercise-image {
+  width: 100%;
+  height: auto;
 }
-.exercise-title {
-  margin: 10px 0;
-  font-size: 18px;
-  color: var(--dark-text-color);
-}
-.exercise-subtitle {
-  font-size: 18px;
-  color: #666;
-  margin-bottom: 5px;
-}
-.exercise-text {
-  font-size: 16px;
-  color: #777;
-  line-height: 1.5;
+
+.glass {
+  position: absolute; /* Position over the image */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(
+    255,
+    255,
+    255,
+    0.5
+  ); /* Example semi-transparent overlay */
 }
 
 .exercise-details {
-  max-width: 250px;
-  padding: 0.5rem;
-  color: var(--light-text-color);
-  border-width: 1px;
-  border-style: solid;
-  border-image: linear-gradient(
-      to bottom,
-      var(--light-text-color),
-      rgba(0, 0, 0, 0)
-    )
-    1 100%;
+  flex-grow: 1; /* Adjust as needed */
+  padding-left: 16px;
+  min-width: 300;
 }
 
-.exercise.selectable {
-  cursor: pointer; /* Indicates the item is clickable */
+.exercise-title,
+.exercise-subtitle {
+  margin: 0;
+  white-space: nowrap;
 }
 
-.exercise.selected {
-  border: 2px solid var(--alt-text-color); /* Change as needed */
-  border-style: dotted;
+.selected {
+  border-color: rgb(198, 255, 53); /* Example to show a selected item */
 }
