@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/SearchBar/SearchBar';
+import DayContainer from '../../../components/DayContainer/DayContainer';
 import Exercise from '../../../components/Exercise/Exercise';
 import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../../hooks/useFetchData';
@@ -16,7 +17,7 @@ const CreateProgram = () => {
     workouts: [],
     selectedExercises: []
   });
-
+  const [days, setDays] = useState(['Monday']);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -56,6 +57,10 @@ const CreateProgram = () => {
 
   const handleEquipmentChange = value => {
     setSelectedEquipment(value);
+  };
+
+  const handleDayChange = selectedDay => {
+    setDays(prevWorkout => ({ ...prevWorkout, day: selectedDay }));
   };
 
   const handleDayTypeChange = selectedDayType => {
@@ -257,6 +262,7 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
+        <DayContainer day={days} />
         <SearchBar onChange={handleSearch} />
         <ExerciseFilters
           onMuscleChange={handleMuscleChange}

@@ -4,6 +4,7 @@
   border: 1px solid #ccc;
   padding: 1px;
   margin-bottom: 8px;
+  width: 500px;
 }
 
 .image-container {
@@ -17,7 +18,7 @@
   position: relative;
 }
 
-.exercise-image {
+#exercise-image {
   width: 100%;
   height: auto;
 }
@@ -36,14 +37,14 @@
   ); /* Example semi-transparent overlay */
 }
 
-.exercise-details {
+#exercise-details {
   flex-grow: 1; /* Adjust as needed */
   padding-left: 16px;
   min-width: 300;
 }
 
-.exercise-title,
-.exercise-subtitle {
+#exercise-title,
+#exercise-subtitle {
   margin: 0;
   white-space: nowrap;
 }

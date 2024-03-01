@@ -14,14 +14,14 @@ export default function Exercise({
   return (
     <div className={exerciseClass} onClick={isSelectable ? onClick : undefined}>
       <div className='image-container'>
-        <img src={image} alt={name} className='exercise-image' />
+        <img src={image} alt={name} id='exercise-image' />
         <div className='glass'></div>
       </div>
-      <div className='exercise-details'>
-        <p className='exercise-title'>
+      <div id='exercise-details'>
+        <p id='exercise-title'>
           {name} ({equipment})
         </p>
-        <p className='exercise-subtitle'>{muscle} </p>
+        <p id='exercise-subtitle'>{muscle} </p>
       </div>
     </div>
   );
