@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Droppable, Draggable } from 'react-beautiful-dnd';
+
 import './DayContainer.css';
 
 const DayContainer = ({ day, onAddExercise }) => {
@@ -11,30 +11,38 @@ const DayContainer = ({ day, onAddExercise }) => {
   };
 
   return (
-    <Droppable droppableId={day}>
-      {provided => (
-        <div {...provided.droppableProps} ref={provided.innerRef}>
-          {exercises.map((exercise, index) => (
-            <Draggable
-              key={exercise.id}
-              draggableId={exercise.id}
-              index={index}
-            >
-              {provided => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.draggableProps}
-                  {...provided.dragHandleProps}
-                >
-                  {/* Exercise content here */}
-                </div>
-              )}
-            </Draggable>
-          ))}
-          {provided.placeholder}
+    <div>
+      <div className='day-container'>
+        <div className='day-header' onClick={toggleExpand}>
+          <h2>{day}</h2>
+          <button onClick={toggleExpand}>{isExpanded ? '-' : '+'}</button>
         </div>
-      )}
-    </Droppable>
+        {isExpanded && (
+          <div className='day-body'>
+            <div className='day-body-header'>
+              <h3>Exercises</h3>
+              <button onClick={() => onAddExercise(day)}>Add Exercise</button>
+            </div>
+            <div className='day-body-content'>
+              {exercises.map(exercise => (
+                <div key={exercise.id} className='exercise'>
+                  <h4>{exercise.name}</h4>
+                  <button
+                    onClick={() => {
+                      setExercises(
+                        exercises.filter(ex => ex.id !== exercise.id)
+                      );
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 

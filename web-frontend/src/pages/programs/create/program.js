@@ -1,11 +1,9 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import SearchBar from '../../../components/SearchBar/SearchBar';
+
 import DayContainer from '../../../components/DayContainer/DayContainer';
-import Exercise from '../../../components/Exercise/Exercise';
-import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
+
 import useFetchData from '../../../hooks/useFetchData';
-import { DragDropContext } from 'react-beautiful-dnd';
 
 import './program.css';
 
@@ -19,11 +17,20 @@ const CreateProgram = () => {
     workouts: [],
     selectedExercises: []
   });
-  const [days, setDays] = useState(['Monday']);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [state, setState] = useState();
+
+  const [days, setDays] = useState([
+    { id: 1, name: 'Monday' },
+    { id: 2, name: 'Tuesday' },
+    { id: 3, name: 'Wednesday' },
+    { id: 4, name: 'Thursday' },
+    { id: 5, name: 'Friday' },
+    { id: 6, name: 'Saturday' },
+    { id: 7, name: 'Sunday' }
+  ]);
 
   const navigate = useNavigate();
 
@@ -91,77 +98,18 @@ const CreateProgram = () => {
     }));
   };
 
-  const handleDragEnd = useCallback(
-    result => {
-      const { destination, source, draggableId } = result;
+  const addDay = () => {
+    const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1; // Ensure unique ID
+    const newDay = {
+      id: newDayId,
+      name: `Day ${newDayId}` // Customize the naming as needed
+    };
+    setDays([...days, newDay]);
+  };
 
-      // Do nothing if there's no destination (dropped outside a droppable area)
-      if (!destination) {
-        return;
-      }
-
-      // Do nothing if the item is dropped in the same place
-      if (
-        destination.droppableId === source.droppableId &&
-        destination.index === source.index
-      ) {
-        return;
-      }
-
-      const start = state.columns[source.droppableId];
-      const finish = state.columns[destination.droppableId];
-
-      // Moving within the same column
-      if (start === finish) {
-        const newTaskIds = Array.from(start.taskIds);
-        newTaskIds.splice(source.index, 1);
-        newTaskIds.splice(destination.index, 0, draggableId);
-
-        const newColumn = {
-          ...start,
-          taskIds: newTaskIds
-        };
-
-        const newState = {
-          ...state,
-          columns: {
-            ...state.columns,
-            [newColumn.id]: newColumn
-          }
-        };
-
-        setState(newState);
-        return;
-      }
-
-      // Moving from one column to another
-      const startTaskIds = Array.from(start.taskIds);
-      startTaskIds.splice(source.index, 1);
-      const newStart = {
-        ...start,
-        taskIds: startTaskIds
-      };
-
-      const finishTaskIds = Array.from(finish.taskIds);
-      finishTaskIds.splice(destination.index, 0, draggableId);
-      const newFinish = {
-        ...finish,
-        taskIds: finishTaskIds
-      };
-
-      const newState = {
-        ...state,
-        columns: {
-          ...state.columns,
-          [newStart.id]: newStart,
-          [newFinish.id]: newFinish
-        }
-      };
-
-      setState(newState);
-    },
-    [state]
-  );
+  const removeDay = dayId => {
+    setDays(days.filter(day => day.id !== dayId));
+  };
 
   const handleSaveProgram = async event => {
     event.preventDefault();
@@ -215,30 +163,6 @@ const CreateProgram = () => {
   const handleCancel = () => {
     // Redirect to the create workout page
     navigate('/workouts');
-  };
-
-  const handleSelectExercise = exercise => {
-    setProgram(prevWorkout => {
-      const existingIndex = prevWorkout.selectedExercises.findIndex(
-        ex => ex.exercise_id === exercise.exercise_id
-      );
-
-      let newSelectedExercises;
-      if (existingIndex >= 0) {
-        // Exercise is already selected, remove it
-        newSelectedExercises = prevWorkout.selectedExercises.filter(
-          (_, index) => index !== existingIndex
-        );
-      } else {
-        // Exercise is not selected, add it
-        newSelectedExercises = [...prevWorkout.selectedExercises, exercise];
-      }
-
-      return {
-        ...prevWorkout,
-        selectedExercises: newSelectedExercises
-      };
-    });
   };
 
   if (isLoading) return <div>loading...</div>;
@@ -337,31 +261,15 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <DayContainer day={days} />
-          <SearchBar onChange={handleSearch} />
-          <ExerciseFilters
-            onMuscleChange={handleMuscleChange}
-            onEquipmentChange={handleEquipmentChange}
-          />
+        <button onClick={addDay}>Add Day</button>
 
-          <div className='exercise-container'>
-            {filteredExercises.map(exercise => (
-              <Exercise
-                key={exercise.exercise_id}
-                name={exercise.name}
-                muscle={exercise.muscle}
-                equipment={exercise.equipment}
-                image={`http://localhost:9025/${exercise.file_path}`}
-                isSelectable={true} // Make the exercise selectable in this context
-                isSelected={program.selectedExercises.some(
-                  ex => ex.exercise_id === exercise.exercise_id
-                )}
-                onClick={() => handleSelectExercise(exercise)}
-              />
-            ))}
+        {days.map(day => (
+          <div key={day.id}>
+            <DayContainer day={day.name} />
+            <button onClick={() => removeDay(day.id)}>Remove {day.name}</button>
           </div>
-        </DragDropContext>
+        ))}
+
         <div className='button-container'>
           <button id='save-program-button' onClick={handleSaveProgram}>
             Save
