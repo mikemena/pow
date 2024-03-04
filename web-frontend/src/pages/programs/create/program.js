@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SearchBar from '../../../components/SearchBar/SearchBar';
 import DayContainer from '../../../components/DayContainer/DayContainer';
 import Exercise from '../../../components/Exercise/Exercise';
 import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../../hooks/useFetchData';
+import { DragDropContext } from 'react-beautiful-dnd';
+
 import './program.css';
 
 const CreateProgram = () => {
@@ -21,6 +23,7 @@ const CreateProgram = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
+  const [state, setState] = useState();
 
   const navigate = useNavigate();
 
@@ -87,6 +90,78 @@ const CreateProgram = () => {
       programDuration: selectedDuration
     }));
   };
+
+  const handleDragEnd = useCallback(
+    result => {
+      const { destination, source, draggableId } = result;
+
+      // Do nothing if there's no destination (dropped outside a droppable area)
+      if (!destination) {
+        return;
+      }
+
+      // Do nothing if the item is dropped in the same place
+      if (
+        destination.droppableId === source.droppableId &&
+        destination.index === source.index
+      ) {
+        return;
+      }
+
+      const start = state.columns[source.droppableId];
+      const finish = state.columns[destination.droppableId];
+
+      // Moving within the same column
+      if (start === finish) {
+        const newTaskIds = Array.from(start.taskIds);
+        newTaskIds.splice(source.index, 1);
+        newTaskIds.splice(destination.index, 0, draggableId);
+
+        const newColumn = {
+          ...start,
+          taskIds: newTaskIds
+        };
+
+        const newState = {
+          ...state,
+          columns: {
+            ...state.columns,
+            [newColumn.id]: newColumn
+          }
+        };
+
+        setState(newState);
+        return;
+      }
+
+      // Moving from one column to another
+      const startTaskIds = Array.from(start.taskIds);
+      startTaskIds.splice(source.index, 1);
+      const newStart = {
+        ...start,
+        taskIds: startTaskIds
+      };
+
+      const finishTaskIds = Array.from(finish.taskIds);
+      finishTaskIds.splice(destination.index, 0, draggableId);
+      const newFinish = {
+        ...finish,
+        taskIds: finishTaskIds
+      };
+
+      const newState = {
+        ...state,
+        columns: {
+          ...state.columns,
+          [newStart.id]: newStart,
+          [newFinish.id]: newFinish
+        }
+      };
+
+      setState(newState);
+    },
+    [state]
+  );
 
   const handleSaveProgram = async event => {
     event.preventDefault();
@@ -262,29 +337,31 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
-        <DayContainer day={days} />
-        <SearchBar onChange={handleSearch} />
-        <ExerciseFilters
-          onMuscleChange={handleMuscleChange}
-          onEquipmentChange={handleEquipmentChange}
-        />
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <DayContainer day={days} />
+          <SearchBar onChange={handleSearch} />
+          <ExerciseFilters
+            onMuscleChange={handleMuscleChange}
+            onEquipmentChange={handleEquipmentChange}
+          />
 
-        <div className='exercise-container'>
-          {filteredExercises.map(exercise => (
-            <Exercise
-              key={exercise.exercise_id}
-              name={exercise.name}
-              muscle={exercise.muscle}
-              equipment={exercise.equipment}
-              image={`http://localhost:9025/${exercise.file_path}`}
-              isSelectable={true} // Make the exercise selectable in this context
-              isSelected={program.selectedExercises.some(
-                ex => ex.exercise_id === exercise.exercise_id
-              )}
-              onClick={() => handleSelectExercise(exercise)}
-            />
-          ))}
-        </div>
+          <div className='exercise-container'>
+            {filteredExercises.map(exercise => (
+              <Exercise
+                key={exercise.exercise_id}
+                name={exercise.name}
+                muscle={exercise.muscle}
+                equipment={exercise.equipment}
+                image={`http://localhost:9025/${exercise.file_path}`}
+                isSelectable={true} // Make the exercise selectable in this context
+                isSelected={program.selectedExercises.some(
+                  ex => ex.exercise_id === exercise.exercise_id
+                )}
+                onClick={() => handleSelectExercise(exercise)}
+              />
+            ))}
+          </div>
+        </DragDropContext>
         <div className='button-container'>
           <button id='save-program-button' onClick={handleSaveProgram}>
             Save

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Droppable, Draggable } from 'react-beautiful-dnd';
 import './DayContainer.css';
 
 const DayContainer = ({ day, onAddExercise }) => {
@@ -10,22 +11,30 @@ const DayContainer = ({ day, onAddExercise }) => {
   };
 
   return (
-    <div id='day-container' className={isExpanded ? 'expanded' : ''}>
-      <div id='day-header'>
-        <h2>{day}</h2>
-        <button class='collapse-trigger' onClick={toggleExpand}>
-          {/* This will change based on the state */}
-          <span class='icon'></span>
-        </button>
-        <button id='btn-add-exercise' onClick={() => onAddExercise(day)}>
-          Add Exercise
-        </button>
-      </div>
-      {/* Content to expand/collapse */}
-      <div id='day-content'>
-        <p>some stuff here...</p>
-      </div>
-    </div>
+    <Droppable droppableId={day}>
+      {provided => (
+        <div {...provided.droppableProps} ref={provided.innerRef}>
+          {exercises.map((exercise, index) => (
+            <Draggable
+              key={exercise.id}
+              draggableId={exercise.id}
+              index={index}
+            >
+              {provided => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.draggableProps}
+                  {...provided.dragHandleProps}
+                >
+                  {/* Exercise content here */}
+                </div>
+              )}
+            </Draggable>
+          ))}
+          {provided.placeholder}
+        </div>
+      )}
+    </Droppable>
   );
 };
 
