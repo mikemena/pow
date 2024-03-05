@@ -107,7 +107,7 @@ const CreateProgram = () => {
     setDays([...days, newDay]);
   };
 
-  const removeDay = dayId => {
+  const handleRemoveDay = dayId => {
     setDays(days.filter(day => day.id !== dayId));
   };
 
@@ -265,8 +265,7 @@ const CreateProgram = () => {
 
         {days.map(day => (
           <div key={day.id}>
-            <DayContainer day={day.name} />
-            <button onClick={() => removeDay(day.id)}>Remove {day.name}</button>
+            <DayContainer day={day} onRemove={handleRemoveDay} />
           </div>
         ))}
 

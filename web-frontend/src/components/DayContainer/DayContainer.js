@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 import './DayContainer.css';
 
-const DayContainer = ({ day, onAddExercise }) => {
+const DayContainer = ({ day, onAddExercise, onRemove }) => {
   const [exercises, setExercises] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -14,14 +14,16 @@ const DayContainer = ({ day, onAddExercise }) => {
     <div>
       <div className='day-container'>
         <div className='day-header' onClick={toggleExpand}>
-          <h2>{day}</h2>
+          <h2>{day.name}</h2>
           <button onClick={toggleExpand}>{isExpanded ? '-' : '+'}</button>
         </div>
         {isExpanded && (
           <div className='day-body'>
             <div className='day-body-header'>
               <h3>Exercises</h3>
-              <button onClick={() => onAddExercise(day)}>Add Exercise</button>
+              <button onClick={() => onAddExercise(day.id)}>
+                Add Exercise
+              </button>
             </div>
             <div className='day-body-content'>
               {exercises.map(exercise => (
@@ -39,6 +41,7 @@ const DayContainer = ({ day, onAddExercise }) => {
                 </div>
               ))}
             </div>
+            <button onClick={() => onRemove(day.id)}>Remove {day.name}</button>
           </div>
         )}
       </div>
