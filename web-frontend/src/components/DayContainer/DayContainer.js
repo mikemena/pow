@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import './DayContainer.css';
 
@@ -6,6 +7,13 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
   const [exercises, setExercises] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
+  DayContainer.propTypes = {
+    day: PropTypes.shape({
+      name: PropTypes.string.isRequired
+    }).isRequired,
+    onAddExercise: PropTypes.func.isRequired,
+    onRemove: PropTypes.func.isRequired
+  };
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
