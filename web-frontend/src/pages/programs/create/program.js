@@ -1,9 +1,15 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import {
+  INITIAL_DAYS,
+  DAY_TYPES,
+  GOAL_TYPES,
+  DURATION_TYPES
+} from '../../../utils/constants';
 import DayContainer from '../../../components/DayContainer/DayContainer';
-
 import useFetchData from '../../../hooks/useFetchData';
+import Dropdown from '../../../components/Inputs/Dropdown';
+import TextInput from '../../../components/Inputs/TextInput';
 
 import './program.css';
 
@@ -21,16 +27,10 @@ const CreateProgram = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-
-  const [days, setDays] = useState([
-    { id: 1, name: 'Monday' },
-    { id: 2, name: 'Tuesday' },
-    { id: 3, name: 'Wednesday' },
-    { id: 4, name: 'Thursday' },
-    { id: 5, name: 'Friday' },
-    { id: 6, name: 'Saturday' },
-    { id: 7, name: 'Sunday' }
-  ]);
+  const [days, setDays] = useState(INITIAL_DAYS);
+  const [selectDuration, setSelectDuration] = useState('');
+  const [selectGoal, setSelectGoal] = useState('');
+  const [selectDayType, setSelectDayType] = useState('');
 
   const navigate = useNavigate();
 
@@ -73,10 +73,6 @@ const CreateProgram = () => {
     setDays(prevWorkout => ({ ...prevWorkout, day: selectedDay }));
   };
 
-  const handleDayTypeChange = selectedDayType => {
-    setProgram(prevWorkout => ({ ...prevWorkout, dayType: selectedDayType }));
-  };
-
   const handleProgramGoalChange = selectedProgramGoal => {
     setProgram(prevWorkout => ({
       ...prevWorkout,
@@ -91,11 +87,16 @@ const CreateProgram = () => {
     }));
   };
 
-  const handleDurationChange = selectedDuration => {
-    setProgram(prevWorkout => ({
-      ...prevWorkout,
-      programDuration: selectedDuration
-    }));
+  const handleDurationChange = e => {
+    setSelectDuration(e.target.value);
+  };
+
+  const handleGoalChange = e => {
+    setSelectGoal(e.target.value);
+  };
+
+  const handleDayTypeChange = e => {
+    setSelectDayType(e.target.value);
   };
 
   const addDay = () => {
@@ -168,10 +169,6 @@ const CreateProgram = () => {
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
-  const dayTypes = ['Day of Week', 'Numerical'];
-  const durations = ['Days', 'Weeks', 'Months'];
-  const goals = ['Strength', 'Endurance', 'Hypertrophy', 'Weight Loss'];
-
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Create New Program</h1>
@@ -194,18 +191,13 @@ const CreateProgram = () => {
 
           <div className='program-detail-container'>
             <div className='program-detail'>
-              <select
+              <Dropdown
                 id='day-type'
-                onChange={e => handleDayTypeChange(e.target.value)}
+                value={selectDayType}
+                onChange={handleDayTypeChange}
+                options={DAY_TYPES}
                 placeholder='Select Day Type'
-              >
-                <option value=''>Select Day Type</option>
-                {dayTypes.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
             <div className='program-detail'>
               <div className='input-container'>
@@ -222,22 +214,17 @@ const CreateProgram = () => {
                   }
                 />
               </div>
-              <select
-                id='durations'
-                onChange={e => handleDurationChange(e.target.value)}
+              <Dropdown
+                id='duration'
+                value={selectDuration}
+                onChange={handleDurationChange}
+                options={DURATION_TYPES}
                 placeholder='Select Duration'
-              >
-                <option value=''>Select Duration</option>
-                {durations.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              />
             </div>
 
             <div className='input-container'>
-              <input
+              <TextInput
                 type='text'
                 id='days-per-week'
                 placeholder='Enter Days Per Week'
@@ -247,17 +234,13 @@ const CreateProgram = () => {
             </div>
 
             <div className='program-detail'>
-              <select
-                id='program_goal'
-                onChange={e => handleProgramGoalChange(e.target.value)}
-              >
-                <option value=''>Select Program Goal</option>
-                {goals.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              <Dropdown
+                id='goal'
+                value={selectGoal}
+                onChange={handleGoalChange}
+                options={GOAL_TYPES}
+                placeholder='Select Goal'
+              />
             </div>
           </div>
         </div>
