@@ -12,11 +12,6 @@ export const ALL_DAYS = [
   { id: 7, name: 'Sunday' }
 ];
 
-export const DAY_TYPES = [
-  { id: 1, value: 'day of week', label: 'Day of Week' },
-  { id: 2, value: 'numerical', label: 'Numerical' }
-];
-
 export const DURATION_TYPES = [
   { id: 1, value: 'days', label: 'Days' },
   { id: 2, value: 'weeks', label: 'Weeks' },

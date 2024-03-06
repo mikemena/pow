@@ -5,7 +5,7 @@ import {
   TbLayoutBottombarExpandFilled
 } from 'react-icons/tb';
 import { MdRemoveCircle } from 'react-icons/md';
-
+import Button from '../Inputs/Button';
 import './DayContainer.css';
 
 const DayContainer = ({ day, onAddExercise, onRemove }) => {
@@ -51,9 +51,14 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
           <div className='day-body'>
             <div className='day-body-header'>
               <h3>Exercises</h3>
-              <button onClick={() => onAddExercise(day.id)}>
+              <Button
+                id='save-program-button'
+                onClick={() => onAddExercise(day.id)}
+                type='button'
+                bgColor='#EAEAEA'
+              >
                 Add Exercise
-              </button>
+              </Button>
             </div>
             <div className='day-body-content'>
               {exercises.map(exercise => (

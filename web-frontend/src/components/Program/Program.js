@@ -6,7 +6,7 @@ const Program = ({
   onEdit,
   program_id,
   name,
-  day_type,
+  duration_unit,
   main_goal,
   days_per_week,
   program_duration,
@@ -64,7 +64,7 @@ const Program = ({
             onClick={() => {
               const workout = {
                 name,
-                day_type
+                duration_unit
               };
 
               onEdit(workout);

@@ -102,7 +102,7 @@ const CreateProgram = () => {
       name: program.programName,
       program_duration: program.programDuration,
       days_per_week: program.daysPerWeek,
-      day_type: program.dayType,
+      duration_unit: program.durationUnit,
       main_goal: program.mainGoal,
       workouts: program.workouts.map(workout => ({
         name: workout.name,
@@ -177,13 +177,14 @@ const CreateProgram = () => {
             <div className='program-detail'>
               <div className='input-container' id='duration-container'>
                 <TextInput
+                  id='duration-amount'
                   type='text'
                   placeholder='Enter Duration Amount'
                   value={program.duration}
                   onChange={handleDurationChange}
                 />
                 <Dropdown
-                  id='duration'
+                  id='duration-unit'
                   value={selectDuration}
                   onChange={handleDurationChange}
                   options={DURATION_TYPES}

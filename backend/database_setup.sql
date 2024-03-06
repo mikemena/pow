@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS public.user_workouts
     workout_id serial,
     user_id integer NOT NULL,
     workout_name character varying(255),
-    workout_day_type character varying(50),
+    duration_unit character varying(50),
     plan_type character varying(50),
     difficulty_level character varying(50),
     PRIMARY KEY (workout_id)

@@ -72,7 +72,7 @@ const CreateTemplate = () => {
     const templateData = {
       user_id: 2, // hardcoded for now, but should be the logged in user's ID
       workout_name: workout.templateName,
-      workout_day_type: workout.dayType,
+      duration_unit: workout.durationUnit,
       plan_type: workout.planType,
       difficulty_level: workout.difficulty,
       exercises: Array.from(workout.selectedExercises).map(exerciseId => ({

@@ -121,7 +121,7 @@ router.put('/workout-templates/:template_id', async (req, res) => {
 
     await client.query(
       'UPDATE workouts SET name = $1, program_id = $2 WHERE workout_id = $5',
-      [workout_name, workout_day_type, plan_type, difficulty_level, template_id]
+      [workout_name, duration_unit, plan_type, difficulty_level, template_id]
     );
 
     // Remove all existing exercise associations

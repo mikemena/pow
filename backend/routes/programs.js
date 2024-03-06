@@ -74,7 +74,7 @@ router.post('/programs', async (req, res) => {
     name,
     program_duration,
     days_per_week,
-    day_type,
+    duration_unit,
     main_goal,
     workouts
   } = req.body;
@@ -87,8 +87,8 @@ router.post('/programs', async (req, res) => {
 
     // Insert the new program
     const program = await client.query(
-      'INSERT INTO programs (user_id, name, program_duration, days_per_week, day_type, main_goal) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [user_id, name, program_duration, days_per_week, day_type, main_goal]
+      'INSERT INTO programs (user_id, name, program_duration, days_per_week, duration_unit, main_goal) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+      [user_id, name, program_duration, days_per_week, duration_unit, main_goal]
     );
     const program_id = program.rows[0].program_id;
 

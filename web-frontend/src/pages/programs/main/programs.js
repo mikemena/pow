@@ -71,7 +71,7 @@ const ProgramPage = () => {
             key={program.program_id}
             name={program.name}
             main_goal={program.main_goal}
-            day_type={program.workout_day_type}
+            duration_unit={program.duration_unit}
             days_per_week={program.days_per_week}
             program_duration={program.program_duration}
             workouts={program.workouts}

@@ -77,7 +77,7 @@ const WorkoutTemplatePage = () => {
             key={template.workout_id}
             name={template.workout_name}
             plan_type={template.plan_type}
-            day_type={template.workout_day_type}
+            duration_unit={template.duration_unit}
             difficulty_level={template.difficulty_level}
             exercises={template.exercises}
             onDelete={handleDelete}

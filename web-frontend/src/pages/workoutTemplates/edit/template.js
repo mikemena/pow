@@ -11,7 +11,7 @@ const EditTemplatePage = ({ workoutData }) => {
     workoutData.workout_name || ''
   );
   const [planType, setPlanType] = useState(workoutData.plan_type || '');
-  const [dayType, setDayType] = useState(workoutData.workout_day_type || '');
+  const [durationUnit, setDurationUnit] = useState('');
   const [difficulty, setDifficulty] = useState(
     workoutData.difficulty_level || ''
   );
@@ -63,8 +63,8 @@ const EditTemplatePage = ({ workoutData }) => {
     setPlanType(selectedPlanType);
   };
 
-  const handleDayTypeChange = selectedDayType => {
-    setDayType(selectedDayType);
+  const handleDayTypeChange = selectedDurationUnit => {
+    setDurationUnit(selectedDurationUnit);
   };
 
   const handleDifficultyChange = selectedDifficulty => {
@@ -76,7 +76,7 @@ const EditTemplatePage = ({ workoutData }) => {
 
     const templateData = {
       workout_name: templateName,
-      workout_day_type: dayType,
+      duration_unit: durationUnit,
       plan_type: planType,
       difficulty_level: difficulty,
       exercises: Array.from(selectedExercises)

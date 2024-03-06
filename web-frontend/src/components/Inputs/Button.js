@@ -7,7 +7,7 @@ const StyledButton = styled.button`
   background-color: ${props => props.bgColor || 'rgb(198, 255, 53)'};
   transform: skew(-20deg);
   width: 160px;
-  font-size: 1.2em;
+  font-size: 1em;
   font-weight: 500;
   text-transform: uppercase;
   display: flex;
