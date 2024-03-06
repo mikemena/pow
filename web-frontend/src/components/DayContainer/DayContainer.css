@@ -1,3 +1,45 @@
 .day-container {
   border-style: dotted;
+  width: 500px;
+  padding: 5px;
+  margin: 5px;
+}
+
+button {
+  margin: 5px;
+}
+
+.day-header {
+  display: flex;
+  align-content: center;
+  justify-content: space-between;
+}
+
+#day-card-title {
+  margin: 0;
+  font-weight: 600;
+  font-style: normal;
+  font-size: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+#expand-day-card-button,
+#delete-day-card-button {
+  background: none;
+  color: var(--dark-text-color);
+  border-radius: 4px;
+  font-size: 1.4em;
+  font-weight: 900;
+  font-family: inherit;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#expand-day-card-button:hover,
+#delete-day-card-button:hover {
+  color: var(--alt-text-color);
+  border-style: none;
 }

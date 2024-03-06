@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  INITIAL_DAYS,
   DAY_TYPES,
   GOAL_TYPES,
   DURATION_TYPES
@@ -27,10 +26,11 @@ const CreateProgram = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [days, setDays] = useState(INITIAL_DAYS);
-  const [selectDuration, setSelectDuration] = useState('');
-  const [selectGoal, setSelectGoal] = useState('');
-  const [selectDayType, setSelectDayType] = useState('');
+  const [days, setDays] = useState([]);
+  const [selectDuration, setDuration] = useState('');
+  const [selectGoal, setGoal] = useState('');
+  const [selectDayType, setDayType] = useState('');
+  const [programName, setProgramName] = useState('');
 
   const navigate = useNavigate();
 
@@ -57,29 +57,6 @@ const CreateProgram = () => {
     });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
-  const handleSearch = value => {
-    setSearchTerm(value);
-  };
-
-  const handleMuscleChange = value => {
-    setSelectedMuscle(value);
-  };
-
-  const handleEquipmentChange = value => {
-    setSelectedEquipment(value);
-  };
-
-  const handleDayChange = selectedDay => {
-    setDays(prevWorkout => ({ ...prevWorkout, day: selectedDay }));
-  };
-
-  const handleProgramGoalChange = selectedProgramGoal => {
-    setProgram(prevWorkout => ({
-      ...prevWorkout,
-      programGoal: selectedProgramGoal
-    }));
-  };
-
   const handleDaysPerWeekChange = selectedDaysPerWeek => {
     setProgram(prevWorkout => ({
       ...prevWorkout,
@@ -88,15 +65,19 @@ const CreateProgram = () => {
   };
 
   const handleDurationChange = e => {
-    setSelectDuration(e.target.value);
+    setDuration(e.target.value);
   };
 
   const handleGoalChange = e => {
-    setSelectGoal(e.target.value);
+    setGoal(e.target.value);
   };
 
   const handleDayTypeChange = e => {
-    setSelectDayType(e.target.value);
+    setDayType(e.target.value);
+  };
+
+  const handleProgramNameChange = e => {
+    setProgramName(e.target.value);
   };
 
   const addDay = () => {
@@ -109,7 +90,16 @@ const CreateProgram = () => {
   };
 
   const handleRemoveDay = dayId => {
-    setDays(days.filter(day => day.id !== dayId));
+    //remove days
+    const updatedDays = days.filter(day => day.id !== dayId);
+
+    //renumber the remaining days
+    const renumberedDays = updatedDays.map((day, index) => ({
+      ...day,
+      id: index + 1,
+      name: `Day ${index + 1}`
+    }));
+    setDays(renumberedDays);
   };
 
   const handleSaveProgram = async event => {
@@ -175,17 +165,11 @@ const CreateProgram = () => {
       <form onSubmit={handleSaveProgram}>
         <div>
           <div className='input-container'>
-            <input
+            <TextInput
               type='text'
-              className='full-width-input'
               placeholder='Enter Program Name'
               value={program.name}
-              onChange={e =>
-                setProgram(prevWorkout => ({
-                  ...prevWorkout,
-                  programName: e.target.value
-                }))
-              }
+              onChange={handleProgramNameChange}
             />
           </div>
 
@@ -201,17 +185,11 @@ const CreateProgram = () => {
             </div>
             <div className='program-detail'>
               <div className='input-container'>
-                <input
+                <TextInput
                   type='text'
-                  className='full-width-input'
                   placeholder='Enter Duration Amount'
-                  value={program.duration_amount}
-                  onChange={e =>
-                    setProgram(prevWorkout => ({
-                      ...prevWorkout,
-                      duration_amount: e.target.value
-                    }))
-                  }
+                  value={program.duration}
+                  onChange={handleDurationChange}
                 />
               </div>
               <Dropdown
@@ -229,7 +207,7 @@ const CreateProgram = () => {
                 id='days-per-week'
                 placeholder='Enter Days Per Week'
                 value={program.daysPerWeek}
-                onChange={e => handleDaysPerWeekChange(e.target.value)}
+                onChange={handleDaysPerWeekChange}
               />
             </div>
 
@@ -244,16 +222,20 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
-        <button onClick={addDay}>Add Day</button>
+        <button type='button' onClick={addDay}>
+          Add Day
+        </button>
 
         {days.map(day => (
-          <div key={day.id}>
-            <DayContainer day={day} onRemove={handleRemoveDay} />
-          </div>
+          <DayContainer key={day.id} day={day} onRemove={handleRemoveDay} />
         ))}
 
         <div className='button-container'>
-          <button id='save-program-button' onClick={handleSaveProgram}>
+          <button
+            type='submit'
+            id='save-program-button'
+            onClick={handleSaveProgram}
+          >
             Save
           </button>
           <button id='cancel-program-button' onClick={handleCancel}>

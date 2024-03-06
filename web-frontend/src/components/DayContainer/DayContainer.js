@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import {
+  TbLayoutNavbarExpandFilled,
+  TbLayoutBottombarExpandFilled
+} from 'react-icons/tb';
+import { MdRemoveCircle } from 'react-icons/md';
 
 import './DayContainer.css';
 
@@ -22,8 +27,17 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
     <div>
       <div className='day-container'>
         <div className='day-header' onClick={toggleExpand}>
-          <h2>{day.name}</h2>
-          <button onClick={toggleExpand}>{isExpanded ? '-' : '+'}</button>
+          <button id='expand-day-card-button' onClick={toggleExpand}>
+            {isExpanded ? (
+              <TbLayoutBottombarExpandFilled />
+            ) : (
+              <TbLayoutNavbarExpandFilled />
+            )}
+          </button>
+          <h2 id='day-card-title'>{day.name}</h2>
+          <button id='delete-day-card-button' onClick={() => onRemove(day.id)}>
+            <MdRemoveCircle />
+          </button>
         </div>
         {isExpanded && (
           <div className='day-body'>
@@ -49,7 +63,6 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
                 </div>
               ))}
             </div>
-            <button onClick={() => onRemove(day.id)}>Remove {day.name}</button>
           </div>
         )}
       </div>

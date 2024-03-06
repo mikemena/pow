@@ -73,9 +73,10 @@ button:hover {
 
 input,
 select {
+  box-sizing: border-box;
   font-size: 16px;
   border-radius: 4px;
-  width: 400px;
+  width: 500px;
   padding: 10px;
   margin: 10px;
   background-color: var(--pure-white);
@@ -119,6 +120,7 @@ label {
 .page-title {
   font-size: 2rem;
   font-weight: 700;
+  font-family: 'Courier New', Courier, monospace;
   color: var(--dark-text-color);
 }
 
@@ -130,4 +132,15 @@ label {
   font-size: 1.5rem;
   font-weight: 600;
   color: var(--dark-text-color);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  color: var(--dark-text-color);
+  font-family: 'Courier New', Courier, monospace;
 }
