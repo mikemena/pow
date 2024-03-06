@@ -13,6 +13,14 @@
   border-radius: 5px; /* Optional: Rounds the corners of the button elements */
 }
 
+.input-container {
+  width: 520px;
+}
+
 #save-template-button {
   width: 50%;
+}
+
+#duration-container {
+  display: flex;
 }

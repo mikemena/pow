@@ -10,7 +10,7 @@ import './DayContainer.css';
 
 const DayContainer = ({ day, onAddExercise, onRemove }) => {
   const [exercises, setExercises] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(day.id === 1);
 
   DayContainer.propTypes = {
     day: PropTypes.shape({
@@ -27,16 +27,24 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
     <div>
       <div className='day-container'>
         <div className='day-header' onClick={toggleExpand}>
-          <button id='expand-day-card-button' onClick={toggleExpand}>
+          <button
+            id='expand-day-card-button'
+            onClick={toggleExpand}
+            title='Expand/Collapse Day'
+          >
             {isExpanded ? (
-              <TbLayoutBottombarExpandFilled />
+              <TbLayoutBottombarExpandFilled size={30} />
             ) : (
-              <TbLayoutNavbarExpandFilled />
+              <TbLayoutNavbarExpandFilled size={30} />
             )}
           </button>
           <h2 id='day-card-title'>{day.name}</h2>
-          <button id='delete-day-card-button' onClick={() => onRemove(day.id)}>
-            <MdRemoveCircle />
+          <button
+            id='delete-day-card-button'
+            onClick={() => onRemove(day.id)}
+            title='Remove Day'
+          >
+            <MdRemoveCircle size={30} />
           </button>
         </div>
         {isExpanded && (

@@ -1,10 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  DAY_TYPES,
-  GOAL_TYPES,
-  DURATION_TYPES
-} from '../../../utils/constants';
+import { GOAL_TYPES, DURATION_TYPES } from '../../../utils/constants';
 import DayContainer from '../../../components/DayContainer/DayContainer';
 import useFetchData from '../../../hooks/useFetchData';
 import Dropdown from '../../../components/Inputs/Dropdown';
@@ -29,7 +25,6 @@ const CreateProgram = () => {
   const [days, setDays] = useState([]);
   const [selectDuration, setDuration] = useState('');
   const [selectGoal, setGoal] = useState('');
-  const [selectDayType, setDayType] = useState('');
   const [programName, setProgramName] = useState('');
 
   const navigate = useNavigate();
@@ -70,10 +65,6 @@ const CreateProgram = () => {
 
   const handleGoalChange = e => {
     setGoal(e.target.value);
-  };
-
-  const handleDayTypeChange = e => {
-    setDayType(e.target.value);
   };
 
   const handleProgramNameChange = e => {
@@ -172,33 +163,32 @@ const CreateProgram = () => {
               onChange={handleProgramNameChange}
             />
           </div>
-
+          <div className='program-detail'>
+            <Dropdown
+              id='goal'
+              value={selectGoal}
+              onChange={handleGoalChange}
+              options={GOAL_TYPES}
+              placeholder='Select Goal'
+            />
+          </div>
           <div className='program-detail-container'>
             <div className='program-detail'>
-              <Dropdown
-                id='day-type'
-                value={selectDayType}
-                onChange={handleDayTypeChange}
-                options={DAY_TYPES}
-                placeholder='Select Day Type'
-              />
-            </div>
-            <div className='program-detail'>
-              <div className='input-container'>
+              <div className='input-container' id='duration-container'>
                 <TextInput
                   type='text'
                   placeholder='Enter Duration Amount'
                   value={program.duration}
                   onChange={handleDurationChange}
                 />
+                <Dropdown
+                  id='duration'
+                  value={selectDuration}
+                  onChange={handleDurationChange}
+                  options={DURATION_TYPES}
+                  placeholder='Select Duration Unit'
+                />
               </div>
-              <Dropdown
-                id='duration'
-                value={selectDuration}
-                onChange={handleDurationChange}
-                options={DURATION_TYPES}
-                placeholder='Select Duration'
-              />
             </div>
 
             <div className='input-container'>
@@ -208,16 +198,6 @@ const CreateProgram = () => {
                 placeholder='Enter Days Per Week'
                 value={program.daysPerWeek}
                 onChange={handleDaysPerWeekChange}
-              />
-            </div>
-
-            <div className='program-detail'>
-              <Dropdown
-                id='goal'
-                value={selectGoal}
-                onChange={handleGoalChange}
-                options={GOAL_TYPES}
-                placeholder='Select Goal'
               />
             </div>
           </div>
