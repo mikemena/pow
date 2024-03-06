@@ -5,3 +5,7 @@
 #duration-container {
   display: flex;
 }
+
+.button-container {
+  width: 500px;
+}

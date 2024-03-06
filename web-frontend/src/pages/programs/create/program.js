@@ -53,11 +53,8 @@ const CreateProgram = () => {
     });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
-  const handleDaysPerWeekChange = selectedDaysPerWeek => {
-    setProgram(prevWorkout => ({
-      ...prevWorkout,
-      daysPerWeek: selectedDaysPerWeek
-    }));
+  const handleDaysPerWeekChange = e => {
+    setProgram(e.target.value);
   };
 
   const handleDurationChange = e => {
@@ -154,7 +151,7 @@ const CreateProgram = () => {
   return (
     <div className='page-layout'>
       <h1 className='page-title'>Create New Program</h1>
-      <form onSubmit={handleSaveProgram}>
+      <form id='create-program-form' onSubmit={handleSaveProgram}>
         <div>
           <div className='input-container'>
             <TextInput
