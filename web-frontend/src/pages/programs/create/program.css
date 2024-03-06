@@ -1,11 +1,3 @@
-.input-container {
-  width: 520px;
-}
-
-#duration-container {
-  display: flex;
-}
-
-.button-container {
-  width: 500px;
+.page-title {
+  color: #555;
 }

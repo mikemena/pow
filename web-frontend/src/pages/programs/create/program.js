@@ -149,56 +149,58 @@ const CreateProgram = () => {
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div className='page-layout'>
+    <div className='program-container'>
+      <div className='lines'></div>
       <h1 className='page-title'>Create New Program</h1>
       <form id='create-program-form' onSubmit={handleSaveProgram}>
         <div>
-          <div className='input-container'>
-            <TextInput
-              type='text'
-              placeholder='Enter Program Name'
-              value={program.name}
-              onChange={handleProgramNameChange}
-            />
-          </div>
-          <div className='program-detail'>
-            <Dropdown
-              id='goal'
-              value={selectGoal}
-              onChange={handleGoalChange}
-              options={GOAL_TYPES}
-              placeholder='Select Goal'
-            />
-          </div>
-          <div className='program-detail-container'>
-            <div className='program-detail'>
-              <div className='input-container' id='duration-container'>
-                <TextInput
-                  id='duration-amount'
-                  type='text'
-                  placeholder='Enter Duration Amount'
-                  value={program.duration}
-                  onChange={handleDurationChange}
-                />
-                <Dropdown
-                  id='duration-unit'
-                  value={selectDuration}
-                  onChange={handleDurationChange}
-                  options={DURATION_TYPES}
-                  placeholder='Select Duration Unit'
-                />
-              </div>
-            </div>
-
-            <div className='input-container'>
+          <div className='program-section'>
+            <div className='program-section-content'>
               <TextInput
+                className='program-section-text'
                 type='text'
-                id='days-per-week'
-                placeholder='Enter Days Per Week'
-                value={program.daysPerWeek}
-                onChange={handleDaysPerWeekChange}
+                placeholder='Enter Program Name'
+                value={program.name}
+                onChange={handleProgramNameChange}
               />
             </div>
+          </div>
+          <div className='program-section'>
+            <div className='program-section-content'>
+              <Dropdown
+                id='goal'
+                value={selectGoal}
+                onChange={handleGoalChange}
+                options={GOAL_TYPES}
+                placeholder='Select Goal'
+              />
+            </div>
+          </div>
+          <div className='program-section' id='duration-container'>
+            <TextInput
+              id='duration-amount'
+              type='text'
+              placeholder='Enter Duration Amount'
+              value={program.duration}
+              onChange={handleDurationChange}
+            />
+            <Dropdown
+              id='duration-unit'
+              value={selectDuration}
+              onChange={handleDurationChange}
+              options={DURATION_TYPES}
+              placeholder='Select Duration Unit'
+            />
+          </div>
+
+          <div className='program-section'>
+            <TextInput
+              type='text'
+              id='days-per-week'
+              placeholder='Enter Days Per Week'
+              value={program.daysPerWeek}
+              onChange={handleDaysPerWeekChange}
+            />
           </div>
         </div>
         <Button
