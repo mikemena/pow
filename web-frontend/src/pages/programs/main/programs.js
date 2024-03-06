@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Program from '../../../components/Program/Program';
+import Button from '../../../components/Inputs/Button';
 
 import './programs.css';
 
@@ -58,9 +59,9 @@ const ProgramPage = () => {
       <div id='program-header-container'>
         <h1 className='page-title'>My Programs</h1>
         <div id='container'>
-          <div id='create-program-btn' onClick={handleCreateProgram}>
-            create
-          </div>
+          <Button id='create-program-btn' onClick={handleCreateProgram}>
+            Create
+          </Button>
         </div>
       </div>
       <div id='programs-container'>

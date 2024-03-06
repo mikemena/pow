@@ -1,3 +1,4 @@
+import Button from '../Inputs/Button';
 import './Program.css';
 
 const Program = ({
@@ -47,12 +48,19 @@ const Program = ({
               .join(', ')}
           </p>
         </div>
+
         <div className='workout-template-actions-container'>
-          <div className='btn' onClick={() => console.log('Start Workout')}>
+          <Button
+            id='create-program-btn'
+            type='button'
+            onClick={() => console.log('Start Workout')}
+            bgColor='#EAEAEA'
+          >
             Start
-          </div>
-          <div
-            className='btn'
+          </Button>
+          <Button
+            id='create-program-btn'
+            type='button'
             onClick={() => {
               const workout = {
                 name,
@@ -61,17 +69,20 @@ const Program = ({
 
               onEdit(workout);
             }}
+            bgColor='#EAEAEA'
           >
             Edit
-          </div>
-          <div
-            className='btn'
+          </Button>
+          <Button
+            id='create-program-btn'
+            type='button'
             onClick={() => {
               onDelete(program_id);
             }}
+            bgColor='#EAEAEA'
           >
             Delete
-          </div>
+          </Button>
         </div>
       </div>
     </div>

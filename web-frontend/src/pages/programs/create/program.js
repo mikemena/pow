@@ -5,6 +5,7 @@ import DayContainer from '../../../components/DayContainer/DayContainer';
 import useFetchData from '../../../hooks/useFetchData';
 import Dropdown from '../../../components/Inputs/Dropdown';
 import TextInput from '../../../components/Inputs/TextInput';
+import Button from '../../../components/Inputs/Button';
 
 import './program.css';
 
@@ -202,25 +203,34 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
-        <button type='button' onClick={addDay}>
+        <Button
+          id='save-program-button'
+          onClick={addDay}
+          type='button'
+          bgColor='#EAEAEA'
+        >
           Add Day
-        </button>
+        </Button>
 
         {days.map(day => (
           <DayContainer key={day.id} day={day} onRemove={handleRemoveDay} />
         ))}
 
         <div className='button-container'>
-          <button
-            type='submit'
+          <Button
             id='save-program-button'
             onClick={handleSaveProgram}
+            type='submit'
           >
             Save
-          </button>
-          <button id='cancel-program-button' onClick={handleCancel}>
+          </Button>
+          <Button
+            id='cancel-program-button'
+            onClick={handleCancel}
+            type='button'
+          >
             Cancel
-          </button>
+          </Button>
         </div>
       </form>
     </div>
