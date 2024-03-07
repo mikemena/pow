@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Program from '../../../components/Program/Program';
+import ProgramForm from '../../../components/Program/ProgramForm';
 import Button from '../../../components/Inputs/Button';
 
 import './programs.css';
@@ -32,32 +32,34 @@ const ProgramPage = () => {
     navigate('/create-program');
   };
 
-  const handleDelete = async program_id => {
-    try {
-      const response = await fetch(
-        `http://localhost:9025/api/programs/${program_id}`,
-        {
-          method: 'DELETE'
-        }
-      );
-      if (response.status === 204) {
-        setPrograms(currentPrograms =>
-          currentPrograms.filter(program => program.program_id !== program_id)
-        );
-      }
-    } catch (error) {
-      console.error('Failed to delete program:', error);
-    }
-  };
+  // const handleDelete = async program_id => {
+  //   try {
+  //     const response = await fetch(
+  //       `http://localhost:9025/api/programs/${program_id}`,
+  //       {
+  //         method: 'DELETE'
+  //       }
+  //     );
+  //     if (response.status === 204) {
+  //       setPrograms(currentPrograms =>
+  //         currentPrograms.filter(program => program.program_id !== program_id)
+  //       );
+  //     }
+  //   } catch (error) {
+  //     console.error('Failed to delete program:', error);
+  //   }
+  // };
 
-  const handleEdit = program => {
-    navigate(`/edit-program/${program.program_id}`, { state: { program } });
-  };
+  // const handleEdit = program => {
+  //   navigate(`/edit-program/${program.program_id}`, { state: { program } });
+  // };
+
+  console.log('programs from programs page:', programs);
 
   return (
     <div className='programs'>
       <div id='program-header-container'>
-        <h1 className='page-title'>My Programs</h1>
+        <h1 className='page-title'>My Programs X</h1>
         <div id='container'>
           <Button id='create-program-btn' onClick={handleCreateProgram}>
             Create
@@ -66,17 +68,12 @@ const ProgramPage = () => {
       </div>
       <div id='programs-container'>
         {programs.map(program => (
-          <Program
-            program_id={program.program_id}
+          <ProgramForm
+            program={program}
             key={program.program_id}
-            name={program.name}
-            main_goal={program.main_goal}
-            duration_unit={program.duration_unit}
-            days_per_week={program.days_per_week}
-            program_duration={program.program_duration}
-            workouts={program.workouts}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
+            isEditing={false}
+            // onDelete={handleDelete}
+            // onEdit={handleEdit}
           />
         ))}
       </div>
