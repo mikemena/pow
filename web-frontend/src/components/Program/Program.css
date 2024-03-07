@@ -16,10 +16,6 @@
 }
 
 .program-section {
-  color: #555;
-  font-size: 22px;
-  width: 600px;
-  font-family: courier, monospace;
   border-top: 1px solid #dedede;
 }
 
@@ -31,7 +27,11 @@
 
 .program-section-title,
 .program-section-text {
-  margin: 10px; /* Adds some spacing around the title and text */
+  margin: 10px;
+  color: #555;
+  font-size: 22px;
+  width: 600px;
+  font-family: courier, monospace;
 }
 
 .lines {

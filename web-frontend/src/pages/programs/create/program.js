@@ -10,6 +10,7 @@ import styled from 'styled-components';
 
 const DurationContainer = styled.div`
   display: flex;
+  border-top: 1px solid #dedede;
 `;
 
 const ButtonContainer = styled.div`
@@ -159,8 +160,9 @@ const CreateProgram = () => {
 
   return (
     <div className='program-container'>
-      <div className='lines'></div>
       <h1 className='page-title'>Create New Program</h1>
+      <div className='lines'></div>
+
       <form id='create-program-form' onSubmit={handleSaveProgram}>
         <div>
           <div className='program-section'>
@@ -188,7 +190,7 @@ const CreateProgram = () => {
           <DurationContainer>
             <TextInput
               id='duration-amount'
-              type='text'
+              type='number'
               placeholder='Enter Duration Amount'
               value={program.duration}
               onChange={handleDurationChange}
@@ -205,7 +207,7 @@ const CreateProgram = () => {
           <div className='program-section'>
             <div className='program-section-content'>
               <TextInput
-                type='text'
+                type='number'
                 placeholder='Enter Days Per Week'
                 value={program.daysPerWeek}
                 onChange={handleDaysPerWeekChange}
@@ -213,14 +215,17 @@ const CreateProgram = () => {
             </div>
           </div>
         </div>
-        <Button
-          id='save-program-button'
-          onClick={addDay}
-          type='button'
-          bgColor='#EAEAEA'
-        >
-          Add Day
-        </Button>
+        <div className='program-section'>
+          <Button
+            id='add-program-button'
+            onClick={addDay}
+            type='button'
+            bgColor='#EAEAEA'
+            fontSize={'1em'}
+          >
+            Add Day
+          </Button>
+        </div>
 
         {days.map(day => (
           <DayContainer key={day.id} day={day} onRemove={handleRemoveDay} />

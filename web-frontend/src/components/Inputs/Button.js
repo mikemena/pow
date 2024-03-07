@@ -7,7 +7,8 @@ const StyledButton = styled.button`
   background-color: ${props => props.bgColor || 'rgb(198, 255, 53)'};
   transform: skew(-20deg);
   width: 160px;
-  font-size: 1em;
+  font-size: ${props => props.fontSize || '1em'};
+  // font-size: 1em;
   font-weight: 500;
   text-transform: uppercase;
   display: flex;
@@ -32,8 +33,8 @@ const StyledButton = styled.button`
   }
 `;
 
-const Button = ({ id, onClick, children, bgColor }) => (
-  <StyledButton id={id} onClick={onClick} bgColor={bgColor}>
+const Button = ({ id, onClick, children, bgColor, fontSize }) => (
+  <StyledButton id={id} onClick={onClick} bgColor={bgColor} fontSize={fontSize}>
     {children}
   </StyledButton>
 );
