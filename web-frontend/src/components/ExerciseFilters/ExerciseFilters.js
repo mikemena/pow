@@ -1,6 +1,16 @@
 import React from 'react';
+import styled from 'styled-components';
 import useFetchData from '../../hooks/useFetchData';
-import './ExerciseFilters.css';
+
+const FilterContainer = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const Filter = styled.div`
+  display: flex;
+  width: 275px;
+`;
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   const {
@@ -25,8 +35,8 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   if (errorMuscles) return <div>Error loading equipments: {errorMuscles}</div>;
 
   return (
-    <div className='exercise-filters-container'>
-      <div className='exercise-filter'>
+    <FilterContainer>
+      <Filter>
         {/* <label htmlFor='muscle-search'>Muscle</label> */}
         <input
           list='muscles'
@@ -40,10 +50,9 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             <option key={index} value={option.name} />
           ))}
         </datalist>
-      </div>
+      </Filter>
 
-      <div className='exercise-filter'>
-        {/* <label htmlFor='equipment-search'>Equipment</label> */}
+      <Filter>
         <input
           list='equipments'
           id='equipment-search'
@@ -56,8 +65,8 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             <option key={index} value={option.name} />
           ))}
         </datalist>
-      </div>
-    </div>
+      </Filter>
+    </FilterContainer>
   );
 }
 

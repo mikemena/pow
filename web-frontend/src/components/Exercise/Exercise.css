@@ -1,10 +1,10 @@
 .exercise {
   display: flex;
   align-items: center;
-  border: 1px solid #ccc;
-  padding: 1px;
-  margin-bottom: 8px;
-  width: 500px;
+  background-color: #f5f5f5;
+  width: 550px;
+  box-shadow: 2.6px 5.3px 5.3px hsla(0, 0%, 42%, 0.42);
+  margin: 20px;
 }
 
 .image-container {
@@ -41,14 +41,16 @@
   flex-grow: 1; /* Adjust as needed */
   padding-left: 16px;
   min-width: 300;
+  font-family: courier, monospace;
 }
 
 #exercise-title,
 #exercise-subtitle {
+  color: #555;
+  font-size: 16px;
   margin: 0;
   white-space: nowrap;
 }
-
-.selected {
-  border-color: rgb(198, 255, 53); /* Example to show a selected item */
+#exercise-subtitle {
+  font-weight: 600;
 }

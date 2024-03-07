@@ -3,7 +3,6 @@ import ExerciseSearch from '../../../components/SearchBar/SearchBar';
 import Exercise from '../../../components/Exercise/Exercise';
 import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../../hooks/useFetchData';
-import Nav from '../../../components/Nav/Nav';
 import './exercises.css';
 
 const ExercisesListPage = () => {
@@ -50,8 +49,7 @@ const ExercisesListPage = () => {
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div className='page-layout'>
-      <Nav />
+    <div id='exercise-container'>
       <h1 className='page-title'>Exercises</h1>
       <ExerciseSearch onChange={handleSearch} exercises={exercises} />
       <ExerciseFilters
