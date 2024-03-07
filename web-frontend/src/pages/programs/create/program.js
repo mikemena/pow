@@ -6,8 +6,17 @@ import useFetchData from '../../../hooks/useFetchData';
 import Dropdown from '../../../components/Inputs/Dropdown';
 import TextInput from '../../../components/Inputs/TextInput';
 import Button from '../../../components/Inputs/Button';
+import styled from 'styled-components';
 
-import './program.css';
+const DurationContainer = styled.div`
+  display: flex;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
 
 const CreateProgram = () => {
   const [program, setProgram] = useState({
@@ -176,7 +185,7 @@ const CreateProgram = () => {
               />
             </div>
           </div>
-          <div className='program-section' id='duration-container'>
+          <DurationContainer>
             <TextInput
               id='duration-amount'
               type='text'
@@ -191,16 +200,17 @@ const CreateProgram = () => {
               options={DURATION_TYPES}
               placeholder='Select Duration Unit'
             />
-          </div>
+          </DurationContainer>
 
           <div className='program-section'>
-            <TextInput
-              type='text'
-              id='days-per-week'
-              placeholder='Enter Days Per Week'
-              value={program.daysPerWeek}
-              onChange={handleDaysPerWeekChange}
-            />
+            <div className='program-section-content'>
+              <TextInput
+                type='text'
+                placeholder='Enter Days Per Week'
+                value={program.daysPerWeek}
+                onChange={handleDaysPerWeekChange}
+              />
+            </div>
           </div>
         </div>
         <Button
@@ -216,7 +226,7 @@ const CreateProgram = () => {
           <DayContainer key={day.id} day={day} onRemove={handleRemoveDay} />
         ))}
 
-        <div className='button-container'>
+        <ButtonContainer>
           <Button
             id='save-program-button'
             onClick={handleSaveProgram}
@@ -231,7 +241,7 @@ const CreateProgram = () => {
           >
             Cancel
           </Button>
-        </div>
+        </ButtonContainer>
       </form>
     </div>
   );
