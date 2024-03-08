@@ -15,11 +15,8 @@
   font-family: courier, monospace;
 }
 
-.program-section {
-  border-top: 1px solid #dedede;
-}
-
 .program-section-content {
+  border-top: 1px solid #dedede;
   display: flex;
   justify-content: space-between; /* Aligns one item to the left and the other to the right */
   align-items: center; /* Optional: Aligns items vertically in the center */

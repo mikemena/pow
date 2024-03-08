@@ -1,8 +1,7 @@
 .main-title {
   font-family: 'Major Mono Display', monospace;
-  font-weight: 400;
   font-style: normal;
-  font-size: 100px;
+  font-size: 40px;
   color: #2e2e2e;
 }
 
@@ -124,4 +123,15 @@
   background-image: url('../../assets/gym9.jpg');
   background-size: cover;
   background-position: center;
+}
+
+/* Media query for viewports 768px and wider */
+@media (min-width: 768px) {
+  .main-title {
+    font-family: 'Major Mono Display', monospace;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 80px;
+    color: #2e2e2e;
+  }
 }
