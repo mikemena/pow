@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
+import NavBar from '../../components/Nav/Nav';
 import './home.css';
 
 const HomePage = () => {
@@ -12,8 +13,6 @@ const HomePage = () => {
     /* Optional options */
     threshold: 0.4
   });
-
-  const menuRef = useRef(null);
 
   const navigateToProgramPage = () => {
     navigate('/programs');
@@ -44,6 +43,7 @@ const HomePage = () => {
 
   return (
     <div>
+      <NavBar />
       <div className='full-viewport-div'>
         <h1 className='main-title'>Pr00f 0f W0rk</h1>
         <div
