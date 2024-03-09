@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useInView } from 'react-intersection-observer';
 import './home.css';
 
 const HomePage = () => {
   const [activeDiv, setActiveDiv] = useState(null);
 
   const navigate = useNavigate();
+
+  const { ref, inView } = useInView({
+    /* Optional options */
+    threshold: 0.4
+  });
+
+  const menuRef = useRef(null);
 
   const navigateToProgramPage = () => {
     navigate('/programs');
@@ -38,11 +46,14 @@ const HomePage = () => {
     <div>
       <div className='full-viewport-div'>
         <h1 className='main-title'>Pr00f 0f W0rk</h1>
-        <div className='arrow scroll-down' onClick={scrollToNextPage}>
-          &#x2193; {/* Downwards arrow symbol, or use an icon */}
+        <div
+          className={inView ? 'arrow-hidden' : 'arrow'}
+          onClick={scrollToNextPage}
+        >
+          ↓
         </div>
       </div>
-      <div className='container'>
+      <div className='container' ref={ref}>
         <div
           className={`child left ${activeDiv === 'div1' ? 'active' : ''}`}
           onClick={navigateToCreateProgramPage}
