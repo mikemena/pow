@@ -16,7 +16,7 @@
 }
 
 .arrow {
-  color: rgb(53, 167, 255);
+  color: rgb(198, 255, 53);
   position: absolute;
   font-size: 2em;
   bottom: 20px;
@@ -127,7 +127,7 @@
 }
 
 /* Media query for viewports 768px and wider */
-@media (min-width: 768px) {
+@media (min-width: 800px) {
   .main-title {
     font-family: 'Major Mono Display', monospace;
     font-weight: 400;

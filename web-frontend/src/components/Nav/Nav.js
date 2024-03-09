@@ -24,27 +24,27 @@ const Navbar = ({ theme, toggleTheme }) => {
           menuClicked ? 'navbar_list navbar_list--active' : 'navbar_list'
         }
       >
-        <li>
+        <li className='navbar_item'>
           <Link to='/programs' className='navbar_link'>
             Programs
           </Link>
         </li>
-        <li>
+        <li className='navbar_item'>
           <Link to='/workouts' className='navbar_link'>
             Workouts
           </Link>
         </li>
-        <li>
+        <li className='navbar_item'>
           <Link to='/exercises' className='navbar_link'>
             Exercises
           </Link>
         </li>
-        <li>
+        <li className='navbar_item'>
           <Link to='/progress' className='navbar_link'>
             Progress
           </Link>
         </li>
-        <li>
+        <li className='navbar_item'>
           <Link to='/profile' className='navbar_link'>
             Profile
           </Link>
