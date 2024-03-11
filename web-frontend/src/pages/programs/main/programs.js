@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import Button from '../../../components/Inputs/Button';
+import NavBar from '../../../components/Nav/Nav';
 
 import './programs.css';
 
@@ -58,6 +59,7 @@ const ProgramPage = () => {
 
   return (
     <div className='programs'>
+      <NavBar />
       <div id='program-header-container'>
         <h1 className='page-title'>My Programs X</h1>
         <div id='container'>
