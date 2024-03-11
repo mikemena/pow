@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useInView } from 'react-intersection-observer';
 import NavBar from '../../components/Nav/Nav';
@@ -6,12 +6,10 @@ import './home.css';
 
 const HomePage = () => {
   const [activeDiv, setActiveDiv] = useState(null);
-
   const navigate = useNavigate();
 
   const { ref, inView } = useInView({
-    /* Optional options */
-    threshold: 0.4
+    threshold: 0.1
   });
 
   const navigateToProgramPage = () => {
@@ -55,7 +53,8 @@ const HomePage = () => {
       </div>
       <div className='container' ref={ref}>
         <div
-          className={`child left ${activeDiv === 'div1' ? 'active' : ''}`}
+          ref={ref}
+          className={`child left ${inView ? 'inview-active' : ''}`}
           onClick={navigateToCreateProgramPage}
           onMouseEnter={() => handleMouseEnter('div1')}
           onMouseLeave={handleMouseLeave}
@@ -64,7 +63,8 @@ const HomePage = () => {
           <h1>Start Program</h1>
         </div>
         <div
-          className={`child center ${activeDiv === 'div2' ? 'active' : ''}`}
+          ref={ref}
+          className={`child center ${inView ? 'inview-active' : ''}`}
           onClick={navigateToProgramPage}
           onMouseEnter={() => handleMouseEnter('div2')}
           onMouseLeave={handleMouseLeave}
@@ -73,7 +73,8 @@ const HomePage = () => {
           <h1>Workout Using Program</h1>
         </div>
         <div
-          className={`child right ${activeDiv === 'div3' ? 'active' : ''}`}
+          ref={ref}
+          className={`child right ${inView ? 'inview-active' : ''}`}
           onClick={() => handleClick('div3')}
           onMouseEnter={() => handleMouseEnter('div3')}
           onMouseLeave={handleMouseLeave}
