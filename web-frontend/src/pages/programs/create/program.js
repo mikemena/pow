@@ -3,40 +3,21 @@ import { useNavigate } from 'react-router-dom';
 import { GOAL_TYPES, DURATION_TYPES } from '../../../utils/constants';
 import DayContainer from '../../../components/DayContainer/DayContainer';
 import useFetchData from '../../../hooks/useFetchData';
-import Dropdown from '../../../components/Inputs/Dropdown';
-import TextInput from '../../../components/Inputs/TextInput';
-import Button from '../../../components/Inputs/Button';
-import styled from 'styled-components';
-
-const DurationContainer = styled.div`
-  display: flex;
-  border-top: 1px solid #dedede;
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+import ProgramForm from '../../../components/Program/ProgramForm';
+import NavBar from '../../../components/Nav/Nav';
+import './program.css';
 
 const CreateProgram = () => {
   const [program, setProgram] = useState({
     programName: '',
+    mainGoal: '',
     programDuration: '',
+    durationUnit: '',
     daysPerWeek: '',
-    dayType: '',
-    programGoal: '',
-    workouts: [],
-    selectedExercises: []
+    workouts: []
   });
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMuscle, setSelectedMuscle] = useState('');
-  const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [days, setDays] = useState([]);
-  const [selectDuration, setDuration] = useState('');
-  const [selectGoal, setGoal] = useState('');
-  const [programName, setProgramName] = useState('');
+  const [days, setDays] = useState([{ id: 1, name: 'Day 1' }]);
 
   const navigate = useNavigate();
 
@@ -45,39 +26,6 @@ const CreateProgram = () => {
     isLoading,
     error
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
-
-  const filteredExercises = useMemo(() => {
-    return exercises.filter(exercise => {
-      const matchesMuscle =
-        !selectedMuscle ||
-        selectedMuscle === 'All' ||
-        exercise.muscle === selectedMuscle;
-      const matchesEquipment =
-        !selectedEquipment ||
-        selectedEquipment === 'All' ||
-        exercise.equipment === selectedEquipment;
-      const matchesSearchTerm =
-        !searchTerm ||
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesMuscle && matchesEquipment && matchesSearchTerm;
-    });
-  }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
-
-  const handleDaysPerWeekChange = e => {
-    setProgram(e.target.value);
-  };
-
-  const handleDurationChange = e => {
-    setDuration(e.target.value);
-  };
-
-  const handleGoalChange = e => {
-    setGoal(e.target.value);
-  };
-
-  const handleProgramNameChange = e => {
-    setProgramName(e.target.value);
-  };
 
   const addDay = () => {
     const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1; // Ensure unique ID
@@ -101,17 +49,19 @@ const CreateProgram = () => {
     setDays(renumberedDays);
   };
 
-  const handleSaveProgram = async event => {
-    event.preventDefault();
+  const onAddExercise = dayId => {
+    // Logic for adding an exercise to a specific day
+  };
 
+  const handleSaveProgram = async NewProgram => {
     const programData = {
-      user_id: 2, // hardcoded for now, but should be the logged in user's ID
-      name: program.programName,
-      program_duration: program.programDuration,
-      days_per_week: program.daysPerWeek,
-      duration_unit: program.durationUnit,
-      main_goal: program.mainGoal,
-      workouts: program.workouts.map(workout => ({
+      user_id: 2,
+      name: NewProgram.programName,
+      program_duration: NewProgram.programDuration,
+      days_per_week: NewProgram.daysPerWeek,
+      duration_unit: NewProgram.durationUnit,
+      main_goal: NewProgram.mainGoal,
+      workouts: NewProgram.workouts.map(workout => ({
         name: workout.name,
         order: workout.order,
         exercises: workout.exercises.map(exercise => ({
@@ -150,104 +100,31 @@ const CreateProgram = () => {
     }
   };
 
-  const handleCancel = () => {
-    // Redirect to the create workout page
-    navigate('/workouts');
-  };
-
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div className='program-container'>
-      <h1 className='page-title'>Create New Program</h1>
-      <div className='lines'></div>
-
-      <form id='create-program-form' onSubmit={handleSaveProgram}>
-        <div>
-          <div className='program-section'>
-            <div className='program-section-content'>
-              <TextInput
-                className='program-section-text'
-                type='text'
-                placeholder='Enter Program Name'
-                value={program.name}
-                onChange={handleProgramNameChange}
-              />
-            </div>
-          </div>
-          <div className='program-section'>
-            <div className='program-section-content'>
-              <Dropdown
-                id='goal'
-                value={selectGoal}
-                onChange={handleGoalChange}
-                options={GOAL_TYPES}
-                placeholder='Select Goal'
-              />
-            </div>
-          </div>
-          <DurationContainer>
-            <TextInput
-              id='duration-amount'
-              type='number'
-              placeholder='Enter Duration Amount'
-              value={program.duration}
-              onChange={handleDurationChange}
-            />
-            <Dropdown
-              id='duration-unit'
-              value={selectDuration}
-              onChange={handleDurationChange}
-              options={DURATION_TYPES}
-              placeholder='Select Duration Unit'
-            />
-          </DurationContainer>
-
-          <div className='program-section'>
-            <div className='program-section-content'>
-              <TextInput
-                type='number'
-                placeholder='Enter Days Per Week'
-                value={program.daysPerWeek}
-                onChange={handleDaysPerWeekChange}
-              />
-            </div>
-          </div>
-        </div>
-        <div className='program-section'>
-          <Button
-            id='add-program-button'
-            onClick={addDay}
-            type='button'
-            bgColor='#EAEAEA'
-            fontSize={'1em'}
-          >
-            Add Day
-          </Button>
+    <div>
+      <NavBar isEditing='true' />
+      <div id='create-program-container'>
+        <div id='create-program-header-container'>
+          <h1 className='page-title'>Create New Program</h1>
         </div>
 
+        <ProgramForm
+          program={program}
+          onSubmit={handleSaveProgram}
+          isEditing={true}
+        />
         {days.map(day => (
-          <DayContainer key={day.id} day={day} onRemove={handleRemoveDay} />
+          <DayContainer
+            key={day.id}
+            day={day}
+            onAddExercise={onAddExercise}
+            onRemove={handleRemoveDay}
+          />
         ))}
-
-        <ButtonContainer>
-          <Button
-            id='save-program-button'
-            onClick={handleSaveProgram}
-            type='submit'
-          >
-            Save
-          </Button>
-          <Button
-            id='cancel-program-button'
-            onClick={handleCancel}
-            type='button'
-          >
-            Cancel
-          </Button>
-        </ButtonContainer>
-      </form>
+      </div>
     </div>
   );
 };

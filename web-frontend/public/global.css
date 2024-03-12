@@ -49,11 +49,11 @@ textarea {
 
 a {
   font-weight: 500;
-  color: #a74747;
+  color: #0957bd;
   text-decoration: inherit;
 }
 a:hover {
-  color: #b63d3d;
+  color: #0957bd;
 }
 
 button {
@@ -109,7 +109,7 @@ input::placeholder {
 label {
   font-size: 1.2em;
   font-weight: 500;
-  color: var(--light-text-color);
+  color: #0957bd;
   padding-right: 10px;
 }
 

@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Button from '../../components/Inputs/Button';
 import './programForm.css';
 
 const ProgramForm = ({ program, onSubmit, isEditing }) => {
+  const navigate = useNavigate();
+
   console.log('Rendering ProgramForm component', program);
   const [formValues, setFormValues] = useState({
     name: program?.name || '',
@@ -42,6 +46,11 @@ const ProgramForm = ({ program, onSubmit, isEditing }) => {
   const handleSubmit = e => {
     e.preventDefault();
     onSubmit(formValues);
+  };
+
+  const handleCancel = () => {
+    // Redirect to the create workout page
+    navigate('/');
   };
 
   console.log('formValues.mainGoal:', formValues.mainGoal);
@@ -137,7 +146,14 @@ const ProgramForm = ({ program, onSubmit, isEditing }) => {
           <span className='program-section-text'>{formValues.daysPerWeek}</span>
         )}
       </div>
-      {isEditing && <button type='submit'>Save</button>}
+      {isEditing && (
+        <div className='pogram-form-button-container'>
+          <Button type='submit'>Save</Button>
+          <Button type='button' onClick={handleCancel}>
+            Cancel
+          </Button>
+        </div>
+      )}
     </form>
   );
 };

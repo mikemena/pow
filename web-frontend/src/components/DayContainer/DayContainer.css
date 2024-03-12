@@ -1,8 +1,10 @@
 .day-container {
-  border-style: dotted;
-  width: 550px;
+  background-color: #f5f5f5;
+  width: 580px;
+  box-shadow: 2.6px 5.3px 5.3px hsla(0, 0%, 40%, 0.42);
+  margin-left: 20px;
   padding: 10px;
-  margin: 10px;
+  margin: 20px;
 }
 
 button {

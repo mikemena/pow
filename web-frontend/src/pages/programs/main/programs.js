@@ -61,7 +61,7 @@ const ProgramPage = () => {
     <div className='programs'>
       <NavBar />
       <div id='program-header-container'>
-        <h1 className='page-title'>My Programs X</h1>
+        <h1 className='page-title'>My Programs</h1>
         <div id='container'>
           <Button id='create-program-btn' onClick={handleCreateProgram}>
             Create

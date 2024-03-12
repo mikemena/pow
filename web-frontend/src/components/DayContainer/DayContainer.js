@@ -12,13 +12,6 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
   const [exercises, setExercises] = useState([]);
   const [isExpanded, setIsExpanded] = useState(day.id === 1);
 
-  DayContainer.propTypes = {
-    day: PropTypes.shape({
-      name: PropTypes.string.isRequired
-    }).isRequired,
-    onAddExercise: PropTypes.func.isRequired,
-    onRemove: PropTypes.func.isRequired
-  };
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
@@ -81,6 +74,15 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
       </div>
     </div>
   );
+};
+
+DayContainer.propTypes = {
+  day: PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired
+  }).isRequired,
+  onAddExercise: PropTypes.func.isRequired,
+  onRemove: PropTypes.func.isRequired
 };
 
 export default DayContainer;
