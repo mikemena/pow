@@ -8,7 +8,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
 
   console.log('Rendering ProgramForm component', program);
   const [formValues, setFormValues] = useState({
-    name: program?.name || '',
+    programName: program?.name || '',
     mainGoal: program?.main_goal || '',
     programDuration: program?.program_duration || '',
     durationUnit: program?.duration_unit || '',
@@ -21,7 +21,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
 
   useEffect(() => {
     setFormValues({
-      name: program?.name || '',
+      programName: program?.name || '',
       mainGoal: program?.main_goal || '',
       programDuration: program?.program_duration || '',
       durationUnit: program?.duration_unit || '',
@@ -81,7 +81,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             />
           </>
         ) : (
-          <span className='program-section-text'>{formValues.name}</span>
+          <span className='program-section-text'>{formValues.programName}</span>
         )}
       </div>
 
