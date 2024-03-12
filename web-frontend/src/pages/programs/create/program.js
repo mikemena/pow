@@ -27,11 +27,11 @@ const CreateProgram = () => {
     error
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
-  const addDay = () => {
-    const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1; // Ensure unique ID
+  const handleAddDay = () => {
+    const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1;
     const newDay = {
       id: newDayId,
-      name: `Day ${newDayId}` // Customize the naming as needed
+      name: `Day ${newDayId}`
     };
     setDays([...days, newDay]);
   };
@@ -47,10 +47,6 @@ const CreateProgram = () => {
       name: `Day ${index + 1}`
     }));
     setDays(renumberedDays);
-  };
-
-  const onAddExercise = dayId => {
-    // Logic for adding an exercise to a specific day
   };
 
   const handleSaveProgram = async NewProgram => {
@@ -114,14 +110,15 @@ const CreateProgram = () => {
         <ProgramForm
           program={program}
           onSubmit={handleSaveProgram}
+          handleAddDay={handleAddDay}
           isEditing={true}
         />
         {days.map(day => (
           <DayContainer
             key={day.id}
             day={day}
-            onAddExercise={onAddExercise}
-            onRemove={handleRemoveDay}
+            // onAddExercise={onAddExercise}
+            handleRemoveDay={handleRemoveDay}
           />
         ))}
       </div>

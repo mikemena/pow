@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Inputs/Button';
 import './programForm.css';
 
-const ProgramForm = ({ program, onSubmit, isEditing }) => {
+const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   const navigate = useNavigate();
 
   console.log('Rendering ProgramForm component', program);
@@ -148,6 +148,9 @@ const ProgramForm = ({ program, onSubmit, isEditing }) => {
       </div>
       {isEditing && (
         <div className='pogram-form-button-container'>
+          <Button type='button' onClick={handleAddDay}>
+            Add Day
+          </Button>
           <Button type='submit'>Save</Button>
           <Button type='button' onClick={handleCancel}>
             Cancel

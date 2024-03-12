@@ -8,7 +8,7 @@ import { MdRemoveCircle } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import './DayContainer.css';
 
-const DayContainer = ({ day, onAddExercise, onRemove }) => {
+const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
   const [exercises, setExercises] = useState([]);
   const [isExpanded, setIsExpanded] = useState(day.id === 1);
 
@@ -34,7 +34,7 @@ const DayContainer = ({ day, onAddExercise, onRemove }) => {
           <h2 id='day-card-title'>{day.name}</h2>
           <button
             id='delete-day-card-button'
-            onClick={() => onRemove(day.id)}
+            onClick={() => handleRemoveDay(day.id)}
             title='Remove Day'
           >
             <MdRemoveCircle size={30} />
