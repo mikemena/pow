@@ -63,17 +63,20 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   );
 
   return (
-    <form className='program-container' onSubmit={handleSubmit}>
-      <div className='lines'></div>
-      <div className='program-section-content'>
+    <form className='prog-container' onSubmit={handleSubmit}>
+      <div className='prog-container__lines'></div>
+      <div className='prog-container__prog-section'>
         {isEditing ? (
           <>
-            <label htmlFor='programName' className='program-section-title'>
+            <label
+              htmlFor='program-name-input'
+              className='prog-container__prog-section-title'
+            >
               Name
             </label>
             <input
               type='text'
-              id='programName'
+              id='program-name-input'
               name='programName'
               value={formValues.name}
               onChange={handleChange}
@@ -81,12 +84,17 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             />
           </>
         ) : (
-          <span className='program-section-text'>{formValues.programName}</span>
+          <span className='prog-container__prog-section-text'>
+            {formValues.programName}
+          </span>
         )}
       </div>
 
-      <div className='program-section-content'>
-        <label htmlFor='mainGoal' className='program-section-title'>
+      <div className='prog-container__prog-section'>
+        <label
+          htmlFor='mainGoal'
+          className='prog-container__prog-section-title'
+        >
           Main Goal
         </label>
         {isEditing ? (
@@ -99,11 +107,16 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             disabled={!isEditing}
           />
         ) : (
-          <span className='program-section-text'>{formValues.mainGoal}</span>
+          <span className='prog-container__prog-section-text'>
+            {formValues.mainGoal}
+          </span>
         )}
       </div>
-      <div className='program-section-content'>
-        <label htmlFor='programDuration' className='program-section-title'>
+      <div className='prog-container__prog-section'>
+        <label
+          htmlFor='programDuration'
+          className='prog-container__prog-section-title'
+        >
           Program Duration
         </label>
         {isEditing ? (
@@ -124,13 +137,16 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             />
           </>
         ) : (
-          <span className='program-section-text'>
+          <span className='prog-container__prog-section-text'>
             {formValues.programDurationDisplay}
           </span>
         )}
       </div>
-      <div className='program-section-content'>
-        <label htmlFor='daysPerWeek' className='program-section-title'>
+      <div className='prog-container__prog-section'>
+        <label
+          htmlFor='daysPerWeek'
+          className='prog-container__prog-section-title'
+        >
           Days Per Week
         </label>
         {isEditing ? (
@@ -143,11 +159,13 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             disabled={!isEditing}
           />
         ) : (
-          <span className='program-section-text'>{formValues.daysPerWeek}</span>
+          <span className='prog-container__prog-section-text'>
+            {formValues.daysPerWeek}
+          </span>
         )}
       </div>
       {isEditing && (
-        <div className='pogram-form-button-container'>
+        <div className='prog-container__btn-container'>
           <Button type='button' onClick={handleAddDay}>
             Add Day
           </Button>

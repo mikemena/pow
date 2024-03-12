@@ -1,8 +1,7 @@
-#create-programs-container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 20px;
+.program-container {
+  background-color: #81d3ff;
+  width: 600px;
+  box-shadow: 2.6px 5.3px 5.3px hsla(0, 0%, 40%, 0.42);
   margin-left: 20px;
 }
 

@@ -117,7 +117,6 @@ const CreateProgram = () => {
           <DayContainer
             key={day.id}
             day={day}
-            // onAddExercise={onAddExercise}
             handleRemoveDay={handleRemoveDay}
           />
         ))}
