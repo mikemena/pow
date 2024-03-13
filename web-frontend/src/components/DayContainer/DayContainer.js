@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   TbLayoutNavbarExpandFilled,
@@ -6,23 +6,25 @@ import {
 } from 'react-icons/tb';
 import { MdRemoveCircle } from 'react-icons/md';
 import Button from '../Inputs/Button';
+import { DayContainerContext } from '../../contexts/dayContainerContext';
 import './DayContainer.css';
 
 const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
   const [exercises, setExercises] = useState([]);
-  const [isExpanded, setIsExpanded] = useState(day.id === 1);
+  const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
+  const isExpanded = expandedDayId === day.id;
 
-  const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+  const toggleDayExpand = () => {
+    toggleExpand(day.id);
   };
 
   return (
     <div>
       <div className='day-container'>
-        <div className='day-header' onClick={toggleExpand}>
+        <div className='day-container__header' onClick={toggleDayExpand}>
           <button
-            id='expand-day-card-button'
-            onClick={toggleExpand}
+            className='day-container__expand-btn'
+            onClick={toggleDayExpand}
             title='Expand/Collapse Day'
           >
             {isExpanded ? (
@@ -31,21 +33,27 @@ const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
               <TbLayoutNavbarExpandFilled size={30} />
             )}
           </button>
-          <h2 id='day-card-title'>{day.name}</h2>
+          <h2 className='day-container__title'>{day.name}</h2>
           <button
-            id='delete-day-card-button'
-            onClick={() => handleRemoveDay(day.id)}
-            title='Remove Day'
+            className='day-container__delete-btn'
+            onClick={() => {
+              const confirm = window.confirm(
+                `Are you sure you want to remove ${day.name}?`
+              );
+              if (confirm) {
+                handleRemoveDay(day.id);
+              }
+            }}
           >
             <MdRemoveCircle size={30} />
           </button>
         </div>
         {isExpanded && (
-          <div className='day-body'>
-            <div className='day-body-header'>
+          <div className='day-container__body'>
+            <div className='day-container__header'>
               <h3>Exercises</h3>
               <Button
-                id='save-program-button'
+                id='save--exercise-btn'
                 onClick={() => onAddExercise(day.id)}
                 type='button'
                 bgColor='#EAEAEA'
@@ -53,19 +61,22 @@ const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
                 Add Exercise
               </Button>
             </div>
-            <div className='day-body-content'>
+            <div className='day-container__content'>
               {exercises.map(exercise => (
-                <div key={exercise.id} className='exercise'>
+                <div key={exercise.id} className='day-container__exercise'>
                   <h4>{exercise.name}</h4>
-                  <button
+                  <Button
+                    id='remove-exercise-btn'
+                    type='button'
+                    bgColor='#EAEAEA'
                     onClick={() => {
                       setExercises(
                         exercises.filter(ex => ex.id !== exercise.id)
                       );
                     }}
                   >
-                    Remove
-                  </button>
+                    Remove Exercise
+                  </Button>
                 </div>
               ))}
             </div>

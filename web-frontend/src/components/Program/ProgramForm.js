@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Inputs/Button';
 import './programForm.css';
+import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 
 const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   const navigate = useNavigate();
@@ -20,6 +21,16 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   });
 
   useEffect(() => {
+    // Dynamically set the height of .prog-container__lines
+    var progContainer = document.querySelector('.prog-container');
+    var progContainerLines = document.querySelector('.prog-container__lines');
+
+    // Get the height of .prog-container
+    var progContainerHeight = progContainer.offsetHeight;
+
+    // Set the height of .prog-container__lines
+    progContainerLines.style.height = progContainerHeight + 'px';
+
     setFormValues({
       programName: program?.name || '',
       mainGoal: program?.main_goal || '',
@@ -34,9 +45,18 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   }, [program]);
 
   const handleChange = e => {
+    let value = e.target.value;
+
+    if (e.target.name === 'programDuration' && value < 1) {
+      value = 1;
+    }
+    if (e.target.name === 'daysPerWeek' && value < 1) {
+      value = 1;
+    }
+
     setFormValues({
       ...formValues,
-      [e.target.name]: e.target.value,
+      [e.target.name]: value,
       programDurationDisplay: `${program?.programDuration || ''} ${
         program?.durationUnit || ''
       }`
@@ -53,71 +73,65 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
     navigate('/');
   };
 
-  console.log('formValues.mainGoal:', formValues.mainGoal);
-
-  console.log('formValues.name:', formValues.name);
-
-  console.log(
-    'formValues.programDurationDisplay:',
-    formValues.programDurationDisplay
-  );
-
   return (
     <form className='prog-container' onSubmit={handleSubmit}>
       <div className='prog-container__lines'></div>
-      <div className='prog-container__prog-section'>
+      <div className='prog-container__section'>
         {isEditing ? (
           <>
             <label
-              htmlFor='program-name-input'
-              className='prog-container__prog-section-title'
+              htmlFor='programName'
+              className='prog-container__section-title'
             >
-              Name
+              Program Name
             </label>
-            <input
+            <textarea
               type='text'
               id='program-name-input'
               name='programName'
               value={formValues.name}
               onChange={handleChange}
               disabled={!isEditing}
+              maxLength={84}
             />
           </>
         ) : (
-          <span className='prog-container__prog-section-text'>
+          <span className='prog-container__section-text'>
             {formValues.programName}
           </span>
         )}
       </div>
 
-      <div className='prog-container__prog-section'>
-        <label
-          htmlFor='mainGoal'
-          className='prog-container__prog-section-title'
-        >
+      <div className='prog-container__section'>
+        <label htmlFor='mainGoal' className='prog-container__section-title'>
           Main Goal
         </label>
         {isEditing ? (
-          <input
-            type='text'
+          <select
             id='mainGoal'
             name='mainGoal'
             value={formValues.mainGoal}
             onChange={handleChange}
             disabled={!isEditing}
-          />
+          >
+            {GOAL_TYPES.map(goal => (
+              <option key={goal.id} value={goal.value}>
+                {goal.label}
+              </option>
+            ))}
+          </select>
         ) : (
-          <span className='prog-container__prog-section-text'>
+          <span className='prog-container__section-text'>
             {formValues.mainGoal}
           </span>
         )}
       </div>
-      <div className='prog-container__prog-section'>
+      <div className='prog-container__section'>
         <label
           htmlFor='programDuration'
-          className='prog-container__prog-section-title'
+          className='prog-container__section-title'
         >
-          Program Duration
+          Duration
         </label>
         {isEditing ? (
           <>
@@ -127,26 +141,29 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
               name='programDuration'
               value={formValues.programDuration}
               onChange={handleChange}
+              min={1}
             />
-            <input
-              type='text'
+            <select
               id='durationUnit'
               name='durationUnit'
               value={formValues.durationUnit}
               onChange={handleChange}
-            />
+            >
+              {DURATION_TYPES.map(duration => (
+                <option key={duration.id} value={duration.value}>
+                  {duration.label}
+                </option>
+              ))}
+            </select>
           </>
         ) : (
-          <span className='prog-container__prog-section-text'>
+          <span className='prog-container__section-text'>
             {formValues.programDurationDisplay}
           </span>
         )}
       </div>
-      <div className='prog-container__prog-section'>
-        <label
-          htmlFor='daysPerWeek'
-          className='prog-container__prog-section-title'
-        >
+      <div className='prog-container__section'>
+        <label htmlFor='daysPerWeek' className='prog-container__section-title'>
           Days Per Week
         </label>
         {isEditing ? (
@@ -157,9 +174,10 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
             value={formValues.daysPerWeek}
             onChange={handleChange}
             disabled={!isEditing}
+            min={1}
           />
         ) : (
-          <span className='prog-container__prog-section-text'>
+          <span className='prog-container__section-text'>
             {formValues.daysPerWeek}
           </span>
         )}

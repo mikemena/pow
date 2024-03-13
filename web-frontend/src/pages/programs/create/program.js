@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GOAL_TYPES, DURATION_TYPES } from '../../../utils/constants';
+import { DayContainerProvider } from '../../../contexts/dayContainerContext';
 import DayContainer from '../../../components/DayContainer/DayContainer';
 import useFetchData from '../../../hooks/useFetchData';
 import ProgramForm from '../../../components/Program/ProgramForm';
@@ -100,11 +100,11 @@ const CreateProgram = () => {
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div>
+    <div classname='create-prog-container'>
       <NavBar isEditing='true' />
-      <div id='create-program-container'>
-        <div id='create-program-header-container'>
-          <h1 className='page-title'>Create New Program</h1>
+      <div className='.create-prog-container__item'>
+        <div className='create-prog-container__header'>
+          <h1 className='create-prog-container__title'>Create New Program</h1>
         </div>
 
         <ProgramForm
@@ -113,13 +113,15 @@ const CreateProgram = () => {
           handleAddDay={handleAddDay}
           isEditing={true}
         />
-        {days.map(day => (
-          <DayContainer
-            key={day.id}
-            day={day}
-            handleRemoveDay={handleRemoveDay}
-          />
-        ))}
+        <DayContainerProvider>
+          {days.map(day => (
+            <DayContainer
+              key={day.id}
+              day={day}
+              handleRemoveDay={handleRemoveDay}
+            />
+          ))}
+        </DayContainerProvider>
       </div>
     </div>
   );

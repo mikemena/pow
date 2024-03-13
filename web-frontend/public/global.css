@@ -66,13 +66,10 @@ button {
   cursor: pointer;
   border-radius: 4px;
 }
-button:hover {
-  background-color: var(--alt-text-color);
-  border: 2px solid var(--alt-text-color);
-}
 
 input,
-select {
+select,
+textarea {
   box-sizing: border-box;
   font-size: 16px;
   border-radius: 4px;

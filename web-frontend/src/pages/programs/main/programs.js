@@ -58,17 +58,17 @@ const ProgramPage = () => {
   console.log('programs from programs page:', programs);
 
   return (
-    <div className='programs'>
+    <div className='view-prog-container'>
       <NavBar />
-      <div id='program-header-container'>
-        <h1 className='page-title'>My Programs</h1>
-        <div id='container'>
+      <div className='view-prog-container__header'>
+        <h1 className='view-prog-container__title'>My Programs</h1>
+        <div>
           <Button id='create-program-btn' onClick={handleCreateProgram}>
             Create
           </Button>
         </div>
       </div>
-      <div id='programs-container'>
+      <div className='view-prog-container_items'>
         {programs.map(program => (
           <ProgramForm
             program={program}

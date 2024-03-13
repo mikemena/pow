@@ -1,11 +1,4 @@
-#programs-container {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 20px;
-}
-
-#program-header-container {
+.view-prog-container__header {
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -13,8 +6,14 @@
   margin-top: 30px;
 }
 
-.page-title,
-.section-title {
+.view-prog-container_items {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  gap: 20px;
+}
+
+.view-prog-container__title {
   padding-left: 50px;
   font-family: courier, monospace;
 }
