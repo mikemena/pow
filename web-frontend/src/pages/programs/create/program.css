@@ -1,33 +1,17 @@
-.create-prog-container {
+.create-prog-page__container {
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: flex-start;
+  align-items: flex-start;
 }
 
-.create-prog-container__left {
+.create-prog-page__left-container {
+  flex-grow: 0;
   width: 60%;
   margin-right: 20px;
 }
 
-.create-prog-container__right {
+.create-prog-page__right-container {
+  flex-grow: 0;
   width: 35%;
-}
-
-.create-prog-container__item {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
-  gap: 20px;
-}
-.create-prog-container__header {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  padding-top: 30px;
-  margin-top: 30px;
-}
-
-.create-prog-container__title {
-  padding-left: 50px;
-  font-family: courier, monospace;
 }

@@ -96,12 +96,12 @@ const CreateProgram = () => {
   };
 
   return (
-    <div classname='create-prog-container'>
+    <div className='create-prog-page'>
       <NavBar isEditing='true' />
-      <div className='.create-prog-container__item'>
-        <div className='create-prog-container__left'>
-          <div className='create-prog-container__header'>
-            <h1 className='create-prog-container__title'>Create New Program</h1>
+      <div className='create-prog-page__container'>
+        <div className='create-prog-page__left-container'>
+          <div className='create-prog-page__header'>
+            <h1 className='create-prog-page__title'>Create New Program</h1>
           </div>
 
           <ProgramForm
@@ -122,7 +122,7 @@ const CreateProgram = () => {
             ))}
           </DayContainerProvider>
         </div>
-        <div className='create-prog-container__right'>
+        <div className='create-prog-page__right-container'>
           {showExerciseList && <ExerciseList />}
         </div>
       </div>
