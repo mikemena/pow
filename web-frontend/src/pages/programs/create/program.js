@@ -32,7 +32,8 @@ const CreateProgram = () => {
     const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1;
     const newDay = {
       id: newDayId,
-      name: `Day ${newDayId}`
+      name: `Day ${newDayId}`,
+      exercises: []
     };
     setDays([...days, newDay]);
   };
