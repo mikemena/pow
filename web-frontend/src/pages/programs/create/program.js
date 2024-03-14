@@ -18,11 +18,12 @@ const CreateProgram = () => {
   });
 
   const [days, setDays] = useState([{ id: 1, name: 'Day 1' }]);
+  const [showExerciseList, setShowExerciseList] = useState(false);
 
   const navigate = useNavigate();
 
-  const onDragEnd = result => {
-    // TODO: reorder your list of items based on the result object
+  const handleAddExercise = () => {
+    setShowExerciseList(true);
   };
 
   const handleAddDay = () => {
@@ -98,30 +99,32 @@ const CreateProgram = () => {
     <div classname='create-prog-container'>
       <NavBar isEditing='true' />
       <div className='.create-prog-container__item'>
-        <div className='create-prog-container__header'>
-          <h1 className='create-prog-container__title'>Create New Program</h1>
+        <div className='create-prog-container__left'>
+          <div className='create-prog-container__header'>
+            <h1 className='create-prog-container__title'>Create New Program</h1>
+          </div>
+
+          <ProgramForm
+            program={program}
+            onSubmit={handleSaveProgram}
+            handleAddDay={handleAddDay}
+            isEditing={true}
+          />
+
+          <DayContainerProvider>
+            {days.map(day => (
+              <DayContainer
+                key={day.id}
+                day={day}
+                handleRemoveDay={handleRemoveDay}
+                handleAddExercise={handleAddExercise}
+              />
+            ))}
+          </DayContainerProvider>
         </div>
-
-        <ProgramForm
-          program={program}
-          onSubmit={handleSaveProgram}
-          handleAddDay={handleAddDay}
-          isEditing={true}
-        />
-
-        <DayContainerProvider>
-          {days.map(day => (
-            <DayContainer
-              key={day.id}
-              day={day}
-              handleRemoveDay={handleRemoveDay}
-            />
-          ))}
-        </DayContainerProvider>
-
-        {days.map((day, index) => (
-          <ExerciseList />
-        ))}
+        <div className='create-prog-container__right'>
+          {showExerciseList && <ExerciseList />}
+        </div>
       </div>
     </div>
   );

@@ -9,7 +9,7 @@ import Button from '../Inputs/Button';
 import { DayContainerContext } from '../../contexts/dayContainerContext';
 import './DayContainer.css';
 
-const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
+const DayContainer = ({ day, handleRemoveDay, handleAddExercise }) => {
   const [exercises, setExercises] = useState([]);
   const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
   const isExpanded = expandedDayId === day.id;
@@ -54,7 +54,7 @@ const DayContainer = ({ day, onAddExercise, handleRemoveDay }) => {
                 <h3>Exercises</h3>
                 <Button
                   id='save--exercise-btn'
-                  onClick={() => onAddExercise(day.id)}
+                  onClick={handleAddExercise}
                   type='button'
                   bgColor='#EAEAEA'
                 >

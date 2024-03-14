@@ -1,3 +1,18 @@
+.create-prog-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.create-prog-container__left {
+  width: 60%;
+  margin-right: 20px;
+}
+
+.create-prog-container__right {
+  width: 35%;
+}
+
 .create-prog-container__item {
   display: flex;
   flex-wrap: wrap;
