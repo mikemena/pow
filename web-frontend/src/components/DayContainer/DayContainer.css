@@ -49,3 +49,12 @@ button {
 .day-container__delete-btn:hover {
   border-style: none;
 }
+
+.day-container__no-exercise-message {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-text-color);
+  margin: 20px;
+  text-align: center;
+}

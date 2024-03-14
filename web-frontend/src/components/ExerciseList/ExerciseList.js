@@ -11,7 +11,7 @@ const searchStyle = {
   borderRadius: '5px'
 };
 
-const ExerciseList = ({ isDraggable }) => {
+const ExerciseList = ({ activeDay, selectedExercises, onSelectExercise }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -74,8 +74,10 @@ const ExerciseList = ({ isDraggable }) => {
             muscle={exercise.muscle}
             equipment={exercise.equipment}
             image={`http://localhost:9025/${exercise.file_path}`}
-            isSelectable={false} // Make the exercise selectable in this context
-            onClick={() => console.log('Exercise clicked:', exercise.name)}
+            isSelected={selectedExercises.some(
+              e => e.exercise_id === exercise.exercise_id
+            )}
+            onClick={() => onSelectExercise(exercise)}
           />
         ))}
       </div>

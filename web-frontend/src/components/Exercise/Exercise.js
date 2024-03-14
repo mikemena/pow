@@ -7,12 +7,17 @@ export default function Exercise({
   equipment,
   image,
   onClick,
-  isSelectable,
   isSelected
 }) {
-  const exerciseClass = isSelected ? 'exercise selected' : 'exercise';
+  const handleClick = () => {
+    if (onClick) onClick();
+  };
+
   return (
-    <div className={exerciseClass} onClick={isSelectable ? onClick : undefined}>
+    <div
+      className={`exercise ${isSelected ? 'exercise--selected' : ''}`}
+      onClick={handleClick}
+    >
       <div className='image-container'>
         <img src={image} alt={name} id='exercise-image' />
         <div className='glass'></div>

@@ -17,7 +17,7 @@ const CreateProgram = () => {
     workouts: []
   });
 
-  const [days, setDays] = useState([{ id: 1, name: 'Day 1' }]);
+  const [days, setDays] = useState([{ id: 1, name: 'Day 1', exercises: [] }]);
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeDay, setActiveDay] = useState(null);
 
@@ -48,6 +48,45 @@ const CreateProgram = () => {
       name: `Day ${index + 1}`
     }));
     setDays(renumberedDays);
+  };
+
+  const handleSelectExercise = selectedExercise => {
+    setDays(
+      days.map(day => {
+        if (day.id === activeDay) {
+          const isExerciseSelected = day.exercises.find(
+            e => e.exercise_id === selectedExercise.exercise_id
+          );
+          if (isExerciseSelected) {
+            // Exercise is already selected, so remove it
+            return {
+              ...day,
+              exercises: day.exercises.filter(
+                e => e.exercise_id !== selectedExercise.exercise_id
+              )
+            };
+          } else {
+            // Exercise is not selected, so add it
+            return { ...day, exercises: [...day.exercises, selectedExercise] };
+          }
+        }
+        return day;
+      })
+    );
+  };
+
+  const handleRemoveExercise = (dayId, exerciseId) => {
+    setDays(
+      days.map(day => {
+        if (day.id === dayId) {
+          return {
+            ...day,
+            exercises: day.exercises.filter(ex => ex.id !== exerciseId)
+          };
+        }
+        return day;
+      })
+    );
   };
 
   const handleSaveProgram = async NewProgram => {
@@ -119,8 +158,10 @@ const CreateProgram = () => {
                 key={day.id}
                 day={day}
                 isActive={activeDay === day.id}
+                exercises={day.exercises}
                 handleRemoveDay={handleRemoveDay}
                 handleAddExercise={() => handleAddExercise(day.id)}
+                handleRemoveExercise={() => handleRemoveExercise(day.id)}
               />
             ))}
           </DayContainerProvider>
@@ -131,9 +172,17 @@ const CreateProgram = () => {
               ? `Adding exercises for ${
                   days.find(day => day.id === activeDay)?.name
                 }`
-              : 'Select a day to add exercises'}
+              : ''}
           </h1>
-          {showExerciseList && <ExerciseList />}
+          {showExerciseList && (
+            <ExerciseList
+              activeDay={activeDay}
+              selectedExercises={
+                days.find(day => day.id === activeDay)?.exercises || []
+              }
+              onSelectExercise={handleSelectExercise}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useContext } from 'react';
 import PropTypes from 'prop-types';
 import {
   TbLayoutNavbarExpandFilled,
@@ -13,9 +13,9 @@ const DayContainer = ({
   day,
   handleRemoveDay,
   handleAddExercise,
+  handleRemoveExercise,
   isActive
 }) => {
-  const [exercises, setExercises] = useState([]);
   const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
   const isExpanded = expandedDayId === day.id;
 
@@ -68,24 +68,28 @@ const DayContainer = ({
                   Add Exercise
                 </Button>
               </div>
-              <div className='day-container__content'>
-                {exercises.map((exercise, index) => (
-                  <div key={index}>
-                    <h4>{exercise.name}</h4>
-                    <Button
-                      id='remove-exercise-btn'
-                      type='button'
-                      bgColor='#EAEAEA'
-                      onClick={() => {
-                        setExercises(
-                          exercises.filter(ex => ex.id !== exercise.id)
-                        );
-                      }}
-                    >
-                      Remove Exercise
-                    </Button>
-                  </div>
-                ))}
+              <div className='day-container__exercises'>
+                {day.exercises && day.exercises.length > 0 ? (
+                  day.exercises.map((exercise, index) => (
+                    <div key={index}>
+                      <h4>{exercise.name}</h4>
+                      <Button
+                        id='remove-exercise-btn'
+                        type='button'
+                        bgColor='#EAEAEA'
+                        onClick={() =>
+                          handleRemoveExercise(day.id, exercise.id)
+                        }
+                      >
+                        X
+                      </Button>
+                    </div>
+                  ))
+                ) : (
+                  <p className='day-container__no-exercise-message'>
+                    No exercises added
+                  </p>
+                )}
               </div>
             </div>
           )}
