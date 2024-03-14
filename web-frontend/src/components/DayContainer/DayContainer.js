@@ -9,10 +9,17 @@ import Button from '../Inputs/Button';
 import { DayContainerContext } from '../../contexts/dayContainerContext';
 import './DayContainer.css';
 
-const DayContainer = ({ day, handleRemoveDay, handleAddExercise }) => {
+const DayContainer = ({
+  day,
+  handleRemoveDay,
+  handleAddExercise,
+  isActive
+}) => {
   const [exercises, setExercises] = useState([]);
   const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
   const isExpanded = expandedDayId === day.id;
+
+  const dayContainerClass = isActive ? 'day-container active' : 'day-container';
 
   const toggleDayExpand = () => {
     toggleExpand(day.id);
@@ -21,7 +28,7 @@ const DayContainer = ({ day, handleRemoveDay, handleAddExercise }) => {
   return (
     <div>
       <>
-        <div className='day-container'>
+        <div className={dayContainerClass}>
           <div className='day-container__header' onClick={toggleDayExpand}>
             <button
               className='day-container__expand-btn'

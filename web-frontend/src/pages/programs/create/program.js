@@ -19,11 +19,13 @@ const CreateProgram = () => {
 
   const [days, setDays] = useState([{ id: 1, name: 'Day 1' }]);
   const [showExerciseList, setShowExerciseList] = useState(false);
+  const [activeDay, setActiveDay] = useState(null);
 
   const navigate = useNavigate();
 
-  const handleAddExercise = () => {
+  const handleAddExercise = dayId => {
     setShowExerciseList(true);
+    setActiveDay(dayId);
   };
 
   const handleAddDay = () => {
@@ -116,13 +118,21 @@ const CreateProgram = () => {
               <DayContainer
                 key={day.id}
                 day={day}
+                isActive={activeDay === day.id}
                 handleRemoveDay={handleRemoveDay}
-                handleAddExercise={handleAddExercise}
+                handleAddExercise={() => handleAddExercise(day.id)}
               />
             ))}
           </DayContainerProvider>
         </div>
         <div className='create-prog-page__right-container'>
+          <h1 className='create-prog-page__exercise-container-title'>
+            {activeDay
+              ? `Adding exercises for ${
+                  days.find(day => day.id === activeDay)?.name
+                }`
+              : 'Select a day to add exercises'}
+          </h1>
           {showExerciseList && <ExerciseList />}
         </div>
       </div>

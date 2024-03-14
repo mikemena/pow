@@ -16,3 +16,24 @@
   flex-grow: 0;
   width: 35%;
 }
+
+.create-prog-page__title {
+  padding-left: 20px;
+}
+
+.create-prog-page__exercise-container-title {
+  padding-left: 20px;
+  font-size: 26px;
+}
+
+@media screen and (max-width: 800px) {
+  .create-prog-page__container {
+    flex-direction: column;
+  }
+
+  .create-prog-page__left-container,
+  .create-prog-page__right-container {
+    width: 100%;
+    margin-right: 0;
+  }
+}

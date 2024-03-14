@@ -56,7 +56,6 @@ const ExerciseList = ({ isDraggable }) => {
 
   return (
     <div id='exercise-container'>
-      <h1 className='exercise-container__title'>Exercises</h1>
       <ExerciseSearch
         style={searchStyle}
         onChange={handleSearch}
