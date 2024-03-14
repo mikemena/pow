@@ -3,11 +3,12 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
+  margin-top: 60px;
 }
 
 .create-prog-page__left-container {
   flex-grow: 0;
-  width: 40%;
+  width: 650px;
   margin-right: 20px;
 }
 
