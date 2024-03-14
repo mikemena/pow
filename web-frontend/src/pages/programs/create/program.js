@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DayContainerProvider } from '../../../contexts/dayContainerContext';
 import DayContainer from '../../../components/DayContainer/DayContainer';
-import useFetchData from '../../../hooks/useFetchData';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
+import ExerciseList from '../../../components/ExerciseList/ExerciseList';
 import './program.css';
 
 const CreateProgram = () => {
@@ -21,11 +21,9 @@ const CreateProgram = () => {
 
   const navigate = useNavigate();
 
-  const {
-    data: exercises,
-    isLoading,
-    error
-  } = useFetchData('http://localhost:9025/api/exercise-catalog');
+  const onDragEnd = result => {
+    // TODO: reorder your list of items based on the result object
+  };
 
   const handleAddDay = () => {
     const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1;
@@ -96,9 +94,6 @@ const CreateProgram = () => {
     }
   };
 
-  if (isLoading) return <div>loading...</div>;
-  if (error) return <div>Error loading exercises: {error}</div>;
-
   return (
     <div classname='create-prog-container'>
       <NavBar isEditing='true' />
@@ -113,6 +108,7 @@ const CreateProgram = () => {
           handleAddDay={handleAddDay}
           isEditing={true}
         />
+
         <DayContainerProvider>
           {days.map(day => (
             <DayContainer
@@ -122,6 +118,10 @@ const CreateProgram = () => {
             />
           ))}
         </DayContainerProvider>
+
+        {days.map((day, index) => (
+          <ExerciseList />
+        ))}
       </div>
     </div>
   );

@@ -1,30 +1,35 @@
 import { useState } from 'react';
-import styled from 'styled-components';
 import TextInput from '../Inputs/TextInput';
+import styled from 'styled-components';
 
 const SearchBarContainer = styled.div`
-  width: 800px;
   display: flex;
-  flex-direction: column;
-  gap: 16px;
+  width: 600px;
+  padding: 0 0 0 10px;
 `;
 
-export default function ExerciseSearch({ exercises = [], onChange }) {
+export default function ExerciseSearch({
+  exercises = [],
+  onChange,
+  searchStyle
+}) {
   const [inputValue, setInputValue] = useState('');
   const handleInputChange = event => {
     const newValue = event.target.value;
     setInputValue(newValue);
-    onChange(newValue); // Call the provided onChange function with the new value
+    onChange(newValue);
   };
   return (
     <SearchBarContainer>
       <TextInput
         list='exercises'
-        id='exercise-search'
+        className='search-bar-container__input'
+        id='exercise-search-bar'
         onChange={handleInputChange}
         value={inputValue}
         type='search'
         placeholder='Search Exercise Names'
+        style={searchStyle}
       />
       <datalist id='exercises'>
         {exercises.map((exercise, index) => (

@@ -4,12 +4,13 @@ import useFetchData from '../../hooks/useFetchData';
 
 const FilterContainer = styled.div`
   display: flex;
-  gap: 1rem;
+  width: 585px;
 `;
 
 const Filter = styled.div`
   display: flex;
-  width: 275px;
+  width: 300px;
+  padding-left: 10px;
 `;
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
@@ -37,7 +38,6 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   return (
     <FilterContainer>
       <Filter>
-        {/* <label htmlFor='muscle-search'>Muscle</label> */}
         <input
           list='muscles'
           id='muscle-search'
