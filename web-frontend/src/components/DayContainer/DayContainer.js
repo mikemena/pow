@@ -4,7 +4,7 @@ import {
   TbLayoutNavbarExpandFilled,
   TbLayoutBottombarExpandFilled
 } from 'react-icons/tb';
-import { MdRemoveCircle } from 'react-icons/md';
+import { MdDelete } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { DayContainerContext } from '../../contexts/dayContainerContext';
 import './DayContainer.css';
@@ -54,7 +54,7 @@ const DayContainer = ({
                 }
               }}
             >
-              <MdRemoveCircle size={30} />
+              <MdDelete size={30} />
             </button>
           </div>
           {isExpanded && (
@@ -73,18 +73,28 @@ const DayContainer = ({
               <div className='day-container__exercises'>
                 {day.exercises && day.exercises.length > 0 ? (
                   day.exercises.map(exercise => (
-                    <div key={exercise.exercise_id}>
-                      <h4>{exercise.name}</h4>
-                      <Button
+                    <div
+                      key={exercise.exercise_id}
+                      className='day-container__each-exercise'
+                    >
+                      <div className='day-container__exercise-details'>
+                        <h4 className='day-container__exercise-name'>
+                          {exercise.name}
+                        </h4>
+                        <p className='day-container__exercise-muscle'>
+                          {exercise.muscle}
+                        </p>
+                      </div>
+                      <button
+                        className='day-container__remove-exercise-btn'
                         id={`remove-exercise-btn-${exercise.exercise_id}`}
                         type='button'
-                        bgColor='#EAEAEA'
                         onClick={() =>
                           handleRemoveExercise(day.id, exercise.exercise_id)
                         }
                       >
-                        X
-                      </Button>
+                        <MdDelete size={30} />
+                      </button>
                     </div>
                   ))
                 ) : (
