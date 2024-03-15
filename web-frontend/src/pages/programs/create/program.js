@@ -52,6 +52,7 @@ const CreateProgram = () => {
   };
 
   const handleSelectExercise = selectedExercise => {
+    console.log('Adding exercise:', selectedExercise);
     setDays(
       days.map(day => {
         if (day.id === activeDay) {
@@ -77,17 +78,21 @@ const CreateProgram = () => {
   };
 
   const handleRemoveExercise = (dayId, exerciseId) => {
-    setDays(
-      days.map(day => {
-        if (day.id === dayId) {
-          return {
-            ...day,
-            exercises: day.exercises.filter(ex => ex.id !== exerciseId)
-          };
-        }
-        return day;
-      })
-    );
+    console.log(`Removing exercise ${exerciseId} from day ${dayId}`);
+
+    const updatedDays = days.map(day => {
+      if (day.id === dayId) {
+        const updatedExercises = day.exercises.filter(
+          ex => ex.exercise_id !== exerciseId
+        );
+        console.log(`Updated exercises for day ${dayId}:`, updatedExercises);
+        return { ...day, exercises: updatedExercises };
+      }
+      return day;
+    });
+
+    console.log('Updated days:', updatedDays);
+    setDays(updatedDays);
   };
 
   const handleSaveProgram = async NewProgram => {
@@ -162,7 +167,9 @@ const CreateProgram = () => {
                 exercises={day.exercises}
                 handleRemoveDay={handleRemoveDay}
                 handleAddExercise={() => handleAddExercise(day.id)}
-                handleRemoveExercise={() => handleRemoveExercise(day.id)}
+                handleRemoveExercise={event =>
+                  handleRemoveExercise(day.id, day.exercises.exercise_id)
+                }
               />
             ))}
           </DayContainerProvider>

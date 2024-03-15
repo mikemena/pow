@@ -24,6 +24,8 @@ const DayContainer = ({
   const toggleDayExpand = () => {
     toggleExpand(day.id);
   };
+  console.log('day', day);
+  console.log(day.exercises);
 
   return (
     <div>
@@ -70,15 +72,15 @@ const DayContainer = ({
               </div>
               <div className='day-container__exercises'>
                 {day.exercises && day.exercises.length > 0 ? (
-                  day.exercises.map((exercise, index) => (
-                    <div key={index}>
+                  day.exercises.map(exercise => (
+                    <div key={exercise.exercise_id}>
                       <h4>{exercise.name}</h4>
                       <Button
-                        id='remove-exercise-btn'
+                        id={`remove-exercise-btn-${exercise.exercise_id}`}
                         type='button'
                         bgColor='#EAEAEA'
                         onClick={() =>
-                          handleRemoveExercise(day.id, exercise.id)
+                          handleRemoveExercise(day.id, exercise.exercise_id)
                         }
                       >
                         X
