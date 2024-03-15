@@ -3,7 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/home/home';
 import ExercisesListPage from './pages/exercises/main/exercises';
-import WorkoutPage from './pages/workoutTemplates/main/template';
+
 import ProgramPage from './pages/programs/main/programs';
 import CreateProgramPage from './pages/programs/create/program';
 import CreateWorkout from './pages/workoutTemplates/create/template';
@@ -20,7 +20,7 @@ function App() {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/exercises' element={<ExercisesListPage />} />
-        <Route path='/workouts' element={<WorkoutPage />} />
+
         <Route path='/create-workout' element={<CreateWorkout />} />
         <Route path='/programs' element={<ProgramPage />} />
         <Route path='/create-program' element={<CreateProgramPage />} />

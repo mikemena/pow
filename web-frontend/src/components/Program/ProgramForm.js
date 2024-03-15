@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../components/Inputs/Button';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
+import { toProperCase } from '../../utils/stringUtils';
 
 const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
     daysPerWeek: program?.days_per_week || '',
     workouts: program?.workouts || [],
     programDurationDisplay: `${program?.program_duration || ''} ${
-      program?.duration_unit || ''
+      toProperCase(program?.duration_unit) || ''
     }`
   });
 
@@ -39,7 +40,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
       daysPerWeek: program?.days_per_week || '',
       workouts: program?.workouts || [],
       programDurationDisplay: `${program?.program_duration || ''} ${
-        program?.duration_unit || ''
+        toProperCase(program?.duration_unit) || ''
       }`
     });
   }, [program]);
