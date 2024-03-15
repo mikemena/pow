@@ -167,9 +167,7 @@ const CreateProgram = () => {
                 exercises={day.exercises}
                 handleRemoveDay={handleRemoveDay}
                 handleAddExercise={() => handleAddExercise(day.id)}
-                handleRemoveExercise={event =>
-                  handleRemoveExercise(day.id, day.exercises.exercise_id)
-                }
+                handleRemoveExercise={handleRemoveExercise}
               />
             ))}
           </DayContainerProvider>
