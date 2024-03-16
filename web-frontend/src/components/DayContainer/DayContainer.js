@@ -1,8 +1,9 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   TbLayoutNavbarExpandFilled,
-  TbLayoutBottombarExpandFilled
+  TbLayoutBottombarExpandFilled,
+  TbPencil
 } from 'react-icons/tb';
 import { MdDelete } from 'react-icons/md';
 import Button from '../Inputs/Button';
@@ -18,6 +19,8 @@ const DayContainer = ({
 }) => {
   const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
   const isExpanded = expandedDayId === day.id;
+
+  const [isEditing, setIsEditing] = useState(false);
 
   const dayContainerClass = isActive ? 'day-container active' : 'day-container';
 
@@ -37,12 +40,23 @@ const DayContainer = ({
               title='Expand/Collapse Day'
             >
               {isExpanded ? (
-                <TbLayoutBottombarExpandFilled size={30} />
+                <TbLayoutBottombarExpandFilled size={20} />
               ) : (
-                <TbLayoutNavbarExpandFilled size={30} />
+                <TbLayoutNavbarExpandFilled size={20} />
               )}
             </button>
-            <h2 className='day-container__title'>{day.name}</h2>
+
+            {isEditing ? (
+              <p>Editing</p>
+            ) : (
+              <div className='day-container__title_container'>
+                <button className='day-container__edit-title-btn'>
+                  <TbPencil size={20} />
+                </button>
+                <h2 className='day-container__title'>{day.name}</h2>
+              </div>
+            )}
+
             <button
               className='day-container__delete-btn'
               onClick={() => {
@@ -54,7 +68,7 @@ const DayContainer = ({
                 }
               }}
             >
-              <MdDelete size={30} />
+              <MdDelete size={20} />
             </button>
           </div>
           {isExpanded && (

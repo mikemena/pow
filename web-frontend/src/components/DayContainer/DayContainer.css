@@ -22,8 +22,14 @@ button {
   justify-content: space-between;
 }
 
+.day-container__title_container {
+  display: flex;
+  align-items: center;
+}
+
 .day-container__title {
   margin: 0;
+
   font-weight: 600;
   font-style: normal;
   font-size: 24px;
@@ -33,7 +39,8 @@ button {
 }
 .day-container__expand-btn,
 .day-container__delete-btn,
-.day-container__remove-exercise-btn {
+.day-container__remove-exercise-btn,
+.day-container__edit-title-btn {
   background: none;
   color: var(--dark-text-color);
   border-radius: 4px;
