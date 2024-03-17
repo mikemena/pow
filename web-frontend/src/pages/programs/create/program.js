@@ -48,12 +48,12 @@ const CreateProgram = () => {
     );
 
     //renumber the remaining workouts
-    const renumberedWorkouts = updatedWorkouts.map((workout, index) => ({
-      ...workout,
-      id: index + 1,
-      name: `Workout ${index + 1}`
-    }));
-    setWorkouts(renumberedWorkouts);
+    // const renumberedWorkouts = updatedWorkouts.map((workout, index) => ({
+    //   ...workout,
+    //   id: index + 1,
+    //   name: `Workout ${index + 1}`
+    // }));
+    setWorkouts(updatedWorkouts);
   };
 
   const handleWorkoutTitle = (workoutId, newTitle) => {
