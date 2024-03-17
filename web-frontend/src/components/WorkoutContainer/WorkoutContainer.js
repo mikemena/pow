@@ -16,6 +16,7 @@ const WorkoutContainer = ({
   handleRemoveWorkout,
   handleAddExercise,
   handleRemoveExercise,
+  handleWorkoutTitle,
   isActive
 }) => {
   const { expandedWorkoutId, toggleExpand } = useContext(
@@ -28,10 +29,6 @@ const WorkoutContainer = ({
   const handleEditTitleChange = e => {
     setIsEditing(true);
     console.log('Editing', isEditing);
-  };
-
-  const handleSaveTitleChange = e => {
-    console.log('Save Title');
   };
 
   const handleCloseTitleChange = e => {
@@ -73,7 +70,7 @@ const WorkoutContainer = ({
                 <button className='workout-container__save-title-btn'>
                   <IoCheckmarkCircleSharp
                     size={20}
-                    onClick={handleSaveTitleChange}
+                    onClick={e => handleWorkoutTitle(e, workout.id)}
                   />
                 </button>
                 <input type='text' placeholder='Enter Title' />
@@ -164,9 +161,20 @@ const WorkoutContainer = ({
 WorkoutContainer.propTypes = {
   workout: PropTypes.shape({
     id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired
+    name: PropTypes.string.isRequired,
+    exercises: PropTypes.arrayOf(
+      PropTypes.shape({
+        exercise_id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        muscle: PropTypes.string.isRequired
+      })
+    )
   }).isRequired,
-  onAddExercise: PropTypes.func.isRequired
+  handleRemoveWorkout: PropTypes.func.isRequired,
+  handleAddExercise: PropTypes.func.isRequired,
+  handleRemoveExercise: PropTypes.func.isRequired,
+  handleWorkoutTitle: PropTypes.func.isRequired,
+  isActive: PropTypes.bool.isRequired
 };
 
 export default WorkoutContainer;

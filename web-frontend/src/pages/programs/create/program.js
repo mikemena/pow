@@ -22,6 +22,7 @@ const CreateProgram = () => {
   ]);
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
+  const [workoutTitle, setWorkoutTitle] = useState();
 
   const navigate = useNavigate();
 
@@ -54,6 +55,15 @@ const CreateProgram = () => {
       name: `Workout ${index + 1}`
     }));
     setWorkouts(renumberedWorkouts);
+  };
+
+  const handleWorkoutTitle = (e, workoutId) => {
+    const newTitle = e.target.value;
+    setWorkouts(prevWorkouts =>
+      prevWorkouts.map(workout =>
+        workout.id === workoutId ? { ...workout, name: newTitle } : workout
+      )
+    );
   };
 
   const handleSelectExercise = selectedExercise => {
@@ -179,6 +189,7 @@ const CreateProgram = () => {
                 handleRemoveWorkout={handleRemoveWorkout}
                 handleAddExercise={() => handleAddExercise(workout.id)}
                 handleRemoveExercise={handleRemoveExercise}
+                handleWorkoutTitle={handleWorkoutTitle}
               />
             ))}
           </WorkoutContainerProvider>
