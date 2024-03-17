@@ -17,82 +17,93 @@ const CreateProgram = () => {
     workouts: []
   });
 
-  const [days, setDays] = useState([{ id: 1, name: 'Day 1', exercises: [] }]);
+  const [workouts, setWorkouts] = useState([
+    { id: 1, name: 'Workout 1', exercises: [] }
+  ]);
   const [showExerciseList, setShowExerciseList] = useState(false);
-  const [activeDay, setActiveDay] = useState(null);
+  const [activeWorkout, setActiveWorkout] = useState(null);
 
   const navigate = useNavigate();
 
-  const handleAddExercise = dayId => {
+  const handleAddExercise = workoutId => {
     setShowExerciseList(true);
-    setActiveDay(dayId);
+    setActiveWorkout(workoutId);
   };
 
-  const handleAddDay = () => {
-    const newDayId = days.length > 0 ? days[days.length - 1].id + 1 : 1;
-    const newDay = {
-      id: newDayId,
-      name: `Day ${newDayId}`,
+  const handleAddWorkout = () => {
+    const newWorkoutId =
+      workouts.length > 0 ? workouts[workouts.length - 1].id + 1 : 1;
+    const newWorkout = {
+      id: newWorkoutId,
+      name: `Workout ${newWorkoutId}`,
       exercises: []
     };
-    setDays([...days, newDay]);
+    setWorkouts([...workouts, newWorkout]);
   };
 
-  const handleRemoveDay = dayId => {
-    //remove days
-    const updatedDays = days.filter(day => day.id !== dayId);
+  const handleRemoveWorkout = workoutId => {
+    //remove workout
+    const updatedWorkouts = workouts.filter(
+      workout => workout.id !== workoutId
+    );
 
-    //renumber the remaining days
-    const renumberedDays = updatedDays.map((day, index) => ({
-      ...day,
+    //renumber the remaining workouts
+    const renumberedWorkouts = updatedWorkouts.map((workout, index) => ({
+      ...workout,
       id: index + 1,
-      name: `Day ${index + 1}`
+      name: `Workout ${index + 1}`
     }));
-    setDays(renumberedDays);
+    setWorkouts(renumberedWorkouts);
   };
 
   const handleSelectExercise = selectedExercise => {
     console.log('Adding exercise:', selectedExercise);
-    setDays(
-      days.map(day => {
-        if (day.id === activeDay) {
-          const isExerciseSelected = day.exercises.find(
+    setWorkouts(
+      workouts.map(workout => {
+        if (workout.id === activeWorkout) {
+          const isExerciseSelected = workout.exercises.find(
             e => e.exercise_id === selectedExercise.exercise_id
           );
           if (isExerciseSelected) {
             // Exercise is already selected, so remove it
             return {
-              ...day,
-              exercises: day.exercises.filter(
+              ...workout,
+              exercises: workout.exercises.filter(
                 e => e.exercise_id !== selectedExercise.exercise_id
               )
             };
           } else {
             // Exercise is not selected, so add it
-            return { ...day, exercises: [...day.exercises, selectedExercise] };
+            return {
+              ...workout,
+              exercises: [...workout.exercises, selectedExercise]
+            };
           }
         }
-        return day;
+        return workout;
       })
     );
   };
 
-  const handleRemoveExercise = (dayId, exerciseId) => {
-    console.log(`Removing exercise ${exerciseId} from day ${dayId}`);
+  const handleRemoveExercise = (workoutId, exerciseId) => {
+    console.log(`Removing exercise ${exerciseId} from workout ${workoutId}`);
 
-    const updatedDays = days.map(day => {
-      if (day.id === dayId) {
-        const updatedExercises = day.exercises.filter(
+    const updatedWorkouts = workouts.map(workout => {
+      if (workout.id === workoutId) {
+        const updatedExercises = workout.exercises.filter(
           ex => ex.exercise_id !== exerciseId
         );
-        console.log(`Updated exercises for day ${dayId}:`, updatedExercises);
-        return { ...day, exercises: updatedExercises };
+        console.log(
+          `Updated exercises for workout ${workoutId}:`,
+          updatedExercises
+        );
+        return { ...workout, exercises: updatedExercises };
       }
-      return day;
+      return workout;
     });
 
-    console.log('Updated days:', updatedDays);
-    setDays(updatedDays);
+    console.log('Updated workouts:', updatedWorkouts);
+    setWorkouts(updatedWorkouts);
   };
 
   const handleSaveProgram = async NewProgram => {
@@ -154,19 +165,19 @@ const CreateProgram = () => {
           <ProgramForm
             program={program}
             onSubmit={handleSaveProgram}
-            handleAddDay={handleAddDay}
+            handleAddDay={handleAddWorkout}
             isEditing={true}
           />
 
           <WorkoutContainerProvider>
-            {days.map(day => (
+            {workouts.map(workout => (
               <WorkoutContainer
-                key={day.id}
-                day={day}
-                isActive={activeDay === day.id}
-                exercises={day.exercises}
-                handleRemoveDay={handleRemoveDay}
-                handleAddExercise={() => handleAddExercise(day.id)}
+                key={workout.id}
+                day={workout}
+                isActive={activeWorkout === workout.id}
+                exercises={workout.exercises}
+                handleRemoveDay={handleRemoveWorkout}
+                handleAddExercise={() => handleAddExercise(workout.id)}
                 handleRemoveExercise={handleRemoveExercise}
               />
             ))}
@@ -174,17 +185,18 @@ const CreateProgram = () => {
         </div>
         <div className='create-prog-page__right-container'>
           <h1 className='create-prog-page__exercise-container-title'>
-            {activeDay
+            {activeWorkout
               ? `Adding exercises for ${
-                  days.find(day => day.id === activeDay)?.name
+                  workouts.find(workout => workout.id === activeWorkout)?.name
                 }`
               : ''}
           </h1>
           {showExerciseList && (
             <ExerciseList
-              activeDay={activeDay}
+              activeWorkout={activeWorkout}
               selectedExercises={
-                days.find(day => day.id === activeDay)?.exercises || []
+                workouts.find(workout => workout.id === activeWorkout)
+                  ?.exercises || []
               }
               onSelectExercise={handleSelectExercise}
             />
