@@ -8,18 +8,20 @@ import {
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import Button from '../Inputs/Button';
-import { DayContainerContext } from '../../contexts/dayContainerContext';
-import './DayContainer.css';
+import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
+import './WorkoutContainer.css';
 
-const DayContainer = ({
-  day,
-  handleRemoveDay,
+const WorkoutContainer = ({
+  workout,
+  handleRemoveWorkout,
   handleAddExercise,
   handleRemoveExercise,
   isActive
 }) => {
-  const { expandedDayId, toggleExpand } = useContext(DayContainerContext);
-  const isExpanded = expandedDayId === day.id;
+  const { expandedWorkoutId, toggleExpand } = useContext(
+    WorkoutContainerContext
+  );
+  const isExpanded = expandedWorkoutId === workout.id;
 
   const [isEditing, setIsEditing] = useState(false);
 
@@ -37,22 +39,27 @@ const DayContainer = ({
     console.log('Editing', isEditing);
   };
 
-  const dayContainerClass = isActive ? 'day-container active' : 'day-container';
+  const workoutContainerClass = isActive
+    ? 'workout-container active'
+    : 'workout-container';
 
-  const toggleDayExpand = () => {
-    toggleExpand(day.id);
+  const toggleWorkoutExpand = () => {
+    toggleExpand(workout.id);
   };
-  console.log('day', day);
-  console.log(day.exercises);
+  console.log('workout', workout);
+  console.log(workout.exercises);
 
   return (
     <div>
       <>
-        <div className={dayContainerClass}>
-          <div className='day-container__header' onClick={toggleDayExpand}>
+        <div className={workoutContainerClass}>
+          <div
+            className='workout-container__header'
+            onClick={toggleWorkoutExpand}
+          >
             <button
-              className='day-container__expand-btn'
-              title='Expand/Collapse Day'
+              className='workout-container__expand-btn'
+              title='Expand/Collapse Workout'
             >
               {isExpanded ? (
                 <TbLayoutBottombarExpandFilled size={20} />
@@ -62,15 +69,15 @@ const DayContainer = ({
             </button>
 
             {isEditing ? (
-              <div className='day-container__title_container'>
-                <button className='day-container__save-title-btn'>
+              <div className='workout-container__title_container'>
+                <button className='workout-container__save-title-btn'>
                   <IoCheckmarkCircleSharp
                     size={20}
                     onClick={handleSaveTitleChange}
                   />
                 </button>
                 <input type='text' placeholder='Enter Title' />
-                <button className='day-container__close-title-btn'>
+                <button className='workout-container__close-title-btn'>
                   <IoCloseCircleSharp
                     size={20}
                     onClick={handleCloseTitleChange}
@@ -78,22 +85,22 @@ const DayContainer = ({
                 </button>
               </div>
             ) : (
-              <div className='day-container__title_container'>
-                <button className='day-container__edit-title-btn'>
+              <div className='workout-container__title_container'>
+                <button className='workout-container__edit-title-btn'>
                   <TbPencil size={20} onClick={handleEditTitleChange} />
                 </button>
-                <h2 className='day-container__title'>{day.name}</h2>
+                <h2 className='workout-container__title'>{workout.name}</h2>
               </div>
             )}
 
             <button
-              className='day-container__delete-btn'
+              className='workout-container__delete-btn'
               onClick={() => {
                 const confirm = window.confirm(
-                  `Are you sure you want to remove ${day.name}?`
+                  `Are you sure you want to remove ${workout.name}?`
                 );
                 if (confirm) {
-                  handleRemoveDay(day.id);
+                  handleRemoveWorkout(workout.id);
                 }
               }}
             >
@@ -101,8 +108,8 @@ const DayContainer = ({
             </button>
           </div>
           {isExpanded && (
-            <div className='day-container__body'>
-              <div className='day-container__header'>
+            <div className='workout-container__body'>
+              <div className='workout-container__header'>
                 <h3>Exercises</h3>
                 <Button
                   id='save--exercise-btn'
@@ -113,27 +120,27 @@ const DayContainer = ({
                   Add Exercise
                 </Button>
               </div>
-              <div className='day-container__exercises'>
-                {day.exercises && day.exercises.length > 0 ? (
-                  day.exercises.map(exercise => (
+              <div className='workout-container__exercises'>
+                {workout.exercises && workout.exercises.length > 0 ? (
+                  workout.exercises.map(exercise => (
                     <div
                       key={exercise.exercise_id}
-                      className='day-container__each-exercise'
+                      className='workout-container__each-exercise'
                     >
-                      <div className='day-container__exercise-details'>
-                        <h4 className='day-container__exercise-name'>
+                      <div className='workout-container__exercise-details'>
+                        <h4 className='workout-container__exercise-name'>
                           {exercise.name}
                         </h4>
-                        <p className='day-container__exercise-muscle'>
+                        <p className='workout-container__exercise-muscle'>
                           {exercise.muscle}
                         </p>
                       </div>
                       <button
-                        className='day-container__remove-exercise-btn'
+                        className='workout-container__remove-exercise-btn'
                         id={`remove-exercise-btn-${exercise.exercise_id}`}
                         type='button'
                         onClick={() =>
-                          handleRemoveExercise(day.id, exercise.exercise_id)
+                          handleRemoveExercise(workout.id, exercise.exercise_id)
                         }
                       >
                         <MdDelete size={30} />
@@ -141,7 +148,7 @@ const DayContainer = ({
                     </div>
                   ))
                 ) : (
-                  <p className='day-container__no-exercise-message'>
+                  <p className='workout-container__no-exercise-message'>
                     No exercises added
                   </p>
                 )}
@@ -154,7 +161,7 @@ const DayContainer = ({
   );
 };
 
-DayContainer.propTypes = {
+WorkoutContainer.propTypes = {
   day: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired
@@ -162,4 +169,4 @@ DayContainer.propTypes = {
   onAddExercise: PropTypes.func.isRequired
 };
 
-export default DayContainer;
+export default WorkoutContainer;

@@ -11,7 +11,7 @@ const searchStyle = {
   borderRadius: '5px'
 };
 
-const ExerciseList = ({ activeDay, selectedExercises, onSelectExercise }) => {
+const ExerciseList = ({ selectedExercises, onSelectExercise }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');

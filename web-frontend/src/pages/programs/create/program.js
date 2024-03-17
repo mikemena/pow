@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { DayContainerProvider } from '../../../contexts/dayContainerContext';
-import DayContainer from '../../../components/DayContainer/DayContainer';
+import { WorkoutContainerProvider } from '../../../contexts/workoutContainerContext';
+import WorkoutContainer from '../../../components/WorkoutContainer/WorkoutContainer';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
 import ExerciseList from '../../../components/ExerciseList/ExerciseList';
@@ -158,9 +158,9 @@ const CreateProgram = () => {
             isEditing={true}
           />
 
-          <DayContainerProvider>
+          <WorkoutContainerProvider>
             {days.map(day => (
-              <DayContainer
+              <WorkoutContainer
                 key={day.id}
                 day={day}
                 isActive={activeDay === day.id}
@@ -170,7 +170,7 @@ const CreateProgram = () => {
                 handleRemoveExercise={handleRemoveExercise}
               />
             ))}
-          </DayContainerProvider>
+          </WorkoutContainerProvider>
         </div>
         <div className='create-prog-page__right-container'>
           <h1 className='create-prog-page__exercise-container-title'>
