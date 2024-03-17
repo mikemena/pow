@@ -162,7 +162,7 @@ const WorkoutContainer = ({
 };
 
 WorkoutContainer.propTypes = {
-  day: PropTypes.shape({
+  workout: PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired
   }).isRequired,

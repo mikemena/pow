@@ -165,7 +165,7 @@ const CreateProgram = () => {
           <ProgramForm
             program={program}
             onSubmit={handleSaveProgram}
-            handleAddDay={handleAddWorkout}
+            handleAddWorkout={handleAddWorkout}
             isEditing={true}
           />
 
@@ -173,10 +173,10 @@ const CreateProgram = () => {
             {workouts.map(workout => (
               <WorkoutContainer
                 key={workout.id}
-                day={workout}
+                workout={workout}
                 isActive={activeWorkout === workout.id}
                 exercises={workout.exercises}
-                handleRemoveDay={handleRemoveWorkout}
+                handleRemoveWorkout={handleRemoveWorkout}
                 handleAddExercise={() => handleAddExercise(workout.id)}
                 handleRemoveExercise={handleRemoveExercise}
               />

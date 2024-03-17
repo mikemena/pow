@@ -5,7 +5,7 @@ import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 import { toProperCase } from '../../utils/stringUtils';
 
-const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
+const ProgramForm = ({ program, onSubmit, isEditing, handleAddWorkout }) => {
   const navigate = useNavigate();
 
   console.log('Rendering ProgramForm component', program);
@@ -185,8 +185,8 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddDay }) => {
       </div>
       {isEditing && (
         <div className='prog-container__btn-container'>
-          <Button type='button' onClick={handleAddDay}>
-            Add Day
+          <Button type='button' onClick={handleAddWorkout}>
+            Add Workout
           </Button>
           <Button type='submit'>Save</Button>
           <Button type='button' onClick={handleCancel}>
