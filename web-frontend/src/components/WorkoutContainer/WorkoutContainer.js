@@ -25,10 +25,16 @@ const WorkoutContainer = ({
   const isExpanded = expandedWorkoutId === workout.id;
 
   const [isEditing, setIsEditing] = useState(false);
+  const [workoutTitle, setWorkoutTitle] = useState(workout.name);
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
-    console.log('Editing', isEditing);
+    setWorkoutTitle(e.target.value);
+  };
+
+  const handleSaveTitle = () => {
+    handleWorkoutTitle(workout.id, workoutTitle);
+    setIsEditing(false);
   };
 
   const handleCloseTitleChange = e => {
@@ -68,12 +74,14 @@ const WorkoutContainer = ({
             {isEditing ? (
               <div className='workout-container__title_container'>
                 <button className='workout-container__save-title-btn'>
-                  <IoCheckmarkCircleSharp
-                    size={20}
-                    onClick={e => handleWorkoutTitle(e, workout.id)}
-                  />
+                  <IoCheckmarkCircleSharp size={20} onClick={handleSaveTitle} />
                 </button>
-                <input type='text' placeholder='Enter Title' />
+                <input
+                  type='text'
+                  value={workoutTitle}
+                  onChange={handleEditTitleChange}
+                  placeholder='Enter Title'
+                />
                 <button className='workout-container__close-title-btn'>
                   <IoCloseCircleSharp
                     size={20}

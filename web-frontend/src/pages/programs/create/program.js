@@ -22,7 +22,6 @@ const CreateProgram = () => {
   ]);
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
-  const [workoutTitle, setWorkoutTitle] = useState();
 
   const navigate = useNavigate();
 
@@ -57,12 +56,14 @@ const CreateProgram = () => {
     setWorkouts(renumberedWorkouts);
   };
 
-  const handleWorkoutTitle = (e, workoutId) => {
-    const newTitle = e.target.value;
+  const handleWorkoutTitle = (workoutId, newTitle) => {
     setWorkouts(prevWorkouts =>
-      prevWorkouts.map(workout =>
-        workout.id === workoutId ? { ...workout, name: newTitle } : workout
-      )
+      prevWorkouts.map(workout => {
+        if (workout.id === workoutId) {
+          return { ...workout, name: newTitle };
+        }
+        return workout;
+      })
     );
   };
 
