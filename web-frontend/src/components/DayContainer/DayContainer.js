@@ -5,6 +5,7 @@ import {
   TbLayoutBottombarExpandFilled,
   TbPencil
 } from 'react-icons/tb';
+import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDelete } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { DayContainerContext } from '../../contexts/dayContainerContext';
@@ -21,6 +22,20 @@ const DayContainer = ({
   const isExpanded = expandedDayId === day.id;
 
   const [isEditing, setIsEditing] = useState(false);
+
+  const handleEditTitleChange = e => {
+    setIsEditing(true);
+    console.log('Editing', isEditing);
+  };
+
+  const handleSaveTitleChange = e => {
+    console.log('Save Title');
+  };
+
+  const handleCloseTitleChange = e => {
+    setIsEditing(false);
+    console.log('Editing', isEditing);
+  };
 
   const dayContainerClass = isActive ? 'day-container active' : 'day-container';
 
@@ -47,11 +62,25 @@ const DayContainer = ({
             </button>
 
             {isEditing ? (
-              <p>Editing</p>
+              <div className='day-container__title_container'>
+                <button className='day-container__save-title-btn'>
+                  <IoCheckmarkCircleSharp
+                    size={20}
+                    onClick={handleSaveTitleChange}
+                  />
+                </button>
+                <input type='text' placeholder='Enter Title' />
+                <button className='day-container__close-title-btn'>
+                  <IoCloseCircleSharp
+                    size={20}
+                    onClick={handleCloseTitleChange}
+                  />
+                </button>
+              </div>
             ) : (
               <div className='day-container__title_container'>
                 <button className='day-container__edit-title-btn'>
-                  <TbPencil size={20} />
+                  <TbPencil size={20} onClick={handleEditTitleChange} />
                 </button>
                 <h2 className='day-container__title'>{day.name}</h2>
               </div>

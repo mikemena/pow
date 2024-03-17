@@ -5,6 +5,7 @@
   margin-left: 20px;
   padding: 10px;
   margin: 20px;
+  border-radius: 10px;
 }
 
 .day-container.active {
@@ -40,7 +41,10 @@ button {
 .day-container__expand-btn,
 .day-container__delete-btn,
 .day-container__remove-exercise-btn,
-.day-container__edit-title-btn {
+.day-container__edit-title-btn,
+.day-container__close-title-btn,
+.day-container__save-title-btn {
+  padding: 0;
   background: none;
   color: var(--dark-text-color);
   border-radius: 4px;
