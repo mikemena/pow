@@ -49,120 +49,119 @@ const WorkoutContainer = ({
   const toggleWorkoutExpand = () => {
     toggleExpand(workout.id);
   };
+
   console.log('workout', workout);
   console.log(workout.exercises);
 
   return (
-    <div>
-      <>
-        <div className={workoutContainerClass}>
-          <div
-            className='workout-container__header'
-            onClick={toggleWorkoutExpand}
+    <>
+      <div className={workoutContainerClass}>
+        <div
+          className='workout-container__header'
+          onClick={toggleWorkoutExpand}
+        >
+          <button
+            className='workout-container__expand-btn'
+            title='Expand/Collapse Workout'
           >
-            <button
-              className='workout-container__expand-btn'
-              title='Expand/Collapse Workout'
-            >
-              {isExpanded ? (
-                <TbLayoutBottombarExpandFilled size={20} />
-              ) : (
-                <TbLayoutNavbarExpandFilled size={20} />
-              )}
-            </button>
-
-            {isEditing ? (
-              <div className='workout-container__title_container'>
-                <button className='workout-container__save-title-btn'>
-                  <IoCheckmarkCircleSharp size={20} onClick={handleSaveTitle} />
-                </button>
-                <input
-                  type='text'
-                  value={workoutTitle}
-                  onChange={handleEditTitleChange}
-                  placeholder='Enter Title'
-                />
-                <button className='workout-container__close-title-btn'>
-                  <IoCloseCircleSharp
-                    size={20}
-                    onClick={handleCloseTitleChange}
-                  />
-                </button>
-              </div>
+            {isExpanded ? (
+              <TbLayoutBottombarExpandFilled size={20} />
             ) : (
-              <div className='workout-container__title_container'>
-                <button className='workout-container__edit-title-btn'>
-                  <TbPencil size={20} onClick={handleEditTitleChange} />
-                </button>
-                <h2 className='workout-container__title'>{workout.name}</h2>
-              </div>
+              <TbLayoutNavbarExpandFilled size={20} />
             )}
+          </button>
 
-            <button
-              className='workout-container__delete-btn'
-              onClick={() => {
-                const confirm = window.confirm(
-                  `Are you sure you want to remove ${workout.name}?`
-                );
-                if (confirm) {
-                  handleRemoveWorkout(workout.id);
-                }
-              }}
-            >
-              <MdDelete size={20} />
-            </button>
-          </div>
-          {isExpanded && (
-            <div className='workout-container__body'>
-              <div className='workout-container__header'>
-                <h3>Exercises</h3>
-                <Button
-                  id='save--exercise-btn'
-                  onClick={handleAddExercise}
-                  type='button'
-                  bgColor='#EAEAEA'
-                >
-                  Add Exercise
-                </Button>
-              </div>
-              <div className='workout-container__exercises'>
-                {workout.exercises && workout.exercises.length > 0 ? (
-                  workout.exercises.map(exercise => (
-                    <div
-                      key={exercise.exercise_id}
-                      className='workout-container__each-exercise'
-                    >
-                      <div className='workout-container__exercise-details'>
-                        <h4 className='workout-container__exercise-name'>
-                          {exercise.name}
-                        </h4>
-                        <p className='workout-container__exercise-muscle'>
-                          {exercise.muscle}
-                        </p>
-                      </div>
-                      <button
-                        className='workout-container__remove-exercise-btn'
-                        id={`remove-exercise-btn-${exercise.exercise_id}`}
-                        type='button'
-                        onClick={() =>
-                          handleRemoveExercise(workout.id, exercise.exercise_id)
-                        }
-                      >
-                        <MdDelete size={30} />
-                      </button>
-                    </div>
-                  ))
-                ) : (
-                  <p className='workout-container__no-exercise-message'>
-                    No exercises added
-                  </p>
-                )}
-              </div>
+          {isEditing ? (
+            <div className='workout-container__title_container'>
+              <button className='workout-container__save-title-btn'>
+                <IoCheckmarkCircleSharp size={20} onClick={handleSaveTitle} />
+              </button>
+              <input
+                type='text'
+                value={workoutTitle}
+                onChange={handleEditTitleChange}
+                placeholder='Enter Title'
+              />
+              <button className='workout-container__close-title-btn'>
+                <IoCloseCircleSharp
+                  size={20}
+                  onClick={handleCloseTitleChange}
+                />
+              </button>
+            </div>
+          ) : (
+            <div className='workout-container__title_container'>
+              <button className='workout-container__edit-title-btn'>
+                <TbPencil size={20} onClick={handleEditTitleChange} />
+              </button>
+              <h2 className='workout-container__title'>{workout.name}</h2>
             </div>
           )}
+
+          <button
+            className='workout-container__delete-btn'
+            onClick={() => {
+              const confirm = window.confirm(
+                `Are you sure you want to remove ${workout.name}?`
+              );
+              if (confirm) {
+                handleRemoveWorkout(workout.id);
+              }
+            }}
+          >
+            <MdDelete size={20} />
+          </button>
         </div>
-      </>
-    </div>
+        {isExpanded && (
+          <div className='workout-container__body'>
+            <div className='workout-container__header'>
+              <h3>Exercises</h3>
+              <Button
+                id='save--exercise-btn'
+                onClick={handleAddExercise}
+                type='button'
+                bgColor='#EAEAEA'
+              >
+                Add Exercise
+              </Button>
+            </div>
+            <div className='workout-container__exercises'>
+              {workout.exercises && workout.exercises.length > 0 ? (
+                workout.exercises.map(exercise => (
+                  <div
+                    key={exercise.exercise_id}
+                    className='workout-container__each-exercise'
+                  >
+                    <div className='workout-container__exercise-details'>
+                      <h4 className='workout-container__exercise-name'>
+                        {exercise.name}
+                      </h4>
+                      <p className='workout-container__exercise-muscle'>
+                        {exercise.muscle}
+                      </p>
+                    </div>
+                    <button
+                      className='workout-container__remove-exercise-btn'
+                      id={`remove-exercise-btn-${exercise.exercise_id}`}
+                      type='button'
+                      onClick={() =>
+                        handleRemoveExercise(workout.id, exercise.exercise_id)
+                      }
+                    >
+                      <MdDelete size={30} />
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <p className='workout-container__no-exercise-message'>
+                  No exercises added
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
