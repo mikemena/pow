@@ -115,7 +115,6 @@ const WorkoutContainer = ({
         {isExpanded && (
           <div className='workout-container__body'>
             <div className='workout-container__header'>
-              <h3>Exercises</h3>
               <Button
                 id='save--exercise-btn'
                 onClick={handleAddExercise}
@@ -126,6 +125,11 @@ const WorkoutContainer = ({
               </Button>
             </div>
             <div className='workout-container__exercises'>
+              <div className='workout-container__exercises_headers'>
+                <h4>Exercise</h4>
+                <h4>Weight</h4>
+                <h4>Reps</h4>
+              </div>
               {workout.exercises && workout.exercises.length > 0 ? (
                 workout.exercises.map(exercise => (
                   <div
@@ -139,6 +143,18 @@ const WorkoutContainer = ({
                       <p className='workout-container__exercise-muscle'>
                         {exercise.muscle}
                       </p>
+                    </div>
+                    <div className='workout-container__reps_container'>
+                      <input
+                        type='number'
+                        placeholder='lbs'
+                        className='workout-container__lbs'
+                      />
+                      <input
+                        type='number'
+                        placeholder='Reps'
+                        className='workout-container__reps'
+                      />
                     </div>
                     <button
                       className='workout-container__remove-exercise-btn'
