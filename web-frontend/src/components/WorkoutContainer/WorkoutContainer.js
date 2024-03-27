@@ -6,9 +6,10 @@ import {
   TbPencil
 } from 'react-icons/tb';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
-import { MdDelete } from 'react-icons/md';
+import { MdDelete, MdDragHandle } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
+import ExerciseSet from '../ExerciseSet/ExerciseSet';
 import './WorkoutContainer.css';
 
 const WorkoutContainer = ({
@@ -26,6 +27,20 @@ const WorkoutContainer = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
+  const [exerciseSets, setExerciseSets] = useState([]);
+
+  const handleAddSet = () => {
+    const newSetId =
+      exerciseSets.length > 0
+        ? exerciseSets[exerciseSets.length - 1].id + 1
+        : 1;
+    const newSet = {
+      id: newSetId,
+      weight: '',
+      reps: ''
+    };
+    setExerciseSets([...exerciseSets, newSet]);
+  };
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
@@ -125,17 +140,29 @@ const WorkoutContainer = ({
               </Button>
             </div>
             <div className='workout-container__exercises'>
-              <div className='workout-container__exercises_headers'>
-                <h4>Exercise</h4>
-                <h4>Weight</h4>
-                <h4>Reps</h4>
+              <div className='workout-container__exercises-header-container'>
+                <h4 className='workout-container__exercises_header'>
+                  Exercise
+                </h4>
+                <h4 className='workout-container__exercises_header'>Set</h4>
+                <h4 className='workout-container__exercises_header'>Weight</h4>
+                <h4 className='workout-container__exercises_header'>Reps</h4>
               </div>
               {workout.exercises && workout.exercises.length > 0 ? (
-                workout.exercises.map(exercise => (
+                workout.exercises.map((exercise, index) => (
                   <div
                     key={exercise.exercise_id}
                     className='workout-container__each-exercise'
                   >
+                    <div className='workout-container__drag-order-container'>
+                      <span className='workout-container__exercise-order-number'>
+                        {index + 1}
+                      </span>{' '}
+                      <MdDragHandle
+                        size={25}
+                        className='workout-container__exercise-drag'
+                      />
+                    </div>
                     <div className='workout-container__exercise-details'>
                       <h4 className='workout-container__exercise-name'>
                         {exercise.name}
@@ -144,18 +171,9 @@ const WorkoutContainer = ({
                         {exercise.muscle}
                       </p>
                     </div>
-                    <div className='workout-container__reps_container'>
-                      <input
-                        type='number'
-                        placeholder='lbs'
-                        className='workout-container__lbs'
-                      />
-                      <input
-                        type='number'
-                        placeholder='Reps'
-                        className='workout-container__reps'
-                      />
-                    </div>
+
+                    <ExerciseSet setDetails={[22, 5]} />
+
                     <button
                       className='workout-container__remove-exercise-btn'
                       id={`remove-exercise-btn-${exercise.exercise_id}`}

@@ -119,23 +119,19 @@ const CreateProgram = () => {
 
   const handleSaveProgram = async NewProgram => {
     const programData = {
-      user_id: 2,
-      name: NewProgram.programName,
-      program_duration: NewProgram.programDuration,
-      days_per_week: NewProgram.daysPerWeek,
-      duration_unit: NewProgram.durationUnit,
-      main_goal: NewProgram.mainGoal,
-      workouts: NewProgram.workouts.map(workout => ({
+      user_id: 2, // Assuming this is static or retrieved from somewhere else
+      name: program.programName,
+      program_duration: program.programDuration,
+      days_per_week: program.daysPerWeek,
+      duration_unit: program.durationUnit,
+      main_goal: program.mainGoal,
+      workouts: workouts.map(workout => ({
         name: workout.name,
-        order: workout.order,
+        order: workout.id, // Assuming `id` can serve as `order`
         exercises: workout.exercises.map(exercise => ({
           catalog_exercise_id: exercise.catalog_exercise_id,
-          order: exercise.order,
-          sets: exercise.sets.map(set => ({
-            reps: set.reps,
-            weight: set.weight,
-            order: set.order
-          }))
+          order: exercise.order, // Make sure this exists or determine how to set it
+          sets: exercise.sets || [] // Assuming `sets` exist in `exercise`, if not, you'll need to adjust
         }))
       }))
     };

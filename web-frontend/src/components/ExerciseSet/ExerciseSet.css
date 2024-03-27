@@ -1,0 +1,78 @@
+.exercise-set__container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 10px;
+  /* width: 100%; */
+}
+.exercise-set__row {
+  display: flex;
+}
+
+.exercise-set__weight,
+.exercise-set__reps {
+  flex-grow: 1;
+  width: 60px;
+  border: none;
+  margin-right: 5px;
+  padding: 1px;
+  font-size: 16px;
+  border-radius: 4px;
+}
+
+.exercise-set__add-set-btn,
+.exercise-set__remove-set-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.exercise-set__button-wrapper {
+  align-self: flex-start;
+  width: 100%;
+}
+
+.exercise-set__add-set-btn {
+  color: #4caf50;
+  padding: 0;
+  margin-left: 0;
+}
+
+.exercise-set__remove-set-btn {
+  color: #f44336;
+  padding: 0;
+}
+
+/* Additional styling to visually differentiate the button from the inputs */
+.exercise-set__add-set-btn:hover,
+.exercise-set__remove-set-btn:hover {
+  background-color: #f0f0f0;
+}
+
+/* Styling for the drag handle if implemented */
+.drag-handle {
+  padding: 8px;
+  cursor: grab;
+}
+
+/* Responsive adjustments if necessary */
+@media (max-width: 768px) {
+  .exercise-set__container {
+    flex-direction: column;
+  }
+
+  .exercise-set__weight,
+  .exercise-set__reps {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .exercise-set__add-set-btn,
+  .exercise-set__remove-set-btn {
+    margin-bottom: 10px;
+  }
+}

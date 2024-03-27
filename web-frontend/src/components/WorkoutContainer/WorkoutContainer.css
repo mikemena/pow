@@ -71,10 +71,36 @@ button {
   text-align: center;
 }
 
-.workout-container__exercises_headers {
+.workout-container__exercises-header-container {
   display: flex;
   justify-content: space-between;
-  margin: 10px 0;
+}
+
+.workout-container__exercises_header {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0px;
+}
+
+.workout-container__drag-order-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 5px;
+}
+
+.workout-container__exercise-order-number {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 5px;
+}
+
+.workout-container__exercise-drag {
+  padding: 8px;
+  cursor: grab;
 }
 
 .workout-container__each-exercise {
@@ -104,18 +130,4 @@ button {
   font-size: 18px;
   font-weight: 500;
   margin: 0px;
-}
-
-.workout-container__reps_container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-end;
-}
-
-.workout-container__lbs,
-.workout-container__reps {
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 18px;
-  font-weight: 600;
-  width: 85px;
 }
