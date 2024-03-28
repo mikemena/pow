@@ -7,6 +7,7 @@
 }
 .exercise-set__row {
   display: flex;
+  width: 100%;
 }
 
 .exercise-set__weight,
@@ -31,26 +32,27 @@
   align-items: center;
 }
 
-.exercise-set__button-wrapper {
-  align-self: flex-start;
-  width: 100%;
-}
-
 .exercise-set__add-set-btn {
-  color: #4caf50;
-  padding: 0;
-  margin-left: 0;
+  align-self: flex-start;
+  color: #559857;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
 }
 
 .exercise-set__remove-set-btn {
-  color: #f44336;
+  color: #cb392f;
   padding: 0;
 }
 
-/* Additional styling to visually differentiate the button from the inputs */
-.exercise-set__add-set-btn:hover,
+.exercise-set__add-set-btn:hover {
+  color: #4caf50;
+}
+
 .exercise-set__remove-set-btn:hover {
-  background-color: #f0f0f0;
+  color: #f04a3e;
 }
 
 /* Styling for the drag handle if implemented */

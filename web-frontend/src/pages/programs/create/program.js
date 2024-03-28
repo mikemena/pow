@@ -22,6 +22,7 @@ const CreateProgram = () => {
   ]);
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
+  const [workout, setWorkout] = useState({});
 
   const navigate = useNavigate();
 
@@ -117,6 +118,8 @@ const CreateProgram = () => {
     setWorkouts(updatedWorkouts);
   };
 
+  // TODO: Sanitize Data Before Sending: Before sending the programData object to your backend, loop through it and ensure that all fields that are expected to be integers are either valid integers or have a fallback value that is a valid integer. For example, you could ensure that exercise.order and workout.id (used as order in your map function) are integers and not empty strings.
+
   const handleSaveProgram = async NewProgram => {
     const programData = {
       user_id: 2, // Assuming this is static or retrieved from somewhere else
@@ -135,6 +138,8 @@ const CreateProgram = () => {
         }))
       }))
     };
+
+    console.log('Saving program from front end:', programData);
 
     try {
       const response = await fetch('http://localhost:9025/api/programs', {

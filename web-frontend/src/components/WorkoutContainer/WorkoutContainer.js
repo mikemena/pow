@@ -29,17 +29,36 @@ const WorkoutContainer = ({
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const [exerciseSets, setExerciseSets] = useState([]);
 
-  const handleAddSet = () => {
-    const newSetId =
-      exerciseSets.length > 0
-        ? exerciseSets[exerciseSets.length - 1].id + 1
-        : 1;
-    const newSet = {
-      id: newSetId,
-      weight: '',
-      reps: ''
-    };
-    setExerciseSets([...exerciseSets, newSet]);
+  const handleAddSet = exerciseId => {
+    setExerciseSets(currentSets => {
+      const exerciseToUpdate = currentSets.find(
+        exercise => exercise.id === exerciseId
+      );
+
+      if (!exerciseToUpdate) {
+        // If no exercise is found with the given ID, return the current state unchanged
+        console.warn('No exercise found with id:', exerciseId);
+        return currentSets;
+      }
+
+      const newSet = {
+        id:
+          exerciseToUpdate.sets.length > 0
+            ? Math.max(...exerciseToUpdate.sets.map(set => set.id)) + 1
+            : 1,
+        weight: '',
+        reps: ''
+      };
+
+      const updatedSets = exerciseToUpdate.sets.concat(newSet);
+
+      return currentSets.map(exercise => {
+        if (exercise.id === exerciseId) {
+          return { ...exercise, sets: updatedSets };
+        }
+        return exercise;
+      });
+    });
   };
 
   const handleEditTitleChange = e => {
@@ -55,6 +74,15 @@ const WorkoutContainer = ({
   const handleCloseTitleChange = e => {
     setIsEditing(false);
     console.log('Editing', isEditing);
+  };
+
+  const handleRemoveSet = (exerciseId, setId) => {
+    setExerciseSets(currentSets => {
+      return currentSets.filter(set => {
+        return !(set.id === setId && set.exerciseId === exerciseId);
+      });
+    });
+    console.log('Remove Set', exerciseId, setId);
   };
 
   const workoutContainerClass = isActive
@@ -172,7 +200,33 @@ const WorkoutContainer = ({
                       </p>
                     </div>
 
-                    <ExerciseSet setDetails={[22, 5]} />
+                    {/* <ExerciseSet
+                      setDetails={[22, 5]}
+                      onAdd={handleAddSet}
+                      onRemove={handleRemoveSet}
+                    /> */}
+                    {workout.exercises &&
+                      workout.exercises.length > 0 &&
+                      workout.exercises.map(exercise =>
+                        (exercise.sets || []).map(set => (
+                          <ExerciseSet
+                            key={set.id}
+                            setDetails={set}
+                            onAdd={handleAddSet}
+                            // onUpdate={newDetails =>
+                            //   handleSetUpdate(
+                            //     exercise.exercise_id,
+                            //     set.id,
+                            //     newDetails
+                            //   )
+                            // }
+                            onRemove={() =>
+                              handleRemoveSet(exercise.exercise_id, set.id)
+                            }
+                            // ... other props
+                          />
+                        ))
+                      )}
 
                     <button
                       className='workout-container__remove-exercise-btn'

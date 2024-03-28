@@ -21,13 +21,11 @@ const ExerciseSet = ({ setDetails, onUpdate, onRemove, onAdd }) => {
         />
 
         <button onClick={onRemove} className='exercise-set__remove-set-btn'>
-          <MdDelete size={20} />
+          <MdDelete size={25} />
         </button>
       </div>
       <button onClick={onAdd} className='exercise-set__add-set-btn'>
-        <div className='exercise-set__button-wrapper'>
-          <MdAddBox size={20} />
-        </div>
+        <MdAddBox size={25} />
       </button>
     </div>
   );

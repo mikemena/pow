@@ -66,9 +66,14 @@ router.get('/programs/:user_id', async (req, res) => {
   }
 });
 
+// TODO: For POST calls, update the Backend to Handle Invalid Data: On the backend, before inserting the data into the database, validate that all the fields match the expected types. If any field does not match, you can return a more specific error message to the frontend, which can help in diagnosing which part of the data is problematic.
+
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
+  const { programData } = req.body;
+
+  console.log('Received program data:', programData);
   const {
     user_id,
     name,
