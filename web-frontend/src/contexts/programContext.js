@@ -106,21 +106,78 @@ export const ProgramProvider = ({ children }) => {
     });
   }, []);
 
-  // ... more state update functions for exercises and sets
+  // Function to update a set
+  const updateSet = (workoutId, exerciseId, updatedSet) => {
+    setProgram(prevProgram => ({
+      ...prevProgram,
+      workouts: prevProgram.workouts.map(workout => {
+        // Find the matching workout
+        if (workout.order === workoutId) {
+          return {
+            ...workout,
+            exercises: workout.exercises.map(exercise => {
+              // Find the matching exercise
+              if (exercise.catalog_exercise_id === exerciseId) {
+                return {
+                  ...exercise,
+                  sets: exercise.sets.map(set => {
+                    // Find the matching set to update
+                    if (set.order === updatedSet.order) {
+                      return { ...set, ...updatedSet };
+                    }
+                    return set;
+                  })
+                };
+              }
+              return exercise;
+            })
+          };
+        }
+        return workout;
+      })
+    }));
+  };
+
+  // Function to delete a set
+  const deleteSet = (workoutId, exerciseId, setId) => {
+    setProgram(prevProgram => ({
+      ...prevProgram,
+      workouts: prevProgram.workouts.map(workout => {
+        // Find the matching workout
+        if (workout.order === workoutId) {
+          return {
+            ...workout,
+            exercises: workout.exercises.map(exercise => {
+              // Find the matching exercise
+              if (exercise.catalog_exercise_id === exerciseId) {
+                return {
+                  ...exercise,
+                  sets: exercise.sets.filter(set => set.order !== setId)
+                };
+              }
+              return exercise;
+            })
+          };
+        }
+        return workout;
+      })
+    }));
+  };
 
   return (
     <ProgramContext.Provider
       value={{
         program,
         updateProgramDetails,
-        updateWorkout,
         addWorkout,
+        updateWorkout,
         deleteWorkout,
         addExercise,
         updateExercise,
         deleteExercise,
-        addSet
-        // ... other update functions
+        addSet,
+        updateSet,
+        deleteSet
       }}
     >
       {children}
