@@ -10,10 +10,10 @@ router.get('/exercise-catalog/search', async (req, res) => {
 
   try {
     const query = `
-      SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
+      SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
       FROM exercise_catalog ec
-      JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
-      JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
+      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
       JOIN image_metadata im ON ec.image_id = im.image_id
       WHERE LOWER(ec.name) LIKE LOWER($1);
     `;
@@ -31,11 +31,11 @@ router.get('/exercise-catalog/search', async (req, res) => {
 router.get('/exercise-catalog', async (req, res) => {
   try {
     const { rows } = await db.query(`
-    SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
+    SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.image_id = im.image_id;
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+    JOIN image_metadata im ON ec.image_id = im.id;
   `);
     res.json(rows);
   } catch (error) {
@@ -50,12 +50,12 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
-    const exerciseQuery = `SELECT ec.exercise_id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
+    const exerciseQuery = `SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.image_id = im.image_id
-    WHERE exercise_id = $1`;
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+    JOIN image_metadata im ON ec.image_id = im.id
+    WHERE id = $1`;
 
     const { rows } = await db.query(exerciseQuery, [parseInt(id)]);
 
@@ -80,11 +80,11 @@ router.get('/exercise-catalog/muscles/:muscleId', async (req, res) => {
   try {
     const { muscleId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
+    SELECT ec.id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.image_id = im.image_id
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+    JOIN image_metadata im ON ec.image_id = im.id
     WHERE ec.muscle_group_id = $1;
     `;
     const { rows } = await db.query(query, [muscleId]);
@@ -101,11 +101,11 @@ router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
   try {
     const { equipmentId } = req.params;
     const query = `
-    SELECT ec.exercise_id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
+    SELECT ec.id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.muscle_group_id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.equipment_id
-    JOIN image_metadata im ON ec.image_id = im.image_id
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+    JOIN image_metadata im ON ec.image_id = im.id
     WHERE ec.equipment_id = $1;
     `;
     const { rows } = await db.query(query, [equipmentId]);
@@ -174,7 +174,7 @@ router.put('/exercise-catalog/:id', async (req, res) => {
 
     const queryString = `UPDATE exercise_catalog SET ${updateParts.join(
       ', '
-    )} WHERE exercise_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -195,7 +195,7 @@ router.delete('/exercise-catalog/:id', async (req, res) => {
 
   try {
     const { rowCount } = await db.query(
-      'DELETE FROM exercise_catalog WHERE exercise_id = $1',
+      'DELETE FROM exercise_catalog WHERE id = $1',
       [id]
     );
 

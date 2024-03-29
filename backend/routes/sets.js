@@ -6,7 +6,7 @@ const db = require('../config/db');
 
 router.get('/sets', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM user_sets');
+    const { rows } = await db.query('SELECT * FROM sets');
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -20,7 +20,7 @@ router.get('/sets/:id', async (req, res) => {
 
   try {
     // Query to fetch the set with the specified ID
-    const { rows } = await db.query('SELECT * FROM sets WHERE set_id = $1', [
+    const { rows } = await db.query('SELECT * FROM sets WHERE id = $1', [
       parseInt(id)
     ]);
 
@@ -42,10 +42,10 @@ router.get('/sets/:id', async (req, res) => {
 
 router.post('/sets', async (req, res) => {
   try {
-    const { workout_id, exercise_id, reps, weight, notes } = req.body;
+    const { exercise_id, reps, weight, order } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO workouts (workout_id,exercise_id,reps,weight,notes) VALUES ($1, $2, $3, $4, $5) RETURNING *',
-      [workout_id, exercise_id, reps, weight, notes]
+      'INSERT INTO sets (exercise_id,reps,weight,order) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [exercise_id, reps, weight, order]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -65,11 +65,6 @@ router.put('/sets/:id', async (req, res) => {
     const queryValues = [];
     let queryIndex = 1;
 
-    if (workout_id !== undefined) {
-      updateParts.push(`workout_id = $${queryIndex++}`);
-      queryValues.push(workout_id);
-    }
-
     if (exercise_id !== undefined) {
       updateParts.push(`exercise_id = $${queryIndex++}`);
       queryValues.push(exercise_id);
@@ -86,8 +81,8 @@ router.put('/sets/:id', async (req, res) => {
     }
 
     if (notes !== undefined) {
-      updateParts.push(`notes = $${queryIndex++}`);
-      queryValues.push(notes);
+      updateParts.push(`order = $${queryIndex++}`);
+      queryValues.push(order);
     }
 
     queryValues.push(id); // For the WHERE condition
@@ -97,7 +92,7 @@ router.put('/sets/:id', async (req, res) => {
 
     const queryString = `UPDATE sets SET ${updateParts.join(
       ', '
-    )} WHERE set_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -117,9 +112,7 @@ router.delete('/sets/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
   try {
-    const { rowCount } = await db.query('DELETE FROM sets WHERE set_id = $1', [
-      id
-    ]);
+    const { rowCount } = await db.query('DELETE FROM sets WHERE id = $1', [id]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Set deleted successfully' });

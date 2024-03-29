@@ -56,7 +56,7 @@ router.post('/create-workout', async (req, res) => {
 
     // Insert into workout_history and get the workout_id
     const workoutRes = await client.query(
-      'INSERT INTO workout_history (user_id, workout_date, workout_name, plan_type, difficulty_level, duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING workout_id',
+      'INSERT INTO workout_history (user_id, workout_date, workout_name, plan_type, difficulty_level, duration) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id',
       [
         /* user_id, workout_date, workout_name, plan_type, difficulty_level, duration values */
       ]
@@ -66,7 +66,7 @@ router.post('/create-workout', async (req, res) => {
     // For each exercise in the request, insert into exercise_history
     for (const exercise of req.body.exercises) {
       const exerciseRes = await client.query(
-        'INSERT INTO exercise_history (workout_id, name, muscle_group_id) VALUES ($1, $2, $3) RETURNING exercise_id',
+        'INSERT INTO exercise_history (workout_id, exercise_name, muscle_group_id) VALUES ($1, $2, $3) RETURNING id',
         [workoutId, exercise.name, exercise.muscle_group_id]
       );
       const exerciseId = exerciseRes.rows[0].exercise_id;

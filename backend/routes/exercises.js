@@ -6,7 +6,7 @@ const db = require('../config/db');
 
 router.get('/exercises', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM user_exercises');
+    const { rows } = await db.query('SELECT * FROM exercises');
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -20,10 +20,9 @@ router.get('/exercises/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
-    const { rows } = await db.query(
-      'SELECT * FROM user_exercises WHERE exercise_id = $1',
-      [parseInt(id)]
-    );
+    const { rows } = await db.query('SELECT * FROM exercises WHERE id = $1', [
+      parseInt(id)
+    ]);
 
     if (rows.length === 0) {
       // If no exercise is found with the given ID, return a 404 Not Found response
@@ -43,10 +42,10 @@ router.get('/exercises/:id', async (req, res) => {
 
 router.post('/exercises', async (req, res) => {
   try {
-    const { name, muscle_group_id } = req.body;
+    const { workout_id, catalog_exercise_id, order } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO user_exercises (name, muscle_group_id) VALUES ($1, $2) RETURNING *',
-      [name, muscle_group_id]
+      'INSERT INTO exercises (workout_id, catalog_exercise_id, order) VALUES ($1, $2, $3) RETURNING *',
+      [workout_id, catalog_exercise_id, order]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -59,21 +58,26 @@ router.post('/exercises', async (req, res) => {
 router.put('/exercises/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, muscle_group_id } = req.body;
+    const { workout_id, catalog_exercise_id, order } = req.body;
 
     // Construct the update part of the query based on provided fields
     const updateParts = [];
     const queryValues = [];
     let queryIndex = 1;
 
-    if (name !== undefined) {
-      updateParts.push(`name = $${queryIndex++}`);
-      queryValues.push(name);
+    if (workout_id !== undefined) {
+      updateParts.push(`workout_id = $${queryIndex++}`);
+      queryValues.push(workout_id);
     }
 
-    if (muscle_group_id !== undefined) {
-      updateParts.push(`muscle_group_id = $${queryIndex++}`);
-      queryValues.push(muscle_group_id);
+    if (catalog_exercise_id !== undefined) {
+      updateParts.push(`catalog_exercise_id = $${queryIndex++}`);
+      queryValues.push(catalog_exercise_id);
+    }
+
+    if (order !== undefined) {
+      updateParts.push(`order = $${queryIndex++}`);
+      queryValues.push(order);
     }
 
     queryValues.push(id); // For the WHERE condition
@@ -81,9 +85,9 @@ router.put('/exercises/:id', async (req, res) => {
       return res.status(400).send('No update fields provided.');
     }
 
-    const queryString = `UPDATE user_exercises SET ${updateParts.join(
+    const queryString = `UPDATE exercises SET ${updateParts.join(
       ', '
-    )} WHERE exercise_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -103,10 +107,9 @@ router.delete('/exercises/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
   try {
-    const { rowCount } = await db.query(
-      'DELETE FROM user_exercises WHERE exercise_id = $1',
-      [id]
-    );
+    const { rowCount } = await db.query('DELETE FROM exercises WHERE id = $1', [
+      id
+    ]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'Exercise deleted successfully' });

@@ -22,7 +22,7 @@ router.get('/users/:id', async (req, res) => {
 
   try {
     // Query to fetch the user with the specified ID
-    const { rows } = await db.query('SELECT * FROM users WHERE user_id = $1', [
+    const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [
       parseInt(id)
     ]);
 
@@ -89,7 +89,7 @@ router.put('/users/:id', async (req, res) => {
 
     const queryString = `UPDATE users SET ${updateParts.join(
       ', '
-    )} WHERE user_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -109,10 +109,9 @@ router.delete('/users/:id', async (req, res) => {
   const { id } = req.params; // Extract the ID from the route parameters
 
   try {
-    const { rowCount } = await db.query(
-      'DELETE FROM users WHERE user_id = $1',
-      [id]
-    );
+    const { rowCount } = await db.query('DELETE FROM users WHERE id = $1', [
+      id
+    ]);
 
     if (rowCount > 0) {
       res.status(200).json({ message: 'User deleted successfully' });

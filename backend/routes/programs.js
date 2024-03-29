@@ -31,7 +31,7 @@ router.get('/programs/:user_id', async (req, res) => {
         const exercises = await pool.query(
           'SELECT e.*, ec.name as exercise_name ' +
             'FROM exercises e ' +
-            'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.exercise_id ' +
+            'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id ' +
             'WHERE e.workout_id = $1',
           [workout.workout_id]
         );
@@ -223,13 +223,13 @@ router.delete('/programs/:program_id', async (req, res) => {
 
     // Delete sets associated with the exercises in the workouts of the program
     await pool.query(
-      'DELETE FROM sets WHERE exercise_id IN (SELECT exercise_id FROM exercises WHERE workout_id IN (SELECT workout_id FROM workouts WHERE program_id = $1))',
+      'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
     // Delete exercises associated with the workouts of the program
     await pool.query(
-      'DELETE FROM exercises WHERE workout_id IN (SELECT workout_id FROM workouts WHERE program_id = $1)',
+      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
       [program_id]
     );
 

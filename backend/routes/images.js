@@ -78,7 +78,7 @@ router.get('/images/:id', async (req, res) => {
 
   try {
     const { rows } = await db.query(
-      'SELECT * FROM image_metadata WHERE image_id = $1',
+      'SELECT * FROM image_metadata WHERE id = $1',
       [id]
     );
 
@@ -105,7 +105,7 @@ router.delete('/images/:id', async (req, res) => {
     // First, retrieve the file path of the image to delete
 
     const result = await db.query(
-      'SELECT file_path FROM image_metadata WHERE image_id = $1',
+      'SELECT file_path FROM image_metadata WHERE id = $1',
       [id]
     );
 
@@ -120,7 +120,7 @@ router.delete('/images/:id', async (req, res) => {
     // Delete the image metadata record from the database
 
     const { rowCount } = await db.query(
-      'DELETE FROM image_metadata WHERE image_id = $1',
+      'DELETE FROM image_metadata WHERE id = $1',
       [id]
     );
 

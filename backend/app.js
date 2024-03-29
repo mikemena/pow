@@ -19,8 +19,8 @@ const exerciseCatalogRoutes = require('./routes/exercise_catalog');
 const usersRoutes = require('./routes/users');
 const programRoutes = require('./routes/programs');
 // const workoutTemplatesRoutes = require('./routes/workout_templates');
-const userSetsRoutes = require('./routes/user_sets');
-const userExercisesRoutes = require('./routes/user_exercises');
+const userSetsRoutes = require('./routes/sets');
+const userExercisesRoutes = require('./routes/exercises');
 const workoutHistoryRoutes = require('./routes/workout_history');
 
 // Use your routes with a base path

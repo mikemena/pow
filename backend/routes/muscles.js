@@ -22,9 +22,9 @@ router.get('/muscles/:id', async (req, res) => {
   try {
     // Query to fetch the muscle with the specified ID
     const { rows } = await db.query(
-      `SELECT m.muscle_group_id, m.name, i.file_path
+      `SELECT m.id, m.name, i.file_path
       FROM muscle_groups m
-      LEFT JOIN image_metadata i ON m.image_id = i.image_id
+      LEFT JOIN image_metadata i ON m.image_id = i.id
       WHERE muscle_group_id = $1`,
       [parseInt(id)]
     );
@@ -86,7 +86,7 @@ router.put('/muscles/:id', async (req, res) => {
 
     const queryString = `UPDATE muscle_groups SET ${updateParts.join(
       ', '
-    )} WHERE muscle_group_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -107,7 +107,7 @@ router.delete('/muscles/:id', async (req, res) => {
 
   try {
     const { rowCount } = await db.query(
-      'DELETE FROM muscle_groups WHERE muscle_group_id = $1',
+      'DELETE FROM muscle_groups WHERE id = $1',
       [id]
     );
 

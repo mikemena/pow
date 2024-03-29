@@ -19,7 +19,7 @@ router.get('/equipments/:id', async (req, res) => {
   try {
     // Query to fetch the equipment with the specified ID
     const { rows } = await db.query(
-      'SELECT * FROM equipment_catalog WHERE equipment_id = $1',
+      'SELECT * FROM equipment_catalog WHERE id = $1',
       [parseInt(id)]
     );
 
@@ -82,7 +82,7 @@ router.put('/equipments/:id', async (req, res) => {
 
     const queryString = `UPDATE equipment_catalog SET ${updateParts.join(
       ', '
-    )} WHERE equipment_id = $${queryIndex} RETURNING *`;
+    )} WHERE id = $${queryIndex} RETURNING *`;
 
     const { rows } = await db.query(queryString, queryValues);
 
@@ -103,7 +103,7 @@ router.delete('/equipments/:id', async (req, res) => {
 
   try {
     const { rowCount } = await db.query(
-      'DELETE FROM equipment_catalog WHERE equipment_id = $1',
+      'DELETE FROM equipment_catalog WHERE id = $1',
       [id]
     );
 
