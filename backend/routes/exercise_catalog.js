@@ -14,7 +14,7 @@ router.get('/exercise-catalog/search', async (req, res) => {
       FROM exercise_catalog ec
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-      JOIN image_metadata im ON ec.image_id = im.image_id
+      JOIN image_metadata im ON ec.image_id = im.id
       WHERE LOWER(ec.name) LIKE LOWER($1);
     `;
     // The '%' symbols are wildcards for any number of characters
@@ -55,7 +55,7 @@ router.get('/exercise-catalog/:id', async (req, res) => {
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
     JOIN image_metadata im ON ec.image_id = im.id
-    WHERE id = $1`;
+    WHERE ec.id = $1`;
 
     const { rows } = await db.query(exerciseQuery, [parseInt(id)]);
 

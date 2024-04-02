@@ -5,10 +5,9 @@ const db = require('../config/db');
 // GET all muscles
 router.get('/muscles', async (req, res) => {
   try {
-    const { rows } =
-      await db.query(`SELECT m.muscle_group_id, m.name, i.file_path
+    const { rows } = await db.query(`SELECT m.id, m.name, i.file_path
     FROM muscle_groups m
-    LEFT JOIN image_metadata i ON m.image_id = i.image_id;`);
+    LEFT JOIN image_metadata i ON m.image_id = i.id;`);
     res.json(rows);
   } catch (error) {
     res.status(500).send(error.message);
@@ -25,7 +24,7 @@ router.get('/muscles/:id', async (req, res) => {
       `SELECT m.id, m.name, i.file_path
       FROM muscle_groups m
       LEFT JOIN image_metadata i ON m.image_id = i.id
-      WHERE muscle_group_id = $1`,
+      WHERE m.id = $1`,
       [parseInt(id)]
     );
 
@@ -74,7 +73,7 @@ router.put('/muscles/:id', async (req, res) => {
     }
 
     if (image_id !== undefined) {
-      updateParts.push(`image_id = $${queryIndex++}`);
+      updateParts.push(`id = $${queryIndex++}`);
       queryValues.push(image_id);
     }
 
