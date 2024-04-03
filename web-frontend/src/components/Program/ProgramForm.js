@@ -1,12 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ProgramContext } from '../../contexts/programContext';
 import Button from '../../components/Inputs/Button';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 import { toProperCase } from '../../utils/stringUtils';
 
-const ProgramForm = ({ program, onSubmit, isEditing, handleAddWorkout }) => {
+const ProgramForm = ({ isEditing }) => {
   const navigate = useNavigate();
+
+  // Access program data and functions from ProgramContext
+  const { program, updateProgramDetails, addWorkout, saveProgram } =
+    useContext(ProgramContext);
 
   console.log('Rendering ProgramForm component', program);
   const [formValues, setFormValues] = useState({
@@ -66,7 +71,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddWorkout }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit(formValues);
+    saveProgram(formValues);
   };
 
   const handleCancel = () => {
@@ -185,7 +190,7 @@ const ProgramForm = ({ program, onSubmit, isEditing, handleAddWorkout }) => {
       </div>
       {isEditing && (
         <div className='prog-container__btn-container'>
-          <Button type='button' onClick={handleAddWorkout}>
+          <Button type='button' onClick={addWorkout}>
             Add Workout
           </Button>
           <Button type='submit'>Save</Button>

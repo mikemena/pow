@@ -69,7 +69,7 @@ const ExerciseList = ({ selectedExercises, onSelectExercise }) => {
       <div className='exercise-container__exercise-list'>
         {filteredExercises.map(exercise => (
           <Exercise
-            key={exercise.exercise_id}
+            key={exercise.id}
             name={exercise.name}
             muscle={exercise.muscle}
             equipment={exercise.equipment}

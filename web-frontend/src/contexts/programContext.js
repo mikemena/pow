@@ -14,6 +14,49 @@ export const ProgramProvider = ({ children }) => {
     workouts: []
   });
 
+  //Save program to the database
+  const saveProgram = async NewProgram => {
+    const programData = {
+      user_id: 2, // Assuming this is static or retrieved from somewhere else
+      name: program.programName,
+      program_duration: program.programDuration,
+      days_per_week: program.daysPerWeek,
+      duration_unit: program.durationUnit,
+      main_goal: program.mainGoal,
+      workouts: program.workouts.map(workout => ({
+        name: workout.name,
+        order: workout.id, // Assuming `id` can serve as `order`
+        exercises: workout.exercises.map(exercise => ({
+          catalog_exercise_id: exercise.catalog_exercise_id,
+          order: exercise.order, // Make sure this exists or determine how to set it
+          sets: exercise.sets || [] // Assuming `sets` exist in `exercise`, if not, you'll need to adjust
+        }))
+      }))
+    };
+
+    console.log('Saving program from front end:', programData);
+
+    try {
+      const response = await fetch('http://localhost:9025/api/programs', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(programData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Something went wrong with saving the program');
+      }
+
+      // Assuming the backend responds with the created template, you could use it here if needed
+      // const savedTemplate = await response.json();
+    } catch (error) {
+      console.error('Failed to save the program:', error);
+      // Here, you could set an error state and display it to the user if you wish
+    }
+  };
+
   // Functions to update the state of top-level properties of the program object
 
   const updateProgramDetails = useCallback(details => {
@@ -215,6 +258,7 @@ export const ProgramProvider = ({ children }) => {
     <ProgramContext.Provider
       value={{
         program,
+        saveProgram,
         updateProgramDetails,
         addWorkout,
         updateWorkout,

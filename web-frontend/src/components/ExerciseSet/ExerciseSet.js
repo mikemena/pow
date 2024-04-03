@@ -1,7 +1,11 @@
+import React, { useContext } from 'react';
+import { ProgramContext } from '../../contexts/programContext';
 import { MdDelete, MdAddBox } from 'react-icons/md';
 import './ExerciseSet.css';
 
 const ExerciseSet = ({ setDetails, onUpdate, onRemove, onAdd }) => {
+  const { deleteWorkout, addExercise, deleteExercise, updateWorkout } =
+    useContext(ProgramContext);
   return (
     <div className='exercise-set__container'>
       <div className='exercise-set__row'>

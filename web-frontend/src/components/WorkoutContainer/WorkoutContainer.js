@@ -9,57 +9,20 @@ import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDelete, MdDragHandle } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
+import { ProgramContext } from '../../contexts/programContext';
 import ExerciseSet from '../ExerciseSet/ExerciseSet';
 import './WorkoutContainer.css';
 
-const WorkoutContainer = ({
-  workout,
-  handleRemoveWorkout,
-  handleAddExercise,
-  handleRemoveExercise,
-  handleWorkoutTitle,
-  isActive
-}) => {
+const WorkoutContainer = ({ workout, isActive }) => {
   const { expandedWorkoutId, toggleExpand } = useContext(
     WorkoutContainerContext
   );
+  const { deleteWorkout, addExercise, deleteExercise, updateWorkout } =
+    useContext(ProgramContext);
   const isExpanded = expandedWorkoutId === workout.id;
 
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
-  const [exerciseSets, setExerciseSets] = useState([]);
-
-  const handleAddSet = exerciseId => {
-    setExerciseSets(currentSets => {
-      const exerciseToUpdate = currentSets.find(
-        exercise => exercise.id === exerciseId
-      );
-
-      if (!exerciseToUpdate) {
-        // If no exercise is found with the given ID, return the current state unchanged
-        console.warn('No exercise found with id:', exerciseId);
-        return currentSets;
-      }
-
-      const newSet = {
-        id:
-          exerciseToUpdate.sets.length > 0
-            ? Math.max(...exerciseToUpdate.sets.map(set => set.id)) + 1
-            : 1,
-        weight: '',
-        reps: ''
-      };
-
-      const updatedSets = exerciseToUpdate.sets.concat(newSet);
-
-      return currentSets.map(exercise => {
-        if (exercise.id === exerciseId) {
-          return { ...exercise, sets: updatedSets };
-        }
-        return exercise;
-      });
-    });
-  };
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
@@ -67,7 +30,7 @@ const WorkoutContainer = ({
   };
 
   const handleSaveTitle = () => {
-    handleWorkoutTitle(workout.id, workoutTitle);
+    updateWorkout({ ...workout, name: workoutTitle });
     setIsEditing(false);
   };
 
@@ -76,13 +39,16 @@ const WorkoutContainer = ({
     console.log('Editing', isEditing);
   };
 
-  const handleRemoveSet = (exerciseId, setId) => {
-    setExerciseSets(currentSets => {
-      return currentSets.filter(set => {
-        return !(set.id === setId && set.exerciseId === exerciseId);
-      });
-    });
-    console.log('Remove Set', exerciseId, setId);
+  const handleDeleteWorkout = () => {
+    deleteWorkout(workout.id);
+  };
+
+  const handleAddExercise = () => {
+    addExercise(workout.id);
+  };
+
+  const handleDeleteExercise = (workoutId, exerciseId) => {
+    deleteExercise(workoutId, exerciseId);
   };
 
   const workoutContainerClass = isActive
@@ -148,7 +114,7 @@ const WorkoutContainer = ({
                 `Are you sure you want to remove ${workout.name}?`
               );
               if (confirm) {
-                handleRemoveWorkout(workout.id);
+                handleDeleteWorkout(workout.id);
               }
             }}
           >
@@ -179,7 +145,7 @@ const WorkoutContainer = ({
               {workout.exercises && workout.exercises.length > 0 ? (
                 workout.exercises.map((exercise, index) => (
                   <div
-                    key={exercise.exercise_id}
+                    key={exercise.id}
                     className='workout-container__each-exercise'
                   >
                     <div className='workout-container__drag-order-container'>
@@ -199,32 +165,11 @@ const WorkoutContainer = ({
                         {exercise.muscle}
                       </p>
                     </div>
-
-                    {/* <ExerciseSet
-                      setDetails={[22, 5]}
-                      onAdd={handleAddSet}
-                      onRemove={handleRemoveSet}
-                    /> */}
                     {workout.exercises &&
                       workout.exercises.length > 0 &&
                       workout.exercises.map(exercise =>
                         (exercise.sets || []).map(set => (
-                          <ExerciseSet
-                            key={set.id}
-                            setDetails={set}
-                            onAdd={handleAddSet}
-                            // onUpdate={newDetails =>
-                            //   handleSetUpdate(
-                            //     exercise.exercise_id,
-                            //     set.id,
-                            //     newDetails
-                            //   )
-                            // }
-                            onRemove={() =>
-                              handleRemoveSet(exercise.exercise_id, set.id)
-                            }
-                            // ... other props
-                          />
+                          <ExerciseSet key={set.id} setDetails={set} />
                         ))
                       )}
 
@@ -233,7 +178,7 @@ const WorkoutContainer = ({
                       id={`remove-exercise-btn-${exercise.exercise_id}`}
                       type='button'
                       onClick={() =>
-                        handleRemoveExercise(workout.id, exercise.exercise_id)
+                        handleDeleteExercise(workout.id, exercise.exercise_id)
                       }
                     >
                       <MdDelete size={30} />
