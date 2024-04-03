@@ -65,14 +65,32 @@ export const ProgramProvider = ({ children }) => {
 
   // Function to add a workout to the program
 
-  const addWorkout = useCallback(workout => {
-    const tempId = uuidv4();
-    const newWorkout = { ...workout, id: tempId };
-    setProgram(prev => ({
-      ...prev,
-      workouts: [...prev.workouts, newWorkout]
-    }));
-  }, []);
+  const addWorkout = useCallback(
+    workout => {
+      console.log('Adding workout:', workout);
+      const tempId = uuidv4();
+
+      // Find the highest index used in existing workout names
+      const maxIndex = program.workouts.reduce((max, currWorkout) => {
+        const match = currWorkout.name.match(/Workout (\d+)/); // Assuming the format "Workout 1", "Workout 2", etc.
+        const index = match ? parseInt(match[1], 10) : 0;
+        return Math.max(max, index);
+      }, 0);
+
+      const workoutTitle = `Workout ${maxIndex + 1}`;
+
+      const newWorkout = {
+        ...workout,
+        id: tempId,
+        name: workout.name || workoutTitle
+      };
+      setProgram(prev => ({
+        ...prev,
+        workouts: [...prev.workouts, newWorkout]
+      }));
+    },
+    [program.workouts]
+  );
 
   // Function to update a workout
 

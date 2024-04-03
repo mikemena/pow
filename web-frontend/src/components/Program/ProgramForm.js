@@ -70,6 +70,7 @@ const ProgramForm = ({ isEditing }) => {
   };
 
   const handleSubmit = e => {
+    console.log('Submitting form');
     e.preventDefault();
     saveProgram(formValues);
   };

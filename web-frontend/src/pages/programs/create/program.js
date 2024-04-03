@@ -11,13 +11,23 @@ import './program.css';
 
 const CreateProgram = () => {
   // Use ProgramContext to manage the state of the program
-  const { program, addWorkout, deleteWorkout, saveProgram } =
-    useContext(ProgramContext);
+  const { program, saveProgram } = useContext(ProgramContext);
 
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
 
   const navigate = useNavigate();
+
+  const handleShowExercise = workoutId => {
+    if (workoutId === activeWorkout && showExerciseList) {
+      setShowExerciseList(false);
+      setActiveWorkout(null); // Optionally reset the active workout
+    } else {
+      // Show the exercise list for the clicked workout.
+      setShowExerciseList(true);
+      setActiveWorkout(workoutId);
+    }
+  };
 
   // Save function uses context's save logic
   const handleSaveProgram = async () => {
@@ -46,7 +56,8 @@ const CreateProgram = () => {
                 key={workout.id}
                 workout={workout}
                 isActive={activeWorkout === workout.id}
-                exercises={workout.exercises}
+                showExercises={handleShowExercise}
+                showExerciseList={showExerciseList}
               />
             ))}
           </WorkoutContainerProvider>

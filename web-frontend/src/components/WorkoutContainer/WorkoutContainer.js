@@ -13,7 +13,12 @@ import { ProgramContext } from '../../contexts/programContext';
 import ExerciseSet from '../ExerciseSet/ExerciseSet';
 import './WorkoutContainer.css';
 
-const WorkoutContainer = ({ workout, isActive }) => {
+const WorkoutContainer = ({
+  workout,
+  isActive,
+  showExercises,
+  showExerciseList
+}) => {
   const { expandedWorkoutId, toggleExpand } = useContext(
     WorkoutContainerContext
   );
@@ -41,10 +46,6 @@ const WorkoutContainer = ({ workout, isActive }) => {
 
   const handleDeleteWorkout = () => {
     deleteWorkout(workout.id);
-  };
-
-  const handleAddExercise = () => {
-    addExercise(workout.id);
   };
 
   const handleDeleteExercise = (workoutId, exerciseId) => {
@@ -82,8 +83,11 @@ const WorkoutContainer = ({ workout, isActive }) => {
 
           {isEditing ? (
             <div className='workout-container__title_container'>
-              <button className='workout-container__save-title-btn'>
-                <IoCheckmarkCircleSharp size={20} onClick={handleSaveTitle} />
+              <button
+                className='workout-container__save-title-btn'
+                onClick={handleSaveTitle}
+              >
+                <IoCheckmarkCircleSharp size={20} />
               </button>
               <input
                 type='text'
@@ -91,11 +95,11 @@ const WorkoutContainer = ({ workout, isActive }) => {
                 onChange={handleEditTitleChange}
                 placeholder='Enter Title'
               />
-              <button className='workout-container__close-title-btn'>
-                <IoCloseCircleSharp
-                  size={20}
-                  onClick={handleCloseTitleChange}
-                />
+              <button
+                className='workout-container__close-title-btn'
+                onClick={handleCloseTitleChange}
+              >
+                <IoCloseCircleSharp size={20} />
               </button>
             </div>
           ) : (
@@ -125,12 +129,14 @@ const WorkoutContainer = ({ workout, isActive }) => {
           <div className='workout-container__body'>
             <div className='workout-container__header'>
               <Button
-                id='save--exercise-btn'
-                onClick={handleAddExercise}
+                id='toggle-exercises-btn'
+                onClick={() => showExercises(workout.id)}
                 type='button'
                 bgColor='#EAEAEA'
               >
-                Add Exercise
+                {isActive && showExerciseList
+                  ? 'Hide Exercises'
+                  : 'Show Exercise'}
               </Button>
             </div>
             <div className='workout-container__exercises'>
@@ -145,7 +151,7 @@ const WorkoutContainer = ({ workout, isActive }) => {
               {workout.exercises && workout.exercises.length > 0 ? (
                 workout.exercises.map((exercise, index) => (
                   <div
-                    key={exercise.id}
+                    key={exercise.tempId}
                     className='workout-container__each-exercise'
                   >
                     <div className='workout-container__drag-order-container'>
@@ -169,7 +175,7 @@ const WorkoutContainer = ({ workout, isActive }) => {
                       workout.exercises.length > 0 &&
                       workout.exercises.map(exercise =>
                         (exercise.sets || []).map(set => (
-                          <ExerciseSet key={set.id} setDetails={set} />
+                          <ExerciseSet key={set.tempId} setDetails={set} />
                         ))
                       )}
 
@@ -196,25 +202,6 @@ const WorkoutContainer = ({ workout, isActive }) => {
       </div>
     </>
   );
-};
-
-WorkoutContainer.propTypes = {
-  workout: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    exercises: PropTypes.arrayOf(
-      PropTypes.shape({
-        exercise_id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        muscle: PropTypes.string.isRequired
-      })
-    )
-  }).isRequired,
-  handleRemoveWorkout: PropTypes.func.isRequired,
-  handleAddExercise: PropTypes.func.isRequired,
-  handleRemoveExercise: PropTypes.func.isRequired,
-  handleWorkoutTitle: PropTypes.func.isRequired,
-  isActive: PropTypes.bool.isRequired
 };
 
 export default WorkoutContainer;

@@ -33,8 +33,21 @@ const StyledButton = styled.button`
   }
 `;
 
-const Button = ({ id, onClick, children, bgColor, fontSize }) => (
-  <StyledButton id={id} onClick={onClick} bgColor={bgColor} fontSize={fontSize}>
+const Button = ({
+  id,
+  type = 'button',
+  onClick,
+  children,
+  bgColor,
+  fontSize
+}) => (
+  <StyledButton
+    id={id}
+    type={type}
+    onClick={onClick}
+    bgColor={bgColor}
+    fontSize={fontSize}
+  >
     {children}
   </StyledButton>
 );
