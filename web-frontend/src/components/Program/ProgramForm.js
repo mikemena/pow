@@ -13,7 +13,6 @@ const ProgramForm = ({ isEditing }) => {
   const { program, updateProgramDetails, addWorkout, saveProgram } =
     useContext(ProgramContext);
 
-  console.log('Rendering ProgramForm component', program);
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
     mainGoal: program?.main_goal || '',
@@ -70,7 +69,6 @@ const ProgramForm = ({ isEditing }) => {
   };
 
   const handleSubmit = e => {
-    console.log('Submitting form');
     e.preventDefault();
     saveProgram(formValues);
   };

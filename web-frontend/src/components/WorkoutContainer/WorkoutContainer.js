@@ -41,7 +41,6 @@ const WorkoutContainer = ({
 
   const handleCloseTitleChange = e => {
     setIsEditing(false);
-    console.log('Editing', isEditing);
   };
 
   const handleDeleteWorkout = () => {
@@ -59,9 +58,6 @@ const WorkoutContainer = ({
   const toggleWorkoutExpand = () => {
     toggleExpand(workout.id);
   };
-
-  console.log('workout', workout);
-  console.log(workout.exercises);
 
   return (
     <>
@@ -132,7 +128,7 @@ const WorkoutContainer = ({
                 id='toggle-exercises-btn'
                 onClick={() => showExercises(workout.id)}
                 type='button'
-                bgColor='#EAEAEA'
+                // bgcolor='#EAEAEA'
               >
                 {isActive && showExerciseList
                   ? 'Hide Exercises'
@@ -202,6 +198,11 @@ const WorkoutContainer = ({
       </div>
     </>
   );
+};
+
+WorkoutContainer.propTypes = {
+  onShowExercise: PropTypes.func.isRequired,
+  showExerciseList: PropTypes.bool.isRequired
 };
 
 export default WorkoutContainer;

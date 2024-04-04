@@ -1,4 +1,5 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
+import { ProgramContext } from '../../contexts/programContext';
 import ExerciseSearch from '../SearchBar/SearchBar';
 import Exercise from '../Exercise/Exercise';
 import ExerciseFilters from '../ExerciseFilters/ExerciseFilters';
@@ -11,10 +12,15 @@ const searchStyle = {
   borderRadius: '5px'
 };
 
-const ExerciseList = ({ selectedExercises, onSelectExercise }) => {
+const ExerciseList = ({
+  selectedExercises,
+  onSelectExercise,
+  activeWorkout
+}) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
+  const { addExercise } = useContext(ProgramContext);
 
   const {
     data: exercises,
@@ -51,6 +57,16 @@ const ExerciseList = ({ selectedExercises, onSelectExercise }) => {
     setSelectedEquipment(value);
   };
 
+  // Handler to add an exercise to the active workout
+  const handleAddExercise = exercise => {
+    if (activeWorkout) {
+      addExercise(activeWorkout, exercise); // Use activeWorkout as the workoutId
+      console.log(
+        `Adding exercise:${exercise.name} to workout:${activeWorkout}`
+      );
+    }
+  };
+
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
@@ -74,10 +90,8 @@ const ExerciseList = ({ selectedExercises, onSelectExercise }) => {
             muscle={exercise.muscle}
             equipment={exercise.equipment}
             image={`http://localhost:9025/${exercise.file_path}`}
-            isSelected={selectedExercises.some(
-              e => e.exercise_id === exercise.exercise_id
-            )}
-            onClick={() => onSelectExercise(exercise)}
+            isSelected={selectedExercises.some(e => e.id === exercise.id)}
+            onClick={() => handleAddExercise(exercise)}
           />
         ))}
       </div>

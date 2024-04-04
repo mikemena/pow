@@ -119,20 +119,24 @@ export const ProgramProvider = ({ children }) => {
 
     setProgram(prev => {
       const newWorkouts = prev.workouts.map(workout => {
-        if (workout.order === workoutId) {
+        if (workout.id === workoutId) {
+          const currentExercises = Array.isArray(workout.exercises)
+            ? workout.exercises
+            : [];
+
           // Add the tempId to the new exercise object
           const newExercise = { ...exercise, id: tempId, isNew: true };
 
           // Determine the next order value for the new exercise
           const nextOrder =
-            workout.exercises.length > 0
-              ? Math.max(...workout.exercises.map(ex => ex.order)) + 1
+            currentExercises.length > 0
+              ? Math.max(...currentExercises.map(ex => ex.order)) + 1
               : 1;
 
           return {
             ...workout,
             exercises: [
-              ...workout.exercises,
+              ...currentExercises,
               { ...newExercise, order: nextOrder }
             ]
           };
