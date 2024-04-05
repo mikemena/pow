@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback } from 'react';
+import { createContext, useState, useCallback, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export const ProgramContext = createContext();
@@ -34,7 +34,7 @@ export const ProgramProvider = ({ children }) => {
       }))
     };
 
-    console.log('Saving program from front end:', programData);
+    // console.log('Saving program from front end:', programData);
 
     try {
       const response = await fetch('http://localhost:9025/api/programs', {
@@ -67,7 +67,7 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = useCallback(
     workout => {
-      console.log('Adding workout:', workout);
+      // console.log('Adding workout:', workout);
       const tempId = uuidv4();
 
       // Find the highest index used in existing workout names
@@ -130,9 +130,11 @@ export const ProgramProvider = ({ children }) => {
             id: tempId,
             exerciseCatalogId: exercise.id,
             isNew: true,
-            sets: [{ id: uuidv4(), reps: '', weight: '', isNew: true }]
+            sets: [
+              { id: uuidv4(), reps: '', weight: '', order: 1, isNew: true }
+            ]
           };
-          console.log('Adding exercise:', newExercise);
+          // console.log('Adding exercise:', newExercise);
 
           // Determine the next order value for the new exercise
           const nextOrder =
@@ -180,16 +182,16 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete exercise from  a specific workout
 
   const deleteExercise = useCallback((workoutId, exerciseId) => {
-    console.log(
-      `Deleting exercise. Workout ID: ${workoutId}, Exercise ID: ${exerciseId}`
-    );
+    // console.log(
+    //   `Deleting exercise. Workout ID: ${workoutId}, Exercise ID: ${exerciseId}`
+    // );
 
     setProgram(prev => ({
       ...prev,
       workouts: prev.workouts.map(workout => {
-        console.log(
-          `Before deletion, number of exercises: ${workout.exercises.length}`
-        );
+        // console.log(
+        //   `Before deletion, number of exercises: ${workout.exercises.length}`
+        // );
 
         if (workout.id === workoutId) {
           return {
@@ -207,22 +209,39 @@ export const ProgramProvider = ({ children }) => {
 
   // Function to add sets to a specific exercise
 
-  const addSet = useCallback((workoutId, exerciseCatalogId, newSet) => {
+  const addSet = useCallback((workoutId, exerciseId, newSet) => {
     const tempId = uuidv4();
 
     setProgram(prev => ({
       ...prev,
       workouts: prev.workouts.map(workout => {
-        // Find the correct workout by its order
+        // Find the correct workout by its id
         if (workout.id === workoutId) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
               // Find the correct exercise by its catalog ID within the workout
-              if (exercise.catalog_exercise_id === exerciseCatalogId) {
+              if (exercise.id === exerciseId) {
                 // Add the new set with the temporary ID to the exercise's sets array
-                const updatedSet = { ...newSet, id: tempId, isNew: true };
-                return { ...exercise, sets: [...exercise.sets, updatedSet] };
+                const currentSets = Array.isArray(exercise.sets)
+                  ? exercise.sets
+                  : [];
+
+                // Add the new set with the temporary ID to the exercise's sets array
+                const nextOrder =
+                  currentSets.length > 0
+                    ? Math.max(...currentSets.map(set => set.order)) + 1
+                    : 1;
+
+                // Add the new set with the temporary ID to the exercise's sets array
+                const updatedSet = {
+                  ...newSet,
+                  id: tempId,
+                  order: nextOrder,
+                  isNew: true
+                };
+
+                return { ...exercise, sets: [...currentSets, updatedSet] };
               }
               return exercise;
             })
@@ -232,6 +251,10 @@ export const ProgramProvider = ({ children }) => {
       })
     }));
   }, []);
+
+  // useEffect(() => {
+  //   // console.log('Program state updated:', program);
+  // }, [program]); // This effect will run whenever the 'program' state changes
 
   // Function to update a set
 
@@ -245,7 +268,7 @@ export const ProgramProvider = ({ children }) => {
             ...workout,
             exercises: workout.exercises.map(exercise => {
               // Find the matching exercise
-              if (exercise.catalog_exercise_id === exerciseId) {
+              if (exercise.id === exerciseId) {
                 return {
                   ...exercise,
                   sets: exercise.sets.map(set => {
@@ -277,7 +300,7 @@ export const ProgramProvider = ({ children }) => {
             ...workout,
             exercises: workout.exercises.map(exercise => {
               // Find the matching exercise
-              if (exercise.catalog_exercise_id === exerciseId) {
+              if (exercise.id === exerciseId) {
                 return {
                   ...exercise,
                   sets: exercise.sets.filter(set => set.id !== setId)

@@ -55,7 +55,7 @@ router.get('/programs/:user_id', async (req, res) => {
         }
 
         // Log after adding sets to the exercise object
-        console.log(`Workout with exercises and sets ${workout.id}:`, workout);
+        // console.log(`Workout with exercises and sets ${workout.id}:`, workout);
       }
     }
 
@@ -73,7 +73,7 @@ router.get('/programs/:user_id', async (req, res) => {
 router.post('/programs', async (req, res) => {
   const { programData } = req.body;
 
-  console.log('Received program data:', programData);
+  // console.log('Received program data:', programData);
   const {
     user_id,
     name,
@@ -102,11 +102,11 @@ router.post('/programs', async (req, res) => {
     for (const workout of workouts) {
       const newWorkoutQuery =
         'INSERT INTO workouts (program_id, name, "order") VALUES ($1, $2, $3) RETURNING *';
-      console.log('Executing query:', newWorkoutQuery, [
-        program_id,
-        workout.name,
-        workout.order
-      ]);
+      // console.log('Executing query:', newWorkoutQuery, [
+      //   program_id,
+      //   workout.name,
+      //   workout.order
+      // ]);
       const newWorkoutResult = await client.query(newWorkoutQuery, [
         program_id,
         workout.name,
@@ -119,11 +119,11 @@ router.post('/programs', async (req, res) => {
       for (const exercise of workout.exercises) {
         const newExerciseQuery =
           'INSERT INTO exercises (workout_id, catalog_exercise_id, "order") VALUES ($1, $2, $3) RETURNING *';
-        console.log('Executing query:', newExerciseQuery, [
-          workout_id,
-          exercise.catalog_exercise_id,
-          exercise.order
-        ]);
+        // console.log('Executing query:', newExerciseQuery, [
+        //   workout_id,
+        //   exercise.catalog_exercise_id,
+        //   exercise.order
+        // ]);
         const newExerciseResult = await client.query(newExerciseQuery, [
           workout_id,
           exercise.catalog_exercise_id,

@@ -78,6 +78,11 @@ const ProgramForm = ({ isEditing }) => {
     navigate('/');
   };
 
+  const handleAddWorkout = event => {
+    event.preventDefault();
+    addWorkout(program.workouts);
+  };
+
   return (
     <form className='prog-container' onSubmit={handleSubmit}>
       <div className='prog-container__lines'></div>
@@ -189,7 +194,7 @@ const ProgramForm = ({ isEditing }) => {
       </div>
       {isEditing && (
         <div className='prog-container__btn-container'>
-          <Button type='button' onClick={addWorkout}>
+          <Button type='button' onClick={handleAddWorkout}>
             Add Workout
           </Button>
           <Button type='submit'>Save</Button>

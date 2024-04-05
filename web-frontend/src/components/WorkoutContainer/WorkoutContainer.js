@@ -1,12 +1,12 @@
 import React, { useContext, useState } from 'react';
-import PropTypes from 'prop-types';
+
 import {
   TbLayoutNavbarExpandFilled,
   TbLayoutBottombarExpandFilled,
   TbPencil
 } from 'react-icons/tb';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
-import { MdDelete, MdDragHandle } from 'react-icons/md';
+import { MdDelete, MdDragHandle, MdAddBox } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
 import { ProgramContext } from '../../contexts/programContext';
@@ -22,7 +22,7 @@ const WorkoutContainer = ({
   const { expandedWorkoutId, toggleExpand } = useContext(
     WorkoutContainerContext
   );
-  const { deleteWorkout, deleteExercise, updateWorkout } =
+  const { deleteWorkout, deleteExercise, updateWorkout, addSet } =
     useContext(ProgramContext);
   const isExpanded = expandedWorkoutId === workout.id;
 
@@ -57,6 +57,27 @@ const WorkoutContainer = ({
 
   const toggleWorkoutExpand = () => {
     toggleExpand(workout.id);
+  };
+
+  const handleAddSet = (workoutId, exerciseId) => {
+    console.log(
+      'handleAddSet to see workoutId, exerciseId from WorkoutContainer:',
+      workoutId,
+      exerciseId
+    );
+    const newSet = {
+      // Define default properties for a new set
+      weight: '10',
+      reps: '',
+      order:
+        workout.exercises.find(
+          // Get the last set order number
+          exercise => exercise.id === exerciseId
+        ).sets.length + 1
+      // Any other default properties a set should have
+    };
+    addSet(workoutId, exerciseId, newSet);
+    console.log('handleAddSet to see newSet :', newSet);
   };
 
   return (
@@ -167,16 +188,29 @@ const WorkoutContainer = ({
                         {exercise.muscle}
                       </p>
                     </div>
-                    {exercise.sets &&
-                      exercise.sets.map(set => (
-                        <ExerciseSet
-                          id={set.id}
-                          key={set.id}
-                          setDetails={set}
-                          workoutId={workout.id}
-                          exerciseId={exercise.id}
-                        />
-                      ))}
+                    <div>
+                      {exercise.sets &&
+                        exercise.sets.map(set => {
+                          // console.log('Mapping set:', set);
+                          return (
+                            <div className='workout-container__sets-column'>
+                              <ExerciseSet
+                                id={set.id}
+                                key={set.id}
+                                setDetails={set}
+                                workoutId={workout.id}
+                                exerciseId={exercise.id}
+                              />
+                            </div>
+                          );
+                        })}
+                      <button
+                        onClick={() => handleAddSet(workout.id, exercise.id)}
+                        className='workout-container__add-set-btn'
+                      >
+                        <MdAddBox size={25} />
+                      </button>
+                    </div>
 
                     <button
                       className='workout-container__remove-exercise-btn'

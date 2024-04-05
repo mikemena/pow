@@ -2,12 +2,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 10px;
-  /* width: 100%; */
+  width: 100%;
 }
 .exercise-set__row {
   display: flex;
   width: 100%;
+  margin-bottom: 10px;
 }
 
 .exercise-set__weight,
@@ -21,7 +21,6 @@
   border-radius: 4px;
 }
 
-.exercise-set__add-set-btn,
 .exercise-set__remove-set-btn {
   background: none;
   border: none;
@@ -32,23 +31,9 @@
   align-items: center;
 }
 
-.exercise-set__add-set-btn {
-  align-self: flex-start;
-  color: #559857;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin: 0;
-}
-
 .exercise-set__remove-set-btn {
   color: #cb392f;
   padding: 0;
-}
-
-.exercise-set__add-set-btn:hover {
-  color: #4caf50;
 }
 
 .exercise-set__remove-set-btn:hover {
@@ -73,7 +58,6 @@
     margin-bottom: 10px;
   }
 
-  .exercise-set__add-set-btn,
   .exercise-set__remove-set-btn {
     margin-bottom: 10px;
   }

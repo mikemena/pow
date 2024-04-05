@@ -55,7 +55,7 @@ const ProgramPage = () => {
   //   navigate(`/edit-program/${program.program_id}`, { state: { program } });
   // };
 
-  console.log('programs from programs page:', programs);
+  // console.log('programs from programs page:', programs);
 
   return (
     <div className='view-prog-container'>
