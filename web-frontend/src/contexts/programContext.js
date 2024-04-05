@@ -207,14 +207,14 @@ export const ProgramProvider = ({ children }) => {
 
   // Function to add sets to a specific exercise
 
-  const addSet = useCallback((workoutOrder, exerciseCatalogId, newSet) => {
+  const addSet = useCallback((workoutId, exerciseCatalogId, newSet) => {
     const tempId = uuidv4();
 
     setProgram(prev => ({
       ...prev,
       workouts: prev.workouts.map(workout => {
         // Find the correct workout by its order
-        if (workout.id === workoutOrder) {
+        if (workout.id === workoutId) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
@@ -280,7 +280,7 @@ export const ProgramProvider = ({ children }) => {
               if (exercise.catalog_exercise_id === exerciseId) {
                 return {
                   ...exercise,
-                  sets: exercise.sets.filter(set => set.order !== setId)
+                  sets: exercise.sets.filter(set => set.id !== setId)
                 };
               }
               return exercise;

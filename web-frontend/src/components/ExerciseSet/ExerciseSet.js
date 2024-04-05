@@ -3,9 +3,33 @@ import { ProgramContext } from '../../contexts/programContext';
 import { MdDelete, MdAddBox } from 'react-icons/md';
 import './ExerciseSet.css';
 
-const ExerciseSet = ({ setDetails, onUpdate, onRemove, onAdd }) => {
-  const { deleteWorkout, addExercise, deleteExercise, updateWorkout } =
-    useContext(ProgramContext);
+const ExerciseSet = ({ setDetails, onUpdate, workoutId, exerciseId }) => {
+  const { addSet, deleteSet } = useContext(ProgramContext);
+
+  const handleDeleteSet = (workoutId, exerciseId, setId) => {
+    console.log(
+      `Deleting set: ${setId} from exercise: ${exerciseId} in workout: ${workoutId}`
+    );
+
+    deleteSet(workoutId, exerciseId, setId);
+  };
+
+  const handleAddSet = () => {
+    const newSet = {
+      // Define default properties for a new set
+      weight: '10',
+      reps: ''
+      // Any other default properties a set should have
+    };
+    addSet(workoutId, exerciseId, newSet);
+  };
+
+  console.log('ExerciseSet props:', {
+    setDetails,
+    workoutId,
+    exerciseId
+  });
+
   return (
     <div className='exercise-set__container'>
       <div className='exercise-set__row'>
@@ -24,11 +48,17 @@ const ExerciseSet = ({ setDetails, onUpdate, onRemove, onAdd }) => {
           placeholder='Reps'
         />
 
-        <button onClick={onRemove} className='exercise-set__remove-set-btn'>
+        <button
+          onClick={() => handleDeleteSet(workoutId, exerciseId, setDetails.id)}
+          className='exercise-set__remove-set-btn'
+        >
           <MdDelete size={25} />
         </button>
       </div>
-      <button onClick={onAdd} className='exercise-set__add-set-btn'>
+      <button
+        onClick={() => handleAddSet(workoutId, exerciseId, setDetails.id)}
+        className='exercise-set__add-set-btn'
+      >
         <MdAddBox size={25} />
       </button>
     </div>

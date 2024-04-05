@@ -169,7 +169,13 @@ const WorkoutContainer = ({
                     </div>
                     {exercise.sets &&
                       exercise.sets.map(set => (
-                        <ExerciseSet key={set.id} setDetails={set} />
+                        <ExerciseSet
+                          id={set.id}
+                          key={set.id}
+                          setDetails={set}
+                          workoutId={workout.id}
+                          exerciseId={exercise.id}
+                        />
                       ))}
 
                     <button
@@ -195,11 +201,6 @@ const WorkoutContainer = ({
       </div>
     </>
   );
-};
-
-WorkoutContainer.propTypes = {
-  onShowExercise: PropTypes.func.isRequired,
-  showExerciseList: PropTypes.bool.isRequired
 };
 
 export default WorkoutContainer;
