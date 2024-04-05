@@ -22,7 +22,7 @@ const WorkoutContainer = ({
   const { expandedWorkoutId, toggleExpand } = useContext(
     WorkoutContainerContext
   );
-  const { deleteWorkout, addExercise, deleteExercise, updateWorkout } =
+  const { deleteWorkout, deleteExercise, updateWorkout } =
     useContext(ProgramContext);
   const isExpanded = expandedWorkoutId === workout.id;
 
@@ -167,20 +167,17 @@ const WorkoutContainer = ({
                         {exercise.muscle}
                       </p>
                     </div>
-                    {workout.exercises &&
-                      workout.exercises.length > 0 &&
-                      workout.exercises.map(exercise =>
-                        (exercise.sets || []).map(set => (
-                          <ExerciseSet key={set.tempId} setDetails={set} />
-                        ))
-                      )}
+                    {exercise.sets &&
+                      exercise.sets.map(set => (
+                        <ExerciseSet key={set.id} setDetails={set} />
+                      ))}
 
                     <button
                       className='workout-container__remove-exercise-btn'
-                      id={`remove-exercise-btn-${exercise.exercise_id}`}
+                      id={`remove-exercise-btn-${exercise.id}`}
                       type='button'
                       onClick={() =>
-                        handleDeleteExercise(workout.id, exercise.exercise_id)
+                        handleDeleteExercise(workout.id, exercise.id)
                       }
                     >
                       <MdDelete size={30} />

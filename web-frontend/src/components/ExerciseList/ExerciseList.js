@@ -61,9 +61,6 @@ const ExerciseList = ({
   const handleAddExercise = exercise => {
     if (activeWorkout) {
       addExercise(activeWorkout, exercise); // Use activeWorkout as the workoutId
-      console.log(
-        `Adding exercise:${exercise.name} to workout:${activeWorkout}`
-      );
     }
   };
 
@@ -83,17 +80,27 @@ const ExerciseList = ({
         onEquipmentChange={handleEquipmentChange}
       />
       <div className='exercise-container__exercise-list'>
-        {filteredExercises.map(exercise => (
-          <Exercise
-            key={exercise.id}
-            name={exercise.name}
-            muscle={exercise.muscle}
-            equipment={exercise.equipment}
-            image={`http://localhost:9025/${exercise.file_path}`}
-            isSelected={selectedExercises.some(e => e.id === exercise.id)}
-            onClick={() => handleAddExercise(exercise)}
-          />
-        ))}
+        {filteredExercises
+          .filter(
+            exercise =>
+              !selectedExercises.some(e => e.exerciseCatalogId === exercise.id)
+          )
+          .map(exercise => {
+            const isSelected = selectedExercises.some(
+              e => e.exerciseCatalogId === exercise.id
+            );
+            return (
+              <Exercise
+                key={exercise.id}
+                name={exercise.name}
+                muscle={exercise.muscle}
+                equipment={exercise.equipment}
+                image={`http://localhost:9025/${exercise.file_path}`}
+                isSelected={isSelected}
+                onClick={() => handleAddExercise(exercise)}
+              />
+            );
+          })}
       </div>
     </div>
   );

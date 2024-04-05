@@ -1,4 +1,4 @@
-.exercise {
+.exercise-container {
   display: flex;
   align-items: center;
   background-color: #f5f5f5;
@@ -7,13 +7,13 @@
   margin: 20px;
 }
 
-.exercise--selected {
+.exercise-container--selected {
   border: 4px solid rgb(198, 255, 53);
   border-radius: 6px;
   background-color: rgba(198, 255, 53, 0.35);
 }
 
-.image-container {
+.exercise-container__image-container {
   flex-shrink: 0;
   width: 100px;
   height: 100px;
@@ -24,12 +24,12 @@
   position: relative;
 }
 
-#exercise-image {
+.exercise-container__image {
   width: 100%;
   height: auto;
 }
 
-.glass {
+.exercise-container__glass {
   position: absolute; /* Position over the image */
   top: 0;
   left: 0;
@@ -43,20 +43,20 @@
   ); /* Example semi-transparent overlay */
 }
 
-#exercise-details {
-  flex-grow: 1; /* Adjust as needed */
+.exercise-container__details {
+  flex-grow: 1;
   padding-left: 16px;
   min-width: 300;
   font-family: courier, monospace;
 }
 
-#exercise-title,
-#exercise-subtitle {
+.exercise-container__title,
+.exercise-container__subtitle {
   color: #555;
   font-size: 16px;
   margin: 0;
   white-space: nowrap;
 }
-#exercise-subtitle {
+.exercise-container__subtitle {
   font-weight: 600;
 }

@@ -15,18 +15,20 @@ export default function Exercise({
 
   return (
     <div
-      className={`exercise ${isSelected ? 'exercise--selected' : ''}`}
+      className={`exercise-container ${
+        isSelected ? 'exercise-container--selected' : ''
+      }`}
       onClick={handleClick}
     >
-      <div className='image-container'>
-        <img src={image} alt={name} id='exercise-image' />
-        <div className='glass'></div>
+      <div className='exercise-container__image-container'>
+        <img src={image} alt={name} className='exercise-container__image' />
+        <div className='exercise-container__glass'></div>
       </div>
-      <div id='exercise-details'>
-        <p id='exercise-title'>
+      <div className='exercise-container__details'>
+        <p className='exercise-container__title'>
           {name} ({equipment})
         </p>
-        <p id='exercise-subtitle'>{muscle} </p>
+        <p className='exercise-container__subtitle'>{muscle} </p>
       </div>
     </div>
   );

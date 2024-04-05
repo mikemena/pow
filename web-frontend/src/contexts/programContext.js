@@ -125,7 +125,14 @@ export const ProgramProvider = ({ children }) => {
             : [];
 
           // Add the tempId to the new exercise object
-          const newExercise = { ...exercise, id: tempId, isNew: true };
+          const newExercise = {
+            ...exercise,
+            id: tempId,
+            exerciseCatalogId: exercise.id,
+            isNew: true,
+            sets: [{ id: uuidv4(), reps: '', weight: '', isNew: true }]
+          };
+          console.log('Adding exercise:', newExercise);
 
           // Determine the next order value for the new exercise
           const nextOrder =
@@ -153,7 +160,7 @@ export const ProgramProvider = ({ children }) => {
     setProgram(prevProgram => ({
       ...prevProgram,
       workouts: prevProgram.workouts.map(workout => {
-        if (workout.order === workoutId) {
+        if (workout.id === workoutId) {
           // Found the workout that contains the exercise, now update the exercise
           return {
             ...workout,
@@ -173,17 +180,26 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete exercise from  a specific workout
 
   const deleteExercise = useCallback((workoutId, exerciseId) => {
+    console.log(
+      `Deleting exercise. Workout ID: ${workoutId}, Exercise ID: ${exerciseId}`
+    );
+
     setProgram(prev => ({
       ...prev,
       workouts: prev.workouts.map(workout => {
-        if (workout.order === workoutId) {
+        console.log(
+          `Before deletion, number of exercises: ${workout.exercises.length}`
+        );
+
+        if (workout.id === workoutId) {
           return {
             ...workout,
             exercises: workout.exercises.filter(
-              exercise => exercise.catalog_exercise_id !== exerciseId
+              exercise => exercise.id !== exerciseId
             )
           };
         }
+
         return workout;
       })
     }));
@@ -198,7 +214,7 @@ export const ProgramProvider = ({ children }) => {
       ...prev,
       workouts: prev.workouts.map(workout => {
         // Find the correct workout by its order
-        if (workout.order === workoutOrder) {
+        if (workout.id === workoutOrder) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
@@ -224,7 +240,7 @@ export const ProgramProvider = ({ children }) => {
       ...prevProgram,
       workouts: prevProgram.workouts.map(workout => {
         // Find the matching workout
-        if (workout.order === workoutId) {
+        if (workout.id === workoutId) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
@@ -256,7 +272,7 @@ export const ProgramProvider = ({ children }) => {
       ...prevProgram,
       workouts: prevProgram.workouts.map(workout => {
         // Find the matching workout
-        if (workout.order === workoutId) {
+        if (workout.id === workoutId) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
