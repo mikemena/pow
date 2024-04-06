@@ -10,6 +10,16 @@
   margin-bottom: 10px;
 }
 
+.exercise-set__order {
+  font-family: 'Courier New', Courier, monospace;
+  flex-grow: 1;
+  width: 20px;
+  border: none;
+
+  font-size: 16px;
+  border-radius: 4px;
+}
+
 .exercise-set__weight,
 .exercise-set__reps {
   flex-grow: 1;

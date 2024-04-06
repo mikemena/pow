@@ -301,9 +301,14 @@ export const ProgramProvider = ({ children }) => {
             exercises: workout.exercises.map(exercise => {
               // Find the matching exercise
               if (exercise.id === exerciseId) {
+                // Filter out the set to be deleted and renumber the remaining sets
+                const filteredAndRenumberedSets = exercise.sets
+                  .filter(set => set.id !== setId)
+                  .map((set, index) => ({ ...set, order: index + 1 })); // Assuming 'order' needs to be updated
+
                 return {
                   ...exercise,
-                  sets: exercise.sets.filter(set => set.id !== setId)
+                  sets: filteredAndRenumberedSets
                 };
               }
               return exercise;

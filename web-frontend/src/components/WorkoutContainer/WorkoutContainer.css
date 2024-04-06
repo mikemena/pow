@@ -72,8 +72,12 @@ button {
 }
 
 .workout-container__exercises-header-container {
-  display: flex;
-  justify-content: space-between;
+  /* display: flex;
+  justify-content: space-between; */
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  align-items: center;
+  gap: 10px; /* Adjust gap to suit your design */
 }
 
 .workout-container__exercises_header {

@@ -3,38 +3,33 @@ import { ProgramContext } from '../../contexts/programContext';
 import { MdDelete } from 'react-icons/md';
 import './ExerciseSet.css';
 
-const ExerciseSet = ({ setDetails, onUpdate, workoutId, exerciseId }) => {
-  const { deleteSet } = useContext(ProgramContext);
+const ExerciseSet = ({ setDetails, workoutId, exerciseId }) => {
+  const { updateSet, deleteSet } = useContext(ProgramContext);
 
-  const handleDeleteSet = (workoutId, exerciseId, setId) => {
-    // console.log(
-    //   `Deleting set: ${setId} from exercise: ${exerciseId} in workout: ${workoutId}`
-    // );
-
-    deleteSet(workoutId, exerciseId, setId);
+  const handleChange = updatedValue => {
+    updateSet(workoutId, exerciseId, { ...setDetails, ...updatedValue });
   };
 
-  // console.log('ExerciseSet props:', {
-  //   setDetails,
-  //   workoutId,
-  //   exerciseId
-  // });
+  const handleDeleteSet = (workoutId, exerciseId, setId) => {
+    deleteSet(workoutId, exerciseId, setId);
+  };
 
   return (
     <div className='exercise-set__container'>
       <div className='exercise-set__row'>
+        <p className='exercise-set__order'>{setDetails.order}</p>
         <input
           type='number'
           className='exercise-set__weight'
           value={setDetails.weight}
-          onChange={e => onUpdate({ ...setDetails, weight: e.target.value })}
+          onChange={e => handleChange({ weight: e.target.value })}
           placeholder='lbs'
         />
         <input
           type='number'
           className='exercise-set__reps'
           value={setDetails.reps}
-          onChange={e => onUpdate({ ...setDetails, reps: e.target.value })}
+          onChange={e => handleChange({ reps: e.target.value })}
           placeholder='Reps'
         />
 

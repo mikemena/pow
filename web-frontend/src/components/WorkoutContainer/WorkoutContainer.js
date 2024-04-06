@@ -67,7 +67,7 @@ const WorkoutContainer = ({
     );
     const newSet = {
       // Define default properties for a new set
-      weight: '10',
+      weight: '',
       reps: '',
       order:
         workout.exercises.find(
@@ -189,21 +189,26 @@ const WorkoutContainer = ({
                       </p>
                     </div>
                     <div>
-                      {exercise.sets &&
-                        exercise.sets.map(set => {
-                          // console.log('Mapping set:', set);
-                          return (
-                            <div className='workout-container__sets-column'>
-                              <ExerciseSet
-                                id={set.id}
-                                key={set.id}
-                                setDetails={set}
-                                workoutId={workout.id}
-                                exerciseId={exercise.id}
-                              />
-                            </div>
-                          );
-                        })}
+                      {exercise.sets && exercise.sets.length > 0 ? (
+                        exercise.sets.map(set => (
+                          <div
+                            className='workout-container__sets-column'
+                            key={set.id}
+                          >
+                            <ExerciseSet
+                              id={set.id}
+                              setDetails={set}
+                              workoutId={workout.id}
+                              exerciseId={exercise.id}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        <p className='workout-container__no-exercise-message'>
+                          No sets added
+                        </p>
+                      )}
+
                       <button
                         onClick={() => handleAddSet(workout.id, exercise.id)}
                         className='workout-container__add-set-btn'
