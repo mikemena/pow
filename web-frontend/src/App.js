@@ -1,5 +1,5 @@
 // src/App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/home/home';
 import ExercisesListPage from './pages/exercises/main/exercises';
@@ -8,6 +8,7 @@ import CreateProgramPage from './pages/programs/create/program';
 import ProgressPage from './pages/progress/main/progress';
 import ProfilePage from './pages/profile/main/profile';
 import { ProgramProvider } from './contexts/programContext';
+import { useTheme } from './contexts/themeContext';
 
 import './App.css';
 
@@ -19,7 +20,14 @@ function CreateProgramWithProvider() {
   );
 }
 
-function App() {
+const App = () => {
+  const { theme } = useTheme();
+
+  useEffect(() => {
+    // When the theme changes, update the class on the <html> element
+    document.documentElement.className = theme;
+  }, [theme]); // This effect depends on the `theme` variable
+
   return (
     <Router>
       <Routes>
@@ -32,6 +40,6 @@ function App() {
       </Routes>
     </Router>
   );
-}
+};
 
 export default App;

@@ -1,18 +1,28 @@
 .navbar {
   position: sticky;
-  top: 0px;
+  top: 0;
   height: 70px;
-  background-image: url('../../assets/light-nav.svg');
+  background-color: blue;
   background-size: cover;
   background-repeat: no-repeat;
   width: 100%;
-  opacity: 0.65;
+  opacity: 0.85;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 30px 0px 30px;
+  padding: 0 30px;
   margin-bottom: -70px;
   z-index: 5;
+}
+
+/* Light theme specific styles */
+.navbar.light-theme {
+  background-image: url('../../assets/light-nav.svg');
+}
+
+/* Dark theme specific styles */
+.navbar.dark-theme {
+  background-image: url('../../assets/dark-nav.svg');
 }
 
 .navbar__site-name {
@@ -33,9 +43,6 @@
   white-space: nowrap;
 }
 
-/*
-    The anchor tag ( <a> ) for the navbar links
-    */
 .navbar_link {
   font-size: 1.2rem;
   font-weight: 600;

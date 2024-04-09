@@ -6,7 +6,7 @@
   --light-text-color: #ece8e8;
   --dark-card-color: #444444;
   --alt-text-color: #e74c3c;
-  --dark-background: #444444;
+  --dark-background: rgb(38, 38, 42);
   --light-background: rgb(216, 217, 218);
   --light-card: #ece8e8;
   --penumbra-background: #444444;
@@ -25,6 +25,17 @@ body,
   overscroll-behavior: none;
 }
 
+/* Light theme specific styles */
+html.light {
+  background-color: var(--light-background);
+}
+
+/* Dark theme specific styles */
+html.dark {
+  background-color: var(--dark-background);
+  opacity: 0.85;
+}
+
 /* Reset form elements */
 input,
 button,
@@ -39,8 +50,6 @@ textarea {
   line-height: 1.5;
   font-weight: 400;
   color-scheme: light dark;
-  color: var(--text-color);
-  background-color: var(--light-background);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -48,12 +57,7 @@ textarea {
 }
 
 a {
-  font-weight: 500;
-  color: #0957bd;
   text-decoration: inherit;
-}
-a:hover {
-  color: #0957bd;
 }
 
 button {
