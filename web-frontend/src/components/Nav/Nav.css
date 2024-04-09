@@ -2,8 +2,11 @@
   position: sticky;
   top: 0px;
   height: 70px;
-  background-color: black;
-  opacity: 0.75;
+  background-image: url('../../assets/light-nav.svg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  width: 100%;
+  opacity: 0.65;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -12,22 +15,20 @@
   z-index: 5;
 }
 
-.navbar_logo {
+.navbar__site-name {
   color: white;
-  height: 60px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-weight: 400;
+  font-size: 48px;
+  font-style: normal;
 }
 
-/*
-    This is the container for all the navbar links ( <ul> )
-    */
 .navbar_list {
   display: flex;
   list-style: none;
+  margin-right: 50px;
 }
 
-/*
-    This is a single item ( <li> ) in the list
-    */
 .navbar_item {
   white-space: nowrap;
 }
@@ -36,7 +37,8 @@
     The anchor tag ( <a> ) for the navbar links
     */
 .navbar_link {
-  font-size: 0.85rem;
+  font-size: 1.2rem;
+  font-weight: 600;
   text-decoration: none;
   color: rgb(255, 255, 255);
   font-family: 'Montserrat', sans-serif;

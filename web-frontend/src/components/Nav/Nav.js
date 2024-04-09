@@ -14,7 +14,7 @@ const Navbar = ({ theme, toggleTheme }) => {
   return (
     <nav className='navbar'>
       <Link to='/' className='navbar_logo'>
-        <img src={logoSvg} alt='POW' className='navbar_logo' />
+        <h1 className='navbar__site-name'>WRKT</h1>
       </Link>
       {menuClicked ? (
         <FiX size={25} className={'navbar_menu'} onClick={toggleMenuClick} />
