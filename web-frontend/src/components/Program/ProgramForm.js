@@ -1,17 +1,19 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { IoIosArrowDown } from 'react-icons/io';
 import { ProgramContext } from '../../contexts/programContext';
 import Button from '../../components/Inputs/Button';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 import { toProperCase } from '../../utils/stringUtils';
+import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ isEditing }) => {
+  const { theme } = useTheme();
   const navigate = useNavigate();
 
   // Access program data and functions from ProgramContext
-  const { program, updateProgramDetails, addWorkout, saveProgram } =
-    useContext(ProgramContext);
+  const { program, addWorkout, saveProgram } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -24,30 +26,6 @@ const ProgramForm = ({ isEditing }) => {
       toProperCase(program?.duration_unit) || ''
     }`
   });
-
-  useEffect(() => {
-    // Dynamically set the height of .prog-container__lines
-    var progContainer = document.querySelector('.prog-container');
-    var progContainerLines = document.querySelector('.prog-container__lines');
-
-    // Get the height of .prog-container
-    var progContainerHeight = progContainer.offsetHeight;
-
-    // Set the height of .prog-container__lines
-    progContainerLines.style.height = progContainerHeight + 'px';
-
-    setFormValues({
-      programName: program?.name || '',
-      mainGoal: program?.main_goal || '',
-      programDuration: program?.program_duration || '',
-      durationUnit: program?.duration_unit || '',
-      daysPerWeek: program?.days_per_week || '',
-      workouts: program?.workouts || [],
-      programDurationDisplay: `${program?.program_duration || ''} ${
-        toProperCase(program?.duration_unit) || ''
-      }`
-    });
-  }, [program]);
 
   const handleChange = e => {
     let value = e.target.value;
@@ -84,20 +62,19 @@ const ProgramForm = ({ isEditing }) => {
   };
 
   return (
-    <form className='prog-container' onSubmit={handleSubmit}>
-      <div className='prog-container__lines'></div>
+    <form className={`prog-container ${theme}`} onSubmit={handleSubmit}>
       <div className='prog-container__section'>
         {isEditing ? (
           <>
             <label
               htmlFor='programName'
-              className='prog-container__section-title'
+              className={`prog-container__section-title ${theme}`}
             >
               Program Name
             </label>
             <textarea
               type='text'
-              id='program-name-input'
+              className={`program-name-input ${theme}`}
               name='programName'
               value={formValues.name}
               onChange={handleChange}
@@ -113,12 +90,15 @@ const ProgramForm = ({ isEditing }) => {
       </div>
 
       <div className='prog-container__section'>
-        <label htmlFor='mainGoal' className='prog-container__section-title'>
+        <label
+          htmlFor='mainGoal'
+          className={`prog-container__section-title ${theme}`}
+        >
           Main Goal
         </label>
         {isEditing ? (
           <select
-            id='mainGoal'
+            className={`mainGoal ${theme}`}
             name='mainGoal'
             value={formValues.mainGoal}
             onChange={handleChange}
@@ -139,7 +119,7 @@ const ProgramForm = ({ isEditing }) => {
       <div className='prog-container__section'>
         <label
           htmlFor='programDuration'
-          className='prog-container__section-title'
+          className={`prog-container__section-title ${theme}`}
         >
           Duration
         </label>
@@ -147,14 +127,14 @@ const ProgramForm = ({ isEditing }) => {
           <>
             <input
               type='number'
-              id='programDuration'
+              className={`programDuration ${theme}`}
               name='programDuration'
               value={formValues.programDuration}
               onChange={handleChange}
               min={1}
             />
             <select
-              id='durationUnit'
+              className={`durationUnit ${theme}`}
               name='durationUnit'
               value={formValues.durationUnit}
               onChange={handleChange}
@@ -173,13 +153,16 @@ const ProgramForm = ({ isEditing }) => {
         )}
       </div>
       <div className='prog-container__section'>
-        <label htmlFor='daysPerWeek' className='prog-container__section-title'>
+        <label
+          htmlFor='daysPerWeek'
+          className={`prog-container__section-title ${theme}`}
+        >
           Days Per Week
         </label>
         {isEditing ? (
           <input
             type='number'
-            id='daysPerWeek'
+            className={`daysPerWeek  ${theme}`}
             name='daysPerWeek'
             value={formValues.daysPerWeek}
             onChange={handleChange}

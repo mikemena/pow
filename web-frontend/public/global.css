@@ -2,15 +2,17 @@
   --primary-color: #43a36d;
   --secondary-color: #ff793f;
   --background-color: #ece8e8;
-  --dark-text-color: #444444;
-  --light-text-color: #ece8e8;
+  --dark-text-color: rgb(83, 84, 82);
+  --light-text-color: rgb(151, 148, 154);
   --dark-card-color: #444444;
   --alt-text-color: #e74c3c;
   --dark-background: rgb(38, 38, 42);
-  --light-background: rgb(216, 217, 218);
-  --light-card: #ece8e8;
-  --penumbra-background: #444444;
-  --pure-white: #e8e8e8;
+  --light-background: rgb(219, 215, 213);
+  --dark-input: rgb(38, 38, 42);
+  --light-input: rgb(219, 215, 213);
+  --orange: rgb(193, 96, 39);
+  --white: rgb(220, 218, 218);
+  --black: rgb(38, 38, 42);
 }
 
 html,
@@ -33,7 +35,6 @@ html.light {
 /* Dark theme specific styles */
 html.dark {
   background-color: var(--dark-background);
-  opacity: 0.85;
 }
 
 /* Reset form elements */
@@ -75,14 +76,27 @@ input,
 select,
 textarea {
   box-sizing: border-box;
+  height: 40px;
   font-size: 16px;
   border-radius: 4px;
   padding: 5px;
   margin: 5px;
-  background-color: var(--pure-white);
-  color: var(--dark-text-color);
-  font-family: courier, monospace;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 400;
+  font-style: normal;
   width: 100%;
+}
+
+input.light,
+select.light,
+textarea.light {
+  color: var(--dark-text-color);
+}
+
+input.dark,
+select.dark,
+textarea.dark {
+  color: var(--light-text-color);
 }
 
 select {
@@ -94,6 +108,7 @@ select {
   background-position: right 10px center;
   background-size: 12px;
   border-style: none;
+  background-color: var(--primary-color);
 }
 
 /* For Internet Explorer */
@@ -105,13 +120,6 @@ input::placeholder {
   /* font-size: 16px; */
   color: var(--dark-text-color);
   opacity: 1;
-}
-
-label {
-  font-size: 1.2em;
-  font-weight: 500;
-  color: #0957bd;
-  padding-right: 10px;
 }
 
 .page-layout {

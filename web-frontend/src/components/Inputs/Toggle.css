@@ -13,7 +13,7 @@
 .toggle-label {
   cursor: pointer;
   text-indent: -9999px;
-  width: 30px;
+  width: 40px;
   height: 25px;
   background: rgb(49, 50, 53);
   display: block;
@@ -28,21 +28,20 @@
   left: 2px;
   width: 21px;
   height: 21px;
-  background: rgb(244, 32, 60);
+  background: var;
   border-radius: 45px;
   transition: transform 0.2s linear, background-color 0.2s linear;
+  background-color: var(--white);
 }
 
 /* When the toggle is checked */
 #theme-toggle-checkbox:checked + .toggle-label {
-  background: rgb(49, 50, 53); /* Dark theme background */
+  background: var(--black);
 }
 
 #theme-toggle-checkbox:checked + .toggle-label .toggle-ball {
-  transform: translateX(
-    15px
-  ); /* Adjust this value if needed for proper alignment */
-  background: rgb(242, 57, 149); /* Dark theme ball */
+  transform: translateX(15px);
+  background: var(--white);
 }
 
 .toggle-label:active .toggle-ball {

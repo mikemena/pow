@@ -1,8 +1,7 @@
 .navbar {
   position: sticky;
   top: 0;
-  height: 70px;
-  background-color: blue;
+  height: 80px;
   background-size: cover;
   background-repeat: no-repeat;
   width: 100%;
@@ -26,11 +25,18 @@
 }
 
 .navbar__site-name {
-  color: white;
   font-family: 'Black Han Sans', sans-serif;
   font-weight: 400;
   font-size: 48px;
   font-style: normal;
+}
+
+.navbar__site-name.light {
+  color: rgb(55, 94, 144);
+}
+
+.navbar__site-name.dark {
+  color: rgb(177, 90, 152);
 }
 
 .navbar_list {
@@ -47,7 +53,6 @@
   font-size: 1.2rem;
   font-weight: 600;
   text-decoration: none;
-  color: rgb(255, 255, 255);
   font-family: 'Montserrat', sans-serif;
   text-align: center;
   padding: 10px;
@@ -56,6 +61,14 @@
   border-width: 0px 0px 1px 0px;
   border-color: transparent;
   transition: 250ms;
+}
+
+.navbar_link.light {
+  color: var(--black);
+}
+
+.navbar_link.dark {
+  color: var(--white);
 }
 
 .navbar_link:hover {

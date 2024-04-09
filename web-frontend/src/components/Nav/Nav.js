@@ -17,7 +17,7 @@ const Navbar = () => {
     <div>
       <nav className={`navbar ${theme}-theme`}>
         <Link to='/' className='navbar_logo'>
-          <h1 className='navbar__site-name'>WRKT</h1>
+          <h1 className={`navbar__site-name ${theme}`}>WRKT</h1>
         </Link>
         {menuClicked ? (
           <FiX size={25} className={'navbar_menu'} onClick={toggleMenuClick} />
@@ -34,27 +34,27 @@ const Navbar = () => {
           }
         >
           <li className='navbar_item'>
-            <Link to='/programs' className='navbar_link'>
+            <Link to='/programs' className={`navbar_link ${theme}`}>
               Programs
             </Link>
           </li>
           <li className='navbar_item'>
-            <Link to='/workouts' className='navbar_link'>
+            <Link to='/workouts' className={`navbar_link ${theme}`}>
               Workouts
             </Link>
           </li>
           <li className='navbar_item'>
-            <Link to='/exercises' className='navbar_link'>
+            <Link to='/exercises' className={`navbar_link ${theme}`}>
               Exercises
             </Link>
           </li>
           <li className='navbar_item'>
-            <Link to='/progress' className='navbar_link'>
+            <Link to='/progress' className={`navbar_link ${theme}`}>
               Progress
             </Link>
           </li>
           <li className='navbar_item'>
-            <Link to='/profile' className='navbar_link'>
+            <Link to='/profile' className={`navbar_link ${theme}`}>
               Profile
             </Link>
           </li>
