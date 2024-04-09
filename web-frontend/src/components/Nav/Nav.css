@@ -14,6 +14,11 @@
   z-index: 5;
 }
 
+.navbar_menu-container {
+  display: flex;
+  align-items: center;
+}
+
 /* Light theme specific styles */
 .navbar.light-theme {
   background-image: url('../../assets/light-nav.svg');
@@ -83,11 +88,17 @@
 }
 
 @media screen and (max-width: 800px) {
+  .navbar_menu-container {
+    display: flex;
+    justify-content: space-between;
+
+    padding-right: 10px;
+  }
   .navbar_logo {
     margin-left: 20px;
   }
   .navbar {
-    padding: 0px 0px; /* Remove horizontal padding */
+    padding: 0px 0px;
   }
   .navbar_list {
     display: flex;
@@ -104,7 +115,7 @@
     left: 0;
     width: 100vw;
     margin-left: -40px;
-    padding-left: 31px; /* Add this line */
+    padding-left: 31px;
   }
 
   .navbar_list--active .navbar_item {

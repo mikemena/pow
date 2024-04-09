@@ -6,6 +6,7 @@ import WorkoutContainer from '../../../components/WorkoutContainer/WorkoutContai
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
 import ExerciseList from '../../../components/ExerciseList/ExerciseList';
+import Toggle from '../../../components/Inputs/Toggle';
 
 import './program.css';
 
@@ -42,6 +43,9 @@ const CreateProgram = () => {
   return (
     <div className='create-prog-page'>
       <NavBar isEditing='true' />
+      <div className='toggle-container'>
+        <Toggle />
+      </div>
       <div className='create-prog-page__container'>
         <div className='create-prog-page__left-container'>
           <div className='create-prog-page__header'>

@@ -5,6 +5,14 @@
   align-items: flex-start;
   margin-top: 60px;
 }
+.toggle-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px;
+  z-index: 10;
+  margin-top: 90px;
+}
 
 .create-prog-page__left-container {
   flex-grow: 0;

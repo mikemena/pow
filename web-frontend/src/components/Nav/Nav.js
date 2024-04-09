@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import Toggle from '../Inputs/Toggle';
 import { FiMenu, FiX } from 'react-icons/fi';
 import { useTheme } from '../../contexts/themeContext';
 import './Nav.css';
@@ -19,6 +18,7 @@ const Navbar = () => {
         <Link to='/' className='navbar_logo'>
           <h1 className={`navbar__site-name ${theme}`}>WRKT</h1>
         </Link>
+
         {menuClicked ? (
           <FiX size={25} className={'navbar_menu'} onClick={toggleMenuClick} />
         ) : (
@@ -28,6 +28,7 @@ const Navbar = () => {
             onClick={toggleMenuClick}
           />
         )}
+
         <ul
           className={
             menuClicked ? 'navbar_list navbar_list--active' : 'navbar_list'
@@ -58,9 +59,7 @@ const Navbar = () => {
               Profile
             </Link>
           </li>
-          <li>
-            <Toggle />
-          </li>
+          <li></li>
         </ul>
       </nav>
     </div>

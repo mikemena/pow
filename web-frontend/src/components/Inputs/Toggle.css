@@ -15,7 +15,7 @@
   text-indent: -9999px;
   width: 40px;
   height: 25px;
-  background: rgb(49, 50, 53);
+  background: var(--gray);
   display: block;
   border-radius: 100px;
   position: relative;
@@ -36,7 +36,7 @@
 
 /* When the toggle is checked */
 #theme-toggle-checkbox:checked + .toggle-label {
-  background: var(--black);
+  background: var(--gray);
 }
 
 #theme-toggle-checkbox:checked + .toggle-label .toggle-ball {
