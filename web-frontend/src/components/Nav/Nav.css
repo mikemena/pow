@@ -32,11 +32,11 @@
 }
 
 .navbar__site-name.light {
-  color: rgb(55, 94, 144);
+  color: var(--orange);
 }
 
 .navbar__site-name.dark {
-  color: rgb(177, 90, 152);
+  color: var(--orange);
 }
 
 .navbar_list {
