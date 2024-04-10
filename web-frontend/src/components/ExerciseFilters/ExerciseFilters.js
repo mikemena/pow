@@ -1,19 +1,11 @@
 import React from 'react';
-import styled from 'styled-components';
 import useFetchData from '../../hooks/useFetchData';
-
-const FilterContainer = styled.div`
-  display: flex;
-  width: 585px;
-`;
-
-const Filter = styled.div`
-  display: flex;
-  width: 300px;
-  padding-left: 10px;
-`;
+import { useTheme } from '../../contexts/themeContext';
+import './ExerciseFilters.css';
 
 function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
+  const { theme } = useTheme();
+
   const {
     data: muscles,
     isLoading: isLoadingMuscles,
@@ -36,11 +28,11 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   if (errorMuscles) return <div>Error loading equipments: {errorMuscles}</div>;
 
   return (
-    <FilterContainer>
-      <Filter>
+    <div className='exercise-search-container'>
+      <div className='exercise-search-container__filter-container'>
         <input
           list='muscles'
-          id='muscle-search'
+          className={`muscle-search ${theme}`}
           type='search'
           onChange={event => onMuscleChange(event.target.value)}
           placeholder='Search Muscles'
@@ -50,12 +42,12 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             <option key={index} value={option.name} />
           ))}
         </datalist>
-      </Filter>
+      </div>
 
-      <Filter>
+      <div className='exercise-search-container'>
         <input
           list='equipments'
-          id='equipment-search'
+          className={`equipment-search ${theme}`}
           type='search'
           onChange={event => onEquipmentChange(event.target.value)}
           placeholder='Search Equipment'
@@ -65,8 +57,8 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
             <option key={index} value={option.name} />
           ))}
         </datalist>
-      </Filter>
-    </FilterContainer>
+      </div>
+    </div>
   );
 }
 

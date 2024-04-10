@@ -11,13 +11,22 @@
 }
 
 .exercise-set__order {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: 'Roboto', sans-serif;
   flex-grow: 1;
   width: 20px;
   border: none;
-
   font-size: 16px;
   border-radius: 4px;
+}
+
+/* Light theme specific styles */
+.exercise-set__order.light {
+  color: var(--dark-text-color);
+}
+
+/* Dark theme specific styles */
+.exercise-set__order.dark {
+  color: var(--light-text-color);
 }
 
 .exercise-set__weight,
@@ -29,6 +38,15 @@
   padding: 1px;
   font-size: 16px;
   border-radius: 4px;
+}
+
+.exercise-set__weight.light,
+.exercise-set__reps.light {
+  background-color: var(--light-input);
+}
+.exercise-set__weight.dark,
+.exercise-set__reps.dark {
+  background-color: var(--dark-input);
 }
 
 .exercise-set__remove-set-btn {

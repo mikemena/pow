@@ -1,0 +1,19 @@
+.exercise-search-container {
+  display: flex;
+  width: 585px;
+}
+
+.exercise-search-container__filter-container {
+  display: flex;
+  width: 300px;
+  padding-left: 10px;
+}
+
+.muscle-search.light,
+.equipment-search.light {
+  background-color: var(--light-input);
+}
+.muscle-search.dark,
+.equipment-search.dark {
+  background-color: var(--dark-input);
+}

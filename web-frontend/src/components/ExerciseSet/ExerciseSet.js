@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
+import { useTheme } from '../../contexts/themeContext';
 import { MdDelete } from 'react-icons/md';
 import './ExerciseSet.css';
 
@@ -14,23 +15,23 @@ const ExerciseSet = ({ setDetails, workoutId, exerciseId }) => {
     deleteSet(workoutId, exerciseId, setId);
   };
 
+  const { theme } = useTheme();
+
   return (
     <div className='exercise-set__container'>
       <div className='exercise-set__row'>
-        <p className='exercise-set__order'>{setDetails.order}</p>
+        <p className={`exercise-set__order ${theme}`}>{setDetails.order}</p>
         <input
           type='number'
-          className='exercise-set__weight'
+          className={`exercise-set__weight ${theme}`}
           value={setDetails.weight}
           onChange={e => handleChange({ weight: e.target.value })}
-          placeholder='lbs'
         />
         <input
           type='number'
-          className='exercise-set__reps'
+          className={`exercise-set__reps ${theme}`}
           value={setDetails.reps}
           onChange={e => handleChange({ reps: e.target.value })}
-          placeholder='Reps'
         />
 
         <button

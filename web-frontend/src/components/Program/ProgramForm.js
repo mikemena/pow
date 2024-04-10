@@ -175,17 +175,6 @@ const ProgramForm = ({ isEditing }) => {
           </span>
         )}
       </div>
-      {isEditing && (
-        <div className='prog-container__btn-container'>
-          <Button type='button' onClick={handleAddWorkout}>
-            Add Workout
-          </Button>
-          <Button type='submit'>Save</Button>
-          <Button type='button' onClick={handleCancel}>
-            Cancel
-          </Button>
-        </div>
-      )}
     </form>
   );
 };

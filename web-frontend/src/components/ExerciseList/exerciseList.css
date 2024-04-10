@@ -1,5 +1,14 @@
-#exercise-container {
-  width: 550px;
+.exercise-tile {
+  width: 600px;
+}
+
+.exercise-tile.light {
+  background-color: rgb(204, 204, 202);
+  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
+}
+.exercise-tile.dark {
+  background-color: rgb(50, 49, 54);
+  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
 
 #exercise-search-bar {

@@ -4,6 +4,7 @@ import { ProgramContext } from '../../../contexts/programContext';
 import { WorkoutContainerProvider } from '../../../contexts/workoutContainerContext';
 import WorkoutContainer from '../../../components/WorkoutContainer/WorkoutContainer';
 import ProgramForm from '../../../components/Program/ProgramForm';
+import ProgramButtonContainer from '../../../components/ProgramButtonContainer/ProgramButtonContainer';
 import NavBar from '../../../components/Nav/Nav';
 import ExerciseList from '../../../components/ExerciseList/ExerciseList';
 import Toggle from '../../../components/Inputs/Toggle';
@@ -41,49 +42,52 @@ const CreateProgram = () => {
   };
 
   return (
-    <div className='create-prog-page'>
+    <div>
+      {' '}
       <NavBar isEditing='true' />
-      <div className='toggle-container'>
-        <Toggle />
-      </div>
-      <div className='create-prog-page__container'>
-        <div className='create-prog-page__left-container'>
-          <div className='create-prog-page__header'>
-            <h1 className='create-prog-page__title'>Create New Program</h1>
-          </div>
-
-          <ProgramForm program={program} isEditing={true} />
-
-          <WorkoutContainerProvider>
-            {program.workouts.map(workout => (
-              <WorkoutContainer
-                key={workout.id}
-                workout={workout}
-                isActive={activeWorkout === workout.id}
-                showExercises={handleShowExercise}
-                showExerciseList={showExerciseList}
-              />
-            ))}
-          </WorkoutContainerProvider>
+      <div className='create-prog-page'>
+        <div className='toggle-container'>
+          <Toggle />
         </div>
-        <div className='create-prog-page__right-container'>
-          <h1 className='create-prog-page__exercise-container-title'>
-            {activeWorkout
-              ? `Adding exercises for ${
+        <div className='create-prog-page__container'>
+          <div className='create-prog-page__left-container'>
+            <div className='create-prog-page__header'>
+              <h1 className='create-prog-page__title'>Create New Program</h1>
+            </div>
+            <ProgramForm program={program} isEditing={true} />
+            <WorkoutContainerProvider>
+              {program.workouts.map(workout => (
+                <WorkoutContainer
+                  key={workout.id}
+                  workout={workout}
+                  isActive={activeWorkout === workout.id}
+                  showExercises={handleShowExercise}
+                  showExerciseList={showExerciseList}
+                />
+              ))}
+            </WorkoutContainerProvider>
+          </div>
+          <div className='create-prog-page__right-container'>
+            <h1 className='create-prog-page__exercise-container-title'>
+              {activeWorkout
+                ? `Adding exercises for ${
+                    program.workouts.find(
+                      workout => workout.id === activeWorkout
+                    )?.name
+                  }`
+                : ''}
+            </h1>
+            {showExerciseList && (
+              <ExerciseList
+                activeWorkout={activeWorkout}
+                selectedExercises={
                   program.workouts.find(workout => workout.id === activeWorkout)
-                    ?.name
-                }`
-              : ''}
-          </h1>
-          {showExerciseList && (
-            <ExerciseList
-              activeWorkout={activeWorkout}
-              selectedExercises={
-                program.workouts.find(workout => workout.id === activeWorkout)
-                  ?.exercises || []
-              }
-            />
-          )}
+                    ?.exercises || []
+                }
+              />
+            )}
+          </div>
+          <ProgramButtonContainer />
         </div>
       </div>
     </div>

@@ -10,6 +10,7 @@ import { MdDelete, MdDragHandle, MdAddBox } from 'react-icons/md';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
 import { ProgramContext } from '../../contexts/programContext';
+import { useTheme } from '../../contexts/themeContext';
 import ExerciseSet from '../ExerciseSet/ExerciseSet';
 import './WorkoutContainer.css';
 
@@ -25,9 +26,10 @@ const WorkoutContainer = ({
   const { deleteWorkout, deleteExercise, updateWorkout, addSet } =
     useContext(ProgramContext);
   const isExpanded = expandedWorkoutId === workout.id;
-
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
+
+  const { theme } = useTheme();
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
@@ -51,9 +53,9 @@ const WorkoutContainer = ({
     deleteExercise(workoutId, exerciseId);
   };
 
-  const workoutContainerClass = isActive
-    ? 'workout-container active'
-    : 'workout-container';
+  const workoutContainerClass = `workout-container ${theme} ${
+    isActive ? 'active' : ''
+  }`;
 
   const toggleWorkoutExpand = () => {
     toggleExpand(workout.id);
@@ -124,7 +126,9 @@ const WorkoutContainer = ({
               <button className='workout-container__edit-title-btn'>
                 <TbPencil size={20} onClick={handleEditTitleChange} />
               </button>
-              <h2 className='workout-container__title'>{workout.name}</h2>
+              <h2 className={`workout-container__title ${theme}`}>
+                {workout.name}
+              </h2>
             </div>
           )}
 
@@ -158,12 +162,18 @@ const WorkoutContainer = ({
             </div>
             <div className='workout-container__exercises'>
               <div className='workout-container__exercises-header-container'>
-                <h4 className='workout-container__exercises_header'>
+                <h4 className={`workout-container__exercises_header ${theme}`}>
                   Exercise
                 </h4>
-                <h4 className='workout-container__exercises_header'>Set</h4>
-                <h4 className='workout-container__exercises_header'>Weight</h4>
-                <h4 className='workout-container__exercises_header'>Reps</h4>
+                <h4 className={`workout-container__exercises_header ${theme}`}>
+                  Set
+                </h4>
+                <h4 className={`workout-container__exercises_header ${theme}`}>
+                  Weight
+                </h4>
+                <h4 className={`workout-container__exercises_header ${theme}`}>
+                  Reps
+                </h4>
               </div>
               {workout.exercises && workout.exercises.length > 0 ? (
                 workout.exercises.map((exercise, index) => (
@@ -171,8 +181,12 @@ const WorkoutContainer = ({
                     key={exercise.tempId}
                     className='workout-container__each-exercise'
                   >
-                    <div className='workout-container__drag-order-container'>
-                      <span className='workout-container__exercise-order-number'>
+                    <div
+                      className={`workout-container__drag-order-container ${theme}`}
+                    >
+                      <span
+                        className={`workout-container__exercise-order-number ${theme}`}
+                      >
                         {index + 1}
                       </span>{' '}
                       <MdDragHandle
@@ -181,10 +195,14 @@ const WorkoutContainer = ({
                       />
                     </div>
                     <div className='workout-container__exercise-details'>
-                      <h4 className='workout-container__exercise-name'>
+                      <h4
+                        className={`workout-container__exercises_name ${theme}`}
+                      >
                         {exercise.name}
                       </h4>
-                      <p className='workout-container__exercise-muscle'>
+                      <p
+                        className={`workout-container__exercise-muscle ${theme}`}
+                      >
                         {exercise.muscle}
                       </p>
                     </div>

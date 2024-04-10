@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 const StyledButton = styled.button`
   margin: 20px;
-  color: var(--dark-text-color);
+  color: var(--white);
   font-family: courier, monospace;
   background-color: ${props => props.bgColor || 'rgb(249, 156, 87)'};
   width: 160px;

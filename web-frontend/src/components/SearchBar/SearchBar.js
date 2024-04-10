@@ -1,12 +1,7 @@
 import { useState } from 'react';
 import TextInput from '../Inputs/TextInput';
-import styled from 'styled-components';
-
-const SearchBarContainer = styled.div`
-  display: flex;
-  width: 600px;
-  padding: 0 0 0 10px;
-`;
+import { useTheme } from '../../contexts/themeContext';
+import './SearchBar.css';
 
 export default function ExerciseSearch({
   exercises = [],
@@ -19,11 +14,14 @@ export default function ExerciseSearch({
     setInputValue(newValue);
     onChange(newValue);
   };
+
+  const { theme } = useTheme();
+
   return (
-    <SearchBarContainer>
+    <div className='search-bar-container'>
       <TextInput
         list='exercises'
-        className='search-bar-container__input'
+        className={`search-bar-container__input ${theme}`}
         id='exercise-search-bar'
         onChange={handleInputChange}
         value={inputValue}
@@ -36,6 +34,6 @@ export default function ExerciseSearch({
           <option key={index} value={exercise.name} />
         ))}
       </datalist>
-    </SearchBarContainer>
+    </div>
   );
 }

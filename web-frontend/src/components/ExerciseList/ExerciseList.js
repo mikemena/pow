@@ -4,6 +4,7 @@ import ExerciseSearch from '../SearchBar/SearchBar';
 import Exercise from '../Exercise/Exercise';
 import ExerciseFilters from '../ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
+import { useTheme } from '../../contexts/themeContext';
 import './exerciseList.css';
 
 const searchStyle = {
@@ -27,6 +28,8 @@ const ExerciseList = ({
     isLoading,
     error
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
+
+  const { theme } = useTheme();
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -68,7 +71,7 @@ const ExerciseList = ({
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div id='exercise-container'>
+    <div className={`exercise-tile ${theme}`}>
       <ExerciseSearch
         style={searchStyle}
         onChange={handleSearch}
