@@ -13,7 +13,7 @@ const Navbar = () => {
   };
 
   return (
-    <div>
+    <div className='navbar-container'>
       <nav className={`navbar ${theme}-theme`}>
         <Link to='/' className='navbar_logo'>
           <h1 className={`navbar__site-name ${theme}`}>WRKT</h1>

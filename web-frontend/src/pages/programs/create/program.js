@@ -51,9 +51,9 @@ const CreateProgram = () => {
         </div>
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
-            <div className='create-prog-page__header'>
+            {/* <div className='create-prog-page__header'>
               <h1 className='create-prog-page__title'>Create New Program</h1>
-            </div>
+            </div> */}
             <ProgramForm program={program} isEditing={true} />
             <WorkoutContainerProvider>
               {program.workouts.map(workout => (
@@ -87,6 +87,8 @@ const CreateProgram = () => {
               />
             )}
           </div>
+        </div>{' '}
+        <div className='create-prog-page__button-container'>
           <ProgramButtonContainer />
         </div>
       </div>

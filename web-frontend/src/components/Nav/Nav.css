@@ -1,6 +1,10 @@
-.navbar {
+.navbar-container {
   position: sticky;
   top: 0;
+  z-index: 1000;
+}
+
+.navbar {
   height: 80px;
   background-size: cover;
   background-repeat: no-repeat;
@@ -11,7 +15,6 @@
   align-items: center;
   padding: 0 30px;
   margin-bottom: -70px;
-  z-index: 5;
 }
 
 .navbar_menu-container {

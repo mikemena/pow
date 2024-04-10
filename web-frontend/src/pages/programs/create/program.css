@@ -9,9 +9,11 @@
 }
 
 .create-prog-page__container {
-  flex-grow: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+  min-width: 700px;
   transition: transform 0.3s;
 }
 .toggle-container {
@@ -26,11 +28,17 @@
 .create-prog-page__left-container {
   max-width: 700px;
   width: 100%;
+  margin-top: 100px;
 }
 
 .create-prog-page__right-container {
   flex-grow: 0;
   width: 35%;
+}
+.create-prog-page__button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
 }
 
 .create-prog-page__title {
@@ -43,6 +51,15 @@
 }
 
 @media screen and (max-width: 800px) {
+  .create-prog-page {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    height: 100vh;
+    padding-bottom: 100px;
+  }
   .create-prog-page__container {
     flex-direction: column;
   }
