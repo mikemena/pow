@@ -11,8 +11,12 @@ export const ProgramProvider = ({ children }) => {
     duration_unit: '',
     days_per_week: 0,
     main_goal: '',
-    workouts: []
+    workouts: [{ id: uuidv4(), name: 'Workout 1', exercises: [] }]
   });
+
+  const [activeWorkoutId, setActiveWorkoutId] = useState(
+    program.workouts[0].id
+  );
 
   //Save program to the database
   const saveProgram = async NewProgram => {
@@ -67,7 +71,10 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = useCallback(
     workout => {
-      // console.log('Adding workout:', workout);
+      console.log(
+        'addWorkout func in context , received workout to add:',
+        workout
+      );
       const tempId = uuidv4();
 
       // Find the highest index used in existing workout names
@@ -88,6 +95,8 @@ export const ProgramProvider = ({ children }) => {
         ...prev,
         workouts: [...prev.workouts, newWorkout]
       }));
+      setActiveWorkoutId(tempId);
+      console.log('Workouts after addWorkout:', newWorkout);
     },
     [program.workouts]
   );
@@ -106,11 +115,60 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete a workout
 
   const deleteWorkout = useCallback(workoutId => {
-    setProgram(prev => ({
-      ...prev,
-      workouts: prev.workouts.filter(workout => workout.id !== workoutId)
-    }));
+    console.log(`Attempting to delete workout with id: ${workoutId}`);
+    setProgram(prev => {
+      let newActiveWorkoutId = prev.activeWorkoutId;
+      const workoutIndex = prev.workouts.findIndex(
+        workout => workout.id === workoutId
+      );
+
+      // Ensure we have more than one workout to prevent deleting the last one.
+      if (prev.workouts.length <= 1) return prev; // Or handle the error as needed.
+
+      const updatedWorkouts = prev.workouts.filter(
+        workout => workout.id !== workoutId
+      );
+      console.log('Workouts after deletion:', updatedWorkouts);
+
+      // If the deleted workout was the active one, update the activeWorkoutId.
+      if (newActiveWorkoutId === workoutId) {
+        if (workoutIndex === prev.workouts.length - 1) {
+          // If it was the last workout, set the previous one as active.
+          newActiveWorkoutId = updatedWorkouts[workoutIndex - 1].id;
+        } else {
+          // Otherwise, set the next workout as active (or previous if it was the last).
+          newActiveWorkoutId = updatedWorkouts[Math.max(0, workoutIndex)].id;
+        }
+      }
+
+      // Update the active workout ID in the state.
+      setActiveWorkoutId(newActiveWorkoutId);
+
+      // Return the updated program.
+      return { ...prev, workouts: updatedWorkouts };
+    });
   }, []);
+
+  // Function to go to the next workout
+
+  const goToNextWorkout = () => {
+    const currentIndex = program.workouts.findIndex(
+      workout => workout.id === activeWorkoutId
+    );
+    const nextIndex = (currentIndex + 1) % program.workouts.length;
+    setActiveWorkoutId(program.workouts[nextIndex].id);
+  };
+
+  // Function to go to the previous workout
+
+  const goToPreviousWorkout = () => {
+    const currentIndex = program.workouts.findIndex(
+      workout => workout.id === activeWorkoutId
+    );
+    const previousIndex =
+      (currentIndex - 1 + program.workouts.length) % program.workouts.length;
+    setActiveWorkoutId(program.workouts[previousIndex].id);
+  };
 
   // Function to add exercise to a specific workout
 
@@ -329,6 +387,8 @@ export const ProgramProvider = ({ children }) => {
         addWorkout,
         updateWorkout,
         deleteWorkout,
+        goToNextWorkout,
+        goToPreviousWorkout,
         addExercise,
         updateExercise,
         deleteExercise,

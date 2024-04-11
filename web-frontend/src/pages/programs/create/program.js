@@ -41,6 +41,8 @@ const CreateProgram = () => {
     }
   };
 
+  console.log('program.workouts before mapping:', program.workouts);
+
   return (
     <div>
       {' '}
@@ -56,15 +58,12 @@ const CreateProgram = () => {
             </div> */}
             <ProgramForm program={program} isEditing={true} />
             <WorkoutContainerProvider>
-              {program.workouts.map(workout => (
-                <WorkoutContainer
-                  key={workout.id}
-                  workout={workout}
-                  isActive={activeWorkout === workout.id}
-                  showExercises={handleShowExercise}
-                  showExerciseList={showExerciseList}
-                />
-              ))}
+              <WorkoutContainer
+                activeWorkoutId={activeWorkout}
+                onWorkoutChange={setActiveWorkout}
+                showExercises={handleShowExercise}
+                showExerciseList={showExerciseList}
+              />
             </WorkoutContainerProvider>
           </div>
           <div className='create-prog-page__right-container'>
