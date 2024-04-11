@@ -13,6 +13,7 @@ export const ProgramProvider = ({ children }) => {
     main_goal: '',
     workouts: [{ id: uuidv4(), name: 'Workout 1', exercises: [] }]
   });
+  console.log('Program state:', program);
 
   const [activeWorkoutId, setActiveWorkoutId] = useState(
     program.workouts[0].id

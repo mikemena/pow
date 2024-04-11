@@ -5,9 +5,7 @@ import React, {
   useRef,
   createRef
 } from 'react';
-
 import gsap from 'gsap';
-
 import {
   TbLayoutNavbarExpandFilled,
   TbLayoutBottombarExpandFilled,
@@ -31,6 +29,15 @@ const WorkoutSlider = ({
   const { expandedWorkoutId, toggleExpand } = useContext(
     WorkoutContainerContext
   );
+
+  // Log directly inside the component function
+  console.log('Active Workout ID:', activeWorkoutId);
+
+  //testing state changes
+  useEffect(() => {
+    console.log(`Updated expandedWorkoutId: ${expandedWorkoutId}`);
+  }, [expandedWorkoutId]);
+
   const { program, deleteWorkout, deleteExercise, updateWorkout, addSet } =
     useContext(ProgramContext);
   const [isEditing, setIsEditing] = useState(false);
@@ -46,7 +53,18 @@ const WorkoutSlider = ({
   };
 
   const handleSaveTitle = () => {
-    updateWorkout({ ...activeWorkoutId, name: workoutTitle });
+    // Find the workout that matches the activeWorkoutId
+    const workoutToUpdate = workouts.find(
+      workout => workout.id === activeWorkoutId
+    );
+
+    // If the workout exists, update its name and call the updateWorkout function
+    if (workoutToUpdate) {
+      const updatedWorkout = { ...workoutToUpdate, name: workoutTitle };
+      updateWorkout(updatedWorkout);
+    }
+
+    // Exit editing mode
     setIsEditing(false);
   };
 
@@ -106,7 +124,7 @@ const WorkoutSlider = ({
     gsap.to(workoutRefs.current, {
       xPercent: idx => (idx - activeIndex) * 100,
       ease: 'none',
-      duration: 0.5 // Adjust duration to your liking
+      duration: 0.9 // Adjust duration to your liking
     });
   }, [activeWorkoutId, workouts]);
 
@@ -126,29 +144,58 @@ const WorkoutSlider = ({
     slideToWorkout(nextIndex);
   };
 
+  // Return the JSX for the slider
+
+  useEffect(() => {
+    // Initialize the refs array with the same length as the workouts array
+    workoutRefs.current = workouts.map(
+      (_, i) => workoutRefs.current[i] || createRef()
+    );
+  }, [workouts]); // Rerun this effect when workouts change
+
+  // Update the slider position when the active workout changes
+
+  useEffect(() => {
+    const activeIndex = workouts.findIndex(
+      workout => workout.id === activeWorkoutId
+    );
+
+    gsap.to(workoutRefs.current, {
+      x: () => `-${activeIndex * 100}%`, // Moves the slider 100% of its width for each workout
+      ease: 'none',
+      duration: 0.9
+    });
+  }, [activeWorkoutId, workouts]);
+
   return (
     <>
-      <div className='workout-slider' ref={sliderRef}>
+      <div className={`workout-slider ${theme}`} ref={sliderRef}>
         {workouts.map((workout, index) => (
           <div
-            className='workout-container'
-            ref={workoutRefs.current[index]}
+            className={`workout-container ${theme} ${
+              workout.id === activeWorkoutId ? 'active' : ''
+            }`}
+            ref={el => (workoutRefs.current[index] = el)}
             key={workout.id}
           >
             <>
               <div>
-                <div
-                  className='workout-container__header'
-                  onClick={toggleWorkoutExpand}
-                >
+                <div className='workout-container__header'>
                   <button
                     className='workout-container__expand-btn'
                     title='Expand/Collapse Workout'
+                    onClick={toggleWorkoutExpand}
                   >
                     {isExpanded ? (
-                      <TbLayoutBottombarExpandFilled size={20} />
+                      <TbLayoutBottombarExpandFilled
+                        className={`workout-container__icon ${theme}`}
+                        size={20}
+                      />
                     ) : (
-                      <TbLayoutNavbarExpandFilled size={20} />
+                      <TbLayoutNavbarExpandFilled
+                        className={`workout-container__icon ${theme}`}
+                        size={20}
+                      />
                     )}
                   </button>
 
@@ -158,25 +205,36 @@ const WorkoutSlider = ({
                         className='workout-container__save-title-btn'
                         onClick={handleSaveTitle}
                       >
-                        <IoCheckmarkCircleSharp size={20} />
+                        <IoCheckmarkCircleSharp
+                          className={`workout-container__icon ${theme}`}
+                          size={20}
+                        />
                       </button>
                       <input
                         type='text'
+                        className={`workout-container__title-input ${theme}`}
                         value={workoutTitle}
                         onChange={handleEditTitleChange}
-                        placeholder='Enter Title'
+                        placeholder='Change Title'
                       />
                       <button
                         className='workout-container__close-title-btn'
                         onClick={handleCloseTitleChange}
                       >
-                        <IoCloseCircleSharp size={20} />
+                        <IoCloseCircleSharp
+                          className={`workout-container__icon ${theme}`}
+                          size={20}
+                        />
                       </button>
                     </div>
                   ) : (
                     <div className='workout-container__title_container'>
                       <button className='workout-container__edit-title-btn'>
-                        <TbPencil size={20} onClick={handleEditTitleChange} />
+                        <TbPencil
+                          className={`workout-container__icon ${theme}`}
+                          size={20}
+                          onClick={handleEditTitleChange}
+                        />
                       </button>
                       <h2 className={`workout-container__title ${theme}`}>
                         {workout.name}
@@ -196,7 +254,10 @@ const WorkoutSlider = ({
                     }}
                     disabled={program.workouts.length <= 1}
                   >
-                    <MdDelete size={20} />
+                    <MdDelete
+                      className={`workout-container__icon ${theme}`}
+                      size={20}
+                    />
                   </button>
                 </div>
                 {isExpanded && (

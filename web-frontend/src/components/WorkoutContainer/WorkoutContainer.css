@@ -1,31 +1,35 @@
 .workout-slider {
-  display: flex; /* Aligns child divs in a row */
-  overflow-x: hidden; /* Hides the horizontal overflow */
-  width: 100%; /* Adjust this as necessary */
-  position: relative; /* For positioning the sliding workouts absolutely */
+  display: flex;
+  flex-direction: row;
+  gap: 1px;
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
+  border-style: solid;
+  margin-top: 25px;
+  border-color: #4caf50;
 }
 
 .workout-container {
-  width: 100%; /* Each workout takes full width of the slider */
-  min-width: 100%; /* Ensures that the workout doesn't shrink */
-  max-width: 100%; /* Prevents the workout from growing */
-  /* Remove margin and padding if not needed, or adjust as necessary */
-  /* Other styles */
-}
-
-.workout-container {
-  width: 630px;
-  margin-left: 20px;
+  /* flex: 1; */
+  width: 100%;
+  min-width: 0;
   padding: 10px;
   margin: 25px 20px 20px 20px;
-  border-radius: 10px;
+  border-style: solid;
+  border-color: #534caf;
+}
+.workout-container.active {
+  flex: 0 0 100%;
 }
 
-.workout-container.light {
+.workout-container.light,
+.workout-slider.light {
   background-color: rgb(204, 204, 202);
   box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
 }
-.workout-container.dark {
+.workout-container.dark,
+.workout-slider.dark {
   background-color: rgb(50, 49, 54);
   box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
@@ -40,6 +44,7 @@
   display: flex;
   align-content: center;
   justify-content: space-between;
+  overflow-x: hidden;
 }
 
 .workout-container__title_container {
@@ -57,13 +62,21 @@
   align-items: center;
 }
 
+.workout-container__title-input.light {
+  background-color: var(--light-input);
+}
+.workout-container__title-input.dark {
+  background-color: var(--dark-input);
+}
+
 /* Light theme specific styles */
 .workout-container__title.light,
 .workout-container__exercises_header.light,
 .workout-container__exercises_name.light,
 .workout-container__exercise-muscle,
 .workout-container__exercise-order-number.light,
-.workout-container__drag-order-container.light {
+.workout-container__drag-order-container.light,
+.workout-container__icon.light {
   color: var(--dark-text-color);
 }
 
@@ -73,7 +86,8 @@
 .workout-container__exercises_name.dark,
 .workout-container__exercise-muscle.dark,
 .workout-container__exercise-order-number.dark,
-.workout-container__drag-order-container.dark {
+.workout-container__drag-order-container.dark,
+.workout-container__icon.dark {
   color: var(--light-text-color);
 }
 .workout-container__expand-btn,

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import { WorkoutContainerProvider } from '../../../contexts/workoutContainerContext';
@@ -41,7 +41,14 @@ const CreateProgram = () => {
     }
   };
 
+  useEffect(() => {
+    if (program.workouts.length > 0) {
+      setActiveWorkout(program.workouts[0].id);
+    }
+  }, [program.workouts]); // This effect depends on program.workouts
+
   console.log('program.workouts before mapping:', program.workouts);
+  console.log('activeWorkout:', activeWorkout);
 
   return (
     <div>
