@@ -110,23 +110,16 @@ const WorkoutSlider = ({
   }, [workouts]);
 
   useEffect(() => {
-    // Find the index of the active workout
     const activeIndex = workouts.findIndex(
       workout => workout.id === activeWorkoutId
     );
 
-    // GSAP initial setup to position all workouts side by side
-    gsap.set(workoutRefs.current, {
-      xPercent: idx => (idx - activeIndex) * 100
-    });
-
-    // Then, when activeWorkoutId changes, animate to the new active workout
-    gsap.to(workoutRefs.current, {
-      xPercent: idx => (idx - activeIndex) * 100,
+    gsap.to(sliderRef.current.children, {
+      x: () => `-${activeIndex * 100}%`,
       ease: 'none',
-      duration: 0.9 // Adjust duration to your liking
+      duration: 0.5
     });
-  }, [activeWorkoutId, workouts]);
+  }, [activeWorkoutId]);
 
   const slideToWorkout = index => {
     // You need to calculate the ID of the workout based on the index
