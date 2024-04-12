@@ -1,7 +1,7 @@
 .workout-slider {
   display: flex;
   flex-direction: row;
-  gap: 1px;
+  gap: 20px;
   overflow-x: hidden;
   width: 680px;
   position: relative;
