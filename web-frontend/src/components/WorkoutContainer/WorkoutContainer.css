@@ -89,6 +89,16 @@
 .workout-container__icon.dark {
   color: var(--light-text-color);
 }
+
+#expand-icon,
+#collapse-icon {
+  padding-left: 10px;
+}
+
+#delete-icon {
+  padding-right: 10px;
+}
+
 .workout-container__expand-btn,
 .workout-container__delete-btn,
 .workout-container__remove-exercise-btn,

@@ -6,13 +6,11 @@ import React, {
   createRef
 } from 'react';
 import gsap from 'gsap';
-import {
-  TbLayoutNavbarExpandFilled,
-  TbLayoutBottombarExpandFilled,
-  TbPencil
-} from 'react-icons/tb';
+import { TbPencil } from 'react-icons/tb';
+import { PiCaretDoubleDownThin, PiCaretDoubleUpThin } from 'react-icons/pi';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
-import { MdDelete, MdDragHandle, MdAddBox } from 'react-icons/md';
+import { MdDragHandle, MdAddBox } from 'react-icons/md';
+import { TbHttpDelete } from 'react-icons/tb';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
 import { ProgramContext } from '../../contexts/programContext';
@@ -180,13 +178,15 @@ const WorkoutSlider = ({
                     onClick={toggleWorkoutExpand}
                   >
                     {isExpanded ? (
-                      <TbLayoutBottombarExpandFilled
+                      <PiCaretDoubleUpThin
                         className={`workout-container__icon ${theme}`}
+                        id='expand-icon'
                         size={20}
                       />
                     ) : (
-                      <TbLayoutNavbarExpandFilled
+                      <PiCaretDoubleDownThin
                         className={`workout-container__icon ${theme}`}
+                        id='collapse-icon'
                         size={20}
                       />
                     )}
@@ -247,8 +247,9 @@ const WorkoutSlider = ({
                     }}
                     disabled={program.workouts.length <= 1}
                   >
-                    <MdDelete
+                    <TbHttpDelete
                       className={`workout-container__icon ${theme}`}
+                      id='delete-icon'
                       size={20}
                     />
                   </button>
@@ -358,7 +359,7 @@ const WorkoutSlider = ({
                                 handleDeleteExercise(workout.id, exercise.id)
                               }
                             >
-                              <MdDelete size={30} />
+                              <TbHttpDelete size={30} />
                             </button>
                           </div>
                         ))

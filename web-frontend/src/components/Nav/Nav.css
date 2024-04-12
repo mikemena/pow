@@ -24,12 +24,12 @@
 
 /* Light theme specific styles */
 .navbar.light-theme {
-  background-image: url('../../assets/light-nav.svg');
+  background-image: url('../../assets/light-nav-cropped.svg');
 }
 
 /* Dark theme specific styles */
 .navbar.dark-theme {
-  background-image: url('../../assets/dark-nav.svg');
+  background-image: url('../../assets/dark-nav-cropped.svg');
 }
 
 .navbar__site-name {
