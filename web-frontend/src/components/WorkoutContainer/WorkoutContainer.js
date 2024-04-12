@@ -8,8 +8,10 @@ import React, {
 import gsap from 'gsap';
 import { TbPencil } from 'react-icons/tb';
 import { PiCaretDoubleDownThin, PiCaretDoubleUpThin } from 'react-icons/pi';
+import { TbEye, TbEyeClosed } from 'react-icons/tb';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDragHandle, MdAddBox } from 'react-icons/md';
+import { GrClose } from 'react-icons/gr';
 import { TbHttpDelete } from 'react-icons/tb';
 import Button from '../Inputs/Button';
 import { WorkoutContainerContext } from '../../contexts/workoutContainerContext';
@@ -161,6 +163,14 @@ const WorkoutSlider = ({
   return (
     <>
       <div className={`workout-slider ${theme}`} ref={sliderRef}>
+        <div className='workout-container__controls prev'>
+          <button
+            className={`workout-container__controls-button ${theme}`}
+            onClick={() => navigateToWorkout(-1)}
+          >
+            Prev
+          </button>
+        </div>
         {workouts.map((workout, index) => (
           <div
             className={`workout-container ${theme} ${
@@ -178,16 +188,16 @@ const WorkoutSlider = ({
                     onClick={toggleWorkoutExpand}
                   >
                     {isExpanded ? (
-                      <PiCaretDoubleUpThin
+                      <TbEyeClosed
                         className={`workout-container__icon ${theme}`}
                         id='expand-icon'
-                        size={20}
+                        size={30}
                       />
                     ) : (
-                      <PiCaretDoubleDownThin
+                      <TbEye
                         className={`workout-container__icon ${theme}`}
                         id='collapse-icon'
-                        size={20}
+                        size={30}
                       />
                     )}
                   </button>
@@ -208,7 +218,7 @@ const WorkoutSlider = ({
                         className={`workout-container__title-input ${theme}`}
                         value={workoutTitle}
                         onChange={handleEditTitleChange}
-                        placeholder='Change Title'
+                        placeholder='Change Workout Title'
                       />
                       <button
                         className='workout-container__close-title-btn'
@@ -225,34 +235,33 @@ const WorkoutSlider = ({
                       <button className='workout-container__edit-title-btn'>
                         <TbPencil
                           className={`workout-container__icon ${theme}`}
-                          size={20}
+                          id='edit-icon'
+                          size={25}
                           onClick={handleEditTitleChange}
                         />
                       </button>
                       <h2 className={`workout-container__title ${theme}`}>
                         {workout.name}
                       </h2>
+                      <button
+                        className='workout-container__delete-btn'
+                        onClick={() => {
+                          const confirm = window.confirm(
+                            `Are you sure you want to remove ${workout.name}?`
+                          );
+                          if (confirm) {
+                            handleDeleteWorkout(workout.id);
+                          }
+                        }}
+                        disabled={program.workouts.length <= 1}
+                      >
+                        <GrClose
+                          className={`workout-container__icon ${theme}`}
+                          id='delete-icon'
+                        />
+                      </button>
                     </div>
                   )}
-
-                  <button
-                    className='workout-container__delete-btn'
-                    onClick={() => {
-                      const confirm = window.confirm(
-                        `Are you sure you want to remove ${workout.name}?`
-                      );
-                      if (confirm) {
-                        handleDeleteWorkout(workout.id);
-                      }
-                    }}
-                    disabled={program.workouts.length <= 1}
-                  >
-                    <TbHttpDelete
-                      className={`workout-container__icon ${theme}`}
-                      id='delete-icon'
-                      size={20}
-                    />
-                  </button>
                 </div>
                 {isExpanded && (
                   <div className='workout-container__body'>
@@ -261,7 +270,6 @@ const WorkoutSlider = ({
                         id='toggle-exercises-btn'
                         onClick={() => showExercises(workout.id)}
                         type='button'
-                        // bgcolor='#EAEAEA'
                       >
                         {showExerciseList ? 'Hide Exercises' : 'Show Exercise'}
                       </Button>
@@ -375,10 +383,14 @@ const WorkoutSlider = ({
             </>
           </div>
         ))}
-      </div>
-      <div className='controls'>
-        <button onClick={() => navigateToWorkout(-1)}>Prev</button>
-        <button onClick={() => navigateToWorkout(1)}>Next</button>
+        <div className='workout-container__controls next'>
+          <button
+            className={`workout-container__controls-button ${theme}`}
+            onClick={() => navigateToWorkout(1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </>
   );

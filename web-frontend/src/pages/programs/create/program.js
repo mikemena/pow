@@ -55,7 +55,7 @@ const CreateProgram = () => {
       {' '}
       <NavBar isEditing='true' />
       <div className='create-prog-page'>
-        <div className='toggle-container'>
+        <div className='create-prog-page__toggle-container'>
           <Toggle />
         </div>
         <div className='create-prog-page__container'>

@@ -1,25 +1,22 @@
 .workout-slider {
+  position: relative;
   display: flex;
   flex-direction: row;
   gap: 20px;
   overflow-x: hidden;
-  width: 680px;
-  position: relative;
-  /* border-style: solid; */
-  padding: 0 20px;
-  /* border-color: #4caf50; */
+  width: calc(680px + 10px);
+  margin: 20px;
 }
 
 .workout-container {
   flex-shrink: 0;
-  width: 100%;
-  min-width: 0;
-  margin: 20px 0px;
-  /* border-style: solid;
-  border-color: #534caf; */
+  width: calc(100% - 20px);
+  transition: width 0.3s ease;
+  margin-top: 35px;
 }
 .workout-container.active {
-  flex: 0 0 100%;
+  width: 100%;
+  flex: none;
 }
 
 .workout-container.light,
@@ -34,9 +31,8 @@
 }
 
 .workout-container.active {
-  /* border: 4px solid rgb(198, 255, 53); */
-  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
-  border-radius: 6px;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
+    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
 }
 
 .workout-container__header {
@@ -49,6 +45,9 @@
 .workout-container__title_container {
   display: flex;
   align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-grow: 1;
 }
 
 .workout-container__title {
@@ -75,7 +74,8 @@
 .workout-container__exercise-muscle,
 .workout-container__exercise-order-number.light,
 .workout-container__drag-order-container.light,
-.workout-container__icon.light {
+.workout-container__icon.light,
+.workout-container__controls-button.light {
   color: var(--dark-text-color);
 }
 
@@ -86,11 +86,31 @@
 .workout-container__exercise-muscle.dark,
 .workout-container__exercise-order-number.dark,
 .workout-container__drag-order-container.dark,
-.workout-container__icon.dark {
+.workout-container__icon.dark,
+.workout-container__controls-button.dark {
   color: var(--light-text-color);
 }
 
+#edit-icon {
+  color: var(--orange);
+  margin-right: 10px;
+}
+
 #expand-icon,
+#collapse-icon {
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  color: var(--orange);
+}
+
+#delete-icon {
+  margin-left: 10px;
+  color: var(--orange);
+  cursor: pointer;
+}
 #collapse-icon {
   padding-left: 10px;
 }
@@ -224,6 +244,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.workout-container__controls {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.workout-container__controls.prev {
+  background: none;
+  left: 0;
+  padding-left: 10px;
+  transform: translateX(-100%);
+}
+
+.workout-container__controls.next {
+  background: none;
+  right: 0;
+  padding-right: 10px;
+  transform: translateX(100%);
 }
 
 /* Responsive adjustments if necessary */

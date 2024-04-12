@@ -16,13 +16,13 @@
   min-width: 700px;
   transition: transform 0.3s;
 }
-.toggle-container {
+.create-prog-page__toggle-container {
   position: absolute;
   top: 0;
   right: 0;
   padding: 10px;
   z-index: 10;
-  margin-top: 90px;
+  margin-top: 200px;
 }
 
 .create-prog-page__left-container {
