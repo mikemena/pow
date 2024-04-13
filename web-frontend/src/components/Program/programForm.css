@@ -1,6 +1,6 @@
 .prog-container {
   width: 700px;
-  height: auto;
+  /* height: auto; */
   margin-bottom: 40px;
 }
 .prog-container.light {

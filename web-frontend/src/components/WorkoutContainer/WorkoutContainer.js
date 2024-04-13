@@ -7,7 +7,6 @@ import React, {
 } from 'react';
 import gsap from 'gsap';
 import { TbPencil } from 'react-icons/tb';
-import { PiCaretDoubleDownThin, PiCaretDoubleUpThin } from 'react-icons/pi';
 import { TbEye, TbEyeClosed } from 'react-icons/tb';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDragHandle, MdAddBox } from 'react-icons/md';
@@ -113,13 +112,20 @@ const WorkoutSlider = ({
     const activeIndex = workouts.findIndex(
       workout => workout.id === activeWorkoutId
     );
+    console.log('Active workout index for GSAP:', activeIndex);
+    if (activeIndex !== -1) {
+      console.log('Starting GSAP animation for active workout');
+      console.log('Slider children:', sliderRef.current.children);
 
-    gsap.to(sliderRef.current.children, {
-      x: () => `-${activeIndex * 100}%`,
-      ease: 'none',
-      duration: 0.5
-    });
-  }, [activeWorkoutId]);
+      const xTransform = `-${activeIndex * 100}%`;
+      console.log('GSAP x transform:', xTransform);
+      gsap.to(sliderRef.current.children, {
+        x: xTransform,
+        ease: 'none',
+        duration: 0.5
+      });
+    }
+  }, [workouts, activeWorkoutId]);
 
   const slideToWorkout = index => {
     // You need to calculate the ID of the workout based on the index
@@ -153,24 +159,45 @@ const WorkoutSlider = ({
       workout => workout.id === activeWorkoutId
     );
 
-    gsap.to(workoutRefs.current, {
-      x: () => `-${activeIndex * 100}%`, // Moves the slider 100% of its width for each workout
+    const tl = gsap.timeline();
+
+    // If the active index is 0, we need to temporarily shift the slider to the right
+    // to create the illusion of sliding from the end to the beginning
+    if (activeIndex === 0) {
+      tl.set(workoutRefs.current, { x: `${workouts.length * 100}%` });
+    }
+
+    // If the active index is the last one, we need to temporarily shift the slider
+    // to the left to create the illusion of sliding from the beginning to the end
+    if (activeIndex === workouts.length - 1) {
+      tl.set(workoutRefs.current, { x: `-${workouts.length * 100}%` });
+    }
+
+    tl.to(workoutRefs.current, {
+      x: `-${activeIndex * 100}%`,
       ease: 'none',
       duration: 0.9
     });
   }, [activeWorkoutId, workouts]);
 
+  useEffect(() => {
+    console.log('Component updated with new activeWorkoutId:', activeWorkoutId);
+    // ... rest of the effect
+  }, [activeWorkoutId]);
+
+  console.log('Rendering with activeWorkoutId:', activeWorkoutId);
+
   return (
-    <>
+    <div className={`workout-slider-wrapper ${theme}`}>
+      <div className='workout-container__controls prev'>
+        <button
+          className={`workout-container__controls-button ${theme}`}
+          onClick={() => navigateToWorkout(-1)}
+        >
+          Prev
+        </button>
+      </div>
       <div className={`workout-slider ${theme}`} ref={sliderRef}>
-        <div className='workout-container__controls prev'>
-          <button
-            className={`workout-container__controls-button ${theme}`}
-            onClick={() => navigateToWorkout(-1)}
-          >
-            Prev
-          </button>
-        </div>
         {workouts.map((workout, index) => (
           <div
             className={`workout-container ${theme} ${
@@ -383,16 +410,16 @@ const WorkoutSlider = ({
             </>
           </div>
         ))}
-        <div className='workout-container__controls next'>
-          <button
-            className={`workout-container__controls-button ${theme}`}
-            onClick={() => navigateToWorkout(1)}
-          >
-            Next
-          </button>
-        </div>
+      </div>{' '}
+      <div className='workout-container__controls next'>
+        <button
+          className={`workout-container__controls-button ${theme}`}
+          onClick={() => navigateToWorkout(1)}
+        >
+          Next
+        </button>
       </div>
-    </>
+    </div>
   );
 };
 

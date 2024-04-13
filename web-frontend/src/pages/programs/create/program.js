@@ -42,8 +42,10 @@ const CreateProgram = () => {
   };
 
   useEffect(() => {
+    // Assuming new workouts are added to the end of the array
     if (program.workouts.length > 0) {
-      setActiveWorkout(program.workouts[0].id);
+      const lastWorkout = program.workouts[program.workouts.length - 1];
+      setActiveWorkout(lastWorkout.id);
     }
   }, [program.workouts]); // This effect depends on program.workouts
 

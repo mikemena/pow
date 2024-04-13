@@ -72,10 +72,8 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = useCallback(
     workout => {
-      console.log(
-        'addWorkout func in context , received workout to add:',
-        workout
-      );
+      console.log('addWorkout function called', workout);
+      console.log('Current workouts before add:', program.workouts);
       const tempId = uuidv4();
 
       // Find the highest index used in existing workout names
@@ -96,10 +94,13 @@ export const ProgramProvider = ({ children }) => {
         ...prev,
         workouts: [...prev.workouts, newWorkout]
       }));
+      console.log('New activeWorkoutId set:', newWorkout.id);
+      console.log('Updated workouts after add:', program.workouts);
+      console.log('Setting activeWorkoutId to:', tempId);
       setActiveWorkoutId(tempId);
-      console.log('Workouts after addWorkout:', newWorkout);
+      console.log('activeWorkoutId after set:', tempId);
     },
-    [program.workouts]
+    [setProgram, setActiveWorkoutId, program.workouts]
   );
 
   // Function to update a workout
@@ -144,6 +145,10 @@ export const ProgramProvider = ({ children }) => {
 
       // Update the active workout ID in the state.
       setActiveWorkoutId(newActiveWorkoutId);
+      console.log(
+        'New active workout ID from deleting a workout:',
+        newActiveWorkoutId
+      );
 
       // Return the updated program.
       return { ...prev, workouts: updatedWorkouts };
@@ -158,6 +163,10 @@ export const ProgramProvider = ({ children }) => {
     );
     const nextIndex = (currentIndex + 1) % program.workouts.length;
     setActiveWorkoutId(program.workouts[nextIndex].id);
+    console.log(
+      'Active workout ID after next:',
+      program.workouts[nextIndex].id
+    );
   };
 
   // Function to go to the previous workout
@@ -169,6 +178,10 @@ export const ProgramProvider = ({ children }) => {
     const previousIndex =
       (currentIndex - 1 + program.workouts.length) % program.workouts.length;
     setActiveWorkoutId(program.workouts[previousIndex].id);
+    console.log(
+      'Active workout ID after previous:',
+      program.workouts[previousIndex].id
+    );
   };
 
   // Function to add exercise to a specific workout

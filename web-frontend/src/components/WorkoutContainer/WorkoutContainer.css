@@ -1,38 +1,64 @@
-.workout-slider {
-  position: relative;
+.workout-slider-wrapper {
   display: flex;
   flex-direction: row;
-  gap: 20px;
+  align-items: center;
+  justify-content: center;
+  width: 660px;
+  padding: 10px 20px;
+}
+
+.workout-slider-wrapper.light {
+  background-color: rgb(204, 204, 202);
+  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
+}
+.workout-slider-wrapper.dark {
+  background-color: rgb(50, 49, 54);
+  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
+}
+
+.workout-slider {
+  display: flex;
+  flex-direction: row;
   overflow-x: hidden;
-  width: calc(680px + 10px);
   margin: 20px;
+  padding: 20px 0px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border: #4caf50;
+}
+.workout-slider.light {
+  background-color: rgb(204, 204, 202);
+}
+
+.workout-slider.dark {
+  background-color: rgb(50, 49, 54);
 }
 
 .workout-container {
   flex-shrink: 0;
   width: calc(100% - 20px);
-  transition: width 0.3s ease;
-  margin-top: 35px;
+  /* margin-top: 0; */
+  margin-left: auto;
+  margin-right: auto;
+  padding: 20px 0px;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
 }
 .workout-container.active {
-  width: 100%;
   flex: none;
+  z-index: 2;
 }
 
-.workout-container.light,
-.workout-slider.light {
+.workout-container.light {
   background-color: rgb(204, 204, 202);
-  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
 }
-.workout-container.dark,
-.workout-slider.dark {
+.workout-container.dark {
   background-color: rgb(50, 49, 54);
-  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
 
 .workout-container.active {
-  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px,
-    rgba(0, 0, 0, 0.3) 0px 18px 36px -18px;
+  padding-top: 4px;
 }
 
 .workout-container__header {
@@ -102,7 +128,6 @@
   top: -25px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 2;
   color: var(--orange);
 }
 
@@ -247,24 +272,17 @@
 }
 
 .workout-container__controls {
-  position: absolute;
-  top: 0;
-  z-index: 10;
-  cursor: pointer;
+  top: 50%;
 }
 
 .workout-container__controls.prev {
-  background: none;
-  left: 0;
-  padding-left: 10px;
-  transform: translateX(-100%);
+  left: 20px;
+  display: flex;
+  flex-direction: row;
 }
 
 .workout-container__controls.next {
-  background: none;
-  right: 0;
-  padding-right: 10px;
-  transform: translateX(100%);
+  right: 20px;
 }
 
 /* Responsive adjustments if necessary */

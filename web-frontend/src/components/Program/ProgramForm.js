@@ -1,8 +1,6 @@
 import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { IoIosArrowDown } from 'react-icons/io';
 import { ProgramContext } from '../../contexts/programContext';
-import Button from '../../components/Inputs/Button';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 import { toProperCase } from '../../utils/stringUtils';
