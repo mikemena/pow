@@ -259,6 +259,9 @@ const WorkoutSlider = ({
                     </div>
                   ) : (
                     <div className='workout-container__title_container'>
+                      <h2 className={`workout-container__title ${theme}`}>
+                        {workout.name}
+                      </h2>
                       <button className='workout-container__edit-title-btn'>
                         <TbPencil
                           className={`workout-container__icon ${theme}`}
@@ -267,9 +270,6 @@ const WorkoutSlider = ({
                           onClick={handleEditTitleChange}
                         />
                       </button>
-                      <h2 className={`workout-container__title ${theme}`}>
-                        {workout.name}
-                      </h2>
                       <button
                         className='workout-container__delete-btn'
                         onClick={() => {
