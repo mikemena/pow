@@ -4,15 +4,14 @@ import { ProgramContext } from '../../../contexts/programContext';
 import { WorkoutProvider } from '../../../contexts/workoutContext';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
-import ProgramButtonContainer from '../../../components/ProgramButtonContainer/ProgramButtonContainer';
 import NavBar from '../../../components/Nav/Nav';
 import ExerciseList from '../../../components/ExerciseList/ExerciseList';
 import Toggle from '../../../components/Inputs/Toggle';
+import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { program, saveProgram } = useContext(ProgramContext);
-
+  const { program, saveProgram, addWorkout } = useContext(ProgramContext);
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
@@ -60,6 +59,17 @@ const CreateProgram = () => {
     }));
   };
 
+  const handleCancel = () => {
+    // Redirect to the create workout page
+    navigate('/');
+  };
+
+  const handleAddWorkout = event => {
+    // console.log('handleAddWorkout called');
+    event.preventDefault();
+    addWorkout({});
+  };
+
   useEffect(() => {
     if (program.workouts.length > 0) {
       const lastWorkout = program.workouts[program.workouts.length - 1];
@@ -68,7 +78,7 @@ const CreateProgram = () => {
   }, [program.workouts]);
 
   useEffect(() => {
-    console.log('Workouts updated in main component:', program.workouts);
+    // console.log('Workouts updated in main component:', program.workouts);
     setRenderKey(prevKey => prevKey + 1); // Increment the render key
   }, [program.workouts]);
 
@@ -84,8 +94,8 @@ const CreateProgram = () => {
             <ProgramForm
               program={program}
               isEditing={true}
-              isExpanded={expandedWorkouts['program'] || true}
-              onToggleExpand={() => handleToggleProgramForm('program')}
+              isExpanded={expandedWorkouts['program']}
+              onToggleExpand={handleToggleProgramForm}
             />
 
             <WorkoutProvider key={renderKey}>
@@ -103,7 +113,7 @@ const CreateProgram = () => {
           </div>
           <div className='create-prog-page__right-container'>
             <h1 className='create-prog-page__exercise-container-title'>
-              {activeWorkout
+              {activeWorkout && showExerciseList
                 ? `Adding exercises for ${
                     program.workouts.find(
                       workout => workout.id === activeWorkout
@@ -123,7 +133,13 @@ const CreateProgram = () => {
           </div>
         </div>
         <div className='create-prog-page__button-container'>
-          <ProgramButtonContainer />
+          <Button type='button' onClick={handleAddWorkout}>
+            Add Workout
+          </Button>
+          <Button type='submit'>Save</Button>
+          <Button type='button' onClick={handleCancel}>
+            Cancel
+          </Button>
         </div>
       </div>
     </div>

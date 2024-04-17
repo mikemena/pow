@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState } from 'react';
 import { TbPencil } from 'react-icons/tb';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
@@ -66,17 +66,13 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
     const count = workout?.exercises?.length ?? 0;
 
     if (count === 0) {
-      return 'No Exercises';
+      return 'No Exercises ';
     } else if (count === 1) {
-      return '1 Exercise';
+      return '1 Exercise ';
     } else {
-      return `${count} Exercises`;
+      return `${count} Exercises `;
     }
   };
-
-  useEffect(() => {
-    console.log('Workouts updated in component:', program.workouts);
-  }, [program.workouts]);
 
   if (!workout) return null;
 
@@ -141,6 +137,7 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
         <span className={`workout__exercise-count ${theme}`}>
           {exerciseText(workout)}
         </span>
+        <button className='workout__add-exercise-btn'>Add</button>
       </div>
       {isExpanded && (
         <div className='workout__body'>

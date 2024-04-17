@@ -1,9 +1,34 @@
-.pprogram {
+.program {
   position: relative;
   width: 700px;
-  /* height: auto; */
   margin-bottom: 20px;
   padding: 10px 0px;
+}
+
+.program__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.program__expand-btn {
+  flex: 0 0 auto;
+}
+
+.program__title {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.pencil-icon {
+  cursor: pointer;
+  margin-left: 5px;
+}
+
+.program__form {
+  display: flex;
+  flex-direction: column;
 }
 .program.light {
   background-color: rgb(204, 204, 202);
@@ -26,13 +51,17 @@
 
 /* Light theme specific styles */
 .program__section-title.light,
-.program__expand-btn.light {
+.program__expand-btn.light,
+.program__title.light,
+.program__icon.light {
   color: var(--dark-text-color);
 }
 
 /* Dark theme specific styles */
 .program__section-title.dark,
-.program__expand-btn.dark {
+.program__expand-btn.dark,
+.program__title.dark,
+.program__icon.dark {
   color: var(--light-text-color);
 }
 

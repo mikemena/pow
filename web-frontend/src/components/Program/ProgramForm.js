@@ -1,5 +1,4 @@
 import { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../contexts/programContext';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
@@ -9,10 +8,9 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-  const navigate = useNavigate();
 
   // Access program data and functions from ProgramContext
-  const { program, addWorkout, saveProgram } = useContext(ProgramContext);
+  const { program } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -45,27 +43,18 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
     });
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    saveProgram(formValues);
-  };
-
-  const handleCancel = () => {
-    // Redirect to the create workout page
-    navigate('/');
-  };
-
-  const handleAddWorkout = event => {
-    event.preventDefault();
-    addWorkout(program.workouts);
+  const handleProgramExpand = () => {
+    console.log('handleProgramExpand called');
+    onToggleExpand(program);
   };
 
   return (
-    <form className={`program ${theme}`} onSubmit={handleSubmit}>
-      <div className='program__expand-btn-container'>
+    <form className={`program ${theme}`}>
+      <div className='program__header'>
         <button
+          type='button'
           className={`program__expand-btn ${theme}`}
-          onClick={onToggleExpand}
+          onClick={handleProgramExpand}
         >
           {isExpanded ? (
             <BsChevronCompactUp
@@ -79,10 +68,11 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
             />
           )}
         </button>
+        <h2 className={`program__title ${theme}`}>{formValues.programName}</h2>
       </div>
-      <div className='program__section'>
-        {isEditing ? (
-          <>
+      {isExpanded && (
+        <div className='program__form'>
+          <div className='program__section'>
             <label
               htmlFor='programName'
               className={`program__section-title ${theme}`}
@@ -93,50 +83,40 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               type='text'
               className={`program-name-input ${theme}`}
               name='programName'
-              value={formValues.name}
+              value={formValues.programName}
               onChange={handleChange}
               disabled={!isEditing}
               maxLength={84}
             />
-          </>
-        ) : (
-          <span className='program__section-text'>
-            {formValues.programName}
-          </span>
-        )}
-      </div>
-
-      <div className='program__section'>
-        <label htmlFor='mainGoal' className={`program__section-title ${theme}`}>
-          Main Goal
-        </label>
-        {isEditing ? (
-          <select
-            className={`mainGoal ${theme}`}
-            name='mainGoal'
-            value={formValues.mainGoal}
-            onChange={handleChange}
-            disabled={!isEditing}
-          >
-            {GOAL_TYPES.map(goal => (
-              <option key={goal.id} value={goal.value}>
-                {goal.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <span className='program__section-text'>{formValues.mainGoal}</span>
-        )}
-      </div>
-      <div className='program__section'>
-        <label
-          htmlFor='programDuration'
-          className={`program__section-title ${theme}`}
-        >
-          Duration
-        </label>
-        {isEditing ? (
-          <>
+          </div>
+          <div className='program__section'>
+            <label
+              htmlFor='mainGoal'
+              className={`program__section-title ${theme}`}
+            >
+              Main Goal
+            </label>
+            <select
+              className={`mainGoal ${theme}`}
+              name='mainGoal'
+              value={formValues.mainGoal}
+              onChange={handleChange}
+              disabled={!isEditing}
+            >
+              {GOAL_TYPES.map(goal => (
+                <option key={goal.id} value={goal.value}>
+                  {goal.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className='program__section'>
+            <label
+              htmlFor='programDuration'
+              className={`program__section-title ${theme}`}
+            >
+              Duration
+            </label>
             <input
               type='number'
               className={`programDuration ${theme}`}
@@ -157,36 +137,26 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
                 </option>
               ))}
             </select>
-          </>
-        ) : (
-          <span className='program__section-text'>
-            {formValues.programDurationDisplay}
-          </span>
-        )}
-      </div>
-      <div className='program__section'>
-        <label
-          htmlFor='daysPerWeek'
-          className={`program__section-title ${theme}`}
-        >
-          Days Per Week
-        </label>
-        {isEditing ? (
-          <input
-            type='number'
-            className={`daysPerWeek  ${theme}`}
-            name='daysPerWeek'
-            value={formValues.daysPerWeek}
-            onChange={handleChange}
-            disabled={!isEditing}
-            min={1}
-          />
-        ) : (
-          <span className='program__section-text'>
-            {formValues.daysPerWeek}
-          </span>
-        )}
-      </div>
+          </div>
+          <div className='program__section'>
+            <label
+              htmlFor='daysPerWeek'
+              className={`program__section-title ${theme}`}
+            >
+              Days Per Week
+            </label>
+            <input
+              type='number'
+              className={`daysPerWeek  ${theme}`}
+              name='daysPerWeek'
+              value={formValues.daysPerWeek}
+              onChange={handleChange}
+              disabled={!isEditing}
+              min={1}
+            />
+          </div>
+        </div>
+      )}
     </form>
   );
 };

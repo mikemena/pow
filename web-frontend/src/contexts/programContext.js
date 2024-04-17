@@ -6,14 +6,14 @@ export const ProgramContext = createContext();
 export const ProgramProvider = ({ children }) => {
   const [program, setProgram] = useState({
     user_id: 2, // This should be set to the logged in user's ID
-    name: '',
+    name: 'Program 1',
     program_duration: 0,
     duration_unit: '',
     days_per_week: 0,
     main_goal: '',
     workouts: [{ id: uuidv4(), name: 'Workout 1', exercises: [] }]
   });
-  console.log('Program state:', program);
+  // console.log('Program state:', program);
 
   const [activeWorkoutId, setActiveWorkoutId] = useState(
     program.workouts[0].id
@@ -72,8 +72,8 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = useCallback(
     workout => {
-      console.log('addWorkout function called', workout);
-      console.log('Current workouts before add:', program.workouts);
+      // console.log('addWorkout function called', workout);
+      // console.log('Current workouts before add:', program.workouts);
       const tempId = uuidv4();
 
       // Find the highest index used in existing workout names
@@ -92,15 +92,15 @@ export const ProgramProvider = ({ children }) => {
       };
       setProgram(prev => {
         const updatedWorkouts = [...prev.workouts, newWorkout];
-        console.log('Updated workouts after add:', updatedWorkouts);
+        // console.log('Updated workouts after add:', updatedWorkouts);
         return { ...prev, workouts: updatedWorkouts };
       });
 
-      console.log('New activeWorkoutId set:', newWorkout.id);
+      // console.log('New activeWorkoutId set:', newWorkout.id);
       // console.log('Updated workouts after add:', program.workouts);
-      console.log('Setting activeWorkoutId to:', tempId);
+      // console.log('Setting activeWorkoutId to:', tempId);
       setActiveWorkoutId(tempId);
-      console.log('activeWorkoutId after set:', tempId);
+      // console.log('activeWorkoutId after set:', tempId);
     },
     [setProgram, setActiveWorkoutId, program.workouts]
   );
@@ -119,7 +119,7 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete a workout
 
   const deleteWorkout = useCallback(workoutId => {
-    console.log(`Attempting to delete workout with id: ${workoutId}`);
+    // console.log(`Attempting to delete workout with id: ${workoutId}`);
     setProgram(prev => {
       let newActiveWorkoutId = prev.activeWorkoutId;
       const workoutIndex = prev.workouts.findIndex(
