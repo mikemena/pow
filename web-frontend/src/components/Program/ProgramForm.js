@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../contexts/programContext';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
+import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toProperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-const ProgramForm = ({ isEditing }) => {
+const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -60,13 +61,31 @@ const ProgramForm = ({ isEditing }) => {
   };
 
   return (
-    <form className={`prog-container ${theme}`} onSubmit={handleSubmit}>
-      <div className='prog-container__section'>
+    <form className={`program ${theme}`} onSubmit={handleSubmit}>
+      <div className='program__expand-btn-container'>
+        <button
+          className={`program__expand-btn ${theme}`}
+          onClick={onToggleExpand}
+        >
+          {isExpanded ? (
+            <BsChevronCompactUp
+              className={`program__icon ${theme}`}
+              size={30}
+            />
+          ) : (
+            <BsChevronCompactDown
+              className={`program__icon ${theme}`}
+              size={30}
+            />
+          )}
+        </button>
+      </div>
+      <div className='program__section'>
         {isEditing ? (
           <>
             <label
               htmlFor='programName'
-              className={`prog-container__section-title ${theme}`}
+              className={`program__section-title ${theme}`}
             >
               Program Name
             </label>
@@ -81,17 +100,14 @@ const ProgramForm = ({ isEditing }) => {
             />
           </>
         ) : (
-          <span className='prog-container__section-text'>
+          <span className='program__section-text'>
             {formValues.programName}
           </span>
         )}
       </div>
 
-      <div className='prog-container__section'>
-        <label
-          htmlFor='mainGoal'
-          className={`prog-container__section-title ${theme}`}
-        >
+      <div className='program__section'>
+        <label htmlFor='mainGoal' className={`program__section-title ${theme}`}>
           Main Goal
         </label>
         {isEditing ? (
@@ -109,15 +125,13 @@ const ProgramForm = ({ isEditing }) => {
             ))}
           </select>
         ) : (
-          <span className='prog-container__section-text'>
-            {formValues.mainGoal}
-          </span>
+          <span className='program__section-text'>{formValues.mainGoal}</span>
         )}
       </div>
-      <div className='prog-container__section'>
+      <div className='program__section'>
         <label
           htmlFor='programDuration'
-          className={`prog-container__section-title ${theme}`}
+          className={`program__section-title ${theme}`}
         >
           Duration
         </label>
@@ -145,15 +159,15 @@ const ProgramForm = ({ isEditing }) => {
             </select>
           </>
         ) : (
-          <span className='prog-container__section-text'>
+          <span className='program__section-text'>
             {formValues.programDurationDisplay}
           </span>
         )}
       </div>
-      <div className='prog-container__section'>
+      <div className='program__section'>
         <label
           htmlFor='daysPerWeek'
-          className={`prog-container__section-title ${theme}`}
+          className={`program__section-title ${theme}`}
         >
           Days Per Week
         </label>
@@ -168,7 +182,7 @@ const ProgramForm = ({ isEditing }) => {
             min={1}
           />
         ) : (
-          <span className='prog-container__section-text'>
+          <span className='program__section-text'>
             {formValues.daysPerWeek}
           </span>
         )}

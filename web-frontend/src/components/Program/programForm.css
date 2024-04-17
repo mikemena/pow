@@ -1,39 +1,43 @@
-.prog-container {
+.pprogram {
+  position: relative;
   width: 700px;
   /* height: auto; */
-  margin-bottom: 40px;
+  margin-bottom: 20px;
+  padding: 10px 0px;
 }
-.prog-container.light {
+.program.light {
   background-color: rgb(204, 204, 202);
   box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
 }
-.prog-container.dark {
+.program.dark {
   background-color: rgb(50, 49, 54);
   box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
 
-.prog-container__section {
+.program__section {
   display: flex;
   align-items: center;
 }
 
-.prog-container__section-title {
+.program__section-title {
   flex-shrink: 0;
   width: 120px;
 }
 
 /* Light theme specific styles */
-.prog-container__section-title.light {
+.program__section-title.light,
+.program__expand-btn.light {
   color: var(--dark-text-color);
 }
 
 /* Dark theme specific styles */
-.prog-container__section-title.dark {
+.program__section-title.dark,
+.program__expand-btn.dark {
   color: var(--light-text-color);
 }
 
-.prog-container__section-title,
-.prog-container__section-text {
+.program__section-title,
+.program__section-text {
   margin: 10px;
   padding-left: 10px;
   font-size: 18px;
@@ -43,7 +47,7 @@
   white-space: nowrap;
 }
 
-.prog-container__btn-container {
+.program__btn-container {
   display: flex;
   justify-content: center;
   margin-right: 20px;
@@ -69,4 +73,10 @@
 .durationUnit.dark,
 .mainGoal.dark {
   background-color: var(--dark-input);
+}
+
+.program__expand-btn {
+  top: 5px;
+  left: 0;
+  margin-left: 10px;
 }

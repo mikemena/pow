@@ -1,120 +1,115 @@
-.workout-slider-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  width: 660px;
-  padding: 10px 20px;
-}
-
-.workout-slider-wrapper.light {
-  background-color: rgb(204, 204, 202);
-  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
-}
-.workout-slider-wrapper.dark {
-  background-color: rgb(50, 49, 54);
-  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
-}
-
-.workout-slider {
-  display: flex;
-  flex-direction: row;
-  overflow-x: hidden;
-  margin: 20px;
-  padding: 20px 0px;
+.workout {
   position: relative;
-  height: 100%;
-  width: 100%;
-  border: #4caf50;
-}
-.workout-slider.light {
-  background-color: rgb(204, 204, 202);
-}
-
-.workout-slider.dark {
-  background-color: rgb(50, 49, 54);
-}
-
-.workout-container {
   flex-shrink: 0;
-  width: calc(100% - 20px);
-  /* margin-top: 0; */
+  width: 700px;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 15px;
   padding: 20px 0px;
   transition: transform 0.3s ease;
   box-sizing: border-box;
 }
-.workout-container.active {
+
+.workout.light {
+  background-color: rgb(204, 204, 202);
+  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
+}
+.workout.dark {
+  background-color: rgb(50, 49, 54);
+  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
+}
+
+.workout.active {
   flex: none;
   z-index: 2;
-}
-
-.workout-container.light {
-  background-color: rgb(204, 204, 202);
-}
-.workout-container.dark {
-  background-color: rgb(50, 49, 54);
-}
-
-.workout-container.active {
   padding-top: 4px;
 }
 
-.workout-container__header {
+.workout__header {
   display: flex;
-  align-content: center;
   justify-content: space-between;
-  overflow-x: hidden;
+  align-items: center;
 }
 
-.workout-container__title_container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
+.workout__title-container {
   flex-grow: 1;
-}
-
-.workout-container__title {
-  margin: 0;
-  font-weight: 600;
-  font-style: normal;
-  font-size: 24px;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-.workout-container__title-input.light {
+.workout__title {
+  margin: 0;
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.workout__exercise-count {
+  margin: 0;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.workout__title-input.light {
   background-color: var(--light-input);
 }
-.workout-container__title-input.dark {
+.workout__title-input.dark {
   background-color: var(--dark-input);
 }
 
+.workout__delete-btn {
+  position: absolute;
+  display: flex;
+  top: 0;
+  right: 0;
+  margin-right: 10px;
+  margin-top: 5px;
+}
+
 /* Light theme specific styles */
-.workout-container__title.light,
-.workout-container__exercises_header.light,
-.workout-container__exercises_name.light,
-.workout-container__exercise-muscle,
-.workout-container__exercise-order-number.light,
-.workout-container__drag-order-container.light,
-.workout-container__icon.light,
-.workout-container__controls-button.light {
+.workout__title.light,
+.workout__exercises_header.light,
+.workout__exercise-count.light,
+.workout__exercises_name.light,
+.workout__exercise-muscle,
+.workout__exercise-order-number.light,
+.workout__drag-order-container.light,
+.workout__icon.light,
+.workout__controls-button.light {
   color: var(--dark-text-color);
 }
 
 /* Dark theme specific styles */
-.workout-container__title.dark,
-.workout-container__exercises_header.dark,
-.workout-container__exercises_name.dark,
-.workout-container__exercise-muscle.dark,
-.workout-container__exercise-order-number.dark,
-.workout-container__drag-order-container.dark,
-.workout-container__icon.dark,
-.workout-container__controls-button.dark {
+.workout__title.dark,
+.workout__exercises_header.dark,
+.workout__exercise-count.dark,
+.workout__exercises_name.dark,
+.workout__exercise-muscle.dark,
+.workout__exercise-order-number.dark,
+.workout__drag-order-container.dark,
+.workout__icon.dark,
+.workout__controls-button.dark {
   color: var(--light-text-color);
+}
+
+.workout__title-input.light {
+  background-color: var(--light-input);
+}
+.workout__title-input.dark {
+  background-color: var(--dark-input);
+}
+
+.pencil-icon {
+  margin-left: 5px;
 }
 
 #edit-icon {
@@ -144,12 +139,19 @@
   padding-right: 10px;
 }
 
-.workout-container__expand-btn,
-.workout-container__delete-btn,
-.workout-container__remove-exercise-btn,
-.workout-container__edit-title-btn,
-.workout-container__close-title-btn,
-.workout-container__save-title-btn {
+.workout__expand-btn {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  margin-left: 10px;
+}
+
+.workout__expand-btn,
+.workout__delete-btn,
+.workout__remove-exercise-btn,
+.workout__edit-title-btn,
+.workout__close-title-btn,
+.workout__save-title-btn {
   padding: 0;
   background: none;
   color: var(--dark-text-color);
@@ -163,12 +165,12 @@
   align-items: center;
 }
 
-.workout-container__expand-btn:hover,
-.workout-container__delete-btn:hover {
+.workout__expand-btn:hover,
+.workout__delete-btn:hover {
   border-style: none;
 }
 
-.workout-container__no-exercise-message {
+.workout__no-exercise-message {
   font-family: 'Roboto', sans-serif;
   font-size: 16px;
   font-weight: 600;
@@ -177,7 +179,7 @@
   text-align: center;
 }
 
-.workout-container__exercises-header-container {
+.workout__exercises-header-container {
   /* display: flex;
   justify-content: space-between; */
   display: grid;
@@ -186,14 +188,14 @@
   gap: 10px; /* Adjust gap to suit your design */
 }
 
-.workout-container__exercises_header {
+.workout__exercises_header {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
   margin: 0px;
 }
 
-.workout-container__drag-order-container {
+.workout__drag-order-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -202,19 +204,19 @@
   padding-top: 5px;
 }
 
-.workout-container__exercise-order-number {
+.workout__exercise-order-number {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
   margin: 5px;
 }
 
-.workout-container__exercise-drag {
+.workout__exercise-drag {
   padding: 8px;
   cursor: grab;
 }
 
-.workout-container__each-exercise {
+.workout__each-exercise {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -222,28 +224,28 @@
   margin: 10px 0;
 }
 
-.workout-container__exercise-details {
+.workout__exercise-details {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
   align-items: flex-start;
 }
 
-.workout-container__exercise-name {
+.workout__exercise-name {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
   margin: 0px;
 }
 
-.workout-container__exercise-muscle {
+.workout__exercise-muscle {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 500;
   margin: 0px;
 }
 
-.workout-container__sets-column {
+.workout__sets-column {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -251,17 +253,17 @@
   margin: 0;
 }
 
-.workout-container__add-set-btn {
+.workout__add-set-btn {
   color: #559857;
   cursor: pointer;
   margin: 0;
 }
 
-.workout-container__add-set-btn:hover {
+.workout__add-set-btn:hover {
   color: #4caf50;
 }
 
-.workout-container__add-set-btn {
+.workout__add-set-btn {
   background: none;
   border: none;
   cursor: pointer;
@@ -271,23 +273,23 @@
   align-items: center;
 }
 
-.workout-container__controls {
+.workout__controls {
   top: 50%;
 }
 
-.workout-container__controls.prev {
+.workout__controls.prev {
   left: 20px;
   display: flex;
   flex-direction: row;
 }
 
-.workout-container__controls.next {
+.workout__controls.next {
   right: 20px;
 }
 
 /* Responsive adjustments if necessary */
 @media (max-width: 768px) {
-  .workout-container__add-set-btn {
+  .workout__add-set-btn {
     margin-bottom: 10px;
   }
 }

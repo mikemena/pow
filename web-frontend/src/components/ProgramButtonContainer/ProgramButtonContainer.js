@@ -1,9 +1,9 @@
-import { useContext } from 'react';
+import { useContext, memo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../contexts/programContext';
 import Button from '../Inputs/Button';
 
-const ProgramButtonContainer = () => {
+const ProgramButtonContainer = memo(() => {
   const navigate = useNavigate();
 
   // Access program data and functions from ProgramContext
@@ -20,6 +20,10 @@ const ProgramButtonContainer = () => {
     addWorkout({});
   };
 
+  useEffect(() => {
+    console.log('ProgramButtonContainer rendered');
+  }, []);
+
   return (
     <div className='prog-container__btn-container'>
       <Button type='button' onClick={handleAddWorkout}>
@@ -31,6 +35,6 @@ const ProgramButtonContainer = () => {
       </Button>
     </div>
   );
-};
+});
 
 export default ProgramButtonContainer;

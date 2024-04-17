@@ -1,37 +1,35 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
-import { WorkoutContainerProvider } from '../../../contexts/workoutContainerContext';
-import WorkoutContainer from '../../../components/WorkoutContainer/WorkoutContainer';
+import { WorkoutProvider } from '../../../contexts/workoutContext';
+import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import ProgramButtonContainer from '../../../components/ProgramButtonContainer/ProgramButtonContainer';
 import NavBar from '../../../components/Nav/Nav';
 import ExerciseList from '../../../components/ExerciseList/ExerciseList';
 import Toggle from '../../../components/Inputs/Toggle';
-
 import './program.css';
 
 const CreateProgram = () => {
-  // Use ProgramContext to manage the state of the program
   const { program, saveProgram } = useContext(ProgramContext);
 
   const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
+  const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  const [renderKey, setRenderKey] = useState(0); // Add a render key
 
   const navigate = useNavigate();
 
   const handleShowExercise = workoutId => {
     if (workoutId === activeWorkout && showExerciseList) {
       setShowExerciseList(false);
-      setActiveWorkout(null); // Optionally reset the active workout
+      setActiveWorkout(null);
     } else {
-      // Show the exercise list for the clicked workout.
       setShowExerciseList(true);
       setActiveWorkout(workoutId);
     }
   };
 
-  // Save function uses context's save logic
   const handleSaveProgram = async () => {
     try {
       await saveProgram();
@@ -41,20 +39,41 @@ const CreateProgram = () => {
     }
   };
 
+  const handleExpandWorkout = workoutId => {
+    // Collapse all other items when one is expanded
+    setExpandedWorkouts(prevState => ({
+      ...Object.keys(prevState).reduce((acc, key) => {
+        acc[key] = false; // collapse all
+        return acc;
+      }, {}),
+      [workoutId]: !prevState[workoutId] // toggle the clicked one
+    }));
+  };
+
+  const handleToggleProgramForm = () => {
+    setExpandedWorkouts(prevState => ({
+      ...Object.keys(prevState).reduce((acc, key) => {
+        acc[key] = false; // collapse all workouts
+        return acc;
+      }, {}),
+      program: !prevState.program // toggle the program form
+    }));
+  };
+
   useEffect(() => {
-    // Assuming new workouts are added to the end of the array
     if (program.workouts.length > 0) {
       const lastWorkout = program.workouts[program.workouts.length - 1];
       setActiveWorkout(lastWorkout.id);
     }
-  }, [program.workouts]); // This effect depends on program.workouts
+  }, [program.workouts]);
 
-  console.log('program.workouts before mapping:', program.workouts);
-  console.log('activeWorkout:', activeWorkout);
+  useEffect(() => {
+    console.log('Workouts updated in main component:', program.workouts);
+    setRenderKey(prevKey => prevKey + 1); // Increment the render key
+  }, [program.workouts]);
 
   return (
     <div>
-      {' '}
       <NavBar isEditing='true' />
       <div className='create-prog-page'>
         <div className='create-prog-page__toggle-container'>
@@ -62,18 +81,25 @@ const CreateProgram = () => {
         </div>
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
-            {/* <div className='create-prog-page__header'>
-              <h1 className='create-prog-page__title'>Create New Program</h1>
-            </div> */}
-            <ProgramForm program={program} isEditing={true} />
-            <WorkoutContainerProvider>
-              <WorkoutContainer
-                activeWorkoutId={activeWorkout}
-                onWorkoutChange={setActiveWorkout}
-                showExercises={handleShowExercise}
-                showExerciseList={showExerciseList}
-              />
-            </WorkoutContainerProvider>
+            <ProgramForm
+              program={program}
+              isEditing={true}
+              isExpanded={expandedWorkouts['program'] || true}
+              onToggleExpand={() => handleToggleProgramForm('program')}
+            />
+
+            <WorkoutProvider key={renderKey}>
+              {' '}
+              {/* Pass the render key here */}
+              {program.workouts.map(workout => (
+                <Workout
+                  key={workout.id}
+                  workoutId={workout.id}
+                  isExpanded={expandedWorkouts[workout.id] || false}
+                  onToggleExpand={handleExpandWorkout}
+                />
+              ))}
+            </WorkoutProvider>
           </div>
           <div className='create-prog-page__right-container'>
             <h1 className='create-prog-page__exercise-container-title'>
@@ -95,7 +121,7 @@ const CreateProgram = () => {
               />
             )}
           </div>
-        </div>{' '}
+        </div>
         <div className='create-prog-page__button-container'>
           <ProgramButtonContainer />
         </div>

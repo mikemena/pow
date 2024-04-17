@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useEffect } from 'react';
+import { createContext, useState, useCallback } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export const ProgramContext = createContext();
@@ -90,12 +90,14 @@ export const ProgramProvider = ({ children }) => {
         id: tempId,
         name: workout.name || workoutTitle
       };
-      setProgram(prev => ({
-        ...prev,
-        workouts: [...prev.workouts, newWorkout]
-      }));
+      setProgram(prev => {
+        const updatedWorkouts = [...prev.workouts, newWorkout];
+        console.log('Updated workouts after add:', updatedWorkouts);
+        return { ...prev, workouts: updatedWorkouts };
+      });
+
       console.log('New activeWorkoutId set:', newWorkout.id);
-      console.log('Updated workouts after add:', program.workouts);
+      // console.log('Updated workouts after add:', program.workouts);
       console.log('Setting activeWorkoutId to:', tempId);
       setActiveWorkoutId(tempId);
       console.log('activeWorkoutId after set:', tempId);
