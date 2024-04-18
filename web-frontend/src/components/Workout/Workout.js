@@ -7,7 +7,9 @@ import { GrClose } from 'react-icons/gr';
 import { TbHttpDelete } from 'react-icons/tb';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
+import { useNavigate } from 'react-router-dom';
 import ExerciseSet from '../ExerciseSet/ExerciseSet';
+
 import './Workout.css';
 
 const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
@@ -18,6 +20,8 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
 
   const workout = program.workouts.find(w => w.id === workoutId);
+
+  const navigate = useNavigate();
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
@@ -75,6 +79,12 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   };
 
   if (!workout) return null;
+
+  const handleAddExercises = workoutId => {
+    navigate('/select-exercises', {
+      state: { workoutId: workoutId }
+    });
+  };
 
   return (
     <div
@@ -137,7 +147,12 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
         <span className={`workout__exercise-count ${theme}`}>
           {exerciseText(workout)}
         </span>
-        <button className='workout__add-exercise-btn'>Add</button>
+        <button
+          onClick={() => handleAddExercises(workout.id)}
+          className='workout__add-exercise-btn'
+        >
+          Add
+        </button>
       </div>
       {isExpanded && (
         <div className='workout__body'>

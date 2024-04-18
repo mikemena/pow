@@ -1,14 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import ExerciseSearch from '../../../components/SearchBar/SearchBar';
-import Exercise from '../../../components/Exercise/Exercise';
-import ExerciseFilters from '../../../components/ExerciseFilters/ExerciseFilters';
-import useFetchData from '../../../hooks/useFetchData';
-import './exercises.css';
+import React, { useState, useMemo, useContext } from 'react';
+import { ProgramContext } from '../../contexts/programContext';
+import { useNavigate } from 'react-router-dom';
+import ExerciseSearch from '../../components/SearchBar/SearchBar';
+import Exercise from '../../components/Exercise/Exercise';
+import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
+import useFetchData from '../../hooks/useFetchData';
+import './select-exercises.css';
 
-const ExercisesListPage = () => {
+const SelectExercisesPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
+  const [selectedExercises, setSelectedExercises] = useState([]);
+
+  const navigate = useNavigate();
+
+  const { addExercise } = useContext(ProgramContext);
 
   const {
     data: exercises,
@@ -48,6 +55,13 @@ const ExercisesListPage = () => {
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
+  const handleAddSelectedExercises = () => {
+    selectedExercises.forEach(exercise => {
+      addExercise(activeWorkout, exercise);
+    });
+    navigate('/create-program');
+  };
+
   return (
     <div id='exercise-container'>
       <h1 className='page-title'>Exercises</h1>
@@ -69,8 +83,9 @@ const ExercisesListPage = () => {
           />
         ))}
       </div>
+      <button onClick={handleAddSelectedExercises}>Add</button>
     </div>
   );
 };
 
-export default ExercisesListPage;
+export default SelectExercisesPage;

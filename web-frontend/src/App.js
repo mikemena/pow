@@ -2,7 +2,8 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/home/home';
-import ExercisesListPage from './pages/exercises/main/exercises';
+import ExercisesListPage from './pages/exercises/exercises';
+import SelectExercisesPage from './pages/exercises/select-exercises';
 import ProgramPage from './pages/programs/main/programs';
 import CreateProgramPage from './pages/programs/create/program';
 import ProgressPage from './pages/progress/main/progress';
@@ -33,6 +34,7 @@ const App = () => {
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/exercises' element={<ExercisesListPage />} />
+        <Route path='/select-exercises' element={<SelectExercisesPage />} />
         <Route path='/programs' element={<ProgramPage />} />
         <Route path='/create-program' element={<CreateProgramWithProvider />} />
         <Route path='/progress' element={<ProgressPage />} />

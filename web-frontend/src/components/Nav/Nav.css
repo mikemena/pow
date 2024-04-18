@@ -78,10 +78,16 @@
 .navbar_link.dark {
   color: var(--white);
 }
-
 .navbar_link:hover {
-  border-color: white;
   transition: 250ms;
+}
+
+.navbar_link:hover.light {
+  color: var(--pink);
+}
+
+.navbar_link:hover.dark {
+  color: var(--green);
 }
 
 .navbar_menu {
