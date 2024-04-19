@@ -96,6 +96,18 @@ const SelectExercisesPage = () => {
     navigate('/create-program');
   };
 
+  const exerciseText = selectedExercises => {
+    const count = selectedExercises?.length ?? 0;
+
+    if (count === 0) {
+      return 'No Exercises ';
+    } else if (count === 1) {
+      return '1 Exercise ';
+    } else {
+      return `${count} Exercises `;
+    }
+  };
+
   // console.log('Active Workout:', activeWorkout);
 
   return (
@@ -108,14 +120,18 @@ const SelectExercisesPage = () => {
             size={30}
           />
         </button>
-        <h1 className='create-prog-page__exercise-container-title'>
+        <h1 className='select-exercise__title'>
           {`Adding exercises for ${
             activeWorkout.name ? activeWorkout.name : 'your selected workout'
           }`}
         </h1>
+        <div className='select-exercise__count'>
+          {exerciseText(selectedExercises)}{' '}
+          {/* Display the count of selected exercises */}
+        </div>
         <button
           onClick={handleAddExercises}
-          className='workout__add-exercise-btn'
+          className='select-exercise__add-exercise-btn'
         >
           Add
         </button>
@@ -126,7 +142,7 @@ const SelectExercisesPage = () => {
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-      <div className='exercise-container'>
+      <div className='select-exercise__exercises'>
         {filteredExercises.map(exercise => (
           <Exercise
             key={exercise.id}

@@ -1,13 +1,20 @@
-.select-exercise {
-  width: 550px;
+.select-exercise__exercises {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* Creates a three-column layout */
+  gap: 1rem; /* Adjust gap between grid items */
+  padding: 1rem; /* Spacing around the entire grid */
 }
 
-.select-exercise__title {
-  font-size: 24px;
-  font-weight: 500;
-  margin-bottom: 20px;
+/* Adjustments for tablet devices */
+@media (max-width: 768px) {
+  .select-exercise__exercises {
+    grid-template-columns: repeat(2, 1fr); /* Two columns for tablet */
+  }
 }
 
-.select-exercise__back-btn {
-  margin-bottom: 20px;
+/* Adjustments for mobile devices */
+@media (max-width: 480px) {
+  .select-exercise__exercises {
+    grid-template-columns: 1fr; /* Single column for mobile */
+  }
 }
