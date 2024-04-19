@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import ExerciseSearch from '../../components/SearchBar/SearchBar';
+import ExerciseSearch from '../../components/Exercise/Search';
 import Exercise from '../../components/Exercise/Exercise';
-import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
+
 import useFetchData from '../../hooks/useFetchData';
 import './exercises.css';
 
@@ -51,11 +51,13 @@ const ExercisesListPage = () => {
   return (
     <div id='exercise-container'>
       <h1 className='page-title'>Exercises</h1>
-      <ExerciseSearch onChange={handleSearch} exercises={exercises} />
-      <ExerciseFilters
+      <ExerciseSearch
+        onChange={handleSearch}
+        exercises={exercises}
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
+
       <div className='exercise-container'>
         {filteredExercises.map(exercise => (
           <Exercise

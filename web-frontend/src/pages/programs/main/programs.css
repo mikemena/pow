@@ -17,12 +17,3 @@
   padding-left: 50px;
   font-family: courier, monospace;
 }
-
-@supports (display: grid) {
-  body {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 0.625rem;
-    grid-template-areas: '. main main .' '. main main .';
-  }
-}

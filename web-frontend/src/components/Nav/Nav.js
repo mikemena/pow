@@ -30,9 +30,9 @@ const Navbar = () => {
         )}
 
         <ul
-          className={
-            menuClicked ? 'navbar_list navbar_list--active' : 'navbar_list'
-          }
+          className={`navbar_list ${
+            menuClicked ? 'navbar_list--active' : ''
+          } ${theme}`}
         >
           <li className='navbar_item'>
             <Link to='/programs' className={`navbar_link ${theme}`}>

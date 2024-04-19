@@ -1,10 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
+import TextInput from '../Inputs/TextInput';
 import useFetchData from '../../hooks/useFetchData';
 import { useTheme } from '../../contexts/themeContext';
-import './ExerciseFilters.css';
+import './Search.css';
 
-function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
+function ExerciseFilters({
+  exercises = [],
+  onSearchTextChange,
+  onMuscleChange,
+  onEquipmentChange
+}) {
+  const [inputValue, setInputValue] = useState('');
+
   const { theme } = useTheme();
+
+  const handleInputChange = event => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    onSearchTextChange(newValue);
+  };
 
   const {
     data: muscles,
@@ -28,11 +42,27 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
   if (errorMuscles) return <div>Error loading equipments: {errorMuscles}</div>;
 
   return (
-    <div className='exercise-search-container'>
-      <div className='exercise-search-container__filter-container'>
+    <div className={`exercise-search ${theme}`}>
+      <div className='exercise-search__search-input-container'>
+        <TextInput
+          list='exercises'
+          className={`exercise-search__search-text-input ${theme}`}
+          id='exercise-search-bar'
+          onChange={handleInputChange}
+          value={inputValue}
+          type='search'
+          placeholder='Search Exercise Names'
+        />
+        <datalist id='exercises'>
+          {exercises.map((exercise, index) => (
+            <option key={index} value={exercise.name} />
+          ))}
+        </datalist>
+      </div>
+      <div className='exercise-search__search-input-container'>
         <input
           list='muscles'
-          className={`muscle-search ${theme}`}
+          className={`exercise-search__muscle ${theme}`}
           type='search'
           onChange={event => onMuscleChange(event.target.value)}
           placeholder='Search Muscles'
@@ -44,10 +74,10 @@ function ExerciseFilters({ onMuscleChange, onEquipmentChange }) {
         </datalist>
       </div>
 
-      <div className='exercise-search-container'>
+      <div className='exercise-search__search-input-container'>
         <input
           list='equipments'
-          className={`equipment-search ${theme}`}
+          className={`exercise-search__equipment ${theme}`}
           type='search'
           onChange={event => onEquipmentChange(event.target.value)}
           placeholder='Search Equipment'

@@ -60,6 +60,7 @@
 
 .workout__add-exercise-btn {
   color: var(--orange);
+  text-transform: uppercase;
   margin-left: 10px;
 }
 

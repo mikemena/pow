@@ -4,6 +4,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: start;
+  width: 100%;
+  border: green 1px solid;
 }
 
 .create-prog-page__container {
@@ -47,23 +49,46 @@
   font-size: 26px;
 }
 
-@media screen and (max-width: 800px) {
+@media (max-width: 768px) {
   .create-prog-page {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: start;
-    height: 100vh;
-    padding-bottom: 100px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: rgb(49, 208, 24) 5px solid;
   }
+
+  .create-prog-page__toggle-container {
+    z-index: 10;
+  }
+
   .create-prog-page__container {
+    min-width: 0;
+    border: gold 5px solid;
     flex-direction: column;
   }
 
   .create-prog-page__left-container,
   .create-prog-page__right-container {
     width: 100%;
-    margin-right: 0;
+  }
+  .create-prog-page__right-container {
+    margin-top: 20px;
+  }
+
+  .create-prog-page__exercise-container-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+
+  .create-prog-page__button-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 10px;
+  }
+
+  .create-prog-page__button-container button {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
   }
 }

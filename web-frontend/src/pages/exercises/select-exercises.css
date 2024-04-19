@@ -1,20 +1,98 @@
-.select-exercise__exercises {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); /* Creates a three-column layout */
-  gap: 1rem; /* Adjust gap between grid items */
-  padding: 1rem; /* Spacing around the entire grid */
+.select-exercise {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Adjustments for tablet devices */
-@media (max-width: 768px) {
-  .select-exercise__exercises {
-    grid-template-columns: repeat(2, 1fr); /* Two columns for tablet */
-  }
+.select-exercise__exercises {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 1rem;
+}
+
+.select-exercise__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  flex-shrink: 0;
+  width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 15px;
+  padding: 20px 0px;
+  transition: transform 0.3s ease;
+  box-sizing: border-box;
+}
+
+.select-exercise__header.light {
+  background-color: rgb(204, 204, 202);
+  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
+}
+.select-exercise__header.dark {
+  background-color: rgb(50, 49, 54);
+  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
+}
+
+.select-exercise__title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  font-style: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-exercise__subtitle {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  font-size: 18px;
+
+  font-weight: 400;
+  font-style: normal;
+}
+
+.select-exercise__count {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  font-style: normal;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-exercise__add-exercise-btn {
+  color: var(--orange);
+  font-size: 18px;
+  font-weight: 600;
+  font-style: normal;
+  text-transform: uppercase;
+  margin-right: 10px;
+}
+
+/* Light theme specific styles */
+.select-exercise__title.light,
+.select-exercise__icon.light,
+.select-exercise__count.light {
+  color: var(--dark-text-color);
+}
+
+/* Dark theme specific styles */
+.select-exercise__title.dark,
+.select-exercise__icon.dark,
+.select-exercise__count.dark {
+  color: var(--light-text-color);
 }
 
 /* Adjustments for mobile devices */
-@media (max-width: 480px) {
+
+@media (max-width: 768px) {
   .select-exercise__exercises {
-    grid-template-columns: 1fr; /* Single column for mobile */
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 0.5rem;
   }
 }

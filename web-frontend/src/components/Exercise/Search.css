@@ -1,0 +1,43 @@
+.exercise-search {
+  display: flex;
+  width: 800px;
+  align-items: center;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.exercise-search.light {
+  background-color: rgb(204, 204, 202);
+  box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
+}
+.exercise-search.dark {
+  background-color: rgb(50, 49, 54);
+  box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
+}
+
+.exercise-search__search-input-container {
+  display: flex;
+  width: 320px;
+  padding-left: 5px;
+}
+
+.exercise-search__search-text-input.light,
+.exercise-search__muscle.light,
+.exercise-search__equipment.light {
+  background-color: var(--light-input);
+  color: var(--dark-text-color);
+}
+.exercise-search__search-text-input.dark,
+.exercise-search__muscle.dark,
+.exercise-search__equipment.dark {
+  background-color: var(--dark-input);
+  color: var(--dark-text-color);
+}
+
+/* Adjustments for mobile devices */
+
+@media (max-width: 768px) {
+  .exercise-search {
+    flex-direction: column;
+  }
+}

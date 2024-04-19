@@ -70,7 +70,6 @@
   margin: 10px;
   padding-left: 10px;
   font-size: 18px;
-  font-family: 'Roboto', sans-serif;
   font-weight: 400;
   font-style: normal;
   white-space: nowrap;
@@ -108,4 +107,58 @@
   top: 5px;
   left: 0;
   margin-left: 10px;
+}
+/* Adjust form styling for smaller screens */
+
+@media (max-width: 768px) {
+  .program {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+  }
+
+  .program__header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .program__expand-btn {
+    padding: 10px;
+  }
+  .program__icon {
+    margin-left: 2px;
+  }
+  .program__title {
+    font-size: 1.25rem;
+  }
+  .program__form {
+    padding: 10px;
+    border: #a022b6;
+  }
+  .program__section {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  .program__section-title {
+    width: 120px;
+    margin-right: 10px;
+  }
+  .program-name-input,
+  .mainGoal,
+  .programDuration,
+  .durationUnit,
+  .daysPerWeek {
+    flex: 1;
+  }
+  .mainGoal,
+  .durationUnit {
+    height: 40px;
+  }
+  .programDuration,
+  .daysPerWeek {
+    padding: 8px;
+  }
 }

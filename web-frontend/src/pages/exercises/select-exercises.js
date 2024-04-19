@@ -4,9 +4,8 @@ import NavBar from '../../components/Nav/Nav';
 import { useNavigate } from 'react-router-dom';
 import { BsChevronCompactLeft } from 'react-icons/bs';
 import { useTheme } from '../../contexts/themeContext';
-import ExerciseSearch from '../../components/SearchBar/SearchBar';
+import ExerciseSearch from '../../components/Exercise/Search';
 import Exercise from '../../components/Exercise/Exercise';
-import ExerciseFilters from '../../components/ExerciseFilters/ExerciseFilters';
 import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
@@ -108,52 +107,57 @@ const SelectExercisesPage = () => {
     }
   };
 
-  // console.log('Active Workout:', activeWorkout);
-
   return (
-    <div className='select-exercise'>
+    <div>
       <NavBar isEditing='true' />
-      <div className='select-exercise__header'>
-        <button className='select-exercise__back-btn' onClick={goBack}>
-          <BsChevronCompactLeft
-            className={`workout__icon ${theme}`}
-            size={30}
-          />
-        </button>
-        <h1 className='select-exercise__title'>
-          {`Adding exercises for ${
-            activeWorkout.name ? activeWorkout.name : 'your selected workout'
-          }`}
-        </h1>
-        <div className='select-exercise__count'>
-          {exerciseText(selectedExercises)}{' '}
-          {/* Display the count of selected exercises */}
+      <div className='select-exercise'>
+        <div className={`select-exercise__header ${theme}`}>
+          <button className='select-exercise__back-btn' onClick={goBack}>
+            <BsChevronCompactLeft
+              className={`select-exercise__icon ${theme}`}
+              size={30}
+            />
+          </button>
+          <div className='select-exercise__title-container'>
+            <h1 className={`select-exercise__title ${theme}`}>
+              {`Adding exercises for ${
+                activeWorkout.name
+                  ? activeWorkout.name
+                  : 'your selected workout'
+              }`}
+            </h1>
+            <div className='select-exercise__subtitle'>
+              <span className={`select-exercise__count ${theme}`}>
+                {exerciseText(selectedExercises)}
+              </span>
+            </div>
+          </div>
+          <button
+            onClick={handleAddExercises}
+            className='select-exercise__add-exercise-btn'
+          >
+            Add
+          </button>
         </div>
-        <button
-          onClick={handleAddExercises}
-          className='select-exercise__add-exercise-btn'
-        >
-          Add
-        </button>
-      </div>
-
-      <ExerciseSearch onChange={handleSearch} exercises={exercises} />
-      <ExerciseFilters
-        onMuscleChange={handleMuscleChange}
-        onEquipmentChange={handleEquipmentChange}
-      />
-      <div className='select-exercise__exercises'>
-        {filteredExercises.map(exercise => (
-          <Exercise
-            key={exercise.id}
-            name={exercise.name}
-            muscle={exercise.muscle}
-            equipment={exercise.equipment}
-            image={`http://localhost:9025/${exercise.file_path}`}
-            isSelectable={false}
-            onClick={() => toggleExerciseSelection(exercise)}
-          />
-        ))}
+        <ExerciseSearch
+          onSearchTextChange={handleSearch}
+          exercises={exercises}
+          onMuscleChange={handleMuscleChange}
+          onEquipmentChange={handleEquipmentChange}
+        />
+        <div className='select-exercise__exercises'>
+          {filteredExercises.map(exercise => (
+            <Exercise
+              key={exercise.id}
+              name={exercise.name}
+              muscle={exercise.muscle}
+              equipment={exercise.equipment}
+              image={`http://localhost:9025/${exercise.file_path}`}
+              isSelectable={false}
+              onClick={() => toggleExerciseSelection(exercise)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
