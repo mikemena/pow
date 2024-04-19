@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
+  const [activeWorkout, setActiveWorkout] = useState(null);
   const [program, setProgram] = useState({
     user_id: 2, // This should be set to the logged in user's ID
     name: 'Program 1',
@@ -11,13 +12,20 @@ export const ProgramProvider = ({ children }) => {
     duration_unit: '',
     days_per_week: 0,
     main_goal: '',
-    workouts: [{ id: uuidv4(), name: 'Workout 1', exercises: [] }]
+    workouts: [
+      { id: uuidv4(), name: 'Workout 1', exercises: [], active: false }
+    ]
   });
+
+  console.log('Provider Rendered, Active Workout:', activeWorkout);
   // console.log('Program state:', program);
 
-  const [activeWorkoutId, setActiveWorkoutId] = useState(
-    program.workouts[0].id
-  );
+  // Initialize the active workout to the first workout in the program
+
+  const updateActiveWorkout = useCallback(workout => {
+    console.log('Updating active workout:', workout);
+    setActiveWorkout(workout);
+  }, []);
 
   //Save program to the database
   const saveProgram = async NewProgram => {
@@ -99,10 +107,10 @@ export const ProgramProvider = ({ children }) => {
       // console.log('New activeWorkoutId set:', newWorkout.id);
       // console.log('Updated workouts after add:', program.workouts);
       // console.log('Setting activeWorkoutId to:', tempId);
-      setActiveWorkoutId(tempId);
+      setActiveWorkout(newWorkout);
       // console.log('activeWorkoutId after set:', tempId);
     },
-    [setProgram, setActiveWorkoutId, program.workouts]
+    [setProgram, setActiveWorkout, program.workouts]
   );
 
   // Function to update a workout
@@ -118,53 +126,54 @@ export const ProgramProvider = ({ children }) => {
 
   // Function to delete a workout
 
-  const deleteWorkout = useCallback(workoutId => {
-    // console.log(`Attempting to delete workout with id: ${workoutId}`);
-    setProgram(prev => {
-      let newActiveWorkoutId = prev.activeWorkoutId;
-      const workoutIndex = prev.workouts.findIndex(
-        workout => workout.id === workoutId
-      );
+  const deleteWorkout = useCallback(
+    workoutId => {
+      setProgram(prev => {
+        const workoutIndex = prev.workouts.findIndex(
+          workout => workout.id === workoutId
+        );
 
-      // Ensure we have more than one workout to prevent deleting the last one.
-      if (prev.workouts.length <= 1) return prev; // Or handle the error as needed.
+        // Ensure we have more than one workout to prevent deleting the last one.
+        if (prev.workouts.length <= 1) return prev; // Optionally handle the error as needed.
 
-      const updatedWorkouts = prev.workouts.filter(
-        workout => workout.id !== workoutId
-      );
-      console.log('Workouts after deletion:', updatedWorkouts);
+        const updatedWorkouts = prev.workouts.filter(
+          workout => workout.id !== workoutId
+        );
 
-      // If the deleted workout was the active one, update the activeWorkoutId.
-      if (newActiveWorkoutId === workoutId) {
-        if (workoutIndex === prev.workouts.length - 1) {
-          // If it was the last workout, set the previous one as active.
-          newActiveWorkoutId = updatedWorkouts[workoutIndex - 1].id;
+        // Determine the new active workout
+        let newActiveWorkout = null;
+        if (prev.activeWorkout && prev.activeWorkout.id === workoutId) {
+          // If the active workout is the one being deleted, need to find a new active workout
+          if (workoutIndex === prev.workouts.length - 1) {
+            // If it was the last workout, set the previous one as active
+            newActiveWorkout = updatedWorkouts[workoutIndex - 1];
+          } else {
+            // Otherwise, set the next workout as active (or previous if it was the last)
+            newActiveWorkout = updatedWorkouts[Math.max(0, workoutIndex)];
+          }
         } else {
-          // Otherwise, set the next workout as active (or previous if it was the last).
-          newActiveWorkoutId = updatedWorkouts[Math.max(0, workoutIndex)].id;
+          // If the active workout is not the one being deleted, keep it as is
+          newActiveWorkout = prev.activeWorkout;
         }
-      }
 
-      // Update the active workout ID in the state.
-      setActiveWorkoutId(newActiveWorkoutId);
-      console.log(
-        'New active workout ID from deleting a workout:',
-        newActiveWorkoutId
-      );
+        // Update the active workout in the context
+        setActiveWorkout(newActiveWorkout);
 
-      // Return the updated program.
-      return { ...prev, workouts: updatedWorkouts };
-    });
-  }, []);
+        // Return the updated program with the workout removed
+        return { ...prev, workouts: updatedWorkouts };
+      });
+    },
+    [setActiveWorkout]
+  );
 
   // Function to go to the next workout
 
   const goToNextWorkout = () => {
     const currentIndex = program.workouts.findIndex(
-      workout => workout.id === activeWorkoutId
+      workout => workout.id === activeWorkout.id
     );
     const nextIndex = (currentIndex + 1) % program.workouts.length;
-    setActiveWorkoutId(program.workouts[nextIndex].id);
+    setActiveWorkout(program.workouts[nextIndex]);
     console.log(
       'Active workout ID after next:',
       program.workouts[nextIndex].id
@@ -175,57 +184,56 @@ export const ProgramProvider = ({ children }) => {
 
   const goToPreviousWorkout = () => {
     const currentIndex = program.workouts.findIndex(
-      workout => workout.id === activeWorkoutId
+      workout => workout.id === activeWorkout.id
     );
     const previousIndex =
       (currentIndex - 1 + program.workouts.length) % program.workouts.length;
-    setActiveWorkoutId(program.workouts[previousIndex].id);
+    setActiveWorkout(program.workouts[previousIndex]);
     console.log(
       'Active workout ID after previous:',
       program.workouts[previousIndex].id
     );
   };
 
-  // Function to add exercise to a specific workout
+  // Function to add exercises to a specific workout
 
-  const addExercise = useCallback((workoutId, exercise) => {
-    const tempId = uuidv4();
-
+  const addExercise = useCallback((workoutId, exercises) => {
     setProgram(prev => {
       const newWorkouts = prev.workouts.map(workout => {
         if (workout.id === workoutId) {
           const currentExercises = Array.isArray(workout.exercises)
             ? workout.exercises
             : [];
-
-          // Add the tempId to the new exercise object
-          const newExercise = {
-            ...exercise,
-            id: tempId,
-            exerciseCatalogId: exercise.id,
-            isNew: true,
-            sets: [
-              { id: uuidv4(), reps: '', weight: '', order: 1, isNew: true }
-            ]
-          };
-          // console.log('Adding exercise:', newExercise);
-
-          // Determine the next order value for the new exercise
-          const nextOrder =
-            currentExercises.length > 0
-              ? Math.max(...currentExercises.map(ex => ex.order)) + 1
-              : 1;
-
-          return {
-            ...workout,
-            exercises: [
-              ...currentExercises,
-              { ...newExercise, order: nextOrder }
-            ]
-          };
+          console.log('Existing exercises for this workout:', currentExercises);
+          const newExercises = Array.isArray(exercises)
+            ? exercises
+            : [exercises]; // Ensure it's always an array
+          newExercises.forEach(exercise => {
+            const tempId = uuidv4();
+            const newExercise = {
+              ...exercise,
+              id: tempId,
+              exerciseCatalogId: exercise.id,
+              isNew: true,
+              sets: [
+                {
+                  id: uuidv4(),
+                  reps: '',
+                  weight: '',
+                  order: currentExercises.length + 1,
+                  isNew: true
+                }
+              ]
+            };
+            currentExercises.push(newExercise);
+            console.log('Added new exercise:', newExercise);
+          });
+          console.log('Updated exercises for this workout:', currentExercises);
+          return { ...workout, exercises: currentExercises };
         }
         return workout;
       });
+      console.log('New workouts array:', newWorkouts);
       return { ...prev, workouts: newWorkouts };
     });
   }, []);
@@ -402,6 +410,8 @@ export const ProgramProvider = ({ children }) => {
         updateProgramDetails,
         addWorkout,
         updateWorkout,
+        activeWorkout,
+        updateActiveWorkout,
         deleteWorkout,
         goToNextWorkout,
         goToPreviousWorkout,

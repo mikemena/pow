@@ -13,34 +13,28 @@ import { useTheme } from './contexts/themeContext';
 
 import './App.css';
 
-function CreateProgramWithProvider() {
-  return (
-    <ProgramProvider>
-      <CreateProgramPage />
-    </ProgramProvider>
-  );
-}
-
 const App = () => {
   const { theme } = useTheme();
 
   useEffect(() => {
     // When the theme changes, update the class on the <html> element
     document.documentElement.className = theme;
-  }, [theme]); // This effect depends on the `theme` variable
+  }, [theme]);
 
   return (
-    <Router>
-      <Routes>
-        <Route path='/' element={<HomePage />} />
-        <Route path='/exercises' element={<ExercisesListPage />} />
-        <Route path='/select-exercises' element={<SelectExercisesPage />} />
-        <Route path='/programs' element={<ProgramPage />} />
-        <Route path='/create-program' element={<CreateProgramWithProvider />} />
-        <Route path='/progress' element={<ProgressPage />} />
-        <Route path='/profile' element={<ProfilePage />} />
-      </Routes>
-    </Router>
+    <ProgramProvider>
+      <Router>
+        <Routes>
+          <Route path='/' element={<HomePage />} />
+          <Route path='/exercises' element={<ExercisesListPage />} />
+          <Route path='/select-exercises' element={<SelectExercisesPage />} />
+          <Route path='/programs' element={<ProgramPage />} />
+          <Route path='/create-program' element={<CreateProgramPage />} />
+          <Route path='/progress' element={<ProgressPage />} />
+          <Route path='/profile' element={<ProfilePage />} />
+        </Routes>
+      </Router>
+    </ProgramProvider>
   );
 };
 

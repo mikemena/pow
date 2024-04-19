@@ -5,29 +5,17 @@ import { WorkoutProvider } from '../../../contexts/workoutContext';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
-import ExerciseList from '../../../components/ExerciseList/ExerciseList';
 import Toggle from '../../../components/Inputs/Toggle';
 import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
   const { program, saveProgram, addWorkout } = useContext(ProgramContext);
-  const [showExerciseList, setShowExerciseList] = useState(false);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const [renderKey, setRenderKey] = useState(0); // Add a render key
 
   const navigate = useNavigate();
-
-  const handleShowExercise = workoutId => {
-    if (workoutId === activeWorkout && showExerciseList) {
-      setShowExerciseList(false);
-      setActiveWorkout(null);
-    } else {
-      setShowExerciseList(true);
-      setActiveWorkout(workoutId);
-    }
-  };
 
   const handleSaveProgram = async () => {
     try {
@@ -78,8 +66,7 @@ const CreateProgram = () => {
   }, [program.workouts]);
 
   useEffect(() => {
-    // console.log('Workouts updated in main component:', program.workouts);
-    setRenderKey(prevKey => prevKey + 1); // Increment the render key
+    setRenderKey(prevKey => prevKey + 1);
   }, [program.workouts]);
 
   return (
@@ -113,7 +100,7 @@ const CreateProgram = () => {
           </div>
           <div className='create-prog-page__right-container'>
             <h1 className='create-prog-page__exercise-container-title'>
-              {activeWorkout && showExerciseList
+              {activeWorkout
                 ? `Adding exercises for ${
                     program.workouts.find(
                       workout => workout.id === activeWorkout
@@ -121,22 +108,15 @@ const CreateProgram = () => {
                   }`
                 : ''}
             </h1>
-            {showExerciseList && (
-              <ExerciseList
-                activeWorkout={activeWorkout}
-                selectedExercises={
-                  program.workouts.find(workout => workout.id === activeWorkout)
-                    ?.exercises || []
-                }
-              />
-            )}
           </div>
         </div>
         <div className='create-prog-page__button-container'>
           <Button type='button' onClick={handleAddWorkout}>
             Add Workout
           </Button>
-          <Button type='submit'>Save</Button>
+          <Button type='submit' onClick={handleSaveProgram}>
+            Save
+          </Button>
           <Button type='button' onClick={handleCancel}>
             Cancel
           </Button>

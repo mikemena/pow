@@ -1,3 +1,13 @@
-#exercise-container {
+.select-exercise {
   width: 550px;
+}
+
+.select-exercise__title {
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 20px;
+}
+
+.select-exercise__back-btn {
+  margin-bottom: 20px;
 }

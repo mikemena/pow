@@ -13,8 +13,15 @@ import ExerciseSet from '../ExerciseSet/ExerciseSet';
 import './Workout.css';
 
 const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
-  const { program, deleteWorkout, deleteExercise, updateWorkout, addSet } =
-    useContext(ProgramContext);
+  const {
+    program,
+    deleteWorkout,
+    deleteExercise,
+    updateWorkout,
+    addSet,
+    activeWorkout,
+    updateActiveWorkout
+  } = useContext(ProgramContext);
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState('');
   const { theme } = useTheme();
@@ -42,6 +49,10 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
 
   const handleDeleteWorkout = workoutId => {
     deleteWorkout(workoutId);
+    // Update active workout if the deleted one was active
+    if (activeWorkout && activeWorkout.id === workoutId) {
+      updateActiveWorkout(null); // or set to another workout as needed
+    }
   };
 
   const handleDeleteExercise = (workoutId, exerciseId) => {
@@ -50,6 +61,10 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
 
   const handleWorkoutExpand = () => {
     onToggleExpand(workoutId);
+    // Set as active workout when expanded
+    if (!activeWorkout || activeWorkout.id !== workoutId) {
+      updateActiveWorkout(workout);
+    }
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
@@ -81,9 +96,17 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   if (!workout) return null;
 
   const handleAddExercises = workoutId => {
-    navigate('/select-exercises', {
-      state: { workoutId: workoutId }
-    });
+    const selectedWorkout = program.workouts.find(w => w.id === workoutId);
+    // Ensure that the workout exists before trying to update or navigate
+    if (selectedWorkout) {
+      // Set as active workout when starting to add exercises
+      if (!activeWorkout || activeWorkout.id !== workoutId) {
+        updateActiveWorkout(selectedWorkout);
+      }
+      navigate('/select-exercises');
+    } else {
+      console.error('Selected workout not found');
+    }
   };
 
   return (
