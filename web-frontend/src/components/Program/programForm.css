@@ -123,6 +123,7 @@
   .program__header {
     display: flex;
     flex-direction: column;
+    margin: 15px 0;
   }
 
   .program__expand-btn {
@@ -133,7 +134,7 @@
   }
   .program__title {
     font-size: 1.25rem;
-    padding: 0;
+    padding: 0 0 10px 0;
     margin: 0;
   }
 

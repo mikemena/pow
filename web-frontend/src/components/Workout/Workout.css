@@ -305,6 +305,14 @@
 
 /* Responsive adjustments if necessary */
 @media (max-width: 768px) {
+  .workout {
+    width: 100%;
+    margin-bottom: 20px;
+    padding: 10px 0px;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
   .workout__add-set-btn {
     margin-bottom: 10px;
   }
