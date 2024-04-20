@@ -117,26 +117,28 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
             >
               Duration
             </label>
-            <input
-              type='number'
-              className={`programDuration ${theme}`}
-              name='programDuration'
-              value={formValues.programDuration}
-              onChange={handleChange}
-              min={1}
-            />
-            <select
-              className={`durationUnit ${theme}`}
-              name='durationUnit'
-              value={formValues.durationUnit}
-              onChange={handleChange}
-            >
-              {DURATION_TYPES.map(duration => (
-                <option key={duration.id} value={duration.value}>
-                  {duration.label}
-                </option>
-              ))}
-            </select>
+            <div className='input-select-container'>
+              <input
+                type='number'
+                className={`programDuration ${theme}`}
+                name='programDuration'
+                value={formValues.programDuration}
+                onChange={handleChange}
+                min={1}
+              />
+              <select
+                className={`durationUnit ${theme}`}
+                name='durationUnit'
+                value={formValues.durationUnit}
+                onChange={handleChange}
+              >
+                {DURATION_TYPES.map(duration => (
+                  <option key={duration.id} value={duration.value}>
+                    {duration.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
           <div className='program__section'>
             <label

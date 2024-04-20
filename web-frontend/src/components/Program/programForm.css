@@ -48,6 +48,10 @@
   flex-shrink: 0;
   width: 120px;
 }
+.input-select-container {
+  display: flex;
+  align-items: center;
+}
 
 /* Light theme specific styles */
 .program__section-title.light,
@@ -88,6 +92,12 @@
   resize: none;
 }
 
+.programDuration,
+.durationUnit {
+  width: 270px;
+  margin-bottom: 5px;
+}
+
 .program-name-input.light,
 .programDuration.light,
 .daysPerWeek.light,
@@ -122,7 +132,7 @@
 
   .program__header {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     margin: 15px 0;
   }
 
@@ -134,7 +144,6 @@
   }
   .program__title {
     font-size: 1.25rem;
-    padding: 0 0 10px 0;
     margin: 0;
   }
 
@@ -144,9 +153,9 @@
     align-items: flex-start;
   }
   .program__section-title {
-    text-align: left;
-    margin: 5px;
-    padding: 0;
+    width: auto;
+    margin-bottom: 5px;
+    padding-left: 0;
   }
   .program-name-input,
   .mainGoal,
@@ -157,9 +166,16 @@
     margin: 2px;
   }
 
-  #program-duration-section {
-    display: flex;
-    align-items: center;
+  .input-select-container {
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .programDuration,
+  .durationUnit {
+    width: 100%;
+    margin-bottom: 5px;
   }
 
   .mainGoal,

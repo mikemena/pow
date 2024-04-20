@@ -5,7 +5,6 @@
   align-items: center;
   justify-content: start;
   width: 100%;
-  border: green 1px solid;
 }
 
 .create-prog-page__container {
@@ -54,7 +53,6 @@
     width: 100%;
     padding: 0;
     box-sizing: border-box;
-    border: rgb(49, 208, 24) 5px solid;
   }
 
   .create-prog-page__toggle-container {
@@ -64,7 +62,6 @@
   .create-prog-page__container {
     min-width: 0;
     width: 100%;
-    border: gold 5px solid;
     flex-direction: column;
   }
 
