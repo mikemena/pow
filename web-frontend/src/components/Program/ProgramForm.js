@@ -110,7 +110,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               ))}
             </select>
           </div>
-          <div className='program__section'>
+          <div className='program__section' id='program-duration-section'>
             <label
               htmlFor='programDuration'
               className={`program__section-title ${theme}`}

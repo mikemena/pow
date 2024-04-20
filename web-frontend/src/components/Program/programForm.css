@@ -116,43 +116,51 @@
     margin-bottom: 20px;
     padding: 10px 0px;
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
   .program__header {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
 
   .program__expand-btn {
-    padding: 10px;
+    padding: 5px;
   }
   .program__icon {
     margin-left: 2px;
   }
   .program__title {
     font-size: 1.25rem;
+    padding: 0;
+    margin: 0;
   }
-  .program__form {
-    padding: 10px;
-    border: #a022b6;
-  }
+
   .program__section {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
+    align-items: flex-start;
   }
   .program__section-title {
-    width: 120px;
-    margin-right: 10px;
+    text-align: left;
+    margin: 5px;
+    padding: 0;
   }
   .program-name-input,
   .mainGoal,
   .programDuration,
   .durationUnit,
   .daysPerWeek {
-    flex: 1;
+    width: 100%;
+    margin: 2px;
   }
+
+  #program-duration-section {
+    display: flex;
+    align-items: center;
+  }
+
   .mainGoal,
   .durationUnit {
     height: 40px;

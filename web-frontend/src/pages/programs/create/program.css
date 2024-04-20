@@ -51,6 +51,7 @@
 
 @media (max-width: 768px) {
   .create-prog-page {
+    width: 100%;
     padding: 10px;
     box-sizing: border-box;
     border: rgb(49, 208, 24) 5px solid;
@@ -62,6 +63,7 @@
 
   .create-prog-page__container {
     min-width: 0;
+    width: 100%;
     border: gold 5px solid;
     flex-direction: column;
   }
