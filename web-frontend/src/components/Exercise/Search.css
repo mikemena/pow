@@ -2,17 +2,8 @@
   display: flex;
   width: 100%;
   max-width: 1024px;
-  align-items: center;
-  justify-content: space-between;
-  text-align: center;
-  padding: 0 10px;
-}
-
-.exercise-search__filter-container {
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
   padding: 0;
+  margin: 1px;
 }
 
 .exercise-search.light {
@@ -25,16 +16,16 @@
 }
 
 .exercise-search__search-input-container {
-  flex: 1 1 30%;
-  margin: 0 5px;
-  padding: 0;
+  flex: 1 0 calc(33.3% - 5px);
+  margin: 5px;
+  max-width: calc(33.333% - 10px);
 }
 
 .exercise-search__search-text-input,
 .exercise-search__muscle,
 .exercise-search__equipment {
   width: 100%;
-  box-sizing: border-box;
+  min-width: 200px;
 }
 
 .exercise-search__search-text-input.light,
@@ -57,17 +48,23 @@
     flex-wrap: wrap;
     width: 100%;
     padding: 0;
+    margin: 0;
   }
   .exercise-search__filter-container {
     display: flex;
     width: 100%;
     justify-content: space-between;
     padding: 0;
+    margin: 0;
   }
   .exercise-search__search-input-container {
     display: flex;
     width: 100%;
-    padding: 0;
-    margin: 0;
+  }
+
+  input::placeholder {
+    color: var(--orange);
+    font-size: 0.8rem;
+    width: 100%;
   }
 }

@@ -139,12 +139,14 @@ const SelectExercisesPage = () => {
             Add
           </button>
         </div>
-        <ExerciseSearch
-          onSearchTextChange={handleSearch}
-          exercises={exercises}
-          onMuscleChange={handleMuscleChange}
-          onEquipmentChange={handleEquipmentChange}
-        />
+        <div className='select-exercise__filters'>
+          <ExerciseSearch
+            onSearchTextChange={handleSearch}
+            exercises={exercises}
+            onMuscleChange={handleMuscleChange}
+            onEquipmentChange={handleEquipmentChange}
+          />
+        </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => (
             <Exercise
@@ -153,7 +155,7 @@ const SelectExercisesPage = () => {
               muscle={exercise.muscle}
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
-              isSelectable={false}
+              isSelected={selectedExercises.some(e => e.id === exercise.id)}
               onClick={() => toggleExerciseSelection(exercise)}
             />
           ))}

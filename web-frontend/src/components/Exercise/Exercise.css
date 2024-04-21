@@ -1,36 +1,33 @@
-.exercise-container {
+.exercise {
   display: flex;
   align-items: center;
   background-color: #f5f5f5;
   width: 100%;
-  max-width: 400px;
   box-shadow: 2.6px 5.3px 5.3px hsla(0, 0%, 42%, 0.42);
   margin: 1px;
-  background: #fff; /* Example background color */
+  background: #fff;
   padding: 0.5rem;
-  border-radius: 8px; /* Example border radius */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Example box shadow */
+  border-radius: 4px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.exercise-container.light {
+.exercise.light {
   /* Styles for light theme */
   background-color: var(--white);
   color: var(--black-text-color);
 }
 
-.exercise-container.dark {
+.exercise.dark {
   /* Styles for dark theme */
   background-color: var(--black);
   color: #ffffff;
 }
 
-.exercise-container--selected {
-  border: 4px solid rgb(198, 255, 53);
-  border-radius: 6px;
-  background-color: rgba(198, 255, 53, 0.35);
+.exercise--selected {
+  border: 2px solid var(--orange);
 }
 
-.exercise-container__image-container {
+.exercise__image-container {
   /* flex-shrink: 0; */
   width: 100px;
   height: auto;
@@ -41,12 +38,12 @@
   position: relative;
 }
 
-.exercise-container__image {
+.exercise__image {
   width: 100%;
   height: auto;
 }
 
-.exercise-container__glass {
+.exercise__glass {
   position: absolute; /* Position over the image */
   top: 0;
   left: 0;
@@ -54,58 +51,59 @@
   bottom: 0;
 }
 
-.exercise-container__glass.light {
+.exercise__glass.light {
   /* Styles for light theme */
   background-color: rgba(194, 181, 181, 0.5);
 }
-.exercise-container__glass.dark {
+.exercise__glass.dark {
   /* Styles for light theme */
   background-color: rgba(0, 0, 0, 0.5);
 }
 
-.exercise-container__details {
+.exercise__details {
   flex-grow: 1;
   padding-left: 16px;
   min-width: 300;
   font-family: 'Roboto', sans-serif;
 }
 
-.exercise-container__title,
-.exercise-container__subtitle {
+.exercise__title,
+.exercise__subtitle {
   color: #555;
   font-size: 16px;
   margin: 0;
 }
-.exercise-container__subtitle {
+.exercise__subtitle {
   font-weight: 600;
 }
 @media screen and (max-width: 767px) {
-  .exercise-container {
+  .exercise {
     width: 100%;
+
     padding: 0 15px;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   }
 
-  .exercise-container--selected {
+  .exercise--selected {
     border-radius: 4px;
   }
 
-  .exercise-container__image-container {
+  .exercise__image-container {
     width: 80px;
     height: 80px;
   }
 
-  .exercise-container__details {
+  .exercise__details {
     padding-left: 8px;
   }
-  .exercise-container__title,
-  .exercise-container__subtitle {
+  .exercise__title,
+  .exercise__subtitle {
     color: #555;
     font-size: 10px;
     margin: 0;
     white-space: wrap;
   }
-  .exercise-container__subtitle {
+  .exercise__subtitle {
     font-weight: 400;
   }
 }

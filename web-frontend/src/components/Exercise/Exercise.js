@@ -10,28 +10,22 @@ export default function Exercise({
   onClick,
   isSelected
 }) {
-  const handleClick = () => {
-    if (onClick) onClick();
-  };
-
   const { theme } = useTheme();
 
   return (
     <div
-      className={`exercise-container ${theme} ${
-        isSelected ? 'exercise-container--selected' : ''
-      }`}
-      onClick={handleClick}
+      className={`exercise ${theme} ${isSelected ? 'exercise--selected' : ''}`}
+      onClick={onClick}
     >
-      <div className='exercise-container__image-container'>
-        <img src={image} alt={name} className='exercise-container__image' />
-        <div className={`exercise-container__glass ${theme}`}></div>
+      <div className='exercise__image-container'>
+        <img src={image} alt={name} className='exercise__image' />
+        <div className={`exercise__glass ${theme}`}></div>
       </div>
-      <div className='exercise-container__details'>
-        <p className='exercise-container__title'>
+      <div className='exercise__details'>
+        <p className='exercise__title'>
           {name} ({equipment})
         </p>
-        <p className='exercise-container__subtitle'>{muscle} </p>
+        <p className='exercise__subtitle'>{muscle} </p>
       </div>
     </div>
   );

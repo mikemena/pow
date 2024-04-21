@@ -51,7 +51,7 @@ function ExerciseFilters({
           onChange={handleInputChange}
           value={inputValue}
           type='search'
-          placeholder='Search Exercise Names'
+          placeholder='Exercise Names'
         />
         <datalist id='exercises'>
           {exercises.map((exercise, index) => (
@@ -66,7 +66,7 @@ function ExerciseFilters({
           className={`exercise-search__muscle ${theme}`}
           type='search'
           onChange={event => onMuscleChange(event.target.value)}
-          placeholder='Search Muscles'
+          placeholder='Muscles'
         />
         <datalist id='muscles'>
           {muscles.map((option, index) => (
@@ -81,7 +81,7 @@ function ExerciseFilters({
           className={`exercise-search__equipment ${theme}`}
           type='search'
           onChange={event => onEquipmentChange(event.target.value)}
-          placeholder='Search Equipment'
+          placeholder='Equipment'
         />
         <datalist id='equipments'>
           {equipments.map((option, index) => (

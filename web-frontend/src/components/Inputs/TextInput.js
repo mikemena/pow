@@ -17,7 +17,7 @@ const TextInput = ({
       onChange={onChange}
       placeholder={placeholder}
       className={`text-input ${className}`}
-      {...props} // Spread any additional props to allow for custom attributes like 'disabled', 'maxLength', etc.
+      {...props}
     />
   );
 };
