@@ -1,9 +1,11 @@
 .exercise-search {
   display: flex;
-  width: 800px;
+  width: 100%;
+  max-width: 1024px;
   align-items: center;
   justify-content: space-between;
   text-align: center;
+  padding: 0 10px;
 }
 
 .exercise-search.light {
@@ -39,5 +41,11 @@
 @media (max-width: 768px) {
   .exercise-search {
     flex-direction: column;
+    width: 100%;
+  }
+  .exercise-search__search-input-container {
+    display: flex;
+    width: 100%;
+    padding-left: 5px;
   }
 }

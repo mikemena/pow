@@ -7,7 +7,10 @@
 .select-exercise__exercises {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-gap: 1rem;
+  grid-gap: 0.5rem;
+  margin: 1rem;
+  width: 100%;
+  max-width: 1024px;
 }
 
 .select-exercise__header {
@@ -16,11 +19,10 @@
   align-items: center;
   position: relative;
   flex-shrink: 0;
-  width: 700px;
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
+  max-width: 1024px;
   margin-bottom: 15px;
-  padding: 20px 0px;
+  padding: 20px 10px;
   transition: transform 0.3s ease;
   box-sizing: border-box;
 }
@@ -90,9 +92,17 @@
 /* Adjustments for mobile devices */
 
 @media (max-width: 768px) {
+  .select-exercise {
+    margin: 0;
+    padding: 0;
+  }
+
   .select-exercise__exercises {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-gap: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
 }
