@@ -82,18 +82,17 @@
 @media screen and (max-width: 767px) {
   .exercise-container {
     width: 100%;
-    padding: 0.5rem;
-    margin: 0.5px auto;
+    padding: 0 15px;
     box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
   }
 
   .exercise-container--selected {
-    border-radius: 4px; /* Smaller radius for a less chunky look */
+    border-radius: 4px;
   }
 
   .exercise-container__image-container {
-    width: 80px; /* Smaller image container */
-    height: 80px; /* Smaller image container */
+    width: 80px;
+    height: 80px;
   }
 
   .exercise-container__details {

@@ -49,16 +49,15 @@ const ExercisesListPage = () => {
   if (error) return <div>Error loading exercises: {error}</div>;
 
   return (
-    <div id='exercise-container'>
-      <h1 className='page-title'>Exercises</h1>
+    <div className='exercise'>
+      <h1 className='exercise__title'>Exercises</h1>
       <ExerciseSearch
         onChange={handleSearch}
         exercises={exercises}
         onMuscleChange={handleMuscleChange}
         onEquipmentChange={handleEquipmentChange}
       />
-
-      <div className='exercise-container'>
+      <div className='exercise__container'>
         {filteredExercises.map(exercise => (
           <Exercise
             key={exercise.exercise_id}

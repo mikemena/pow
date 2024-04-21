@@ -59,6 +59,7 @@ function ExerciseFilters({
           ))}
         </datalist>
       </div>
+
       <div className='exercise-search__search-input-container'>
         <input
           list='muscles'
