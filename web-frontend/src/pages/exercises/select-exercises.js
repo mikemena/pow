@@ -108,7 +108,7 @@ const SelectExercisesPage = () => {
   };
 
   return (
-    <div>
+    <div className='select-exercise-page'>
       <NavBar isEditing='true' />
       <div className='select-exercise'>
         <div className={`select-exercise__header ${theme}`}>

@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { MdDelete } from 'react-icons/md';
+import { RiDeleteBack2Fill } from 'react-icons/ri';
 import './ExerciseSet.css';
 
 const ExerciseSet = ({ setDetails, workoutId, exerciseId }) => {
@@ -38,7 +39,7 @@ const ExerciseSet = ({ setDetails, workoutId, exerciseId }) => {
           onClick={() => handleDeleteSet(workoutId, exerciseId, setDetails.id)}
           className='exercise-set__remove-set-btn'
         >
-          <MdDelete size={25} />
+          <RiDeleteBack2Fill size={25} />
         </button>
       </div>
     </div>
