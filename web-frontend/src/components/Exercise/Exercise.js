@@ -12,9 +12,12 @@ export default function Exercise({
 }) {
   const { theme } = useTheme();
 
+  // Log isSelected value
+  console.log(`Exercise selected status for ${name}:`, isSelected);
+
   return (
     <div
-      className={`exercise ${theme} ${isSelected ? 'exercise--selected' : ''}`}
+      className={`exercise ${theme} ${isSelected ? 'selected' : ''}`}
       onClick={onClick}
     >
       <div className='exercise__image-container'>

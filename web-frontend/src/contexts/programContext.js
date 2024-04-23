@@ -205,28 +205,36 @@ export const ProgramProvider = ({ children }) => {
             ? workout.exercises
             : [];
           console.log('Existing exercises for this workout:', currentExercises);
+
+          // Ensure that 'exercises' is always an array
           const newExercises = Array.isArray(exercises)
             ? exercises
-            : [exercises]; // Ensure it's always an array
+            : [exercises];
+
           newExercises.forEach(exercise => {
-            const tempId = uuidv4();
-            const newExercise = {
-              ...exercise,
-              id: tempId,
-              exerciseCatalogId: exercise.id,
-              isNew: true,
-              sets: [
-                {
-                  id: uuidv4(),
-                  reps: '',
-                  weight: '',
-                  order: currentExercises.length + 1,
-                  isNew: true
-                }
-              ]
-            };
-            currentExercises.push(newExercise);
-            console.log('Added new exercise:', newExercise);
+            // Check if the exercise is already added based on exerciseCatalogId
+            if (
+              !currentExercises.some(ex => ex.exerciseCatalogId === exercise.id)
+            ) {
+              // Only add exercise if it's not already in the currentExercises
+              const newExercise = {
+                ...exercise,
+                id: uuidv4(), // Still use a unique ID for react key purposes
+                exerciseCatalogId: exercise.id, // This is the unique ID from the database
+                isNew: true,
+                sets: [
+                  {
+                    id: uuidv4(),
+                    reps: '',
+                    weight: '',
+                    order: currentExercises.length + 1,
+                    isNew: true
+                  }
+                ]
+              };
+              currentExercises.push(newExercise);
+              console.log('Added new exercise:', newExercise);
+            }
           });
           console.log('Updated exercises for this workout:', currentExercises);
           return { ...workout, exercises: currentExercises };

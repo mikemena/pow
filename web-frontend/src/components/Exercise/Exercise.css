@@ -23,7 +23,7 @@
   color: #ffffff;
 }
 
-.exercise--selected {
+.selected {
   border: 2px solid var(--orange);
 }
 

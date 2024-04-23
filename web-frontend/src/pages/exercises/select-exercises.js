@@ -10,7 +10,8 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { addExercise, activeWorkout } = useContext(ProgramContext);
+  const { addExercise, updateExercise, activeWorkout } =
+    useContext(ProgramContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -27,13 +28,19 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
-    if (activeWorkout) {
-      const selectedIds = new Set(
-        (activeWorkout.exercises || []).map(ex => ex.id)
+    // This ensures that selectedExercises is updated whenever
+    // activeWorkout or the list of exercises changes.
+    if (activeWorkout && exercises) {
+      const workoutExerciseIds = new Set(
+        activeWorkout.exercises.map(ex => ex.exerciseCatalogId)
       );
-      setSelectedExercises(exercises.filter(ex => selectedIds.has(ex.id)));
+      const selected = exercises.filter(exercise =>
+        workoutExerciseIds.has(exercise.id)
+      );
+      setSelectedExercises(selected);
     }
-  }, [activeWorkout, exercises]);
+    console.log('activeWorkout:', activeWorkout);
+  }, [activeWorkout, exercises]); // Depend on activeWorkout and exercises
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -51,6 +58,8 @@ const SelectExercisesPage = () => {
       return matchesMuscle && matchesEquipment && matchesSearchTerm;
     });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
+
+  console.log('filteredExercises:', filteredExercises);
 
   const handleSearch = newValue => {
     setSearchTerm(newValue);
@@ -70,11 +79,18 @@ const SelectExercisesPage = () => {
   const toggleExerciseSelection = exercise => {
     setSelectedExercises(prevSelected => {
       const isAlreadySelected = prevSelected.find(ex => ex.id === exercise.id);
+      let newSelected;
       if (isAlreadySelected) {
-        return prevSelected.filter(ex => ex.id !== exercise.id); // Remove if already selected
+        newSelected = prevSelected.filter(ex => ex.id !== exercise.id); // Remove if already selected
       } else {
-        return [...prevSelected, exercise]; // Add if not already selected
+        newSelected = [...prevSelected, exercise]; // Add if not already selected
       }
+      // Assuming `updateExerciseSelection` is a method in your context that updates the selection state
+      updateExercise(
+        activeWorkout.id,
+        newSelected.map(ex => ex.id)
+      );
+      return newSelected;
     });
   };
 
@@ -155,7 +171,9 @@ const SelectExercisesPage = () => {
               muscle={exercise.muscle}
               equipment={exercise.equipment}
               image={`http://localhost:9025/${exercise.file_path}`}
-              isSelected={selectedExercises.some(e => e.id === exercise.id)}
+              isSelected={activeWorkout.exercises.some(
+                e => e.exerciseCatalogId === exercise.id
+              )}
               onClick={() => toggleExerciseSelection(exercise)}
             />
           ))}
