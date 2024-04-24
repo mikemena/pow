@@ -17,9 +17,6 @@ export const ProgramProvider = ({ children }) => {
     ]
   });
 
-  console.log('Provider Rendered, Active Workout:', activeWorkout);
-  // console.log('Program state:', program);
-
   // Initialize the active workout to the first workout in the program
 
   const updateActiveWorkout = useCallback(workout => {
@@ -195,56 +192,101 @@ export const ProgramProvider = ({ children }) => {
     );
   };
 
-  // Function to add exercises to a specific workout
-
-  const addExercise = useCallback((workoutId, exercises) => {
-    setProgram(prev => {
-      const newWorkouts = prev.workouts.map(workout => {
-        if (workout.id === workoutId) {
-          const currentExercises = Array.isArray(workout.exercises)
-            ? workout.exercises
-            : [];
-          console.log('Existing exercises for this workout:', currentExercises);
-
-          // Ensure that 'exercises' is always an array
-          const newExercises = Array.isArray(exercises)
-            ? exercises
-            : [exercises];
-
-          newExercises.forEach(exercise => {
-            // Check if the exercise is already added based on exerciseCatalogId
-            if (
-              !currentExercises.some(ex => ex.exerciseCatalogId === exercise.id)
-            ) {
-              // Only add exercise if it's not already in the currentExercises
-              const newExercise = {
-                ...exercise,
-                id: uuidv4(), // Still use a unique ID for react key purposes
-                exerciseCatalogId: exercise.id, // This is the unique ID from the database
-                isNew: true,
-                sets: [
-                  {
-                    id: uuidv4(),
-                    reps: '',
-                    weight: '',
-                    order: currentExercises.length + 1,
-                    isNew: true
-                  }
-                ]
-              };
-              currentExercises.push(newExercise);
-              console.log('Added new exercise:', newExercise);
-            }
-          });
-          console.log('Updated exercises for this workout:', currentExercises);
-          return { ...workout, exercises: currentExercises };
+  // Function to add a new exercise to a workout
+  const addNewExercise = (currentExercises, exercise) => {
+    const newExercise = {
+      ...exercise,
+      id: uuidv4(), // Unique ID for key purposes
+      exerciseCatalogId: exercise.id,
+      isNew: true,
+      sets: [
+        {
+          id: uuidv4(),
+          reps: '',
+          weight: '',
+          order: currentExercises.length + 1,
+          isNew: true
         }
-        return workout;
+      ]
+    };
+    console.log('Added new exercise:', newExercise);
+    return newExercise;
+  };
+
+  // Function to create a new exercise
+  function createNewExercise(exercise, currentExercisesLength) {
+    return {
+      id: uuidv4(),
+      exerciseCatalogId: exercise.exerciseCatalogId || exercise.id,
+      name: exercise.name,
+      muscle: exercise.muscle,
+      equipment: exercise.equipment,
+      file_path: exercise.file_path,
+      sets: [
+        {
+          id: uuidv4(),
+          reps: '',
+          weight: '',
+          order: currentExercisesLength + 1,
+          isNew: true
+        }
+      ],
+      isNew: true
+    };
+  }
+
+  // Function to add exercises to a specific workout
+  const addExercise = useCallback(
+    (workoutId, exercises) => {
+      console.log(
+        `Attempting to add exercises to workout ${workoutId}:`,
+        exercises
+      );
+      setProgram(prev => {
+        const newWorkouts = prev.workouts.map(workout => {
+          if (workout.id === workoutId) {
+            console.log(`Found workout with ID ${workoutId}`);
+            const currentExercises = Array.isArray(workout.exercises)
+              ? workout.exercises
+              : [];
+            console.log(
+              `Current exercises before adding new ones:`,
+              currentExercises
+            );
+            const newExercises = Array.isArray(exercises)
+              ? exercises
+              : [exercises];
+            newExercises.forEach(exercise => {
+              if (
+                !currentExercises.some(
+                  ex => ex.exerciseCatalogId === exercise.id
+                )
+              ) {
+                const newExercise = createNewExercise(
+                  exercise,
+                  currentExercises.length
+                );
+                currentExercises.push(newExercise);
+                console.log(`Added new exercise:`, newExercise);
+              } else {
+                console.log(
+                  `Exercise with ID ${exercise.id} already exists in the workout`
+                );
+              }
+            });
+            return { ...workout, exercises: currentExercises };
+          }
+          return workout;
+        });
+        console.log(
+          `Updated workouts array after attempting to add exercises:`,
+          newWorkouts
+        );
+        return { ...prev, workouts: newWorkouts };
       });
-      console.log('New workouts array:', newWorkouts);
-      return { ...prev, workouts: newWorkouts };
-    });
-  }, []);
+    },
+    [setProgram]
+  );
 
   // Function to update an exercise
 
@@ -424,7 +466,9 @@ export const ProgramProvider = ({ children }) => {
         goToNextWorkout,
         goToPreviousWorkout,
         addExercise,
+        addNewExercise,
         updateExercise,
+        createNewExercise,
         deleteExercise,
         addSet,
         updateSet,

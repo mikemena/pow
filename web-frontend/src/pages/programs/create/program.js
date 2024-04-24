@@ -84,10 +84,7 @@ const CreateProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-
             <WorkoutProvider key={renderKey}>
-              {' '}
-              {/* Pass the render key here */}
               {program.workouts.map(workout => (
                 <Workout
                   key={workout.id}
@@ -97,17 +94,6 @@ const CreateProgram = () => {
                 />
               ))}
             </WorkoutProvider>
-          </div>
-          <div className='create-prog-page__right-container'>
-            <h1 className='create-prog-page__exercise-container-title'>
-              {activeWorkout
-                ? `Adding exercises for ${
-                    program.workouts.find(
-                      workout => workout.id === activeWorkout
-                    )?.name
-                  }`
-                : ''}
-            </h1>
           </div>
         </div>
         <div className='create-prog-page__button-container'>

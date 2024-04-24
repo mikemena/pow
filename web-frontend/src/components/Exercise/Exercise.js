@@ -12,9 +12,6 @@ export default function Exercise({
 }) {
   const { theme } = useTheme();
 
-  // Log isSelected value
-  console.log(`Exercise selected status for ${name}:`, isSelected);
-
   return (
     <div
       className={`exercise ${theme} ${isSelected ? 'selected' : ''}`}
