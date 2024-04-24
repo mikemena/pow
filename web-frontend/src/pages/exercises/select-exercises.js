@@ -10,8 +10,7 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { addExercise, updateExercise, activeWorkout } =
-    useContext(ProgramContext);
+  const { addExercise, activeWorkout } = useContext(ProgramContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -33,6 +32,7 @@ const SelectExercisesPage = () => {
       const selectedIds = new Set(
         activeWorkout.exercises.map(ex => ex.exerciseCatalogId)
       );
+      console.log('selectedIds', selectedIds);
       setSelectedExercises(
         exercises.filter(ex => selectedIds.has(ex.exerciseCatalogId))
       );
@@ -72,14 +72,14 @@ const SelectExercisesPage = () => {
   if (error) return <div>Error loading exercises: {error}</div>;
 
   const toggleExerciseSelection = exercise => {
+    console.log('toggleExerciseSelection', exercise);
     setSelectedExercises(prevSelected => {
+      console.log('prevSelected', prevSelected);
       const isSelected = prevSelected.some(
-        ex => ex.exerciseCatalogId === exercise.exerciseCatalogId
+        ex => ex.exerciseCatalogId === exercise.id
       );
       if (isSelected) {
-        return prevSelected.filter(
-          ex => ex.exerciseCatalogId !== exercise.exerciseCatalogId
-        );
+        return prevSelected.filter(ex => ex.exerciseCatalogId !== exercise.id);
       } else {
         return [...prevSelected, exercise];
       }
@@ -165,7 +165,7 @@ const SelectExercisesPage = () => {
           {filteredExercises.map(exercise => {
             return (
               <Exercise
-                key={exercise.id}
+                key={exercise.index}
                 name={exercise.name}
                 muscle={exercise.muscle}
                 equipment={exercise.equipment}
