@@ -71,10 +71,14 @@ const SelectExercisesPage = () => {
   if (isLoading) return <div>loading...</div>;
   if (error) return <div>Error loading exercises: {error}</div>;
 
+  console.log('activeWorkout in select-exercise', activeWorkout);
+
   const toggleExerciseSelection = exercise => {
     console.log('toggleExerciseSelection', exercise);
     setSelectedExercises(prevSelected => {
       console.log('prevSelected', prevSelected);
+      console.log('exercise.id', exercise.id);
+
       const isSelected = prevSelected.some(
         ex => ex.exerciseCatalogId === exercise.id
       );
@@ -172,10 +176,10 @@ const SelectExercisesPage = () => {
                 image={`http://localhost:9025/${exercise.file_path}`}
                 isSelected={
                   selectedExercises.some(
-                    ex => ex.exerciseCatalogId === exercise.exerciseCatalogId
+                    ex => ex.exerciseCatalogId === exercise.id
                   ) ||
                   activeWorkout.exercises.some(
-                    e => e.exerciseCatalogId === exercise.exerciseCatalogId
+                    e => e.exerciseCatalogId === exercise.id
                   )
                 }
                 onClick={() => toggleExerciseSelection(exercise)}
