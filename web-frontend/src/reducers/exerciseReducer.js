@@ -3,36 +3,36 @@ import { initialState } from './programReducer';
 
 function exerciseReducer(state = initialState, action) {
   switch (action.type) {
-    //For adding a new workout to the program.
     case 'ADD_EXERCISE':
-      // Map through workouts to find the specific one to update
       return {
         ...state,
         program: {
           ...state.program,
           workouts: state.program.workouts.map(workout => {
             if (workout.id === action.payload.workoutId) {
-              // Construct the new exercise with a unique ID and the correct order
-              const newExercise = {
-                ...action.payload.exercise,
-                id: uuidv4(), // Generate a new ID for the exercise
-                exerciseCatalogId: action.payload.exercise.id,
-                isNew: true,
-                sets: [
-                  {
-                    id: uuidv4(),
-                    reps: '',
-                    weight: '',
-                    order: workout.exercises.length + 1, // Increment order based on the number of existing exercises
-                    isNew: true
+              const currentExercises = workout.exercises ?? [];
+              const newExercises = action.payload.exercises.reduce(
+                (acc, exercise) => {
+                  if (
+                    !currentExercises.some(
+                      ex => ex.exerciseCatalogId === exercise.exerciseCatalogId
+                    )
+                  ) {
+                    const newExercise = {
+                      ...exercise,
+                      id: uuidv4(),
+                      isNew: true
+                    };
+                    acc.push(newExercise);
                   }
-                ]
-              };
+                  return acc;
+                },
+                []
+              );
 
-              // Return the updated workout with the new exercise appended
               return {
                 ...workout,
-                exercises: [...workout.exercises, newExercise]
+                exercises: [...currentExercises, ...newExercises]
               };
             }
             return workout;
@@ -40,53 +40,54 @@ function exerciseReducer(state = initialState, action) {
         }
       };
 
-    //Changes to a workout that might involve renaming or perhaps changing other properties.
-    case 'UPDATE_WORKOUT':
+    case 'UPDATE_EXERCISE':
       return {
         ...state,
         program: {
           ...state.program,
-          workouts: state.program.workouts.map(workout =>
-            workout.id === action.payload.id ? action.payload : workout
-          )
+          workouts: state.program.workouts.map(workout => {
+            if (workout.id === action.payload.workoutId) {
+              // Map through exercises to update the specific one
+              const updatedExercises = workout.exercises.map(exercise => {
+                if (
+                  exercise.catalog_exercise_id ===
+                  action.payload.updatedExercise.catalog_exercise_id
+                ) {
+                  return {
+                    ...exercise,
+                    ...action.payload.updatedExercise
+                  };
+                }
+                return exercise;
+              });
+              return {
+                ...workout,
+                exercises: updatedExercises
+              };
+            }
+            return workout;
+          })
         }
       };
-
-    case 'DELETE_WORKOUT':
-      const workoutIndex = state.program.workouts.findIndex(
-        workout => workout.id === action.payload
-      );
-
-      // Prevent deleting if only one workout exists
-      if (state.program.workouts.length <= 1) {
-        return state; // Optionally handle the error as needed
-      }
-
-      const updatedWorkouts = state.program.workouts.filter(
-        workout => workout.id !== action.payload
-      );
-
-      // Determine the new active workout if necessary
-      let newActiveWorkout = null;
-      if (state.activeWorkout && state.activeWorkout.id === action.payload) {
-        if (workoutIndex === state.program.workouts.length - 1) {
-          // If it was the last workout, set the previous one as active
-          newActiveWorkout = updatedWorkouts[workoutIndex - 1];
-        } else {
-          // Otherwise, set the next workout as active (or previous if it was the last)
-          newActiveWorkout = updatedWorkouts[Math.max(0, workoutIndex)];
-        }
-      } else {
-        newActiveWorkout = state.activeWorkout;
-      }
-
+    case 'DELETE_EXERCISE':
       return {
         ...state,
         program: {
           ...state.program,
-          workouts: updatedWorkouts
-        },
-        activeWorkout: newActiveWorkout
+          workouts: state.program.workouts.map(workout => {
+            if (workout.id === action.payload.workoutId) {
+              // Filter out the exercise that needs to be deleted
+              const filteredExercises = workout.exercises.filter(
+                exercise => exercise.id !== action.payload.exerciseId
+              );
+              return {
+                ...workout,
+                exercises: filteredExercises
+              };
+            }
+            return workout;
+          })
+        }
       };
 
     default:

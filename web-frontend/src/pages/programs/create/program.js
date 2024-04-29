@@ -59,15 +59,20 @@ const CreateProgram = () => {
   };
 
   useEffect(() => {
-    if (program.workouts.length > 0) {
+    if (program && program.workouts?.length > 0) {
       const lastWorkout = program.workouts[program.workouts.length - 1];
       setActiveWorkout(lastWorkout.id);
     }
-  }, [program.workouts]);
+  }, [program?.workouts]);
 
   useEffect(() => {
     setRenderKey(prevKey => prevKey + 1);
-  }, [program.workouts]);
+  }, [program?.workouts]);
+
+  if (!program) {
+    console.log('Program is not available yet.');
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>
@@ -85,7 +90,7 @@ const CreateProgram = () => {
               onToggleExpand={handleToggleProgramForm}
             />
             <WorkoutProvider key={renderKey}>
-              {program.workouts.map(workout => (
+              {program.workouts?.map(workout => (
                 <Workout
                   key={workout.id}
                   workoutId={workout.id}

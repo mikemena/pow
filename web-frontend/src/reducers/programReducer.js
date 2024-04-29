@@ -1,4 +1,4 @@
-import { initialState } from './programReducer';
+import { initialState } from './initialState';
 
 function programReducer(state = initialState, action) {
   switch (action.type) {
