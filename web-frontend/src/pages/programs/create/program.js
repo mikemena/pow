@@ -13,7 +13,7 @@ const CreateProgram = () => {
   const { program, saveProgram, addWorkout } = useContext(ProgramContext);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const [renderKey, setRenderKey] = useState(0); // Add a render key
+  const [renderKey, setRenderKey] = useState(0);
 
   const navigate = useNavigate();
 

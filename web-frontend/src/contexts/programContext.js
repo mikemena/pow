@@ -117,6 +117,8 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
+  console.log('ProgramProvider state:', state);
+
   return (
     <ProgramContext.Provider
       value={{
