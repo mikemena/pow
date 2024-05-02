@@ -10,7 +10,7 @@ import './program.css';
 
 const CreateProgram = () => {
   const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
-  const [activeWorkout, setActiveWorkout] = useState(null);
+
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   // const [renderKey, setRenderKey] = useState(0);
 
@@ -19,18 +19,6 @@ const CreateProgram = () => {
   console.log('program.workouts:', programState.program.workouts);
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    if (programState.program && programState.program.workouts?.length > 0) {
-      const lastWorkout =
-        programState.program.workouts[programState.program.workouts.length - 1];
-      setActiveWorkout(lastWorkout.id);
-    }
-  }, [programState.program.workouts, programState]);
-
-  // useEffect(() => {
-  //   setRenderKey(prevKey => prevKey + 1);
-  // }, [programState?.workouts]);
 
   const handleSaveProgram = async () => {
     try {

@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, useState } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { initialState } from '../reducers/initialState';
@@ -7,8 +7,12 @@ export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
   const [programState, programDispatch] = useReducer(rootReducer, initialState);
+  const [activeWorkout, setActiveWorkout] = useState(null);
 
-  console.log('ProgramContext state:', programState);
+  // Function to update the active workout
+  const updateActiveWorkout = workout => {
+    setActiveWorkout(workout);
+  };
 
   //Save program to the database
   const saveProgram = async newProgram => {
@@ -124,6 +128,7 @@ export const ProgramProvider = ({ children }) => {
         addWorkout,
         updateWorkout,
         deleteWorkout,
+        updateActiveWorkout,
         addExercise,
         updateExercise,
         deleteExercise,
