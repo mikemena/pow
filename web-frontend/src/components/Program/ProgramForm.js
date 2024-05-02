@@ -6,18 +6,11 @@ import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toProperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-console.log('ProgramForm component rendered');
-
 const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
 
   // Access program data and functions from ProgramContext
   const { program } = useContext(ProgramContext);
-
-  console.log('ProgramForm program:', program);
-
-  console.log('ProgramForm component rendered');
-  console.log('ProgramForm props:', isEditing, isExpanded, onToggleExpand);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -51,7 +44,6 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleProgramExpand = () => {
-    console.log('handleProgramExpand called');
     onToggleExpand(program);
   };
 

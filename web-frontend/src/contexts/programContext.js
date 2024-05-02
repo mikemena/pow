@@ -1,22 +1,18 @@
 import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
+import { initialState } from '../reducers/initialState';
 
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  // Define the initial state structure matching the keys used in your combined reducers
-  const initialState = {
-    program: { workouts: [] }, // Default structure
-    saveProgram: () => {},
-    addWorkout: () => {}
-  };
+  const [programState, programDispatch] = useReducer(rootReducer, initialState);
 
-  const [state, dispatch] = useReducer(rootReducer, initialState);
+  console.log('ProgramContext state:', programState);
 
   //Save program to the database
   const saveProgram = async newProgram => {
-    dispatch({ type: actionTypes.SAVE_PROGRAM_START });
+    programDispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
@@ -28,12 +24,12 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
-      dispatch({
+      programDispatch({
         type: actionTypes.SAVE_PROGRAM_SUCCESS,
         payload: savedProgram
       });
     } catch (error) {
-      dispatch({
+      programDispatch({
         type: actionTypes.SAVE_PROGRAM_FAILURE,
         payload: error.message
       });
@@ -43,35 +39,35 @@ export const ProgramProvider = ({ children }) => {
   // For updating basic program information like name, duration, etc.
 
   const updateProgramDetails = details => {
-    dispatch({
+    programDispatch({
       type: actionTypes.UPDATE_PROGRAM_DETAILS,
       payload: details
     });
   };
 
   const addWorkout = workout => {
-    dispatch({
+    programDispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: workout
     });
   };
 
   const updateWorkout = workout => {
-    dispatch({
+    programDispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: workout
     });
   };
 
   const deleteWorkout = workoutId => {
-    dispatch({
+    programDispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: workoutId
     });
   };
 
   const addExercise = (workoutId, exercises) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
     });
@@ -79,7 +75,7 @@ export const ProgramProvider = ({ children }) => {
   // Function to update an exercise
 
   const updateExercise = (workoutId, updatedExercise) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.UPDATE_EXERCISE,
       payload: { workoutId, updatedExercise }
     });
@@ -88,7 +84,7 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete exercise from  a specific workout
 
   const deleteExercise = (workoutId, exerciseId) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.DELETE_EXERCISE,
       payload: { workoutId, exerciseId }
     });
@@ -97,33 +93,33 @@ export const ProgramProvider = ({ children }) => {
   // Function to add sets to a specific exercise
 
   const addSet = (workoutId, exerciseId, newSet) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.ADD_SET,
       payload: { workoutId, exerciseId, newSet }
     });
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
     });
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
-    dispatch({
+    programDispatch({
       type: actionTypes.DELETE_SET,
       payload: { workoutId, exerciseId, setId }
     });
   };
 
-  console.log('ProgramProvider state:', state);
+  console.log('ProgramProvider: programState:', programState);
 
   return (
     <ProgramContext.Provider
       value={{
-        state,
-        dispatch,
+        programState,
+        programDispatch,
         updateProgramDetails,
         addWorkout,
         updateWorkout,

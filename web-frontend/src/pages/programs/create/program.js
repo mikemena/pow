@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
-import { WorkoutProvider } from '../../../contexts/workoutContext';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
@@ -10,12 +9,28 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { program, saveProgram, addWorkout } = useContext(ProgramContext);
+  const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
   const [activeWorkout, setActiveWorkout] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const [renderKey, setRenderKey] = useState(0);
+  // const [renderKey, setRenderKey] = useState(0);
+
+  console.log('CreateProgram: programState:', programState);
+
+  console.log('program.workouts:', programState.program.workouts);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (programState.program && programState.program.workouts?.length > 0) {
+      const lastWorkout =
+        programState.program.workouts[programState.program.workouts.length - 1];
+      setActiveWorkout(lastWorkout.id);
+    }
+  }, [programState.program.workouts, programState]);
+
+  // useEffect(() => {
+  //   setRenderKey(prevKey => prevKey + 1);
+  // }, [programState?.workouts]);
 
   const handleSaveProgram = async () => {
     try {
@@ -58,22 +73,6 @@ const CreateProgram = () => {
     addWorkout({});
   };
 
-  useEffect(() => {
-    if (program && program.workouts?.length > 0) {
-      const lastWorkout = program.workouts[program.workouts.length - 1];
-      setActiveWorkout(lastWorkout.id);
-    }
-  }, [program?.workouts]);
-
-  useEffect(() => {
-    setRenderKey(prevKey => prevKey + 1);
-  }, [program?.workouts]);
-
-  if (!program) {
-    console.log('Program is not available yet.');
-    return <div>Loading...</div>;
-  }
-
   return (
     <div>
       <NavBar isEditing='true' />
@@ -84,21 +83,19 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={program}
+              program={programState.program}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            <WorkoutProvider key={renderKey}>
-              {program.workouts?.map(workout => (
-                <Workout
-                  key={workout.id}
-                  workoutId={workout.id}
-                  isExpanded={expandedWorkouts[workout.id] || false}
-                  onToggleExpand={handleExpandWorkout}
-                />
-              ))}
-            </WorkoutProvider>
+            {programState.program.workouts?.map(workout => (
+              <Workout
+                key={workout.id}
+                workoutId={workout.id}
+                isExpanded={expandedWorkouts[workout.id] || false}
+                onToggleExpand={handleExpandWorkout}
+              />
+            ))}
           </div>
         </div>
         <div className='create-prog-page__button-container'>

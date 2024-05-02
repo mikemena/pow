@@ -14,7 +14,7 @@ import './Workout.css';
 
 const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   const {
-    program,
+    programState,
     deleteWorkout,
     deleteExercise,
     updateWorkout,
@@ -26,7 +26,7 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   const [workoutTitle, setWorkoutTitle] = useState('');
   const { theme } = useTheme();
 
-  const workout = program.workouts.find(w => w.id === workoutId);
+  const workout = programState.program.workouts.find(w => w.id === workoutId);
 
   const navigate = useNavigate();
 
@@ -68,7 +68,9 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    const activeWorkout = program.workouts.find(w => w.id === workoutId);
+    const activeWorkout = programState.program.workouts.find(
+      w => w.id === workoutId
+    );
     const exercise = activeWorkout?.exercises.find(e => e.id === exerciseId);
 
     if (exercise && exercise.sets) {
@@ -96,7 +98,9 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   if (!workout) return null;
 
   const handleAddExercises = workoutId => {
-    const selectedWorkout = program.workouts.find(w => w.id === workoutId);
+    const selectedWorkout = programState.program.workouts.find(
+      w => w.id === workoutId
+    );
     // Ensure that the workout exists before trying to update or navigate
     if (selectedWorkout) {
       // Set as active workout when starting to add exercises
