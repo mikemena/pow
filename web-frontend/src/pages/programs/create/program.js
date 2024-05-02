@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -12,11 +12,6 @@ const CreateProgram = () => {
   const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
 
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  // const [renderKey, setRenderKey] = useState(0);
-
-  console.log('CreateProgram: programState:', programState);
-
-  console.log('program.workouts:', programState.program.workouts);
 
   const navigate = useNavigate();
 
@@ -51,12 +46,10 @@ const CreateProgram = () => {
   };
 
   const handleCancel = () => {
-    // Redirect to the create workout page
     navigate('/');
   };
 
   const handleAddWorkout = event => {
-    // console.log('handleAddWorkout called');
     event.preventDefault();
     addWorkout({});
   };
