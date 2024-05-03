@@ -50,6 +50,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addWorkout = workout => {
+    console.log('addWorkout called from context');
     programDispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: workout

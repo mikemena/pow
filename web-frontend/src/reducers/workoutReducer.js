@@ -1,12 +1,20 @@
 import { v4 as uuidv4 } from 'uuid';
-import { initialState } from './programReducer';
+
+const initialState = {
+  program: {
+    workouts: []
+  },
+  activeWorkout: null
+};
 
 function workoutReducer(state = initialState, action) {
   switch (action.type) {
     //For adding a new workout to the program.
     case 'ADD_WORKOUT':
+      console.log('ADD_WORKOUT called from workoutReducer.js');
       // Find the highest index used in existing workout names
       const maxIndex = state.program.workouts.reduce((max, workout) => {
+        console.log('maxIndex called from workoutReducer.js', maxIndex);
         const match = workout.name.match(/Workout (\d+)/); // Assuming the format "Workout 1", "Workout 2", etc.
         const index = match ? parseInt(match[1], 10) : 0;
         return Math.max(max, index);
@@ -84,4 +92,4 @@ function workoutReducer(state = initialState, action) {
   }
 }
 
-export { workoutReducer, initialState };
+export { workoutReducer };

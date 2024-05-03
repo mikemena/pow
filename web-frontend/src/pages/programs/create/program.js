@@ -56,9 +56,9 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    // console.log('handleAddWorkout called');
+    console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
-    addWorkout({});
+    addWorkout({ name: 'New Workout' });
   };
 
   return (
