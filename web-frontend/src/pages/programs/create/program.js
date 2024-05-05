@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
