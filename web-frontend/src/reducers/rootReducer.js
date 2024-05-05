@@ -4,9 +4,12 @@ import { exerciseReducer } from './exerciseReducer';
 import { setReducer } from './setReducer.js';
 
 const combineReducers = reducers => {
-  return (state, action) => {
+  return (state = {}, action) => {
     return Object.keys(reducers).reduce((nextState, key) => {
-      nextState[key] = reducers[key](state[key], action);
+      nextState[key] = reducers[key](
+        state[key] || reducers[key](undefined, {}),
+        action
+      );
       return nextState;
     }, {});
   };
