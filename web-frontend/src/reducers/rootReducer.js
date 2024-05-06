@@ -5,13 +5,18 @@ import { setReducer } from './setReducer.js';
 
 const combineReducers = reducers => {
   return (state = {}, action) => {
-    return Object.keys(reducers).reduce((nextState, key) => {
-      nextState[key] = reducers[key](
-        state[key] || reducers[key](undefined, {}),
-        action
-      );
-      return nextState;
-    }, {});
+    const nextState = {};
+    let hasChanged = false;
+
+    Object.keys(reducers).forEach(key => {
+      const reducer = reducers[key];
+      const previousStateForKey = state[key];
+      const nextStateForKey = reducer(previousStateForKey, action);
+      nextState[key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    });
+
+    return hasChanged ? nextState : state;
   };
 };
 

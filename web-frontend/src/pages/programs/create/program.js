@@ -14,6 +14,8 @@ const CreateProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   // const [renderKey, setRenderKey] = useState(0);
 
+  const [updateKey, setUpdateKey] = useState(0);
+
   console.log('CreateProgram: programState:', programState);
 
   console.log('program.workouts:', programState.program.workouts);
@@ -59,10 +61,11 @@ const CreateProgram = () => {
     console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
     addWorkout({ name: 'New Workout' });
+    setUpdateKey(prevKey => prevKey + 1); // Increment to force re-render
   };
 
   return (
-    <div>
+    <div key={updateKey}>
       <NavBar isEditing='true' />
       <div className='create-prog-page'>
         <div className='create-prog-page__toggle-container'>
