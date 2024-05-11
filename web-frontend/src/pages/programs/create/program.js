@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -14,11 +14,13 @@ const CreateProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   // const [renderKey, setRenderKey] = useState(0);
 
-  const [updateKey, setUpdateKey] = useState(0);
-
   console.log('CreateProgram: programState:', programState);
 
   console.log('program.workouts:', programState.program.workouts);
+
+  useEffect(() => {
+    console.log('Workouts updated:', programState);
+  }, [programState]);
 
   const navigate = useNavigate();
 
@@ -61,11 +63,10 @@ const CreateProgram = () => {
     console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
     addWorkout({ name: 'New Workout' });
-    setUpdateKey(prevKey => prevKey + 1); // Increment to force re-render
   };
 
   return (
-    <div key={updateKey}>
+    <div>
       <NavBar isEditing='true' />
       <div className='create-prog-page'>
         <div className='create-prog-page__toggle-container'>
@@ -79,7 +80,7 @@ const CreateProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {programState.program.workouts?.map(workout => (
+            {programState.program.workouts.map(workout => (
               <Workout
                 key={workout.id}
                 workoutId={workout.id}

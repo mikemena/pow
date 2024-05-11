@@ -1,98 +1,43 @@
 import { v4 as uuidv4 } from 'uuid';
-import { initialState } from './programReducer';
 
-function exerciseReducer(state = initialState, action) {
+function exerciseReducer(state = {}, action) {
   switch (action.type) {
     case 'ADD_EXERCISE':
+      // Assuming action.payload contains all necessary details for the exercise,
+      // including the workoutId to which it should be linked.
+      const newId = uuidv4();
       return {
         ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
-            if (workout.id === action.payload.workoutId) {
-              const currentExercises = workout.exercises ?? [];
-              const newExercises = action.payload.exercises.reduce(
-                (acc, exercise) => {
-                  if (
-                    !currentExercises.some(
-                      ex => ex.exerciseCatalogId === exercise.exerciseCatalogId
-                    )
-                  ) {
-                    const newExercise = {
-                      ...exercise,
-                      id: uuidv4(),
-                      isNew: true
-                    };
-                    acc.push(newExercise);
-                  }
-                  return acc;
-                },
-                []
-              );
-
-              return {
-                ...workout,
-                exercises: [...currentExercises, ...newExercises]
-              };
-            }
-            return workout;
-          })
+        [newId]: {
+          id: newId,
+          ...action.payload,
+          isNew: true
         }
       };
 
     case 'UPDATE_EXERCISE':
-      return {
-        ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
-            if (workout.id === action.payload.workoutId) {
-              // Map through exercises to update the specific one
-              const updatedExercises = workout.exercises.map(exercise => {
-                if (
-                  exercise.catalog_exercise_id ===
-                  action.payload.updatedExercise.catalog_exercise_id
-                ) {
-                  return {
-                    ...exercise,
-                    ...action.payload.updatedExercise
-                  };
-                }
-                return exercise;
-              });
-              return {
-                ...workout,
-                exercises: updatedExercises
-              };
-            }
-            return workout;
-          })
-        }
-      };
+      // action.payload should include the id of the exercise to update
+      // and the properties to be updated.
+      if (state[action.payload.id]) {
+        return {
+          ...state,
+          [action.payload.id]: {
+            ...state[action.payload.id],
+            ...action.payload.updates
+          }
+        };
+      }
+      return state;
+
     case 'DELETE_EXERCISE':
-      return {
-        ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
-            if (workout.id === action.payload.workoutId) {
-              // Filter out the exercise that needs to be deleted
-              const filteredExercises = workout.exercises.filter(
-                exercise => exercise.id !== action.payload.exerciseId
-              );
-              return {
-                ...workout,
-                exercises: filteredExercises
-              };
-            }
-            return workout;
-          })
-        }
-      };
+      // action.payload should be the id of the exercise to delete.
+      const newState = { ...state };
+      delete newState[action.payload];
+      return newState;
 
     default:
       return state;
   }
 }
 
-export { exerciseReducer, initialState };
+export { exerciseReducer };

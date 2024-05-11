@@ -1,5 +1,4 @@
 import { programReducer } from './programReducer';
-import { workoutReducer } from './workoutReducer';
 import { exerciseReducer } from './exerciseReducer';
 import { setReducer } from './setReducer.js';
 
@@ -22,7 +21,6 @@ const combineReducers = reducers => {
 
 const rootReducer = combineReducers({
   program: programReducer,
-  workouts: workoutReducer,
   exercises: exerciseReducer,
   sets: setReducer
 });
