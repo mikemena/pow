@@ -6,7 +6,7 @@ import { initialState } from '../reducers/initialState';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [programState, programDispatch] = useReducer(rootReducer, initialState);
+  const [programState, dispatch] = useReducer(rootReducer, initialState);
   const [activeWorkout, setActiveWorkout] = useState(null);
 
   console.log('ProgramProvider: Initial State:', initialState);
@@ -19,7 +19,7 @@ export const ProgramProvider = ({ children }) => {
 
   //Save program to the database
   const saveProgram = async newProgram => {
-    programDispatch({ type: actionTypes.SAVE_PROGRAM_START });
+    dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
@@ -31,12 +31,12 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
-      programDispatch({
+      dispatch({
         type: actionTypes.SAVE_PROGRAM_SUCCESS,
         payload: savedProgram
       });
     } catch (error) {
-      programDispatch({
+      dispatch({
         type: actionTypes.SAVE_PROGRAM_FAILURE,
         payload: error.message
       });
@@ -46,7 +46,7 @@ export const ProgramProvider = ({ children }) => {
   // For updating basic program information like name, duration, etc.
 
   const updateProgramDetails = details => {
-    programDispatch({
+    dispatch({
       type: actionTypes.UPDATE_PROGRAM_DETAILS,
       payload: details
     });
@@ -54,28 +54,28 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = workout => {
     console.log('addWorkout called from context');
-    programDispatch({
+    dispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: workout
     });
   };
 
   const updateWorkout = workout => {
-    programDispatch({
+    dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: workout
     });
   };
 
   const deleteWorkout = workoutId => {
-    programDispatch({
+    dispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: workoutId
     });
   };
 
   const addExercise = (workoutId, exercises) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
     });
@@ -83,7 +83,7 @@ export const ProgramProvider = ({ children }) => {
   // Function to update an exercise
 
   const updateExercise = (workoutId, updatedExercise) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.UPDATE_EXERCISE,
       payload: { workoutId, updatedExercise }
     });
@@ -92,7 +92,7 @@ export const ProgramProvider = ({ children }) => {
   // Function to delete exercise from  a specific workout
 
   const deleteExercise = (workoutId, exerciseId) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.DELETE_EXERCISE,
       payload: { workoutId, exerciseId }
     });
@@ -101,21 +101,21 @@ export const ProgramProvider = ({ children }) => {
   // Function to add sets to a specific exercise
 
   const addSet = (workoutId, exerciseId, newSet) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.ADD_SET,
       payload: { workoutId, exerciseId, newSet }
     });
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
     });
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
-    programDispatch({
+    dispatch({
       type: actionTypes.DELETE_SET,
       payload: { workoutId, exerciseId, setId }
     });
@@ -127,7 +127,7 @@ export const ProgramProvider = ({ children }) => {
     <ProgramContext.Provider
       value={{
         programState,
-        programDispatch,
+        dispatch,
         updateProgramDetails,
         addWorkout,
         updateWorkout,

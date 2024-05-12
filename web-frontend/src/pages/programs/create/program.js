@@ -9,9 +9,8 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
+  const { programState, saveProgram, dispatch } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  // const [renderKey, setRenderKey] = useState(0);
 
   console.log('CreateProgram: programState:', programState);
 
@@ -59,9 +58,14 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
+    const currentProgramId = Object.keys(programState.programs)[0];
+    console.log('currentProgramId:', currentProgramId);
     console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
-    addWorkout({ name: 'New Workout' });
+    dispatch({
+      type: 'ADD_WORKOUT',
+      payload: { programId: currentProgramId }
+    });
   };
 
   return (
