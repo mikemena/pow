@@ -10,13 +10,12 @@ import './program.css';
 
 const CreateProgram = () => {
   const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
-
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   // const [renderKey, setRenderKey] = useState(0);
 
   console.log('CreateProgram: programState:', programState);
 
-  console.log('program.workouts:', programState.program.workouts);
+  console.log('programState.workouts:', programState.workouts);
 
   useEffect(() => {
     console.log('Workouts updated:', programState);
@@ -75,19 +74,23 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={programState.program}
+              program={
+                programState.programs[Object.keys(programState.programs)[0]]
+              }
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {programState.program.workouts.map(workout => (
-              <Workout
-                key={workout.id}
-                workoutId={workout.id}
-                isExpanded={expandedWorkouts[workout.id] || false}
-                onToggleExpand={handleExpandWorkout}
-              />
-            ))}
+            {programState &&
+              programState.workouts &&
+              Object.values(programState.workouts).map(workout => (
+                <Workout
+                  key={workout.id}
+                  workoutId={workout.id}
+                  isExpanded={expandedWorkouts[workout.id] || false}
+                  onToggleExpand={handleExpandWorkout}
+                />
+              ))}
           </div>
         </div>
         <div className='create-prog-page__button-container'>

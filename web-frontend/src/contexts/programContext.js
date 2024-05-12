@@ -9,6 +9,9 @@ export const ProgramProvider = ({ children }) => {
   const [programState, programDispatch] = useReducer(rootReducer, initialState);
   const [activeWorkout, setActiveWorkout] = useState(null);
 
+  console.log('ProgramProvider: Initial State:', initialState);
+  console.log('ProgramProvider: Current State:', programState);
+
   // Function to update the active workout
   const updateActiveWorkout = workout => {
     setActiveWorkout(workout);

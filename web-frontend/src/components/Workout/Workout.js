@@ -26,7 +26,7 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   const [workoutTitle, setWorkoutTitle] = useState('');
   const { theme } = useTheme();
 
-  const workout = programState.program.workouts.find(w => w.id === workoutId);
+  const workout = programState.workouts[workoutId];
 
   const navigate = useNavigate();
 
@@ -51,7 +51,7 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
     deleteWorkout(workoutId);
     // Update active workout if the deleted one was active
     if (activeWorkout && activeWorkout.id === workoutId) {
-      updateActiveWorkout(null); // or set to another workout as needed
+      updateActiveWorkout(null);
     }
   };
 
@@ -68,10 +68,9 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    const activeWorkout = programState.program.workouts.find(
-      w => w.id === workoutId
-    );
-    const exercise = activeWorkout?.exercises.find(e => e.id === exerciseId);
+    const activeWorkout = programState.workouts[workoutId];
+
+    const exercise = programState.exercises[exerciseId];
 
     if (exercise && exercise.sets) {
       const newSet = {
