@@ -26,10 +26,11 @@ function workoutReducer(state = initialState, action) {
     case 'UPDATE_WORKOUT': {
       return {
         ...state,
-        [action.payload.id]: {
-          // Update the specific workout by its ID
-          ...state[action.payload.id],
-          ...action.payload
+        workouts: {
+          [action.payload.id]: {
+            ...state[action.payload.id],
+            ...action.payload
+          }
         }
       };
     }

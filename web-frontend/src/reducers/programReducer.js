@@ -6,9 +6,12 @@ function programReducer(state = initialState, action) {
     case 'UPDATE_PROGRAM_DETAILS':
       return {
         ...state,
-        [action.payload.id]: {
-          ...state[action.payload.id],
-          ...action.payload
+        programs: {
+          ...state.programs,
+          [action.payload.id]: {
+            ...state.programs[action.payload.id],
+            ...action.payload
+          }
         }
       };
     default:

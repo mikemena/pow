@@ -12,6 +12,8 @@ const CreateProgram = () => {
   const { programState, saveProgram, dispatch } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
+  console.log('Programs:', programState.programs);
+
   console.log('CreateProgram: programState:', programState);
 
   console.log('programState.workouts:', programState.workouts);
