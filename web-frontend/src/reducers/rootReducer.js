@@ -14,6 +14,7 @@ const combineReducers = reducers => {
       const nextStateForKey = reducer(previousStateForKey, action);
       nextState[key] = nextStateForKey;
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+      console.log(`Next state for ${key}:`, nextStateForKey);
     });
 
     return hasChanged ? nextState : state;

@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { initialState } from './initialState';
 
 function workoutReducer(state = initialState, action) {
-  console.log('workoutReducer: Current State:', state);
   console.log('workoutReducer: Action:', action);
+  console.log('State in workoutReducer:', state);
   switch (action.type) {
     case 'ADD_WORKOUT': {
       const workoutId = uuidv4(); // Generate a unique ID for the new workout

@@ -9,18 +9,18 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { programState, saveProgram, dispatch } = useContext(ProgramContext);
+  const { state, saveProgram, dispatch } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('Programs:', programState.programs);
+  console.log('Programs:', state.programs);
 
-  console.log('CreateProgram: programState:', programState);
+  console.log('CreateProgram: state:', state);
 
-  console.log('programState.workouts:', programState.workouts);
+  console.log('state.workouts:', state.workouts);
 
   useEffect(() => {
-    console.log('Workouts updated:', programState);
-  }, [programState]);
+    console.log('Workouts updated:', state);
+  }, [state]);
 
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    const currentProgramId = Object.keys(programState.programs)[0];
+    const currentProgramId = Object.keys(state.programs)[0];
     console.log('currentProgramId:', currentProgramId);
     console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
@@ -69,6 +69,15 @@ const CreateProgram = () => {
       payload: { programId: currentProgramId }
     });
   };
+
+  console.log('state.programs:', state.programs);
+
+  const firstProgramId = Object.keys(state.programs)[0];
+  console.log('firstProgramId:', firstProgramId);
+
+  if (!state || !state.programs || Object.keys(state.programs).length === 0) {
+    return <div>Loading or no programs available...</div>;
+  }
 
   return (
     <div>
@@ -80,16 +89,14 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={
-                programState.programs[Object.keys(programState.programs)[0]]
-              }
+              program={state.programs[Object.keys(state.programs)[0]]}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {programState &&
-              programState.workouts &&
-              Object.values(programState.workouts).map(workout => (
+            {state &&
+              state.workouts &&
+              Object.values(state.workouts).map(workout => (
                 <Workout
                   key={workout.id}
                   workoutId={workout.id}

@@ -6,11 +6,11 @@ import { initialState } from '../reducers/initialState';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [programState, dispatch] = useReducer(rootReducer, initialState);
+  const [state, dispatch] = useReducer(rootReducer, initialState);
   const [activeWorkout, setActiveWorkout] = useState(null);
 
   console.log('ProgramProvider: Initial State:', initialState);
-  console.log('ProgramProvider: Current State:', programState);
+  console.log('ProgramProvider: Current State:', state);
 
   // Function to update the active workout
   const updateActiveWorkout = workout => {
@@ -121,12 +121,12 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  console.log('ProgramProvider: programState:', programState);
+  console.log('ProgramProvider: state:', state);
 
   return (
     <ProgramContext.Provider
       value={{
-        programState,
+        state,
         dispatch,
         updateProgramDetails,
         addWorkout,

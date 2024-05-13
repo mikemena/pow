@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
+import { initialState } from './initialState';
 
-function exerciseReducer(state = {}, action) {
+function exerciseReducer(state = initialState, action) {
   switch (action.type) {
     case 'ADD_EXERCISE':
       // Assuming action.payload contains all necessary details for the exercise,
