@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -9,9 +9,13 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { programState, saveProgram, addWorkout } = useContext(ProgramContext);
-
+  const { state, saveProgram, dispatch } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  // const [renderKey, setRenderKey] = useState(0);
+
+  console.log('CreateProgram: programState:', programState);
+
+  console.log('program.workouts:', programState.program.workouts);
 
   const navigate = useNavigate();
 
@@ -50,9 +54,22 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
+    // console.log('handleAddWorkout called');
     event.preventDefault();
-    addWorkout({});
+    dispatch({
+      type: 'ADD_WORKOUT',
+      payload: { programId: currentProgramId }
+    });
   };
+
+  console.log('state.programs:', state.programs);
+
+  const firstProgramId = Object.keys(state.programs)[0];
+  console.log('firstProgramId:', firstProgramId);
+
+  if (!state || !state.programs || Object.keys(state.programs).length === 0) {
+    return <div>Loading or no programs available...</div>;
+  }
 
   return (
     <div>
@@ -64,19 +81,20 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={programState.program}
+              program={state.programs[Object.keys(state.programs)[0]]}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {programState.program.workouts?.map(workout => (
-              <Workout
-                key={workout.id}
-                workoutId={workout.id}
-                isExpanded={expandedWorkouts[workout.id] || false}
-                onToggleExpand={handleExpandWorkout}
-              />
-            ))}
+            {state.workouts &&
+              Object.values(state.workouts).map(workout => (
+                <Workout
+                  key={workout.id}
+                  workoutId={workout.id}
+                  isExpanded={expandedWorkouts[workout.id] || false}
+                  onToggleExpand={handleExpandWorkout}
+                />
+              ))}
           </div>
         </div>
         <div className='create-prog-page__button-container'>

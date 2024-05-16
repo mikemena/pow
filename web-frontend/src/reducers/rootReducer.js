@@ -4,16 +4,25 @@ import { exerciseReducer } from './exerciseReducer';
 import { setReducer } from './setReducer.js';
 
 const combineReducers = reducers => {
-  return (state, action) => {
-    return Object.keys(reducers).reduce((nextState, key) => {
-      nextState[key] = reducers[key](state[key], action);
-      return nextState;
-    }, {});
+  return (state = {}, action) => {
+    const nextState = {};
+    let hasChanged = false;
+
+    Object.keys(reducers).forEach(key => {
+      const reducer = reducers[key];
+      const previousStateForKey = state[key];
+      const nextStateForKey = reducer(previousStateForKey, action);
+      nextState[key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+      console.log(`Next state for ${key}:`, nextStateForKey);
+    });
+
+    return hasChanged ? nextState : state;
   };
 };
 
 const rootReducer = combineReducers({
-  program: programReducer,
+  programs: programReducer,
   workouts: workoutReducer,
   exercises: exerciseReducer,
   sets: setReducer

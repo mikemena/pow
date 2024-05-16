@@ -10,7 +10,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
 
   // Access program data and functions from ProgramContext
-  const { program } = useContext(ProgramContext);
+  const { program, updateProgramDetails } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -25,21 +25,27 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   });
 
   const handleChange = e => {
-    let value = e.target.value;
+    const { name, value } = e.target;
+    setFormValues(prev => {
+      const newValues = { ...prev, [name]: value };
+      if (name === 'programDuration' || name === 'durationUnit') {
+        newValues.programDurationDisplay = `${
+          newValues.programDuration
+        } ${toProperCase(newValues.durationUnit)}`;
+      }
+      return newValues;
+    });
+  };
 
-    if (e.target.name === 'programDuration' && value < 1) {
-      value = 1;
-    }
-    if (e.target.name === 'daysPerWeek' && value < 1) {
-      value = 1;
-    }
-
-    setFormValues({
-      ...formValues,
-      [e.target.name]: value,
-      programDurationDisplay: `${program?.programDuration || ''} ${
-        program?.durationUnit || ''
-      }`
+  const handleSubmit = e => {
+    e.preventDefault();
+    updateProgramDetails({
+      id: program.id,
+      name: formValues.programName,
+      main_goal: formValues.mainGoal,
+      program_duration: formValues.programDuration,
+      duration_unit: formValues.durationUnit,
+      days_per_week: formValues.daysPerWeek
     });
   };
 
@@ -48,7 +54,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   };
 
   return (
-    <form className={`program ${theme}`}>
+    <form onSubmit={handleSubmit} className={`program ${theme}`}>
       <div className='program__header'>
         <button
           type='button'
