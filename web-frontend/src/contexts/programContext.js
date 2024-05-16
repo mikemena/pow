@@ -112,7 +112,7 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  console.log('ProgramProvider: programState:', programState);
+  console.log('ProgramProvider: programState:', state);
 
   return (
     <ProgramContext.Provider

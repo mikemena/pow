@@ -13,9 +13,9 @@ const CreateProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   // const [renderKey, setRenderKey] = useState(0);
 
-  console.log('CreateProgram: programState:', programState);
+  console.log('CreateProgram: programState:', state);
 
-  console.log('program.workouts:', programState.program.workouts);
+  console.log('program.workouts:', state.program.workouts);
 
   const navigate = useNavigate();
 
