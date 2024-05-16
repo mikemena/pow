@@ -4,9 +4,10 @@ import { initialState } from './initialState';
 function workoutReducer(state = initialState, action) {
   console.log('workoutReducer: Action:', action);
   console.log('State in workoutReducer:', state);
+  console.log('State Programs in workoutReducer:', state.programs);
   switch (action.type) {
     case 'ADD_WORKOUT': {
-      const workoutId = uuidv4(); // Generate a unique ID for the new workout
+      const workoutId = uuidv4();
       const workoutTitle =
         action.payload.name || `Workout ${Object.keys(state).length + 1}`;
       const newWorkout = {
@@ -14,31 +15,29 @@ function workoutReducer(state = initialState, action) {
         name: workoutTitle,
         exercises: [],
         active: false,
-        programId: action.payload.programId // Ensure this is passed in action.payload
+        programId: action.payload.programId
       };
 
       return {
         ...state,
-        [workoutId]: newWorkout // Add new workout under its ID
+        [workoutId]: newWorkout
       };
     }
 
     case 'UPDATE_WORKOUT': {
       return {
         ...state,
-        workouts: {
-          [action.payload.id]: {
-            ...state[action.payload.id],
-            ...action.payload
-          }
+        [action.payload.id]: {
+          ...state[action.payload.id],
+          ...action.payload
         }
       };
     }
 
     case 'DELETE_WORKOUT': {
-      const newState = { ...state };
-      delete newState[action.payload]; // Remove the workout by its ID
-      return newState;
+      const newWorkouts = { ...state };
+      delete newWorkouts[action.payload];
+      return newWorkouts;
     }
 
     default:

@@ -12,12 +12,10 @@ export const ProgramProvider = ({ children }) => {
   console.log('ProgramProvider: Initial State:', initialState);
   console.log('ProgramProvider: Current State:', state);
 
-  // Function to update the active workout
   const updateActiveWorkout = workout => {
     setActiveWorkout(workout);
   };
 
-  //Save program to the database
   const saveProgram = async newProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
@@ -42,8 +40,6 @@ export const ProgramProvider = ({ children }) => {
       });
     }
   };
-
-  // For updating basic program information like name, duration, etc.
 
   const updateProgramDetails = details => {
     dispatch({
@@ -80,7 +76,6 @@ export const ProgramProvider = ({ children }) => {
       payload: { workoutId, exercises }
     });
   };
-  // Function to update an exercise
 
   const updateExercise = (workoutId, updatedExercise) => {
     dispatch({
@@ -89,16 +84,12 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  // Function to delete exercise from  a specific workout
-
   const deleteExercise = (workoutId, exerciseId) => {
     dispatch({
       type: actionTypes.DELETE_EXERCISE,
       payload: { workoutId, exerciseId }
     });
   };
-
-  // Function to add sets to a specific exercise
 
   const addSet = (workoutId, exerciseId, newSet) => {
     dispatch({

@@ -19,7 +19,7 @@ const CreateProgram = () => {
   console.log('state.workouts:', state.workouts);
 
   useEffect(() => {
-    console.log('Workouts updated:', state);
+    console.log('State initialized or updated using useEffect:', state);
   }, [state]);
 
   const navigate = useNavigate();
@@ -94,8 +94,7 @@ const CreateProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {state &&
-              state.workouts &&
+            {state.workouts &&
               Object.values(state.workouts).map(workout => (
                 <Workout
                   key={workout.id}
