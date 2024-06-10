@@ -1,12 +1,18 @@
 import { v4 as uuidv4 } from 'uuid';
+import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
-function workoutReducer(state = initialState, action) {
-  console.log('workoutReducer: Action:', action);
-  console.log('State in workoutReducer:', state);
-  console.log('State Programs in workoutReducer:', state.programs);
+function workoutReducer(state = initialState.workouts, action) {
+  console.log('Action Type:', action.type);
+  console.log('State Before:', state);
+
   switch (action.type) {
-    case 'ADD_WORKOUT': {
+    case actionTypes.ADD_WORKOUT: {
+      if (!action.payload || !action.payload.programId) {
+        console.error('Invalid payload for ADD_WORKOUT', action.payload);
+        return state;
+      }
+
       const workoutId = uuidv4();
       const workoutTitle =
         action.payload.name || `Workout ${Object.keys(state).length + 1}`;
@@ -14,33 +20,60 @@ function workoutReducer(state = initialState, action) {
         id: workoutId,
         name: workoutTitle,
         exercises: [],
-        active: false,
         programId: action.payload.programId
       };
 
-      return {
+      const newState = {
         ...state,
         [workoutId]: newWorkout
       };
+      console.log('State After ADD_WORKOUT:', newState);
+      return newState;
     }
 
-    case 'UPDATE_WORKOUT': {
-      return {
+    case actionTypes.UPDATE_WORKOUT: {
+      if (!action.payload || !action.payload.id) {
+        console.error('Invalid payload for UPDATE_WORKOUT', action.payload);
+        return state;
+      }
+
+      const workout = state[action.payload.id];
+      if (!workout) {
+        console.error(
+          'Workout not found for UPDATE_WORKOUT',
+          action.payload.id
+        );
+        return state;
+      }
+
+      const newState = {
         ...state,
         [action.payload.id]: {
-          ...state[action.payload.id],
+          ...workout,
           ...action.payload
         }
       };
+      console.log('State After UPDATE_WORKOUT:', newState);
+      return newState;
     }
 
-    case 'DELETE_WORKOUT': {
+    case actionTypes.DELETE_WORKOUT: {
+      if (!action.payload) {
+        console.error('Invalid payload for DELETE_WORKOUT', action.payload);
+        return state;
+      }
+
       const newWorkouts = { ...state };
       delete newWorkouts[action.payload];
-      return newWorkouts;
+      const newState = {
+        ...newWorkouts
+      };
+      console.log('State After DELETE_WORKOUT:', newState);
+      return newState;
     }
 
     default:
+      console.log('State After Default:', state);
       return state;
   }
 }

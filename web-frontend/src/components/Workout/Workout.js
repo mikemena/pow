@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { TbPencil } from 'react-icons/tb';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
@@ -12,7 +12,7 @@ import ExerciseSet from '../ExerciseSet/ExerciseSet';
 
 import './Workout.css';
 
-const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
+const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   const {
     state,
     deleteWorkout,
@@ -20,13 +20,17 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
     updateWorkout,
     addSet,
     activeWorkout,
-    updateActiveWorkout
+    setActiveWorkout
   } = useContext(ProgramContext);
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState('');
   const { theme } = useTheme();
 
-  const workout = state.workouts[workoutId];
+  useEffect(() => {
+    if (workout) {
+      setWorkoutTitle(workout.name);
+    }
+  }, [workout]);
 
   const navigate = useNavigate();
 
@@ -50,8 +54,8 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   const handleDeleteWorkout = workoutId => {
     deleteWorkout(workoutId);
     // Update active workout if the deleted one was active
-    if (activeWorkout && activeWorkout.id === workoutId) {
-      updateActiveWorkout(null);
+    if (activeWorkout && activeWorkout === workoutId) {
+      setActiveWorkout(null);
     }
   };
 
@@ -60,16 +64,14 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   };
 
   const handleWorkoutExpand = () => {
-    onToggleExpand(workoutId);
+    onToggleExpand(workout.id);
     // Set as active workout when expanded
-    if (!activeWorkout || activeWorkout.id !== workoutId) {
-      updateActiveWorkout(workout);
+    if (!activeWorkout || activeWorkout !== workout.id) {
+      setActiveWorkout(workout.id);
     }
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    const activeWorkout = state.workouts[workoutId];
-
     const exercise = state.exercises[exerciseId];
 
     if (exercise && exercise.sets) {
@@ -97,24 +99,23 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
   if (!workout) return null;
 
   const handleAddExercises = workoutId => {
-    const selectedWorkout = state.program.workouts.find(
-      w => w.id === workoutId
-    );
-    // Ensure that the workout exists before trying to update or navigate
-    if (selectedWorkout) {
-      // Set as active workout when starting to add exercises
-      if (!activeWorkout || activeWorkout.id !== workoutId) {
-        updateActiveWorkout(selectedWorkout);
-      }
-      navigate('/select-exercises');
-    } else {
-      console.error('Selected workout not found');
-    }
+    // Set the workout as active
+    setActiveWorkout(workoutId);
+    // Navigate to the select exercises page
+    navigate('/select-exercises');
   };
+
+  const workoutExercises = state.exercises[workout.id] || [];
+
+  console.log({ 'workout exercises': workoutExercises });
+
+  console.log({ 'state from workout component': state });
 
   return (
     <div
-      className={`workout ${theme} ${workout.id === workoutId ? 'active' : ''}`}
+      className={`workout ${theme} ${
+        activeWorkout === workout.id ? 'active' : ''
+      }`}
     >
       <div className='workout__header'>
         <button className='workout__expand-btn' onClick={handleWorkoutExpand}>
@@ -152,7 +153,7 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
               />
             </div>
           ) : (
-            <h2 className={`workout__title ${theme}`}>{workout.name}</h2>
+            <h2 className={`workout__title ${theme}`}>{workoutTitle}</h2>
           )}
           {isExpanded && !isEditing && (
             <TbPencil
@@ -189,8 +190,8 @@ const Workout = ({ workoutId, isExpanded, onToggleExpand }) => {
               <h4 className={`workout__exercises_header ${theme}`}>Weight</h4>
               <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
             </div>
-            {workout.exercises && workout.exercises.length > 0 ? (
-              workout.exercises.map((exercise, index) => (
+            {workoutExercises.length > 0 ? (
+              workoutExercises.map((exercise, index) => (
                 <div key={exercise.tempId} className='workout__each-exercise'>
                   <div className={`workout__drag-order-container ${theme}`}>
                     <span className={`workout__exercise-order-number ${theme}`}>

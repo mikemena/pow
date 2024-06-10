@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -9,13 +9,19 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { state, saveProgram, dispatch } = useContext(ProgramContext);
+  const { state, saveProgram, dispatch, setActiveWorkout } =
+    useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  // const [renderKey, setRenderKey] = useState(0);
 
-  console.log('CreateProgram: programState:', state);
+  console.log('Programs:', state.programs);
 
-  console.log('program.workouts:', state.program.workouts);
+  console.log('CreateProgram: state:', state);
+
+  console.log('state.workouts:', state.workouts);
+
+  useEffect(() => {
+    console.log('State initialized or updated using useEffect:', state);
+  }, [state]);
 
   const navigate = useNavigate();
 
@@ -29,14 +35,21 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
-    // Collapse all other items when one is expanded
+    const isCurrentlyExpanded = expandedWorkouts[workoutId];
+
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
         acc[key] = false; // collapse all
         return acc;
       }, {}),
-      [workoutId]: !prevState[workoutId] // toggle the clicked one
+      [workoutId]: !isCurrentlyExpanded
     }));
+
+    if (!isCurrentlyExpanded) {
+      setActiveWorkout(workoutId);
+    } else {
+      setActiveWorkout(null);
+    }
   };
 
   const handleToggleProgramForm = () => {
@@ -54,7 +67,9 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    // console.log('handleAddWorkout called');
+    const currentProgramId = Object.keys(state.programs)[0];
+    console.log('currentProgramId:', currentProgramId);
+    console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
     dispatch({
       type: 'ADD_WORKOUT',
@@ -62,14 +77,11 @@ const CreateProgram = () => {
     });
   };
 
-  console.log('state.programs:', state.programs);
-
-  const firstProgramId = Object.keys(state.programs)[0];
-  console.log('firstProgramId:', firstProgramId);
-
   if (!state || !state.programs || Object.keys(state.programs).length === 0) {
     return <div>Loading or no programs available...</div>;
   }
+
+  console.log('State:', state); // Log the state
 
   return (
     <div>
@@ -86,15 +98,24 @@ const CreateProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {state.workouts &&
-              Object.values(state.workouts).map(workout => (
-                <Workout
-                  key={workout.id}
-                  workoutId={workout.id}
-                  isExpanded={expandedWorkouts[workout.id] || false}
-                  onToggleExpand={handleExpandWorkout}
-                />
-              ))}
+            {state.workouts && Object.keys(state.workouts).length > 0 ? (
+              Object.values(state.workouts).map(workout => {
+                if (!workout || !workout.id) {
+                  console.error('Invalid workout object:', workout); // Log invalid workout object
+                  return null;
+                }
+                return (
+                  <Workout
+                    key={workout.id}
+                    workout={workout}
+                    isExpanded={expandedWorkouts[workout.id] || false}
+                    onToggleExpand={() => handleExpandWorkout(workout.id)}
+                  />
+                );
+              })
+            ) : (
+              <div>No workouts available</div>
+            )}
           </div>
         </div>
         <div className='create-prog-page__button-container'>

@@ -1,23 +1,38 @@
+// import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
-function programReducer(state = initialState, action) {
-  console.log('State in programReducer:', state);
+function programReducer(state = initialState.programs, action) {
   switch (action.type) {
-    //For updating basic program information like name, duration, etc.
     case 'UPDATE_PROGRAM_DETAILS':
+      const {
+        id,
+        name,
+        program_duration,
+        duration_unit,
+        days_per_week,
+        main_goal
+      } = action.payload;
+
+      if (!state[id]) {
+        console.error('Program not found:', id);
+        return state; // Return the current state if the program ID does not exist.
+      }
+
       return {
         ...state,
-        programs: {
-          ...state.programs,
-          [action.payload.id]: {
-            ...state.programs[action.payload.id],
-            ...action.payload
-          }
+        [id]: {
+          ...state[id], // Spread the existing program details
+          name,
+          program_duration,
+          duration_unit,
+          days_per_week,
+          main_goal
         }
       };
+
     default:
       return state;
   }
 }
 
-export { programReducer, initialState };
+export { programReducer };

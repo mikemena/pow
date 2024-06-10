@@ -10,14 +10,13 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { addExercise, activeWorkout } = useContext(ProgramContext);
+  const { addExercise, activeWorkout, setActiveWorkout } =
+    useContext(ProgramContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
   const [selectedExercises, setSelectedExercises] = useState([]);
-
   const navigate = useNavigate();
-
   const { theme } = useTheme();
 
   const {
@@ -27,15 +26,9 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
-    // Initialize with exercises that are already part of the workout
     if (activeWorkout && activeWorkout.exercises) {
-      const selectedIds = new Set(
-        activeWorkout.exercises.map(ex => ex.exerciseCatalogId)
-      );
-      console.log('selectedIds', selectedIds);
-      setSelectedExercises(
-        exercises.filter(ex => selectedIds.has(ex.exerciseCatalogId))
-      );
+      const selectedIds = new Set(activeWorkout.exercises.map(ex => ex.id));
+      setSelectedExercises(exercises.filter(ex => selectedIds.has(ex.id)));
     }
   }, [activeWorkout, exercises]);
 
@@ -56,34 +49,16 @@ const SelectExercisesPage = () => {
     });
   }, [searchTerm, selectedMuscle, selectedEquipment, exercises]);
 
-  const handleSearch = newValue => {
-    setSearchTerm(newValue);
-  };
-
-  const handleMuscleChange = value => {
-    setSelectedMuscle(value);
-  };
-
-  const handleEquipmentChange = value => {
-    setSelectedEquipment(value);
-  };
-
-  if (isLoading) return <div>loading...</div>;
-  if (error) return <div>Error loading exercises: {error}</div>;
-
-  console.log('activeWorkout in select-exercise', activeWorkout);
+  const handleSearch = newValue => setSearchTerm(newValue);
+  const handleMuscleChange = value => setSelectedMuscle(value);
+  const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const toggleExerciseSelection = exercise => {
-    console.log('toggleExerciseSelection', exercise);
+    console.log('Toggling exercise selection:', exercise);
     setSelectedExercises(prevSelected => {
-      console.log('prevSelected', prevSelected);
-      console.log('exercise.id', exercise.id);
-
-      const isSelected = prevSelected.some(
-        ex => ex.exerciseCatalogId === exercise.id
-      );
+      const isSelected = prevSelected.some(ex => ex.id === exercise.id);
       if (isSelected) {
-        return prevSelected.filter(ex => ex.exerciseCatalogId !== exercise.id);
+        return prevSelected.filter(ex => ex.id !== exercise.id);
       } else {
         return [...prevSelected, exercise];
       }
@@ -91,39 +66,34 @@ const SelectExercisesPage = () => {
   };
 
   const handleAddExercises = () => {
+    console.log('Adding exercises:', selectedExercises);
     if (selectedExercises.length === 0) {
       alert('No exercises selected to add.');
       return;
     }
 
-    selectedExercises.forEach(exercise => {
-      if (exercise && exercise.id) {
-        // Ensure necessary identifiers are present
+    if (!activeWorkout) {
+      alert('No active workout selected.');
+      return;
+    }
 
-        addExercise(activeWorkout.id, exercise);
-      } else {
-      }
-    });
-
-    // Assuming addExercise processes synchronously; otherwise handle asynchronously
-    navigate('/create-program'); // Navigate after all exercises have been added
-  };
-
-  const goBack = () => {
+    addExercise(activeWorkout, selectedExercises);
     navigate('/create-program');
   };
 
+  const goBack = () => navigate('/create-program');
+
   const exerciseText = selectedExercises => {
     const count = selectedExercises?.length ?? 0;
-
-    if (count === 0) {
-      return 'No Exercises ';
-    } else if (count === 1) {
-      return '1 Exercise ';
-    } else {
-      return `${count} Exercises `;
-    }
+    return count === 0
+      ? 'No Exercises '
+      : count === 1
+      ? '1 Exercise '
+      : `${count} Exercises `;
   };
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading exercises: {error.message}</div>;
 
   return (
     <div className='select-exercise-page'>
@@ -139,9 +109,7 @@ const SelectExercisesPage = () => {
           <div className='select-exercise__title-container'>
             <h1 className={`select-exercise__title ${theme}`}>
               {`Adding exercises for ${
-                activeWorkout.name
-                  ? activeWorkout.name
-                  : 'your selected workout'
+                activeWorkout?.name || 'your selected workout'
               }`}
             </h1>
             <div className='select-exercise__subtitle'>
@@ -154,7 +122,7 @@ const SelectExercisesPage = () => {
             onClick={handleAddExercises}
             className='select-exercise__add-exercise-btn'
           >
-            Add
+            Addx
           </button>
         </div>
         <div className='select-exercise__filters'>
@@ -167,21 +135,17 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
+            const isSelected = selectedExercises.some(
+              ex => ex.id === exercise.id
+            );
             return (
               <Exercise
-                key={exercise.index}
+                key={exercise.id}
                 name={exercise.name}
                 muscle={exercise.muscle}
                 equipment={exercise.equipment}
                 image={`http://localhost:9025/${exercise.file_path}`}
-                isSelected={
-                  selectedExercises.some(
-                    ex => ex.exerciseCatalogId === exercise.id
-                  ) ||
-                  activeWorkout.exercises.some(
-                    e => e.exerciseCatalogId === exercise.id
-                  )
-                }
+                isSelected={isSelected}
                 onClick={() => toggleExerciseSelection(exercise)}
               />
             );

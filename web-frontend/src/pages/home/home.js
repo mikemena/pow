@@ -43,7 +43,7 @@ const HomePage = () => {
     <div>
       <NavBar />
       <div className='full-viewport-div'>
-        <h1 className='main-title'>Pr00f 0f W0rk</h1>
+        <h1 className='main-title'>WRKT</h1>
         <div
           className={inView ? 'arrow-hidden' : 'arrow'}
           onClick={scrollToNextPage}

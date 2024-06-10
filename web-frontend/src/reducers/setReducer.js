@@ -1,32 +1,27 @@
 import { v4 as uuidv4 } from 'uuid';
-import { initialState } from './programReducer';
+import { initialState } from './initialState';
 
 function setReducer(state = initialState, action) {
   switch (action.type) {
-    case 'ADD_SET':
+    case 'ADD_SET': {
+      const { workoutId, exerciseId, count, weight } = action.payload;
+      const setId = uuidv4();
       return {
         ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
-            if (workout.id === action.payload.workoutId) {
+        programs: {
+          ...state.programs,
+          workouts: state.programs.workouts.map(workout => {
+            if (workout.id === workoutId) {
               return {
                 ...workout,
                 exercises: workout.exercises.map(exercise => {
-                  if (exercise.id === action.payload.exerciseId) {
-                    // Compute the next order for the new set
-                    const nextOrder =
-                      exercise.sets.length > 0
-                        ? Math.max(...exercise.sets.map(set => set.order)) + 1
-                        : 1;
-
+                  if (exercise.id === exerciseId) {
                     const newSet = {
-                      ...action.payload.newSet,
-                      id: uuidv4(), // Generate a new ID for the set
-                      order: nextOrder,
-                      isNew: true
+                      id: setId,
+                      count,
+                      weight,
+                      exerciseId
                     };
-
                     return {
                       ...exercise,
                       sets: [...exercise.sets, newSet]
@@ -40,13 +35,14 @@ function setReducer(state = initialState, action) {
           })
         }
       };
+    }
 
-    case 'UPDATE_SET':
+    case 'UPDATE_SET': {
       return {
         ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
+        programs: {
+          ...state.programs,
+          workouts: state.programs.workouts.map(workout => {
             if (workout.id === action.payload.workoutId) {
               return {
                 ...workout,
@@ -55,7 +51,8 @@ function setReducer(state = initialState, action) {
                     return {
                       ...exercise,
                       sets: exercise.sets.map(set => {
-                        if (set.order === action.payload.updatedSet.order) {
+                        if (set.id === action.payload.updatedSet.id) {
+                          // Assuming you have set ID to match on
                           return { ...set, ...action.payload.updatedSet };
                         }
                         return set;
@@ -70,21 +67,22 @@ function setReducer(state = initialState, action) {
           })
         }
       };
-    case 'DELETE_SET':
+    }
+
+    case 'DELETE_SET': {
       return {
         ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
+        programs: {
+          ...state.programs,
+          workouts: state.programs.workouts.map(workout => {
             if (workout.id === action.payload.workoutId) {
               return {
                 ...workout,
                 exercises: workout.exercises.map(exercise => {
                   if (exercise.id === action.payload.exerciseId) {
-                    const filteredAndRenumberedSets = exercise.sets
-                      .filter(set => set.id !== action.payload.setId)
-                      .map((set, index) => ({ ...set, order: index + 1 }));
-
+                    const filteredAndRenumberedSets = exercise.sets.filter(
+                      set => set.id !== action.payload.setId
+                    );
                     return {
                       ...exercise,
                       sets: filteredAndRenumberedSets
@@ -98,6 +96,7 @@ function setReducer(state = initialState, action) {
           })
         }
       };
+    }
 
     default:
       return state;

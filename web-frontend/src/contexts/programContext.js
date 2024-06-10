@@ -1,20 +1,33 @@
-import { createContext, useReducer, useState } from 'react';
+import { createContext, useReducer, useEffect } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
+// import { exerciseReducer } from '../reducers/exerciseReducer';
 import { initialState } from '../reducers/initialState';
 
 export const ProgramContext = createContext();
 
+console.log('initialState:', initialState);
+
 export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
-  const [activeWorkout, setActiveWorkout] = useState(null);
 
-  console.log('ProgramProvider: Initial State:', initialState);
-  console.log('ProgramProvider: Current State:', state);
+  console.log('Initial state in Context:', state);
 
-  const updateActiveWorkout = workout => {
-    setActiveWorkout(workout);
+  const setActiveWorkout = workoutId => {
+    console.log('Setting active workout:', workoutId); // Debug log to check the workout ID
+    if (!workoutId) {
+      console.error('Attempted to set active workout without a valid ID');
+      return; // Optionally return to avoid dispatching undefined ID
+    }
+    dispatch({
+      type: actionTypes.SET_ACTIVE_WORKOUT,
+      payload: workoutId
+    });
   };
+
+  useEffect(() => {
+    console.log('Updated state in context:', state);
+  }, [state]);
 
   const saveProgram = async newProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
@@ -49,7 +62,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addWorkout = workout => {
-    console.log('addWorkout called from context');
     dispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: workout
@@ -77,19 +89,10 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const updateExercise = (workoutId, updatedExercise) => {
-    dispatch({
-      type: actionTypes.UPDATE_EXERCISE,
-      payload: { workoutId, updatedExercise }
-    });
-  };
-
-  const deleteExercise = (workoutId, exerciseId) => {
-    dispatch({
-      type: actionTypes.DELETE_EXERCISE,
-      payload: { workoutId, exerciseId }
-    });
-  };
+  const deleteExercise = (workoutId, exerciseId) => ({
+    type: actionTypes.DELETE_EXERCISE,
+    payload: { workoutId, exerciseId }
+  });
 
   const addSet = (workoutId, exerciseId, newSet) => {
     dispatch({
@@ -112,20 +115,20 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  console.log('ProgramProvider: programState:', state);
+  console.log('ProgramProvider: state:', state);
 
   return (
     <ProgramContext.Provider
       value={{
         state,
         dispatch,
+        activeWorkout: state.activeWorkout,
         updateProgramDetails,
         addWorkout,
         updateWorkout,
         deleteWorkout,
-        updateActiveWorkout,
+        setActiveWorkout,
         addExercise,
-        updateExercise,
         deleteExercise,
         addSet,
         updateSet,
