@@ -10,8 +10,7 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { addExercise, activeWorkout, setActiveWorkout } =
-    useContext(ProgramContext);
+  const { state, addExercise, activeWorkout } = useContext(ProgramContext);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -26,11 +25,10 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
-    if (activeWorkout && activeWorkout.exercises) {
-      const selectedIds = new Set(activeWorkout.exercises.map(ex => ex.id));
-      setSelectedExercises(exercises.filter(ex => selectedIds.has(ex.id)));
+    if (activeWorkout && state.exercises[activeWorkout]) {
+      setSelectedExercises(state.exercises[activeWorkout]);
     }
-  }, [activeWorkout, exercises]);
+  }, [activeWorkout, state.exercises]);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
