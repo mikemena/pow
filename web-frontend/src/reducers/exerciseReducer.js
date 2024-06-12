@@ -4,23 +4,16 @@ function exerciseReducer(state = {}, action) {
   switch (action.type) {
     case actionTypes.ADD_EXERCISE:
       const { workoutId, exercises } = action.payload;
+      const currentExercises = state[workoutId] || [];
+      const exerciseIds = currentExercises.map(ex => ex.id);
 
-      console.log('State before ADD_EXERCISE:', state);
-      console.log('Workout ID:', workoutId);
-      console.log('Exercises to add:', exercises);
+      // Filter out exercises that already exist in the workout
+      const newExercises = exercises.filter(ex => !exerciseIds.includes(ex.id));
 
-      if (!workoutId) {
-        console.error('No workout ID provided');
-        return state;
-      }
-
-      const updatedState = {
+      return {
         ...state,
-        [workoutId]: [...(state[workoutId] || []), ...exercises]
+        [workoutId]: [...currentExercises, ...newExercises]
       };
-
-      console.log('State after ADD_EXERCISE:', updatedState);
-      return updatedState;
 
     case actionTypes.DELETE_EXERCISE:
       const { workoutId: wId, exerciseId } = action.payload;

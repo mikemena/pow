@@ -76,10 +76,14 @@ const SelectExercisesPage = () => {
     }
 
     addExercise(activeWorkout, selectedExercises);
+    //setSelectedExercises([]); // Clear selected exercises
     navigate('/create-program');
   };
 
-  const goBack = () => navigate('/create-program');
+  const goBack = () => {
+    //setSelectedExercises([]); // Clear selection
+    navigate('/create-program');
+  };
 
   const exerciseText = selectedExercises => {
     const count = selectedExercises?.length ?? 0;
