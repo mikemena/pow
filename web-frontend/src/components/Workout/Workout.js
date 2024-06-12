@@ -192,7 +192,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
             </div>
             {workoutExercises.length > 0 ? (
               workoutExercises.map((exercise, index) => (
-                <div key={exercise.tempId} className='workout__each-exercise'>
+                <div key={exercise.id} className='workout__each-exercise'>
                   <div className={`workout__drag-order-container ${theme}`}>
                     <span className={`workout__exercise-order-number ${theme}`}>
                       {index + 1}
