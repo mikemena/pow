@@ -89,10 +89,12 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const deleteExercise = (workoutId, exerciseId) => ({
-    type: actionTypes.DELETE_EXERCISE,
-    payload: { workoutId, exerciseId }
-  });
+  const deleteExercise = (workoutId, exerciseId) => {
+    dispatch({
+      type: actionTypes.DELETE_EXERCISE,
+      payload: { workoutId, exerciseId }
+    });
+  };
 
   const addSet = (workoutId, exerciseId, newSet) => {
     dispatch({
