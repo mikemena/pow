@@ -3,7 +3,8 @@ import { workoutReducer } from './workoutReducer';
 import { exerciseReducer } from './exerciseReducer';
 import { setReducer } from './setReducer.js';
 import { activeWorkoutReducer } from './activeWorkoutReducer.js';
-
+import { initialState } from './initialState';
+import { actionTypes } from '../actions/actionTypes';
 const combineReducers = reducers => {
   return (state = {}, action) => {
     let hasChanged = false;
@@ -26,4 +27,11 @@ const rootReducer = combineReducers({
   activeWorkout: activeWorkoutReducer
 });
 
-export default rootReducer;
+const mainReducer = (state, action) => {
+  if (action.type === actionTypes.CLEAR_STATE) {
+    return initialState; // Reset state to initial state
+  }
+  return rootReducer(state, action);
+};
+
+export default mainReducer;

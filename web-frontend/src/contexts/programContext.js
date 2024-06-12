@@ -1,20 +1,14 @@
-import { createContext, useReducer, useEffect } from 'react';
+import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
-// import { exerciseReducer } from '../reducers/exerciseReducer';
 import { initialState } from '../reducers/initialState';
 
 export const ProgramContext = createContext();
 
-console.log('initialState:', initialState);
-
 export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
-  console.log('Initial state in Context:', state);
-
   const setActiveWorkout = workoutId => {
-    console.log('Setting active workout:', workoutId); // Debug log to check the workout ID
     if (!workoutId) {
       console.error('Attempted to set active workout without a valid ID');
       return; // Optionally return to avoid dispatching undefined ID
@@ -24,10 +18,6 @@ export const ProgramProvider = ({ children }) => {
       payload: workoutId
     });
   };
-
-  useEffect(() => {
-    console.log('Updated state in context:', state);
-  }, [state]);
 
   const saveProgram = async newProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
@@ -117,7 +107,9 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  console.log('ProgramProvider: state:', state);
+  const clearState = () => {
+    dispatch({ type: actionTypes.CLEAR_STATE });
+  };
 
   return (
     <ProgramContext.Provider
@@ -135,7 +127,8 @@ export const ProgramProvider = ({ children }) => {
         addSet,
         updateSet,
         deleteSet,
-        saveProgram
+        saveProgram,
+        clearState
       }}
     >
       {children}

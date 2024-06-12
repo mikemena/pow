@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -9,19 +9,9 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { state, saveProgram, dispatch, setActiveWorkout } =
+  const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-
-  console.log('Programs:', state.programs);
-
-  console.log('CreateProgram: state:', state);
-
-  console.log('state.workouts:', state.workouts);
-
-  useEffect(() => {
-    console.log('State initialized or updated using useEffect:', state);
-  }, [state]);
 
   const navigate = useNavigate();
 
@@ -63,6 +53,7 @@ const CreateProgram = () => {
   };
 
   const handleCancel = () => {
+    clearState();
     navigate('/');
   };
 

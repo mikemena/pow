@@ -64,7 +64,6 @@ const SelectExercisesPage = () => {
   };
 
   const handleAddExercises = () => {
-    console.log('Adding exercises:', selectedExercises);
     if (selectedExercises.length === 0) {
       alert('No exercises selected to add.');
       return;
@@ -76,12 +75,10 @@ const SelectExercisesPage = () => {
     }
 
     addExercise(activeWorkout, selectedExercises);
-    //setSelectedExercises([]); // Clear selected exercises
     navigate('/create-program');
   };
 
   const goBack = () => {
-    //setSelectedExercises([]); // Clear selection
     navigate('/create-program');
   };
 
