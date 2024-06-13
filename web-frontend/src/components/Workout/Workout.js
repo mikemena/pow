@@ -72,16 +72,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    const exercise = state.exercises[exerciseId];
-
-    if (exercise && exercise.sets) {
-      const newSet = {
-        weight: '',
-        reps: '',
-        order: exercise.sets.length + 1
-      };
-      addSet(workoutId, exerciseId, newSet);
-    }
+    console.log('Adding new set for exercise:', exerciseId);
+    addSet(workoutId, exerciseId);
   };
 
   const exerciseText = workout => {
@@ -108,8 +100,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   const workoutExercises = state.exercises[workout.id] || [];
 
   console.log({ 'workout exercises': workoutExercises });
-
-  console.log({ 'state from workout component': state });
+  console.log('Workout component state:', state);
 
   return (
     <div
@@ -211,8 +202,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                     </p>
                   </div>
                   <div>
-                    {exercise.sets && exercise.sets.length > 0 ? (
-                      exercise.sets.map(set => (
+                    {state.sets[exercise.id] &&
+                    state.sets[exercise.id].length > 0 ? (
+                      state.sets[exercise.id].map(set => (
                         <div className='workout__sets-column' key={set.id}>
                           <ExerciseSet
                             id={set.id}

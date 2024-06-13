@@ -87,13 +87,24 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 0, reps = 0) => {
+    console.log('Dispatching ADD_SET:', {
+      workoutId,
+      exerciseId,
+      weight,
+      reps
+    });
     dispatch({
-      type: 'ADD_SET',
+      type: actionTypes.ADD_SET,
       payload: { workoutId, exerciseId, weight, reps }
     });
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
+    console.log('Dispatching UPDATE_SET:', {
+      workoutId,
+      exerciseId,
+      updatedSet
+    });
     dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
@@ -101,6 +112,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
+    console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
     dispatch({
       type: actionTypes.DELETE_SET,
       payload: { workoutId, exerciseId, setId }

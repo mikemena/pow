@@ -120,7 +120,7 @@ const SelectExercisesPage = () => {
             onClick={handleAddExercises}
             className='select-exercise__add-exercise-btn'
           >
-            Addx
+            Add
           </button>
         </div>
         <div className='select-exercise__filters'>

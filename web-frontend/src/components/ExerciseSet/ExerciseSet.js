@@ -1,22 +1,22 @@
 import React, { useContext } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
-import { MdDelete } from 'react-icons/md';
 import { RiDeleteBack2Fill } from 'react-icons/ri';
 import './ExerciseSet.css';
 
 const ExerciseSet = ({ setDetails, workoutId, exerciseId }) => {
   const { updateSet, deleteSet } = useContext(ProgramContext);
+  const { theme } = useTheme();
 
   const handleChange = updatedValue => {
+    console.log('Updating set:', updatedValue);
     updateSet(workoutId, exerciseId, { ...setDetails, ...updatedValue });
   };
 
   const handleDeleteSet = (workoutId, exerciseId, setId) => {
+    console.log('Deleting set with id:', setId);
     deleteSet(workoutId, exerciseId, setId);
   };
-
-  const { theme } = useTheme();
 
   return (
     <div className='exercise-set__container'>
