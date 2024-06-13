@@ -1,10 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
+import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
 function setReducer(state = initialState.sets, action) {
   switch (action.type) {
-    case 'ADD_SET': {
-      const { workoutId, exerciseId, weight, reps } = action.payload;
+    case actionTypes.ADD_SET: {
+      const { exerciseId, weight, reps } = action.payload;
       const setId = uuidv4();
       const newSet = {
         id: setId,
@@ -19,8 +20,8 @@ function setReducer(state = initialState.sets, action) {
       };
     }
 
-    case 'UPDATE_SET': {
-      const { workoutId, exerciseId, updatedSet } = action.payload;
+    case actionTypes.UPDATE_SET: {
+      const { exerciseId, updatedSet } = action.payload;
 
       return {
         ...state,
@@ -30,8 +31,8 @@ function setReducer(state = initialState.sets, action) {
       };
     }
 
-    case 'DELETE_SET': {
-      const { workoutId, exerciseId, setId } = action.payload;
+    case actionTypes.DELETE_SET: {
+      const { exerciseId, setId } = action.payload;
 
       return {
         ...state,
