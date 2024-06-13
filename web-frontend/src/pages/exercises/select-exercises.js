@@ -52,7 +52,6 @@ const SelectExercisesPage = () => {
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const toggleExerciseSelection = exercise => {
-    console.log('Toggling exercise selection:', exercise);
     setSelectedExercises(prevSelected => {
       const isSelected = prevSelected.some(ex => ex.id === exercise.id);
       if (isSelected) {

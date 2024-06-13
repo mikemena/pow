@@ -1,4 +1,5 @@
 import { actionTypes } from '../actions/actionTypes';
+import { v4 as uuidv4 } from 'uuid';
 
 function exerciseReducer(state = {}, action) {
   switch (action.type) {
@@ -8,8 +9,19 @@ function exerciseReducer(state = {}, action) {
       const exerciseIds = currentExercises.map(ex => ex.id);
 
       // Filter out exercises that already exist in the workout
-      const newExercises = exercises.filter(ex => !exerciseIds.includes(ex.id));
-
+      const newExercises = exercises
+        .filter(ex => !exerciseIds.includes(ex.id))
+        .map(exercise => ({
+          ...exercise,
+          sets: [
+            {
+              id: uuidv4(),
+              order: 1,
+              weight: 0,
+              reps: 0
+            }
+          ]
+        }));
       return {
         ...state,
         [workoutId]: [...currentExercises, ...newExercises]

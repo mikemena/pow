@@ -86,10 +86,10 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const addSet = (workoutId, exerciseId, newSet) => {
+  const addSet = (workoutId, exerciseId, weight = 0, reps = 0) => {
     dispatch({
-      type: actionTypes.ADD_SET,
-      payload: { workoutId, exerciseId, newSet }
+      type: 'ADD_SET',
+      payload: { workoutId, exerciseId, weight, reps }
     });
   };
 
