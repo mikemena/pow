@@ -84,6 +84,8 @@ router.post('/programs', async (req, res) => {
     workouts
   } = req.body;
 
+  console.log('Received program data:', req.body);
+
   // Begin database transaction
   const client = await pool.connect();
 
@@ -134,6 +136,7 @@ router.post('/programs', async (req, res) => {
         // add sets for each exercise
 
         for (const set of exercise.sets) {
+          console.log('Adding set with exercise_id:', exercise_id);
           const newSetQuery =
             'INSERT INTO sets (exercise_id, reps, weight, "order") VALUES ($1, $2, $3, $4)';
           await client.query(newSetQuery, [

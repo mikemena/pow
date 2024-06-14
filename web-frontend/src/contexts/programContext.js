@@ -22,6 +22,7 @@ export const ProgramProvider = ({ children }) => {
   const saveProgram = async newProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
+      console.log('Saving program:', newProgram); // Log the program data
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -29,6 +30,8 @@ export const ProgramProvider = ({ children }) => {
       });
 
       if (!response.ok) {
+        const errorText = await response.text(); // Get the response text
+        console.error('Error saving program:', errorText); // Log the error text
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
@@ -37,6 +40,7 @@ export const ProgramProvider = ({ children }) => {
         payload: savedProgram
       });
     } catch (error) {
+      console.error('Failed to save program:', error);
       dispatch({
         type: actionTypes.SAVE_PROGRAM_FAILURE,
         payload: error.message
