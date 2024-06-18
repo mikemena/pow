@@ -110,13 +110,13 @@ router.post('/programs', async (req, res) => {
     for (const workout of workouts) {
       const workoutQuery = `
         INSERT INTO workouts (program_id, name, "order")
-        VALUES ($1, $2, $3) RETURNING workout_id`;
+        VALUES ($1, $2, $3) RETURNING id`;
       const workoutResult = await client.query(workoutQuery, [
         program_id,
         workout.name,
         workout.order
       ]);
-      const workout_id = workoutResult.rows[0].workout_id;
+      const workout_id = workoutResult.rows[0].id;
 
       console.log('Inserted workout:', workoutResult.rows[0]);
 
