@@ -16,30 +16,39 @@ const CreateProgram = () => {
   const navigate = useNavigate();
 
   const handleSaveProgram = async () => {
-    const programId = Object.keys(state.programs)[0];
-    const newProgram = {
-      ...state.programs[programId],
-      workouts: Object.values(state.workouts).map(workout => ({
-        ...workout,
-        exercises: (state.exercises[workout.id] || []).map(exercise => ({
-          ...exercise,
-          sets: (state.sets[exercise.id] || []).map(set => ({
-            ...set,
-            exercise_id: exercise.id // Ensure each set includes the exercise_id
-          }))
-        }))
-      }))
-    };
-
-    console.log('Prepared program data for saving:', newProgram);
-
     try {
-      await saveProgram(newProgram);
+      await saveProgram(state.programs[Object.keys(state.programs)[0]]);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
     }
   };
+
+  // const handleSaveProgram = async () => {
+  //   const programId = Object.keys(state.programs)[0];
+  //   const newProgram = {
+  //     ...state.programs[programId],
+  //     workouts: Object.values(state.workouts).map(workout => ({
+  //       ...workout,
+  //       exercises: (state.exercises[workout.id] || []).map(exercise => ({
+  //         ...exercise,
+  //         sets: (state.sets[exercise.id] || []).map(set => ({
+  //           ...set,
+  //           exercise_id: exercise.id // Ensure each set includes the exercise_id
+  //         }))
+  //       }))
+  //     }))
+  //   };
+
+  //   console.log('Prepared program data for saving:', newProgram);
+
+  //   try {
+  //     await saveProgram(newProgram);
+  //     navigate('/programs');
+  //   } catch (error) {
+  //     console.error('Failed to save the program:', error);
+  //   }
+  // };
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];

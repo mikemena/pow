@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
@@ -10,7 +10,9 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
 
   // Access program data and functions from ProgramContext
-  const { program, updateProgramDetails } = useContext(ProgramContext);
+  const { state, updateProgramDetails } = useContext(ProgramContext);
+
+  const program = state.programs[Object.keys(state.programs)[0]];
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -23,6 +25,20 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
       toProperCase(program?.duration_unit) || ''
     }`
   });
+
+  useEffect(() => {
+    setFormValues({
+      programName: program?.name || '',
+      mainGoal: program?.main_goal || '',
+      programDuration: program?.program_duration || '',
+      durationUnit: program?.duration_unit || '',
+      daysPerWeek: program?.days_per_week || '',
+      workouts: program?.workouts || [],
+      programDurationDisplay: `${program?.program_duration || ''} ${
+        toProperCase(program?.duration_unit) || ''
+      }`
+    });
+  }, [program]);
 
   const handleChange = e => {
     const { name, value } = e.target;
