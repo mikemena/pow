@@ -1,4 +1,3 @@
-// import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
 function programReducer(state = initialState.programs, action) {
@@ -29,7 +28,6 @@ function programReducer(state = initialState.programs, action) {
           main_goal
         }
       };
-
       console.log('Updated program state:', updatedState);
       return updatedState;
 

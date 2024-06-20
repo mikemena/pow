@@ -32,6 +32,10 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     }
   }, [workout]);
 
+  useEffect(() => {
+    console.log('UseEffect- Workout component state:', state);
+  }, [state]);
+
   const navigate = useNavigate();
 
   const handleEditTitleChange = e => {

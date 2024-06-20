@@ -50,7 +50,20 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
           newValues.programDuration
         } ${toProperCase(newValues.durationUnit)}`;
       }
+      console.log('Form values updated:', newValues);
       return newValues;
+    });
+  };
+
+  const handleBlur = () => {
+    console.log('Updating program details with:', formValues);
+    updateProgramDetails({
+      id: program.id,
+      name: formValues.programName,
+      main_goal: formValues.mainGoal,
+      program_duration: formValues.programDuration,
+      duration_unit: formValues.durationUnit,
+      days_per_week: formValues.daysPerWeek
     });
   };
 
@@ -108,6 +121,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='programName'
               value={formValues.programName}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               maxLength={84}
             />
@@ -124,6 +138,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='mainGoal'
               value={formValues.mainGoal}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
             >
               {GOAL_TYPES.map(goal => (
@@ -147,6 +162,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
                 name='programDuration'
                 value={formValues.programDuration}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min={1}
               />
               <select
@@ -154,6 +170,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
                 name='durationUnit'
                 value={formValues.durationUnit}
                 onChange={handleChange}
+                onBlur={handleBlur}
               >
                 {DURATION_TYPES.map(duration => (
                   <option key={duration.id} value={duration.value}>
@@ -176,6 +193,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='daysPerWeek'
               value={formValues.daysPerWeek}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               min={1}
             />
