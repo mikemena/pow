@@ -38,6 +38,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
         toProperCase(program?.duration_unit) || ''
       }`
     });
+    console.log('Program loaded in form:', program);
   }, [program]);
 
   const handleChange = e => {
@@ -55,6 +56,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('Updating program details with:', formValues);
     updateProgramDetails({
       id: program.id,
       name: formValues.programName,

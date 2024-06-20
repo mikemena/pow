@@ -18,7 +18,7 @@ function programReducer(state = initialState.programs, action) {
         return state; // Return the current state if the program ID does not exist.
       }
 
-      return {
+      const updatedState = {
         ...state,
         [id]: {
           ...state[id], // Spread the existing program details
@@ -29,6 +29,9 @@ function programReducer(state = initialState.programs, action) {
           main_goal
         }
       };
+
+      console.log('Updated program state:', updatedState);
+      return updatedState;
 
     default:
       return state;
