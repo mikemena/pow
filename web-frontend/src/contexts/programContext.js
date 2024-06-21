@@ -49,9 +49,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateProgramDetails = details => {
-    console.log('Dispatching UPDATE_PROGRAM_DETAILS:', {
-      details
-    });
     dispatch({
       type: actionTypes.UPDATE_PROGRAM_DETAILS,
       payload: details

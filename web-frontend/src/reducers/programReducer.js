@@ -28,7 +28,7 @@ function programReducer(state = initialState.programs, action) {
           main_goal
         }
       };
-      console.log('Updated program state:', updatedState);
+      console.log('XXX-Reducer updated program state:', updatedState);
       return updatedState;
 
     default:
