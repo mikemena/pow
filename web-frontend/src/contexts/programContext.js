@@ -19,10 +19,24 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const saveProgram = async newProgram => {
+  const saveProgram = async () => {
+    const programId = Object.keys(state.programs)[0];
+    const newProgram = {
+      ...state.programs[programId],
+      workouts: Object.values(state.workouts).map(workout => ({
+        ...workout,
+        exercises: (state.exercises[workout.id] || []).map(exercise => ({
+          ...exercise,
+          sets: state.sets[exercise.id] || []
+        })),
+        order: workout.order || 1
+      }))
+    };
+
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       console.log('Saving program:', newProgram); // Log the program data
+      validateProgramData(newProgram); // Validate data before sending
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -46,6 +60,22 @@ export const ProgramProvider = ({ children }) => {
         payload: error.message
       });
     }
+  };
+
+  const validateProgramData = programData => {
+    if (!programData.workouts || !Array.isArray(programData.workouts)) {
+      throw new Error('Workouts should be an array.');
+    }
+    programData.workouts.forEach(workout => {
+      if (!workout.exercises || !Array.isArray(workout.exercises)) {
+        throw new Error('Exercises should be an array.');
+      }
+      workout.exercises.forEach(exercise => {
+        if (!exercise.sets || !Array.isArray(exercise.sets)) {
+          throw new Error('Sets should be an array.');
+        }
+      });
+    });
   };
 
   const updateProgramDetails = details => {

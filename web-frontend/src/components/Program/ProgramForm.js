@@ -8,10 +8,7 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-
-  // Access program data and functions from ProgramContext
   const { state, updateProgramDetails } = useContext(ProgramContext);
-
   const program = state.programs[Object.keys(state.programs)[0]];
 
   const [formValues, setFormValues] = useState({
@@ -50,7 +47,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
           newValues.programDuration
         } ${toProperCase(newValues.durationUnit)}`;
       }
-      console.log('Form values updated:', newValues);
+      console.log('Form values updated:', newValues); // Log form values on change
       return newValues;
     });
   };
