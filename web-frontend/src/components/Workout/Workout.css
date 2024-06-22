@@ -196,12 +196,10 @@
 }
 
 .workout__exercises-header-container {
-  /* display: flex;
-  justify-content: space-between; */
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: center;
-  gap: 10px; /* Adjust gap to suit your design */
+  gap: 10px;
 }
 
 .workout__exercises_header {
@@ -233,8 +231,8 @@
 }
 
 .workout__each-exercise {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* Match the grid columns of headers */
   align-items: center;
   border-top: 1px solid #dedede;
   margin: 10px 0;
