@@ -120,7 +120,7 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const addSet = (workoutId, exerciseId, weight = 0, reps = 0) => {
+  const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
     console.log('Dispatching ADD_SET:', {
       workoutId,
       exerciseId,
