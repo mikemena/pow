@@ -35,7 +35,6 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
         toProperCase(program?.duration_unit) || ''
       }`
     });
-    console.log('Program loaded in form:', program);
   }, [program]);
 
   const handleChange = e => {

@@ -20,7 +20,8 @@ function workoutReducer(state = initialState.workouts, action) {
         id: workoutId,
         name: workoutTitle,
         exercises: [],
-        programId: action.payload.programId
+        programId: action.payload.programId,
+        order: Object.keys(state).length + 1
       };
 
       const newState = {

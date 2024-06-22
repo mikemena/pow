@@ -131,6 +131,7 @@ router.post('/programs', async (req, res) => {
             exercise.order
           ]);
           const exercise_id = exerciseResult.rows[0].id;
+          console.log('exerciseResult ', exerciseResult);
 
           console.log('Inserted exercise:', exerciseResult.rows[0]);
 
