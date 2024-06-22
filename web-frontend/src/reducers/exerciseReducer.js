@@ -13,7 +13,7 @@ function exerciseReducer(state = {}, action) {
         .filter(ex => !exerciseIds.includes(ex.id))
         .map(exercise => ({
           ...exercise,
-          order: (state.exercises[workoutId]?.length || 0) + 1,
+          order: currentExercises.length + 1,
           catalog_exercise_id: exercise.id,
           sets: [
             {
