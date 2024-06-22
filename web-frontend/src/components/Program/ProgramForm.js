@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
@@ -8,9 +8,8 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-
-  // Access program data and functions from ProgramContext
-  const { program, updateProgramDetails } = useContext(ProgramContext);
+  const { state, updateProgramDetails } = useContext(ProgramContext);
+  const program = state.programs[Object.keys(state.programs)[0]];
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -24,6 +23,20 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
     }`
   });
 
+  useEffect(() => {
+    setFormValues({
+      programName: program?.name || '',
+      mainGoal: program?.main_goal || '',
+      programDuration: program?.program_duration || '',
+      durationUnit: program?.duration_unit || '',
+      daysPerWeek: program?.days_per_week || '',
+      workouts: program?.workouts || [],
+      programDurationDisplay: `${program?.program_duration || ''} ${
+        toProperCase(program?.duration_unit) || ''
+      }`
+    });
+  }, [program]);
+
   const handleChange = e => {
     const { name, value } = e.target;
     setFormValues(prev => {
@@ -33,12 +46,26 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
           newValues.programDuration
         } ${toProperCase(newValues.durationUnit)}`;
       }
+      console.log('Form values updated:', newValues); // Log form values on change
       return newValues;
+    });
+  };
+
+  const handleBlur = () => {
+    console.log('Updating program details with:', formValues);
+    updateProgramDetails({
+      id: program.id,
+      name: formValues.programName,
+      main_goal: formValues.mainGoal,
+      program_duration: formValues.programDuration,
+      duration_unit: formValues.durationUnit,
+      days_per_week: formValues.daysPerWeek
     });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('Updating program details with:', formValues);
     updateProgramDetails({
       id: program.id,
       name: formValues.programName,
@@ -90,6 +117,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='programName'
               value={formValues.programName}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               maxLength={84}
             />
@@ -106,6 +134,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='mainGoal'
               value={formValues.mainGoal}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
             >
               {GOAL_TYPES.map(goal => (
@@ -129,6 +158,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
                 name='programDuration'
                 value={formValues.programDuration}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min={1}
               />
               <select
@@ -136,6 +166,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
                 name='durationUnit'
                 value={formValues.durationUnit}
                 onChange={handleChange}
+                onBlur={handleBlur}
               >
                 {DURATION_TYPES.map(duration => (
                   <option key={duration.id} value={duration.value}>
@@ -158,6 +189,7 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
               name='daysPerWeek'
               value={formValues.daysPerWeek}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               min={1}
             />

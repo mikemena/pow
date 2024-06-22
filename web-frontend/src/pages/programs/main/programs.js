@@ -72,7 +72,7 @@ const ProgramPage = () => {
         {programs.map(program => (
           <ProgramForm
             program={program}
-            key={program.program_id}
+            key={program.id}
             isEditing={false}
             // onDelete={handleDelete}
             // onEdit={handleEdit}

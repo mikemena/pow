@@ -1,4 +1,3 @@
-// import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
 function programReducer(state = initialState.programs, action) {
@@ -18,7 +17,7 @@ function programReducer(state = initialState.programs, action) {
         return state; // Return the current state if the program ID does not exist.
       }
 
-      return {
+      const updatedState = {
         ...state,
         [id]: {
           ...state[id], // Spread the existing program details
@@ -29,6 +28,8 @@ function programReducer(state = initialState.programs, action) {
           main_goal
         }
       };
+      console.log('Reducer updated program state:', updatedState);
+      return updatedState;
 
     default:
       return state;

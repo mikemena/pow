@@ -71,9 +71,6 @@ router.get('/programs/:user_id', async (req, res) => {
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
-  const { programData } = req.body;
-
-  // console.log('Received program data:', programData);
   const {
     user_id,
     name,
@@ -81,8 +78,10 @@ router.post('/programs', async (req, res) => {
     days_per_week,
     duration_unit,
     main_goal,
-    workouts
+    workouts = [] // Default to empty array if workouts is undefined
   } = req.body;
+
+  console.log('Received program data:', JSON.stringify(req.body, null, 2));
 
   // Begin database transaction
   const client = await pool.connect();
@@ -91,68 +90,83 @@ router.post('/programs', async (req, res) => {
     await client.query('BEGIN');
 
     // Insert the new program
-    const program = await client.query(
-      'INSERT INTO programs (user_id, name, program_duration, days_per_week, duration_unit, main_goal) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
-      [user_id, name, program_duration, days_per_week, duration_unit, main_goal]
-    );
-    const program_id = program.rows[0].program_id;
+    const programQuery = `
+      INSERT INTO programs (user_id, name, program_duration, days_per_week, duration_unit, main_goal)
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`;
+    const programResult = await client.query(programQuery, [
+      user_id,
+      name,
+      program_duration,
+      days_per_week,
+      duration_unit,
+      main_goal
+    ]);
+    const program_id = programResult.rows[0].id;
 
-    // add workouts for each program
+    console.log('Inserted program:', programResult.rows[0]);
 
-    for (const workout of workouts) {
-      const newWorkoutQuery =
-        'INSERT INTO workouts (program_id, name, "order") VALUES ($1, $2, $3) RETURNING *';
-      // console.log('Executing query:', newWorkoutQuery, [
-      //   program_id,
-      //   workout.name,
-      //   workout.order
-      // ]);
-      const newWorkoutResult = await client.query(newWorkoutQuery, [
-        program_id,
-        workout.name,
-        workout.order
-      ]);
-      const workout_id = newWorkoutResult.rows[0].workout_id;
-
-      //add exercises for each workout
-
-      for (const exercise of workout.exercises) {
-        const newExerciseQuery =
-          'INSERT INTO exercises (workout_id, catalog_exercise_id, "order") VALUES ($1, $2, $3) RETURNING *';
-        // console.log('Executing query:', newExerciseQuery, [
-        //   workout_id,
-        //   exercise.catalog_exercise_id,
-        //   exercise.order
-        // ]);
-        const newExerciseResult = await client.query(newExerciseQuery, [
-          workout_id,
-          exercise.catalog_exercise_id,
-          exercise.order
+    // Add workouts for each program
+    if (Array.isArray(workouts)) {
+      for (const workout of workouts) {
+        const workoutQuery = `
+          INSERT INTO workouts (program_id, name, "order")
+          VALUES ($1, $2, $3) RETURNING id`;
+        const workoutResult = await client.query(workoutQuery, [
+          program_id,
+          workout.name,
+          workout.order
         ]);
-        const exercise_id = newExerciseResult.rows[0].exercise_id;
+        const workout_id = workoutResult.rows[0].id;
 
-        // add sets for each exercise
+        console.log('Inserted workout:', workoutResult.rows[0]);
 
-        for (const set of exercise.sets) {
-          const newSetQuery =
-            'INSERT INTO sets (exercise_id, reps, weight, "order") VALUES ($1, $2, $3, $4)';
-          await client.query(newSetQuery, [
-            exercise_id,
-            set.reps,
-            set.weight,
-            set.order
+        // Add exercises for each workout
+        for (const exercise of workout.exercises || []) {
+          const exerciseQuery = `
+            INSERT INTO exercises (workout_id, catalog_exercise_id, "order")
+            VALUES ($1, $2, $3) RETURNING id`;
+          const exerciseResult = await client.query(exerciseQuery, [
+            workout_id,
+            exercise.catalog_exercise_id,
+            exercise.order
           ]);
+          const exercise_id = exerciseResult.rows[0].id;
+          console.log('exerciseResult ', exerciseResult);
+
+          console.log('Inserted exercise:', exerciseResult.rows[0]);
+
+          // Add sets for each exercise
+          for (const set of exercise.sets || []) {
+            console.log(
+              'Adding set with exercise_id:',
+              exercise_id,
+              'and set:',
+              set
+            );
+            const setQuery = `
+              INSERT INTO sets (exercise_id, reps, weight, "order")
+              VALUES ($1, $2, $3, $4)`;
+            await client.query(setQuery, [
+              exercise_id,
+              set.reps,
+              set.weight,
+              set.order
+            ]);
+          }
         }
       }
+    } else {
+      console.warn('Workouts is not an array:', workouts);
     }
 
     await client.query('COMMIT');
+    console.log('Transaction committed successfully');
     res.status(201).json({
       message: 'Program with workouts, exercises, and sets created successfully'
     });
   } catch (err) {
     await client.query('ROLLBACK');
-    console.error(err);
+    console.error('Error during transaction:', err);
     res.status(500).send('Server error');
   } finally {
     client.release();
