@@ -11,9 +11,9 @@ function exerciseReducer(state = {}, action) {
       // Filter out exercises that already exist in the workout
       const newExercises = exercises
         .filter(ex => !exerciseIds.includes(ex.id))
-        .map(exercise => ({
+        .map((exercise, index) => ({
           ...exercise,
-          order: currentExercises.length + 1,
+          order: currentExercises.length + index + 1,
           catalog_exercise_id: exercise.id,
           sets: [
             {

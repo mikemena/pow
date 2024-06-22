@@ -206,24 +206,16 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                     </p>
                   </div>
                   <div>
-                    {state.sets[exercise.id] &&
-                    state.sets[exercise.id].length > 0 ? (
-                      state.sets[exercise.id].map(set => (
-                        <div className='workout__sets-column' key={set.id}>
-                          <ExerciseSet
-                            id={set.id}
-                            setDetails={set}
-                            workoutId={workout.id}
-                            exerciseId={exercise.id}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <p className='workout__no-exercise-message'>
-                        No sets added
-                      </p>
-                    )}
-
+                    {exercise.sets.map(set => (
+                      <div className='workout__sets-column' key={set.id}>
+                        <ExerciseSet
+                          id={set.id}
+                          setDetails={set}
+                          workoutId={workout.id}
+                          exerciseId={exercise.id}
+                        />
+                      </div>
+                    ))}
                     <button
                       onClick={() => handleAddSet(workout.id, exercise.id)}
                       className='workout__add-set-btn'
