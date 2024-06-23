@@ -195,18 +195,24 @@
   text-align: center;
 }
 
-.workout__exercises-header-container {
+.workout__exercises-header-container,
+.workout__each-exercise {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  align-items: center;
-  gap: 10px;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  gap: 5px;
+}
+
+.workout__each-exercise {
+  border-top: 1px solid #dedede;
 }
 
 .workout__exercises_header {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  margin: 0px;
+  margin: 0;
+  padding: 0;
+  text-align: center;
 }
 
 .workout__drag-order-container {
@@ -230,19 +236,8 @@
   cursor: grab;
 }
 
-.workout__each-exercise {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr; /* Match the grid columns of headers */
-  align-items: center;
-  border-top: 1px solid #dedede;
-  margin: 10px 0;
-}
-
 .workout__exercise-details {
-  display: flex;
-  flex-grow: 1;
-  flex-direction: column;
-  align-items: flex-start;
+  grid-column: 1;
 }
 
 .workout__exercise-name {
@@ -257,14 +252,6 @@
   font-size: 18px;
   font-weight: 500;
   margin: 0px;
-}
-
-.workout__sets-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 0;
-  margin: 0;
 }
 
 .workout__add-set-btn {
@@ -299,6 +286,53 @@
 
 .workout__controls.next {
   right: 20px;
+}
+
+.workout__exercises-header-container,
+.workout__each-exercise {
+  border: rgb(255, 175, 26) 2px solid;
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  gap: 5px;
+}
+
+.workout__exercises_header {
+  border: seagreen 2px solid;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
+.workout__exercise-details {
+  border: rgb(26, 133, 255) 2px solid;
+  grid-column: 1;
+}
+
+.workout__sets-column,
+.workout__weights-column,
+.workout__reps-column {
+  border: rgb(246, 105, 225) 2px solid;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.workout__set {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workout__set-weight,
+.workout__set-reps {
+  width: 100%;
+  max-width: 80px;
+}
+
+.workout__add-set-btn {
+  grid-column: 1 / -1;
+  justify-content: center;
+  margin-top: 10px;
 }
 
 /* Responsive adjustments if necessary */

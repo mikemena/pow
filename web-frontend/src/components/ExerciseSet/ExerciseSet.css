@@ -1,13 +1,23 @@
 .exercise-set__container {
+  border: rgb(255, 175, 26) 2px solid;
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr 1fr;
+  gap: 5px;
+}
+
+.exercise-set__order-column,
+.exercise-set__weight-column,
+.exercise-set__reps-column {
+  border: rgb(246, 105, 225) 2px solid;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 100%;
+  gap: 5px;
 }
-.exercise-set__row {
+
+.exercise-set__set-data {
   display: flex;
-  width: 100%;
-  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .exercise-set__order {

@@ -3,12 +3,12 @@ import { TbPencil } from 'react-icons/tb';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDragHandle, MdAddBox } from 'react-icons/md';
+import { RiDeleteBack2Fill } from 'react-icons/ri';
 import { GrClose } from 'react-icons/gr';
 import { TbHttpDelete } from 'react-icons/tb';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { useNavigate } from 'react-router-dom';
-import ExerciseSet from '../ExerciseSet/ExerciseSet';
 
 import './Workout.css';
 
@@ -20,7 +20,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     updateWorkout,
     addSet,
     activeWorkout,
-    setActiveWorkout
+    setActiveWorkout,
+    updateSet,
+    deleteSet
   } = useContext(ProgramContext);
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState('');
@@ -101,6 +103,16 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     navigate('/select-exercises');
   };
 
+  const handleChange = (updatedValue, exercise, set) => {
+    console.log('Updating set:', updatedValue);
+    updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
+  };
+
+  const handleDeleteSet = (workoutId, exerciseId, setId) => {
+    console.log('Deleting set with id:', setId);
+    deleteSet(workoutId, exerciseId, setId);
+  };
+
   const workoutExercises = state.exercises[workout.id] || [];
 
   console.log({ 'workout exercises': workoutExercises });
@@ -177,77 +189,107 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
         </button>
       </div>
       {isExpanded && (
-        <div className='workout__body'>
-          <div className='workout__exercises'>
-            <div className='workout__exercises-header-container'>
-              <h4 className={`workout__exercises_header ${theme}`}>Exercise</h4>
-              <h4 className={`workout__exercises_header ${theme}`}>Set</h4>
-              <h4 className={`workout__exercises_header ${theme}`}>Weight</h4>
-              <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
-            </div>
-            {workoutExercises.length > 0 ? (
-              workoutExercises.map((exercise, index) => (
-                <div key={exercise.id} className='workout__each-exercise'>
-                  <div className={`workout__drag-order-container ${theme}`}>
-                    <span className={`workout__exercise-order-number ${theme}`}>
-                      {index + 1}
-                    </span>{' '}
-                    <MdDragHandle
-                      size={25}
-                      className='workout__exercise-drag'
-                    />
-                  </div>
-                  <div className='workout__exercise-details'>
-                    <h4 className={`workout__exercises_name ${theme}`}>
-                      {exercise.name}
-                    </h4>
-                    <p className={`workout__exercise-muscle ${theme}`}>
-                      {exercise.muscle}
-                    </p>
-                  </div>
-                  <div>
-                    {state.sets[exercise.id] &&
-                    state.sets[exercise.id].length > 0 ? (
-                      state.sets[exercise.id].map(set => (
-                        <div className='workout__sets-column' key={set.id}>
-                          <ExerciseSet
-                            id={set.id}
-                            setDetails={set}
-                            workoutId={workout.id}
-                            exerciseId={exercise.id}
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      <p className='workout__no-exercise-message'>
-                        No sets added
-                      </p>
-                    )}
+        <div className='workout__exercises'>
+          <div className='workout__exercises-header-container'>
+            <h4 className={`workout__exercises_header ${theme}`}>Exercise</h4>
+            <h4 className={`workout__exercises_header ${theme}`}>Set</h4>
+            <h4 className={`workout__exercises_header ${theme}`}>Weight</h4>
+            <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
+          </div>
+          {workoutExercises.length > 0 ? (
+            workoutExercises.map((exercise, index) => (
+              <div key={exercise.id} className='workout__each-exercise'>
+                <div className={`workout__drag-order-container ${theme}`}>
+                  <span className={`workout__exercise-order-number ${theme}`}>
+                    {index + 1}
+                  </span>{' '}
+                  <MdDragHandle size={25} className='workout__exercise-drag' />
+                </div>
+                <div className='workout__exercise-details'>
+                  <h4 className={`workout__exercises_name ${theme}`}>
+                    {exercise.name}
+                  </h4>
+                  <p className={`workout__exercise-muscle ${theme}`}>
+                    {exercise.muscle}
+                  </p>
+                </div>
+                <div>
+                  {state.sets[exercise.id] &&
+                  state.sets[exercise.id].length > 0 ? (
+                    state.sets[exercise.id].map(set => (
+                      <div key={set.id}>
+                        <div className='workout__sets-column'>
+                          <div className='workout__set'>
+                            <p className={`workout__set-order-number ${theme}`}>
+                              {set.order}
+                            </p>
+                            <span className='icon-drag-handle'>⋮⋮</span>
+                          </div>
 
-                    <button
-                      onClick={() => handleAddSet(workout.id, exercise.id)}
-                      className='workout__add-set-btn'
-                    >
-                      <MdAddBox size={25} />
-                    </button>
-                  </div>
-                  {/* delete exercise button */}
+                          <div className='workout__weights-column'>
+                            <div className='workout__set'>
+                              <input
+                                type='number'
+                                className={`workout__set-weight ${theme}`}
+                                value={set.weight}
+                                onChange={e =>
+                                  handleChange({ weight: e.target.value })
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <div className='workout__reps-column'>
+                            <div className='workout__set'>
+                              <input
+                                type='number'
+                                className={`workout__set-reps ${theme}`}
+                                value={set.reps}
+                                onChange={e =>
+                                  handleChange({ reps: e.target.value })
+                                }
+                              />
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() =>
+                              handleDeleteSet(workout.id, exercise.id, set.id)
+                            }
+                            className='workout__delete-set-btn'
+                          >
+                            <RiDeleteBack2Fill size={25} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className='workout__no-exercise-message'>
+                      No sets added
+                    </p>
+                  )}
+
                   <button
-                    className='workout__remove-exercise-btn'
-                    id={`remove-exercise-btn-${exercise.id}`}
-                    type='button'
-                    onClick={() =>
-                      handleDeleteExercise(workout.id, exercise.id)
-                    }
+                    onClick={() => handleAddSet(workout.id, exercise.id)}
+                    className='workout__add-set-btn'
                   >
-                    <TbHttpDelete size={30} />
+                    <MdAddBox size={25} />
                   </button>
                 </div>
-              ))
-            ) : (
-              <p className='workout__no-exercise-message'>No exercises added</p>
-            )}
-          </div>
+                {/* delete exercise button */}
+                <button
+                  className='workout__remove-exercise-btn'
+                  id={`remove-exercise-btn-${exercise.id}`}
+                  type='button'
+                  onClick={() => handleDeleteExercise(workout.id, exercise.id)}
+                >
+                  <TbHttpDelete size={30} />
+                </button>
+              </div>
+            ))
+          ) : (
+            <p className='workout__no-exercise-message'>No exercises added</p>
+          )}
         </div>
       )}
     </div>
