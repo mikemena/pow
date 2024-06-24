@@ -100,7 +100,8 @@
 .workout__exercise-order-number.light,
 .workout__drag-order-container.light,
 .workout__icon.light,
-.workout__controls-button.light {
+.workout__controls-button.light,
+.workout__set-order-number.light {
   color: var(--dark-text-color);
 }
 
@@ -113,7 +114,8 @@
 .workout__exercise-order-number.dark,
 .workout__drag-order-container.dark,
 .workout__icon.dark,
-.workout__controls-button.dark {
+.workout__controls-button.dark,
+.workout__set-order-number {
   color: var(--light-text-color);
 }
 
@@ -198,8 +200,59 @@
 .workout__exercises-header-container,
 .workout__each-exercise {
   display: grid;
-  grid-template-columns: 3fr 1fr 1fr 1fr;
+  grid-template-columns: 3fr 1fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: start;
+}
+
+.workout__exercise-column {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.workout__exercise-info {
+  display: flex;
+  align-items: center;
+  border: #4caf50 2px solid;
+}
+
+.workout__sets-column,
+.workout__weights-column,
+.workout__reps-column {
+  display: flex;
+  flex-direction: column;
   gap: 5px;
+}
+
+.workout__set {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.workout__set-order-number {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 6px;
+}
+
+.workout__set-weight,
+.workout__set-reps {
+  width: 100%;
+  max-width: 80px;
+}
+
+.workout__add-set-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  margin-top: 10px;
+}
+
+.workout__remove-exercise-btn {
+  grid-column: 5;
+  align-self: center;
 }
 
 .workout__each-exercise {
@@ -217,22 +270,17 @@
 
 .workout__drag-order-container {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  justify-content: flex-start;
   align-items: center;
-  padding-top: 5px;
+  margin: 5px;
 }
 
 .workout__exercise-order-number {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  margin: 5px;
 }
 
 .workout__exercise-drag {
-  padding: 8px;
   cursor: grab;
 }
 
@@ -244,14 +292,12 @@
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 600;
-  margin: 0px;
 }
 
 .workout__exercise-muscle {
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 500;
-  margin: 0px;
 }
 
 .workout__add-set-btn {
@@ -294,45 +340,6 @@
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr;
   gap: 5px;
-}
-
-.workout__exercises_header {
-  border: seagreen 2px solid;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-
-.workout__exercise-details {
-  border: rgb(26, 133, 255) 2px solid;
-  grid-column: 1;
-}
-
-.workout__sets-column,
-.workout__weights-column,
-.workout__reps-column {
-  border: rgb(246, 105, 225) 2px solid;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.workout__set {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.workout__set-weight,
-.workout__set-reps {
-  width: 100%;
-  max-width: 80px;
-}
-
-.workout__add-set-btn {
-  grid-column: 1 / -1;
-  justify-content: center;
-  margin-top: 10px;
 }
 
 /* Responsive adjustments if necessary */
