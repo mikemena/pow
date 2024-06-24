@@ -6,6 +6,7 @@ import { MdDragHandle, MdAddBox } from 'react-icons/md';
 import { RiDeleteBack2Fill } from 'react-icons/ri';
 import { GrClose } from 'react-icons/gr';
 import { TbHttpDelete } from 'react-icons/tb';
+import TextInput from '../Inputs/TextInput';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { useNavigate } from 'react-router-dom';
@@ -244,10 +245,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                   {state.sets[exercise.id] && state.sets[exercise.id].length > 0
                     ? state.sets[exercise.id].map(set => (
                         <div key={set.id} className='workout__set'>
-                          <input
-                            type='number'
+                          <TextInput
                             className={`workout__set-weight ${theme}`}
-                            value={set.weight}
+                            id='set-weight'
                             onChange={e =>
                               handleChange(
                                 { weight: e.target.value },
@@ -255,6 +255,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                                 set
                               )
                             }
+                            value={set.weight}
+                            type='number'
                           />
                         </div>
                       ))
@@ -265,10 +267,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                   {state.sets[exercise.id] && state.sets[exercise.id].length > 0
                     ? state.sets[exercise.id].map(set => (
                         <div key={set.id} className='workout__set'>
-                          <input
-                            type='number'
+                          <TextInput
                             className={`workout__set-reps ${theme}`}
-                            value={set.reps}
+                            id='exercise-search-bar'
                             onChange={e =>
                               handleChange(
                                 { reps: e.target.value },
@@ -276,6 +277,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                                 set
                               )
                             }
+                            value={set.reps}
+                            type='number'
                           />
                           <button
                             onClick={() =>
