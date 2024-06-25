@@ -115,10 +115,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const workoutExercises = state.exercises[workout.id] || [];
-  const exerciseSets = state.sets || {};
 
   console.log({ 'workout exercises': workoutExercises });
-  console.log('Workout component state:', state);
 
   return (
     <div
@@ -224,11 +222,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                     </div>
                   </div>
                 </div>
-
                 <div className='workout__sets-column'>
-                  {exerciseSets[exercise.id] &&
-                  exerciseSets[exercise.id].length > 0 ? (
-                    exerciseSets[exercise.id].map(set => (
+                  {exercise.sets && exercise.sets.length > 0 ? (
+                    exercise.sets.map(set => (
                       <div key={set.id} className='workout__set'>
                         <p className={`workout__set-order-number ${theme}`}>
                           {set.order}
@@ -243,9 +239,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                 </div>
 
                 <div className='workout__weights-column'>
-                  {exerciseSets[exercise.id] &&
-                  exerciseSets[exercise.id].length > 0
-                    ? exerciseSets[exercise.id].map(set => (
+                  {exercise.sets && exercise.sets.length > 0
+                    ? exercise.sets.map(set => (
                         <div key={set.id} className='workout__set'>
                           <TextInput
                             className={`workout__set-weight ${theme}`}
@@ -266,9 +261,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                 </div>
 
                 <div className='workout__reps-column'>
-                  {exerciseSets[exercise.id] &&
-                  exerciseSets[exercise.id].length > 0
-                    ? exerciseSets[exercise.id].map(set => (
+                  {exercise.sets && exercise.sets.length > 0
+                    ? exercise.sets.map(set => (
                         <div key={set.id} className='workout__set'>
                           <TextInput
                             className={`workout__set-reps ${theme}`}
