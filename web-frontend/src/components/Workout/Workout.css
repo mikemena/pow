@@ -249,7 +249,7 @@
 .workout__set-weight,
 .workout__set-reps {
   width: 100%;
-  padding: 5px;
+  margin: 1px;
   box-sizing: border-box;
 }
 
@@ -257,6 +257,12 @@
   grid-column: 1 / -1;
   justify-self: center;
   margin-top: 10px;
+}
+
+.workout__delete-set-btn {
+  color: #d86e66;
+  cursor: pointer;
+  margin-left: 10px;
 }
 
 .workout__remove-exercise-btn {
