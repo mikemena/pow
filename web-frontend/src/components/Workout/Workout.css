@@ -205,10 +205,9 @@
 .workout__each-exercise {
   display: grid;
   grid-template-columns: 3fr 0.5fr 0.75fr 0.75fr 0.2fr;
-  gap: 5px;
+
   align-items: center;
   width: 100%; /* Ensure it takes full width */
-  border: #4cb443 2px solid;
 }
 
 .workout__exercise-column {
@@ -221,7 +220,6 @@
   display: flex;
   align-items: center;
   width: 100%;
-  border: #d83fbe 2px solid;
 }
 
 .workout__sets-column,
@@ -238,7 +236,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: #e858ae 2px solid;
 }
 
 .workout__set-order-number {
@@ -247,7 +244,6 @@
   font-weight: 500;
   margin: 6px;
   text-align: center;
-  border: #d341d1 2px solid;
 }
 
 .workout__set-weight,
@@ -277,7 +273,6 @@
   font-size: 18px;
   font-weight: 600;
   text-align: center;
-  border: #d148d8 2px solid;
 }
 
 .workout__drag-order-container {

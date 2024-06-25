@@ -107,6 +107,12 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
+    console.log(
+      'Adding exercise with workoutId:',
+      workoutId,
+      'and exercises:',
+      exercises
+    );
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
@@ -146,11 +152,16 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
-    console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
-    dispatch({
-      type: actionTypes.DELETE_SET,
-      payload: { workoutId, exerciseId, setId }
-    });
+    const exerciseSets = state.sets[exerciseId];
+    if (exerciseSets && exerciseSets.length > 1) {
+      console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
+      dispatch({
+        type: actionTypes.DELETE_SET,
+        payload: { workoutId, exerciseId, setId }
+      });
+    } else {
+      console.log('Cannot delete the only remaining set.');
+    }
   };
 
   const clearState = () => {
