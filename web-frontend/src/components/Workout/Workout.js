@@ -118,8 +118,13 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   const exerciseCount = workoutExercises.length;
   console.log('count exercises:', exerciseCount);
 
-  const setsCount = allSets.length;
-  console.log('sets count:', setsCount);
+  console.log('allSets:', allSets);
+
+  const totalSetsCount = allSets.reduce((total, exercise) => {
+    return total + (exercise.sets ? exercise.sets.length : 0);
+  }, 0);
+
+  console.log('Total sets count:', totalSetsCount);
 
   return (
     <div
@@ -182,7 +187,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
       </div>
       <div className='workout__subtitle'>
         <span className={`workout__exercise-count ${theme}`}>
-          {exerciseText(workout)}
+          {exerciseText(exerciseCount)}
         </span>
         <button
           onClick={() => handleAddExercises(workout.id)}
