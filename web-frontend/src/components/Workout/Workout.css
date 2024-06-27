@@ -204,10 +204,9 @@
 .workout__exercises-header-container,
 .workout__each-exercise {
   display: grid;
-  grid-template-columns: 3fr 0.5fr 0.75fr 0.75fr 0.2fr;
-
+  grid-template-columns: 3fr 0.25fr 0.65fr 0.65fr 0.25fr;
   align-items: center;
-  width: 100%; /* Ensure it takes full width */
+  width: 100%;
 }
 
 .workout__exercise-column {
@@ -221,18 +220,25 @@
   align-items: center;
   width: 100%;
 }
+.workout__set {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
 
 .workout__sets-column,
 .workout__weights-column,
-.workout__reps-column {
+.workout__reps-column,
+.workout__delete-set-column {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 5px;
 }
 
-.workout__set {
+.workout__no-delete-set-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -248,8 +254,13 @@
 
 .workout__set-weight,
 .workout__set-reps {
-  width: 100%;
-  margin: 1px;
+  width: 65%;
+  margin: 2px;
+  box-sizing: border-box;
+}
+
+.workout__no-delete-set-btn {
+  margin: 2px;
   box-sizing: border-box;
 }
 
@@ -260,9 +271,10 @@
 }
 
 .workout__delete-set-btn {
-  color: #d86e66;
+  color: var(--orange);
   cursor: pointer;
-  margin-left: 10px;
+  margin-left: 5px;
+  padding-top: 10px;
 }
 
 .workout__remove-exercise-btn {
@@ -272,6 +284,7 @@
 
 .workout__each-exercise {
   border-top: 1px solid #dedede;
+  padding-top: 5px;
 }
 
 .workout__exercises_header {

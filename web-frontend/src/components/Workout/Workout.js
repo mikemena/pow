@@ -231,19 +231,15 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                   </div>
                 </div>
                 <div className='workout__sets-column'>
-                  {exercise.sets && exercise.sets.length > 0 ? (
+                  {exercise.sets &&
+                    exercise.sets.length > 0 &&
                     exercise.sets.map(set => (
                       <div key={set.id} className='workout__set'>
                         <p className={`workout__set-order-number ${theme}`}>
                           {set.order}
                         </p>
                       </div>
-                    ))
-                  ) : (
-                    <p className='workout__no-exercise-message'>
-                      No sets added
-                    </p>
-                  )}
+                    ))}
                 </div>
 
                 <div className='workout__weights-column'>
@@ -270,11 +266,10 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
 
                 <div className='workout__reps-column'>
                   {exercise.sets && exercise.sets.length > 0
-                    ? exercise.sets.map(set => (
+                    ? exercise.sets.map((set, setIndex) => (
                         <div key={set.id} className='workout__set'>
                           <TextInput
                             className={`workout__set-reps ${theme}`}
-                            id='exercise-search-bar'
                             onChange={e =>
                               handleChange(
                                 { reps: e.target.value },
@@ -285,15 +280,28 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                             value={set.reps}
                             type='number'
                           />
-                          {/* NOTE: This is where i need to put logic to hide button if length = 1*/}
-                          <button
-                            onClick={() =>
-                              handleDeleteSet(workout.id, exercise.id, set.id)
-                            }
-                            className='workout__delete-set-btn'
-                          >
-                            <RiDeleteBack2Fill size={25} />
-                          </button>
+                        </div>
+                      ))
+                    : null}
+                </div>
+                <div className='workout__delete-set-column'>
+                  {exercise.sets && exercise.sets.length > 0
+                    ? exercise.sets.map((set, setIndex) => (
+                        <div key={set.id} className='workout__set'>
+                          {setIndex > 0 ? (
+                            <button
+                              onClick={() =>
+                                handleDeleteSet(workout.id, exercise.id, set.id)
+                              }
+                              className='workout__delete-set-btn'
+                            >
+                              <RiDeleteBack2Fill size={25} />
+                            </button>
+                          ) : (
+                            <div className='workout__set'>
+                              <div className='workout__no-delete-set-btn' />
+                            </div>
+                          )}
                         </div>
                       ))
                     : null}
