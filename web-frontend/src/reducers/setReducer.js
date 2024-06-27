@@ -11,7 +11,7 @@ function setReducer(state = initialState.sets, action) {
         id: setId,
         weight,
         reps,
-        order: (state[exerciseId] || []).length + 1
+        order: (state[exerciseId] || []).length + 2
       };
 
       console.log('Adding new set:', newSet);
