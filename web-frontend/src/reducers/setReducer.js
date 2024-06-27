@@ -43,15 +43,11 @@ function setReducer(state = initialState.sets, action) {
       const { exerciseId, setId } = action.payload;
       console.log('Deleting set with id:', setId);
 
-      // Check if the exercise has more than one set
-      if (state[exerciseId].length <= 1) {
-        console.log('Cannot delete the only remaining set.');
-        return state;
-      }
+      const updatedSets = state[exerciseId].filter(set => set.id !== setId);
 
       return {
         ...state,
-        [exerciseId]: state[exerciseId].filter(set => set.id !== setId)
+        [exerciseId]: updatedSets
       };
     }
     default:

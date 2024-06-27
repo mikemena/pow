@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { TbPencil } from 'react-icons/tb';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
@@ -26,8 +26,9 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     deleteSet
   } = useContext(ProgramContext);
   const [isEditing, setIsEditing] = useState(false);
-  const [workoutTitle, setWorkoutTitle] = useState('');
+  const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (workout) {
@@ -38,8 +39,6 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   useEffect(() => {
     console.log('UseEffect- Workout component state:', state);
   }, [state]);
-
-  const navigate = useNavigate();
 
   const handleEditTitleChange = e => {
     setIsEditing(true);
@@ -60,8 +59,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
 
   const handleDeleteWorkout = workoutId => {
     deleteWorkout(workoutId);
-    // Update active workout if the deleted one was active
-    if (activeWorkout && activeWorkout === workoutId) {
+    if (activeWorkout === workoutId) {
       setActiveWorkout(null);
     }
   };
@@ -72,8 +70,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
 
   const handleWorkoutExpand = () => {
     onToggleExpand(workout.id);
-    // Set as active workout when expanded
-    if (!activeWorkout || activeWorkout !== workout.id) {
+    if (activeWorkout !== workout.id) {
       setActiveWorkout(workout.id);
     }
   };
@@ -83,24 +80,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     addSet(workoutId, exerciseId);
   };
 
-  const exerciseText = workout => {
-    const count = workout?.exercises?.length ?? 0;
-
-    if (count === 0) {
-      return 'No Exercises ';
-    } else if (count === 1) {
-      return '1 Exercise ';
-    } else {
-      return `${count} Exercises `;
-    }
-  };
-
-  if (!workout) return null;
-
   const handleAddExercises = workoutId => {
-    // Set the workout as active
     setActiveWorkout(workoutId);
-    // Navigate to the select exercises page
     navigate('/select-exercises');
   };
 
@@ -114,9 +95,28 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     deleteSet(workoutId, exerciseId, setId);
   };
 
-  const workoutExercises = state.exercises[workout.id] || [];
+  const workoutExercises = useMemo(
+    () => state.exercises[workout.id] || [],
+    [state.exercises, workout.id]
+  );
 
-  console.log({ 'workout exercises': workoutExercises });
+  const allSets = useMemo(() => {
+    return workoutExercises.map(exercise => {
+      return {
+        ...exercise,
+        sets: [...(exercise.sets || []), ...(state.sets[exercise.id] || [])]
+      };
+    });
+  }, [workoutExercises, state.sets]);
+
+  const exerciseText = count => {
+    if (count === 0) return 'No Exercises';
+    if (count === 1) return '1 Exercise';
+    return `${count} Exercises`;
+  };
+
+  const count = workoutExercises.length;
+  console.log(('count exercises:', count));
 
   return (
     <div
@@ -197,7 +197,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
             <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
           </div>
           {workoutExercises.length > 0 ? (
-            workoutExercises.map((exercise, index) => (
+            allSets.map((exercise, index) => (
               <div key={exercise.id} className='workout__each-exercise'>
                 <div className='workout__exercise-column'>
                   <div className='workout__exercise-info'>

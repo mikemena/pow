@@ -152,8 +152,19 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
+    const exercise = state.exercises[workoutId].find(
+      ex => ex.id === exerciseId
+    );
+    const initialState = exercise?.sets || [];
+    const additionalSets = state.sets[exerciseId] || [];
+    const combinedSets = [...initialState, ...additionalSets];
+    console.log('combinedSets:', combinedSets);
+
     const exerciseSets = state.sets[exerciseId];
-    if (exerciseSets && exerciseSets.length > 1) {
+    console.log('exerciseSets in deleteSet:', exerciseSets);
+    console.log('combinedSets length:', combinedSets.length);
+
+    if (combinedSets.length > 1) {
       console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
       dispatch({
         type: actionTypes.DELETE_SET,
