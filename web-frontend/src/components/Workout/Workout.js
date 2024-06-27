@@ -115,8 +115,11 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     return `${count} Exercises`;
   };
 
-  const count = workoutExercises.length;
-  console.log(('count exercises:', count));
+  const exerciseCount = workoutExercises.length;
+  console.log('count exercises:', exerciseCount);
+
+  const setsCount = allSets.length;
+  console.log('sets count:', setsCount);
 
   return (
     <div
@@ -277,6 +280,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                             value={set.reps}
                             type='number'
                           />
+                          {/* NOTE: This is where i need to put logic to hide button if length = 1*/}
                           <button
                             onClick={() =>
                               handleDeleteSet(workout.id, exercise.id, set.id)
