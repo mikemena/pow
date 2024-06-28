@@ -1,3 +1,7 @@
+* {
+  outline: 1px solid red !important;
+}
+
 .workout {
   position: relative;
   flex-shrink: 0;
@@ -5,7 +9,7 @@
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 15px;
-  padding: 20px 0px;
+  padding: 5px 0px;
   transition: transform 0.3s ease;
   box-sizing: border-box;
 }
@@ -297,7 +301,7 @@
 .workout__drag-order-container {
   display: flex;
   align-items: center;
-  margin: 5px;
+  margin-left: 0.3rem;
 }
 
 .workout__exercise-order-number {
@@ -312,6 +316,8 @@
 
 .workout__exercise-details {
   grid-column: 1;
+  margin-left: 0.3rem;
+  width: 100%;
 }
 
 .workout__exercise-name {
@@ -324,10 +330,11 @@
   font-family: 'Roboto', sans-serif;
   font-size: 18px;
   font-weight: 500;
+  margin: 0;
 }
 
 .workout__add-set-btn {
-  color: #559857;
+  color: #678168;
   cursor: pointer;
   margin: 0;
 }
@@ -344,6 +351,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.workout__exercise-controls {
+  grid-column: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  width: 100%;
 }
 
 .workout__controls {

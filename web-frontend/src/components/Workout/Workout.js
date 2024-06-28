@@ -215,18 +215,14 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                       >
                         {index + 1}
                       </span>
-                      <MdDragHandle
-                        size={25}
-                        className='workout__exercise-drag'
-                      />
                     </div>
                     <div className='workout__exercise-details'>
                       <h4 className={`workout__exercises_name ${theme}`}>
                         {exercise.name}
                       </h4>
-                      <p className={`workout__exercise-muscle ${theme}`}>
+                      <h5 className={`workout__exercise-muscle ${theme}`}>
                         {exercise.muscle}
-                      </p>
+                      </h5>
                     </div>
                   </div>
                 </div>
@@ -314,14 +310,19 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                   <MdAddBox size={25} />
                 </button>
 
-                <button
-                  className='workout__remove-exercise-btn'
-                  id={`remove-exercise-btn-${exercise.id}`}
-                  type='button'
-                  onClick={() => handleDeleteExercise(workout.id, exercise.id)}
-                >
-                  <TbHttpDelete size={30} />
-                </button>
+                <div className='workout__exercise-controls'>
+                  <div className={`workout__drag-handle ${theme}`}>
+                    <MdDragHandle size={25} />
+                  </div>
+                  <button
+                    className='workout__remove-exercise-btn'
+                    onClick={() =>
+                      handleDeleteExercise(workout.id, exercise.id)
+                    }
+                  >
+                    <TbHttpDelete size={30} />
+                  </button>
+                </div>
               </div>
             ))
           ) : (
