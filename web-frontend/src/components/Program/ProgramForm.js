@@ -6,10 +6,9 @@ import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toProperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
+const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-  const { state, updateProgramDetails } = useContext(ProgramContext);
-  const program = state.programs[Object.keys(state.programs)[0]];
+  const { updateProgramDetails } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -46,13 +45,11 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
           newValues.programDuration
         } ${toProperCase(newValues.durationUnit)}`;
       }
-      console.log('Form values updated:', newValues); // Log form values on change
       return newValues;
     });
   };
 
   const handleBlur = () => {
-    console.log('Updating program details with:', formValues);
     updateProgramDetails({
       id: program.id,
       name: formValues.programName,
@@ -65,7 +62,6 @@ const ProgramForm = ({ isEditing, isExpanded, onToggleExpand }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    console.log('Updating program details with:', formValues);
     updateProgramDetails({
       id: program.id,
       name: formValues.programName,
