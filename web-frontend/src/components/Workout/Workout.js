@@ -236,6 +236,12 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                         </p>
                       </div>
                     ))}
+                  <button
+                    onClick={() => handleAddSet(workout.id, exercise.id)}
+                    className='workout__add-set-btn'
+                  >
+                    <MdAddBox size={25} />
+                  </button>
                 </div>
 
                 <div className='workout__weights-column'>
@@ -258,6 +264,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                         </div>
                       ))
                     : null}
+                  <div className='workout__blank'></div>
                 </div>
 
                 <div className='workout__reps-column'>
@@ -279,6 +286,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                         </div>
                       ))
                     : null}
+                  <div className='workout__blank'></div>
                 </div>
                 <div className='workout__delete-set-column'>
                   {exercise.sets && exercise.sets.length > 0
@@ -301,14 +309,8 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
                         </div>
                       ))
                     : null}
+                  <div className='workout__blank'></div>
                 </div>
-
-                <button
-                  onClick={() => handleAddSet(workout.id, exercise.id)}
-                  className='workout__add-set-btn'
-                >
-                  <MdAddBox size={25} />
-                </button>
 
                 <div className='workout__exercise-controls'>
                   <div className={`workout__drag-handle ${theme}`}>

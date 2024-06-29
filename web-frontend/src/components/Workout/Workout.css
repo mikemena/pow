@@ -1,6 +1,6 @@
-* {
+/* * {
   outline: 1px solid red !important;
-}
+} */
 
 .workout {
   position: relative;
@@ -268,6 +268,13 @@
   box-sizing: border-box;
 }
 
+.workout__blank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+}
+
 .workout__add-set-btn {
   grid-column: 1 / -1;
   justify-self: center;
@@ -282,13 +289,18 @@
 }
 
 .workout__remove-exercise-btn {
-  grid-column: 5;
-  justify-self: center;
+  grid-column: 6;
+  justify-self: end;
+  margin-right: 10px;
 }
 
 .workout__each-exercise {
   border-top: 1px solid #dedede;
   padding-top: 5px;
+  display: grid;
+  grid-template-columns: 3fr 0.25fr 0.65fr 0.65fr 0.25fr auto;
+  align-items: center;
+  width: 100%;
 }
 
 .workout__exercises_header {
@@ -354,12 +366,10 @@
 }
 
 .workout__exercise-controls {
-  grid-column: 3;
+  grid-column: 1 / -1;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: space-between;
-  height: 100%;
+  align-items: center;
   width: 100%;
 }
 
