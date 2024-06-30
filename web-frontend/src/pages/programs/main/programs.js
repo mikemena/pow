@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ProgramForm from '../../../components/Program/ProgramForm';
 import Button from '../../../components/Inputs/Button';
 import NavBar from '../../../components/Nav/Nav';
+import { useTheme } from '../../../contexts/themeContext';
 
 import './programs.css';
 
 const ProgramPage = () => {
   const [programs, setPrograms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [expandedProgramId, setExpandedProgramId] = useState(null);
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   useEffect(() => {
     fetch('http://localhost:9025/api/programs/2')
@@ -29,10 +29,6 @@ const ProgramPage = () => {
     navigate('/create-program');
   };
 
-  const toggleExpand = program => {
-    setExpandedProgramId(expandedProgramId === program.id ? null : program.id);
-  };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -42,19 +38,31 @@ const ProgramPage = () => {
   return (
     <div>
       <NavBar />
-      <div className='programs-header'>
+      <div className='view-prog-page'>
         <h1>My Programs</h1>
         <Button onClick={handleCreateProgram}>Create</Button>
       </div>
-      <div className='program-list'>
+      <div className='view-prog-page__program-list'>
         {programs.map(program => (
-          <ProgramForm
-            key={program.id}
-            isEditing={false} // or true, based on your requirement
-            isExpanded={expandedProgramId === program.id}
-            onToggleExpand={() => toggleExpand(program)}
-            program={program}
-          />
+          <div key={program.id} className={`view-prog-page__program ${theme}`}>
+            <h2 className='view-prog-page__program-title'>{program.name}</h2>
+            <div className='view-prog-page__program-details'>
+              <p className='view-prog-page__program-details-label'>Main Goal</p>
+              <p className='view-prog-page__program-details-value'>
+                {program.main_goal}
+              </p>
+              <p className='view-prog-page__program-details-label'>Duration</p>
+              <p className='view-prog-page__program-details-value'>
+                {program.program_duration} {program.duration_unit}
+              </p>
+              <p className='view-prog-page__program-details-label'>
+                Days Per Week
+              </p>
+              <p className='view-prog-page__program-details-value'>
+                {program.days_per_week}
+              </p>
+            </div>
+          </div>
         ))}
       </div>
     </div>

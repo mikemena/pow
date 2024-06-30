@@ -7,7 +7,8 @@
   --light-input: rgb(219, 215, 213);
   --orange: rgb(249, 156, 87);
   --pink: rgb(122, 18, 98);
-  --green: rgb(79, 224, 98);
+  --green: hsl(128, 70%, 59%);
+  --dark-green: #5e8063;
   --white: rgb(220, 218, 218);
   --black: rgb(38, 38, 42);
   --gray: rgb(115, 115, 113);
