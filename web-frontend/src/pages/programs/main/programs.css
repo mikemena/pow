@@ -5,6 +5,12 @@
   padding: 10px 0;
   box-sizing: border-box;
 }
+.view-prog-page__page-title {
+  font-size: 2rem;
+  margin-left: 10px;
+  font-weight: 400;
+  color: var(--gray);
+}
 
 .view-prog-page__program.light {
   background-color: rgb(204, 204, 202);
@@ -27,17 +33,61 @@
   align-items: center;
 }
 
+.view-prog-page__program-details-section {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+}
+
 .view-prog-page__program-details-label {
-  font-size: 1rem;
+  font-size: 16px;
   text-transform: uppercase;
   margin: 0 5px;
   color: var(--gray);
 }
 .view-prog-page__program-details-value {
-  font-size: 1.1rem;
-  font-weight: 700;
-  text-transform: uppercase;
-
+  font-weight: 600;
+  font-size: 18px;
   margin: 0 5px;
   color: var(--dark-green);
+}
+/* Responsive adjustments for mobile devices */
+@media (max-width: 600px) {
+  .view-prog-page__program {
+    max-width: 100%;
+    padding: 5px;
+    margin: 10px auto;
+  }
+
+  .view-prog-page__page-title {
+    font-size: 1.5rem;
+    margin-left: 25px;
+  }
+
+  .view-prog-page__program-title {
+    margin: 5px 25px;
+    font-size: 1.25rem;
+  }
+  .view-prog-page__program-details {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .view-prog-page__program-details-section {
+    display: flex;
+    padding: 5px 10px;
+    width: 70%;
+  }
+
+  .view-prog-page__program-details-label {
+    margin-right: 10px;
+    white-space: nowrap;
+    flex: 1;
+  }
+
+  .view-prog-page__program-details-value {
+    text-align: right;
+    flex: 1;
+    text-align: left;
+  }
 }
