@@ -51,6 +51,7 @@
   margin: 0 5px;
   color: var(--dark-green);
 }
+
 /* Responsive adjustments for mobile devices */
 @media (max-width: 600px) {
   .view-prog-page__program {

@@ -1,42 +1,161 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
+import useFetchData from '../../../hooks/useFetchData';
+import TextInput from '../../../components/Inputs/TextInput';
 import NavBar from '../../../components/Nav/Nav';
 import { useTheme } from '../../../contexts/themeContext';
+import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
 
 import './programs.css';
 
 const ProgramPage = () => {
-  const [programs, setPrograms] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [inputValue, setInputValue] = useState('');
+  const [selectedMainGoal, setSelectedMainGoal] = useState('');
+  const [selectedDuration, setSelectedDuration] = useState('');
+  const [selectedDurationUnit, setSelectedDurationUnit] = useState('');
+  const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const { theme } = useTheme();
 
-  useEffect(() => {
-    fetch('http://localhost:9025/api/programs/2')
-      .then(response => response.json())
-      .then(data => {
-        setPrograms(data);
-        setIsLoading(false);
-      })
-      .catch(error => {
-        console.error('Failed to fetch programs:', error);
-        setIsLoading(false); // Finish loading even if there was an error
-      });
-  }, []);
+  const handleInputChange = event => {
+    const newValue = event.target.value;
+    setInputValue(newValue);
+    setSearchTerm(newValue);
+  };
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  const {
+    data: programs,
+    isLoading,
+    error
+  } = useFetchData('http://localhost:9025/api/programs/2');
+
+  const filteredPrograms = useMemo(() => {
+    return programs.filter(program => {
+      const matchesMainGoal =
+        !selectedMainGoal ||
+        selectedMainGoal === 'All' ||
+        program.main_goal === selectedMainGoal;
+      const matchesDuration =
+        !selectedDuration ||
+        selectedDuration === 'All' ||
+        (program.program_duration === parseInt(selectedDuration) &&
+          (!selectedDurationUnit ||
+            program.duration_unit === selectedDurationUnit));
+      const matchesDaysPerWeek =
+        !selectedDaysPerWeek ||
+        selectedDaysPerWeek === 'All' ||
+        program.days_per_week === parseInt(selectedDaysPerWeek);
+      const matchesSearchTerm =
+        !searchTerm ||
+        program.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        matchesMainGoal &&
+        matchesDuration &&
+        matchesDaysPerWeek &&
+        matchesSearchTerm
+      );
+    });
+  }, [
+    searchTerm,
+    selectedMainGoal,
+    selectedDuration,
+    selectedDurationUnit,
+    selectedDaysPerWeek,
+    programs
+  ]);
+
+  const onGoalChange = event => {
+    setSelectedMainGoal(event.target.value);
+  };
+
+  const onDurationChange = event => {
+    setSelectedDuration(event.target.value);
+  };
+
+  const onDurationUnitChange = event => {
+    setSelectedDurationUnit(event.target.value);
+  };
+
+  const onDaysPerWeekChange = event => {
+    setSelectedDaysPerWeek(event.target.value);
+  };
 
   console.log('programs from programs page:', programs);
+  if (isLoading) return <div>loading...</div>;
+  if (error) return <div>Error loading programs: {error}</div>;
 
   return (
     <div>
       <NavBar />
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
+        <div className={`program-search ${theme}`}>
+          <div className='program-search__search-input-container'>
+            <TextInput
+              list='programs'
+              className={`program-search__search-text-input ${theme}`}
+              id='program-search-bar'
+              onChange={handleInputChange}
+              value={inputValue}
+              type='search'
+              placeholder='Program Names'
+            />
+            <datalist id='programs'>
+              {programs.map((program, index) => (
+                <option key={index} value={program.name} />
+              ))}
+            </datalist>
+          </div>
+
+          <div className='program-search__search-input-container'>
+            <input
+              list='goals'
+              className={`program-search__goals ${theme}`}
+              type='search'
+              onChange={onGoalChange}
+              placeholder='Goals'
+            />
+            <datalist id='goals'>
+              {GOAL_TYPES.map((option, index) => (
+                <option key={index} value={option.name} />
+              ))}
+            </datalist>
+          </div>
+
+          <div className='program-search__search-input-container'>
+            <input
+              className={`program-search__duration ${theme}`}
+              type='search'
+              onChange={onDurationChange}
+              onBlur={onDurationChange}
+              placeholder='Duration'
+            />
+            <select
+              onChange={onDurationUnitChange}
+              className={`program-search__duration-unit ${theme}`}
+            >
+              <option value=''>Select Unit</option>
+              {DURATION_TYPES.map((option, index) => (
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className='program-search__search-input-container'>
+            <input
+              className={`program-search__days-per-week ${theme}`}
+              type='search'
+              onChange={onDaysPerWeekChange}
+              onBlur={onDaysPerWeekChange}
+              placeholder='Days Per Week'
+            />
+          </div>
+        </div>
       </div>
       <div className='view-prog-page__program-list'>
-        {programs.map(program => (
+        {filteredPrograms.map(program => (
           <div key={program.id} className={`view-prog-page__program ${theme}`}>
             <h2 className='view-prog-page__program-title'>{program.name}</h2>
             <div className='view-prog-page__program-details'>
