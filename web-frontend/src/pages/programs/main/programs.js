@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import useFetchData from '../../../hooks/useFetchData';
 import TextInput from '../../../components/Inputs/TextInput';
+import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import NavBar from '../../../components/Nav/Nav';
 import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
@@ -14,6 +15,7 @@ const ProgramPage = () => {
   const [selectedDurationUnit, setSelectedDurationUnit] = useState('');
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { theme } = useTheme();
 
@@ -21,6 +23,10 @@ const ProgramPage = () => {
     const newValue = event.target.value;
     setInputValue(newValue);
     setSearchTerm(newValue);
+  };
+
+  const handleExpand = () => {
+    setIsExpanded(!isExpanded);
   };
 
   const {
@@ -90,6 +96,23 @@ const ProgramPage = () => {
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
         <div className={`view-prog-page__search-container ${theme}`}>
+          <button
+            className='view-prog-page__search-expand-btn'
+            onClick={handleExpand}
+          >
+            {isExpanded ? (
+              <BsChevronCompactUp
+                className={`workout__icon ${theme}`}
+                size={30}
+              />
+            ) : (
+              <BsChevronCompactDown
+                className={`workout__icon ${theme}`}
+                size={30}
+              />
+            )}
+          </button>
+          <p className='view-prog-page__search-filer-text'>Filter</p>
           <div className={`view-prog-page__search-input-container ${theme}`}>
             <TextInput
               list='programs'
