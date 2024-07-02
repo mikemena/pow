@@ -1,3 +1,5 @@
+import { useTheme } from '../../contexts/themeContext';
+import './TextInput.css';
 const TextInput = ({
   id,
   name,
@@ -8,6 +10,7 @@ const TextInput = ({
   className,
   ...props
 }) => {
+  const theme = useTheme();
   return (
     <input
       id={id}
@@ -16,7 +19,7 @@ const TextInput = ({
       value={value}
       onChange={onChange}
       placeholder={placeholder}
-      className={`text-input ${className}`}
+      className={`text-input ${className} ${theme}`}
       {...props}
     />
   );

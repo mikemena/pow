@@ -1,0 +1,8 @@
+.text-input.light {
+  background-color: var(--light-input);
+  color: var(--dark-text-color);
+}
+.text-input.dark {
+  background-color: var(--dark-input);
+  color: var(--dark-text-color);
+}

@@ -108,22 +108,20 @@ const ProgramPage = () => {
           </div>
 
           <div className='program-search__search-input-container'>
-            <input
-              list='goals'
-              className={`program-search__goals ${theme}`}
-              type='search'
+            <select
               onChange={onGoalChange}
-              placeholder='Goals'
-            />
-            <datalist id='goals'>
+              className={`program-search__goals ${theme}`}
+            >
+              <option value=''>Select Goal</option>
               {GOAL_TYPES.map((option, index) => (
-                <option key={index} value={option.name} />
+                <option key={index} value={option.value}>
+                  {option.label}
+                </option>
               ))}
-            </datalist>
+            </select>
           </div>
-
           <div className='program-search__search-input-container'>
-            <input
+            <TextInput
               className={`program-search__duration ${theme}`}
               type='search'
               onChange={onDurationChange}
@@ -144,7 +142,7 @@ const ProgramPage = () => {
           </div>
 
           <div className='program-search__search-input-container'>
-            <input
+            <TextInput
               className={`program-search__days-per-week ${theme}`}
               type='search'
               onChange={onDaysPerWeekChange}
