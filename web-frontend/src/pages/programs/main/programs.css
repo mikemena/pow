@@ -52,6 +52,13 @@
   color: var(--dark-green);
 }
 
+.view-prog-page__search-container,
+.view-prog-page__search-input-container {
+  display: flex;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
+
 /* Responsive adjustments for mobile devices */
 @media (max-width: 600px) {
   .view-prog-page__program {

@@ -89,8 +89,8 @@ const ProgramPage = () => {
       <NavBar />
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
-        <div className={`program-search ${theme}`}>
-          <div className='program-search__search-input-container'>
+        <div className={`view-prog-page__search-container ${theme}`}>
+          <div className='view-prog-page__search-input-container'>
             <TextInput
               list='programs'
               className={`program-search__search-text-input ${theme}`}
@@ -107,7 +107,7 @@ const ProgramPage = () => {
             </datalist>
           </div>
 
-          <div className='program-search__search-input-container'>
+          <div className='view-prog-page__search-input-container'>
             <select
               onChange={onGoalChange}
               className={`program-search__goals ${theme}`}
@@ -120,7 +120,7 @@ const ProgramPage = () => {
               ))}
             </select>
           </div>
-          <div className='program-search__search-input-container'>
+          <div className='view-prog-page__search-input-container'>
             <TextInput
               className={`program-search__duration ${theme}`}
               type='search'
@@ -132,16 +132,16 @@ const ProgramPage = () => {
               onChange={onDurationUnitChange}
               className={`program-search__duration-unit ${theme}`}
             >
-              <option value=''>Select Unit</option>
+              <option value=''>Select Duration Unit</option>
               {DURATION_TYPES.map((option, index) => (
-                <option key={index} value={option.value}>
+                <option key={index} value={option.label}>
                   {option.label}
                 </option>
               ))}
             </select>
           </div>
 
-          <div className='program-search__search-input-container'>
+          <div className='view-prog-page__search-input-container'>
             <TextInput
               className={`program-search__days-per-week ${theme}`}
               type='search'
