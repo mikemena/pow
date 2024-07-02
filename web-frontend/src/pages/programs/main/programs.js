@@ -95,90 +95,105 @@ const ProgramPage = () => {
       <NavBar />
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
+
         <div className={`view-prog-page__search-container ${theme}`}>
-          <button
-            className='view-prog-page__search-expand-btn'
-            onClick={handleExpand}
-          >
-            {isExpanded ? (
-              <BsChevronCompactUp
-                className={`workout__icon ${theme}`}
-                size={30}
-              />
-            ) : (
-              <BsChevronCompactDown
-                className={`workout__icon ${theme}`}
-                size={30}
-              />
+          <div className='view-prog-page__search-expand-container'>
+            <button
+              className='view-prog-page__search-expand-btn'
+              onClick={handleExpand}
+            >
+              {isExpanded ? (
+                <BsChevronCompactUp
+                  className={`workout__icon ${theme}`}
+                  size={30}
+                />
+              ) : (
+                <BsChevronCompactDown
+                  className={`workout__icon ${theme}`}
+                  size={30}
+                />
+              )}
+            </button>
+            {!isExpanded && (
+              <p className={`view-prog-page__search-filer-text ${theme}`}>
+                Filter
+              </p>
             )}
-          </button>
-          {!isExpanded && (
-            <p className={`view-prog-page__search-filer-text ${theme}`}>
-              Filter
-            </p>
-          )}
+          </div>
+
           {isExpanded && (
-            <div className={`view-prog-page__search-input-container ${theme}`}>
-              <TextInput
-                list='programs'
-                className={`program-search__search-text-input ${theme}`}
-                id='program-search-bar'
-                onChange={handleInputChange}
-                value={inputValue}
-                type='search'
-                placeholder='Program Names'
-              />
-              <datalist id='programs'>
-                {programs.map((program, index) => (
-                  <option key={index} value={program.name} />
-                ))}
-              </datalist>
+            <div className='view-prog-page__search-inputs'>
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              >
+                <TextInput
+                  list='programs'
+                  className={`program-search__search-text-input ${theme}`}
+                  id='program-search-bar'
+                  onChange={handleInputChange}
+                  value={inputValue}
+                  type='search'
+                  placeholder='Program Names'
+                />
+                <datalist id='programs'>
+                  {programs.map((program, index) => (
+                    <option key={index} value={program.name} />
+                  ))}
+                </datalist>
+              </div>
+
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              >
+                <select
+                  onChange={onGoalChange}
+                  className={`program-search__goals ${theme}`}
+                >
+                  <option value=''>Goal</option>
+                  {GOAL_TYPES.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              >
+                <TextInput
+                  className={`program-search__duration ${theme}`}
+                  type='search'
+                  onChange={onDurationChange}
+                  onBlur={onDurationChange}
+                  placeholder='Duration'
+                />
+                <select
+                  onChange={onDurationUnitChange}
+                  className={`program-search__duration-unit ${theme}`}
+                >
+                  <option value=''>Duration Type</option>
+                  {DURATION_TYPES.map((option, index) => (
+                    <option key={index} value={option.label}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              >
+                <TextInput
+                  className={`program-search__days-per-week ${theme}`}
+                  type='search'
+                  onChange={onDaysPerWeekChange}
+                  onBlur={onDaysPerWeekChange}
+                  placeholder='Days Per Week'
+                />
+              </div>
             </div>
           )}
-
-          <div className={`view-prog-page__search-input-container ${theme}`}>
-            <select
-              onChange={onGoalChange}
-              className={`program-search__goals ${theme}`}
-            >
-              <option value=''>Goal</option>
-              {GOAL_TYPES.map((option, index) => (
-                <option key={index} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={`view-prog-page__search-input-container ${theme}`}>
-            <TextInput
-              className={`program-search__duration ${theme}`}
-              type='search'
-              onChange={onDurationChange}
-              onBlur={onDurationChange}
-              placeholder='Duration'
-            />
-            <select
-              onChange={onDurationUnitChange}
-              className={`program-search__duration-unit ${theme}`}
-            >
-              <option value=''>Duration Type</option>
-              {DURATION_TYPES.map((option, index) => (
-                <option key={index} value={option.label}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className={`view-prog-page__search-input-container ${theme}`}>
-            <TextInput
-              className={`program-search__days-per-week ${theme}`}
-              type='search'
-              onChange={onDaysPerWeekChange}
-              onBlur={onDaysPerWeekChange}
-              placeholder='Days Per Week'
-            />
-          </div>
         </div>
       </div>
       <div className='view-prog-page__program-list'>

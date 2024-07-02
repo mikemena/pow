@@ -1,5 +1,4 @@
-.view-prog-page__program,
-.view-prog-page__search-container {
+.view-prog-page__program {
   position: relative;
   max-width: 750px;
   margin: 0 auto 20px;
@@ -65,11 +64,47 @@
   color: var(--dark-green);
 }
 
-.view-prog-page__search-container,
-.view-prog-page__search-input-container {
+/* Search Filter Styles */
+
+.view-prog-page__search-container {
+  width: 100%;
+  max-width: 750px;
+  margin: 0 auto 20px;
+  padding: 10px 0;
+}
+
+.view-prog-page__search-expand-container {
   display: flex;
-  justify-content: center;
-  flex-wrap: nowrap;
+  align-items: center;
+  margin: 10px;
+}
+
+.view-prog-page__search-inputs {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.view-prog-page__search-input-container {
+  flex: 1 1 100%;
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+.program-search__search-text-input,
+.program-search__goals {
+  width: 50%;
+  padding: 5px;
+  font-size: 1.1rem;
+}
+
+.program-search__duration,
+.program-search__duration-unit,
+.program-search__days-per-week {
+  width: 33%;
+  padding: 5px;
+  font-size: 1.1rem;
 }
 
 /* Responsive adjustments for mobile devices */
