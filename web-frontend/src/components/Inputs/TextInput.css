@@ -1,8 +1,10 @@
-.text-input.light {
+.text-input.light,
+.text-input.light::placeholder {
   background-color: var(--light-input);
   color: var(--dark-text-color);
 }
-.text-input.dark {
+.text-input.dark,
+.text-input.dark::placeholder {
   background-color: var(--dark-input);
-  color: var(--dark-text-color);
+  color: var(--light-text-color);
 }

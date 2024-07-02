@@ -95,7 +95,6 @@ const ProgramPage = () => {
       <NavBar />
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
-
         <div className={`view-prog-page__search-container ${theme}`}>
           <div className='view-prog-page__search-expand-container'>
             <button
@@ -120,7 +119,6 @@ const ProgramPage = () => {
               </p>
             )}
           </div>
-
           {isExpanded && (
             <div className='view-prog-page__search-inputs'>
               <div className={`view-prog-page__search-input-top-row ${theme}`}>
@@ -150,7 +148,6 @@ const ProgramPage = () => {
                   ))}
                 </select>
               </div>
-
               <div
                 className={`view-prog-page__search-input-bottom-row ${theme}`}
               >
