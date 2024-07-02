@@ -67,44 +67,50 @@
 /* Search Filter Styles */
 
 .view-prog-page__search-container {
-  width: 100%;
   max-width: 750px;
   margin: 0 auto 20px;
   padding: 10px 0;
 }
 
 .view-prog-page__search-expand-container {
-  display: flex;
-  align-items: center;
   margin: 10px;
+  width: 100%;
 }
 
 .view-prog-page__search-inputs {
   display: flex;
   flex-wrap: wrap;
-  width: 100%;
-  padding: 0 10px;
 }
 
-.view-prog-page__search-input-container {
-  flex: 1 1 100%;
-  margin-bottom: 10px;
-  width: 100%;
+.view-prog-page__search-input-top-row {
+  flex: 1 0 100%;
+  padding: 5px;
+  display: flex;
+}
+
+.view-prog-page__search-input-bottom-row {
+  flex: 1 0 100%;
+  padding: 5px;
+  display: flex;
 }
 
 .program-search__search-text-input,
 .program-search__goals {
-  width: 50%;
-  padding: 5px;
-  font-size: 1.1rem;
+  width: 100%;
+  padding: 10px;
+  margin: 5px;
+  background-color: var(--light-input);
+  border-radius: 4px;
 }
 
 .program-search__duration,
 .program-search__duration-unit,
 .program-search__days-per-week {
-  width: 33%;
-  padding: 5px;
-  font-size: 1.1rem;
+  width: 100%;
+  padding: 10px;
+  margin: 5px;
+  background-color: var(--light-input);
+  border-radius: 4px;
 }
 
 /* Responsive adjustments for mobile devices */

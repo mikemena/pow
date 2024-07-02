@@ -123,9 +123,7 @@ const ProgramPage = () => {
 
           {isExpanded && (
             <div className='view-prog-page__search-inputs'>
-              <div
-                className={`view-prog-page__search-input-container ${theme}`}
-              >
+              <div className={`view-prog-page__search-input-top-row ${theme}`}>
                 <TextInput
                   list='programs'
                   className={`program-search__search-text-input ${theme}`}
@@ -140,11 +138,6 @@ const ProgramPage = () => {
                     <option key={index} value={program.name} />
                   ))}
                 </datalist>
-              </div>
-
-              <div
-                className={`view-prog-page__search-input-container ${theme}`}
-              >
                 <select
                   onChange={onGoalChange}
                   className={`program-search__goals ${theme}`}
@@ -159,7 +152,7 @@ const ProgramPage = () => {
               </div>
 
               <div
-                className={`view-prog-page__search-input-container ${theme}`}
+                className={`view-prog-page__search-input-bottom-row ${theme}`}
               >
                 <TextInput
                   className={`program-search__duration ${theme}`}
@@ -179,11 +172,6 @@ const ProgramPage = () => {
                     </option>
                   ))}
                 </select>
-              </div>
-
-              <div
-                className={`view-prog-page__search-input-container ${theme}`}
-              >
                 <TextInput
                   className={`program-search__days-per-week ${theme}`}
                   type='search'
@@ -192,6 +180,10 @@ const ProgramPage = () => {
                   placeholder='Days Per Week'
                 />
               </div>
+
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              ></div>
             </div>
           )}
         </div>
