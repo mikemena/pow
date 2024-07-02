@@ -1,4 +1,5 @@
-.view-prog-page__program {
+.view-prog-page__program,
+.view-prog-page__search-container {
   position: relative;
   max-width: 700px;
   margin: 0 auto 20px;
@@ -12,11 +13,13 @@
   color: var(--gray);
 }
 
-.view-prog-page__program.light {
+.view-prog-page__program.light,
+.view-prog-page__search-container.light {
   background-color: rgb(204, 204, 202);
   box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
 }
-.view-prog-page__program.dark {
+.view-prog-page__program.dark,
+.view-prog-page__search-container.dark {
   background-color: rgb(50, 49, 54);
   box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
@@ -97,5 +100,12 @@
     text-align: right;
     flex: 1;
     text-align: left;
+  }
+  .view-prog-page__search-container,
+  .view-prog-page__search-input-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex-wrap: nowrap;
   }
 }

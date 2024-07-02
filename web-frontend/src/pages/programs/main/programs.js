@@ -90,7 +90,7 @@ const ProgramPage = () => {
       <div className='view-prog-page'>
         <h1 className='view-prog-page__page-title'>My Programs</h1>
         <div className={`view-prog-page__search-container ${theme}`}>
-          <div className='view-prog-page__search-input-container'>
+          <div className={`view-prog-page__search-input-container ${theme}`}>
             <TextInput
               list='programs'
               className={`program-search__search-text-input ${theme}`}
@@ -107,12 +107,12 @@ const ProgramPage = () => {
             </datalist>
           </div>
 
-          <div className='view-prog-page__search-input-container'>
+          <div className={`view-prog-page__search-input-container ${theme}`}>
             <select
               onChange={onGoalChange}
               className={`program-search__goals ${theme}`}
             >
-              <option value=''>Select Goal</option>
+              <option value=''>Goal</option>
               {GOAL_TYPES.map((option, index) => (
                 <option key={index} value={option.value}>
                   {option.label}
@@ -120,7 +120,7 @@ const ProgramPage = () => {
               ))}
             </select>
           </div>
-          <div className='view-prog-page__search-input-container'>
+          <div className={`view-prog-page__search-input-container ${theme}`}>
             <TextInput
               className={`program-search__duration ${theme}`}
               type='search'
@@ -132,7 +132,7 @@ const ProgramPage = () => {
               onChange={onDurationUnitChange}
               className={`program-search__duration-unit ${theme}`}
             >
-              <option value=''>Select Duration Unit</option>
+              <option value=''>Duration Type</option>
               {DURATION_TYPES.map((option, index) => (
                 <option key={index} value={option.label}>
                   {option.label}
@@ -141,7 +141,7 @@ const ProgramPage = () => {
             </select>
           </div>
 
-          <div className='view-prog-page__search-input-container'>
+          <div className={`view-prog-page__search-input-container ${theme}`}>
             <TextInput
               className={`program-search__days-per-week ${theme}`}
               type='search'
