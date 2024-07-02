@@ -112,23 +112,29 @@ const ProgramPage = () => {
               />
             )}
           </button>
-          <p className='view-prog-page__search-filer-text'>Filter</p>
-          <div className={`view-prog-page__search-input-container ${theme}`}>
-            <TextInput
-              list='programs'
-              className={`program-search__search-text-input ${theme}`}
-              id='program-search-bar'
-              onChange={handleInputChange}
-              value={inputValue}
-              type='search'
-              placeholder='Program Names'
-            />
-            <datalist id='programs'>
-              {programs.map((program, index) => (
-                <option key={index} value={program.name} />
-              ))}
-            </datalist>
-          </div>
+          {!isExpanded && (
+            <p className={`view-prog-page__search-filer-text ${theme}`}>
+              Filter
+            </p>
+          )}
+          {isExpanded && (
+            <div className={`view-prog-page__search-input-container ${theme}`}>
+              <TextInput
+                list='programs'
+                className={`program-search__search-text-input ${theme}`}
+                id='program-search-bar'
+                onChange={handleInputChange}
+                value={inputValue}
+                type='search'
+                placeholder='Program Names'
+              />
+              <datalist id='programs'>
+                {programs.map((program, index) => (
+                  <option key={index} value={program.name} />
+                ))}
+              </datalist>
+            </div>
+          )}
 
           <div className={`view-prog-page__search-input-container ${theme}`}>
             <select

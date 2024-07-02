@@ -23,6 +23,16 @@
   background-color: rgb(50, 49, 54);
   box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
 }
+/* Light theme specific styles */
+.view-prog-page__search-filer-text.light {
+  color: var(--dark-text-color);
+}
+
+/* Dark theme specific styles */
+.view-prog-page__search-filer-text.dark {
+  color: var(--light-text-color);
+}
+
 .view-prog-page__program-title {
   color: var(--orange);
   margin-left: 10px;
