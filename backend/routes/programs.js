@@ -249,7 +249,7 @@ router.delete('/programs/:program_id', async (req, res) => {
     // Delete exercises associated with the workouts of the program
     console.log('Deleting exercises...');
     await client.query(
-      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
+      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
       [program_id]
     );
 

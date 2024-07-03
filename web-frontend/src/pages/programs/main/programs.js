@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useContext } from 'react';
-import useFetchData from '../../../hooks/useFetchData';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
+// import useFetchData from '../../../hooks/useFetchData';
 import TextInput from '../../../components/Inputs/TextInput';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { TbHttpDelete } from 'react-icons/tb';
@@ -18,8 +18,9 @@ const ProgramPage = () => {
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [localPrograms, setLocalPrograms] = useState([]);
 
-  const { deleteProgram } = useContext(ProgramContext);
+  const { state, deleteProgram } = useContext(ProgramContext);
 
   const { theme } = useTheme();
 
@@ -33,14 +34,28 @@ const ProgramPage = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const {
-    data: programs,
-    isLoading,
-    error
-  } = useFetchData('http://localhost:9025/api/programs/2');
+  // Use useMemo to memoize programs
+  const programs = useMemo(() => {
+    return state.programs ? Object.values(state.programs) : [];
+  }, [state.programs]);
+
+  useEffect(() => {
+    // Fetch all programs initially
+    const fetchPrograms = async () => {
+      try {
+        const response = await fetch('http://localhost:9025/api/programs/2');
+        const data = await response.json();
+        setLocalPrograms(data);
+      } catch (error) {
+        console.error('Error fetching programs:', error);
+      }
+    };
+
+    fetchPrograms();
+  }, []);
 
   const filteredPrograms = useMemo(() => {
-    return programs.filter(program => {
+    return localPrograms.filter(program => {
       const matchesMainGoal =
         !selectedMainGoal ||
         selectedMainGoal === 'All' ||
@@ -71,7 +86,7 @@ const ProgramPage = () => {
     selectedDuration,
     selectedDurationUnit,
     selectedDaysPerWeek,
-    programs
+    localPrograms
   ]);
 
   const onGoalChange = event => {
@@ -90,14 +105,25 @@ const ProgramPage = () => {
     setSelectedDaysPerWeek(event.target.value);
   };
 
-  const handleDeleteProgram = programId => {
-    console.log('Deleting program:', programId);
-    deleteProgram(programId);
+  const handleDeleteProgram = async programId => {
+    await deleteProgram(programId);
+    // Optionally re-fetch programs after deletion
+    try {
+      const response = await fetch('http://localhost:9025/api/programs/2');
+      const data = await response.json();
+      setLocalPrograms(data);
+    } catch (error) {
+      console.error('Error re-fetching programs:', error);
+    }
   };
 
+  useEffect(() => {
+    console.log('programs from programs page:', programs);
+  }, [programs]);
+
   console.log('programs from programs page:', programs);
-  if (isLoading) return <div>loading...</div>;
-  if (error) return <div>Error loading programs: {error}</div>;
+  // if (isLoading) return <div>loading...</div>;
+  // if (error) return <div>Error loading programs: {error}</div>;
 
   return (
     <div>

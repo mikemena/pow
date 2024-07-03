@@ -85,12 +85,31 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const deleteProgram = programId => {
-    console.log(`Dispatching DELETE_PROGRAM for program ID: ${programId}`);
-    dispatch({
-      type: actionTypes.DELETE_PROGRAM,
-      payload: { programId }
-    });
+  const deleteProgram = async programId => {
+    try {
+      console.log('Deleting program:', programId);
+
+      const response = await fetch(
+        `http://localhost:9025/api/programs/${programId}`,
+        {
+          method: 'DELETE'
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('Error deleting program:', errorText);
+        throw new Error('Failed to delete program');
+      }
+
+      console.log('Dispatching DELETE_PROGRAM for program ID:', programId);
+      dispatch({
+        type: actionTypes.DELETE_PROGRAM,
+        payload: { programId }
+      });
+    } catch (error) {
+      console.error('Failed to delete program:', error);
+    }
   };
 
   const addWorkout = workout => {
