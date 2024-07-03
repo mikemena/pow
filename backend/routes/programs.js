@@ -233,41 +233,49 @@ router.delete('/programs/:program_id', async (req, res) => {
 
   console.log(`Attempting to delete program with ID: ${program_id}`);
 
+  const client = await pool.connect();
+
   try {
     // Begin transaction
-    await pool.query('BEGIN');
+    await client.query('BEGIN');
 
     // Delete sets associated with the exercises in the workouts of the program
-    await pool.query(
+    console.log('Deleting sets...');
+    await client.query(
       'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
     // Delete exercises associated with the workouts of the program
-    await pool.query(
-      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
+    console.log('Deleting exercises...');
+    await client.query(
+      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
     // Delete workouts associated with the program
-    await pool.query('DELETE FROM workouts WHERE program_id = $1', [
+    console.log('Deleting workouts...');
+    await client.query('DELETE FROM workouts WHERE program_id = $1', [
       program_id
     ]);
 
     // Finally, delete the program itself
-    await pool.query('DELETE FROM programs WHERE id = $1', [program_id]);
+    console.log('Deleting program...');
+    await client.query('DELETE FROM programs WHERE id = $1', [program_id]);
 
     // If everything is fine, commit the transaction
-    await pool.query('COMMIT');
+    await client.query('COMMIT');
 
     res.json({
       message: 'Program and all associated data deleted successfully'
     });
   } catch (err) {
     // If there is an error, rollback the transaction
-    await pool.query('ROLLBACK');
-    console.error(err);
+    await client.query('ROLLBACK');
+    console.error('Error during transaction:', err);
     res.status(500).send('Server error');
+  } finally {
+    client.release();
   }
 });
 
