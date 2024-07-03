@@ -25,13 +25,15 @@
 }
 /* Light theme specific styles */
 .view-prog-page__search-filer-text.light,
-.view-prog-page__remove-program-btn.light {
+.view-prog-page__remove-program-btn.light,
+..view-prog-page__no-programs.light {
   color: var(--dark-text-color);
 }
 
 /* Dark theme specific styles */
 .view-prog-page__search-filer-text.dark,
-.view-prog-page__remove-program-btn.dark {
+.view-prog-page__remove-program-btn.dark,
+.view-prog-page__no-programs.dark {
   color: var(--light-text-color);
 }
 
@@ -149,6 +151,16 @@
   bottom: 10px;
   right: 10px;
   padding: 5px 10px;
+}
+
+.view-prog-page__no-programs {
+  text-align: center;
+  margin: 20px;
+}
+
+.view-prog-page__link {
+  text-decoration: none;
+  color: var(--orange);
 }
 
 /* Responsive adjustments for mobile devices */
