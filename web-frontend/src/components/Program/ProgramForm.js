@@ -3,7 +3,7 @@ import { ProgramContext } from '../../contexts/programContext';
 import './programForm.css';
 import { GOAL_TYPES, DURATION_TYPES } from '../../utils/constants';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
-import { toProperCase } from '../../utils/stringUtils';
+import { toUpperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
@@ -18,7 +18,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
     daysPerWeek: program?.days_per_week || '',
     workouts: program?.workouts || [],
     programDurationDisplay: `${program?.program_duration || ''} ${
-      toProperCase(program?.duration_unit) || ''
+      toUpperCase(program?.duration_unit) || ''
     }`
   });
 
@@ -31,7 +31,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
       daysPerWeek: program?.days_per_week || '',
       workouts: program?.workouts || [],
       programDurationDisplay: `${program?.program_duration || ''} ${
-        toProperCase(program?.duration_unit) || ''
+        toUpperCase(program?.duration_unit) || ''
       }`
     });
   }, [program]);
@@ -43,7 +43,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
       if (name === 'programDuration' || name === 'durationUnit') {
         newValues.programDurationDisplay = `${
           newValues.programDuration
-        } ${toProperCase(newValues.durationUnit)}`;
+        } ${toUpperCase(newValues.durationUnit)}`;
       }
       return newValues;
     });

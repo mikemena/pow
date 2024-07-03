@@ -7,6 +7,7 @@ import NavBar from '../../../components/Nav/Nav';
 import { ProgramContext } from '../../../contexts/programContext';
 import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
+import { toProperCase } from '../../../utils/stringUtils';
 import './programs.css';
 
 const ProgramPage = () => {
@@ -63,9 +64,12 @@ const ProgramPage = () => {
       const matchesDuration =
         !selectedDuration ||
         selectedDuration === 'All' ||
-        (program.program_duration === parseInt(selectedDuration) &&
-          (!selectedDurationUnit ||
-            program.duration_unit === selectedDurationUnit));
+        program.program_duration === parseInt(selectedDuration);
+      const matchesDurationUnit =
+        !selectedDurationUnit ||
+        selectedDurationUnit === 'All' ||
+        program.duration_unit.toLowerCase() ===
+          selectedDurationUnit.toLowerCase();
       const matchesDaysPerWeek =
         !selectedDaysPerWeek ||
         selectedDaysPerWeek === 'All' ||
@@ -76,6 +80,7 @@ const ProgramPage = () => {
       return (
         matchesMainGoal &&
         matchesDuration &&
+        matchesDurationUnit &&
         matchesDaysPerWeek &&
         matchesSearchTerm
       );
@@ -115,108 +120,108 @@ const ProgramPage = () => {
     console.log('Filtered programs:', filteredPrograms);
   }, [filteredPrograms]);
 
-  // if (isLoading) return <div>loading...</div>;
-  // if (error) return <div>Error loading programs: {error}</div>;
-
   return (
     <div>
       <NavBar />
       <div className='view-prog-page'>
-        <h1 className='view-prog-page__page-title'>My Programs</h1>
-
-        {filteredPrograms.length > 0 && (
-          <div className={`view-prog-page__search-container ${theme}`}>
-            <div className='view-prog-page__search-expand-container'>
-              <button
-                className='view-prog-page__search-expand-btn'
-                onClick={handleExpand}
-              >
-                {isExpanded ? (
-                  <BsChevronCompactUp
-                    className={`workout__icon ${theme}`}
-                    size={30}
-                  />
-                ) : (
-                  <BsChevronCompactDown
-                    className={`workout__icon ${theme}`}
-                    size={30}
-                  />
-                )}
-              </button>
-              {!isExpanded && (
-                <p className={`view-prog-page__search-filer-text ${theme}`}>
-                  Filter
-                </p>
+        <div className='view-prog-page__page-title-container'>
+          <h1 className='view-prog-page__page-title'>My Programs</h1>
+          <Link
+            className={`view-prog-page__title-link ${theme}`}
+            to='/create-program'
+          >
+            Create
+          </Link>
+        </div>
+        <div className={`view-prog-page__search-container ${theme}`}>
+          <div className='view-prog-page__search-expand-container'>
+            <button
+              className='view-prog-page__search-expand-btn'
+              onClick={handleExpand}
+            >
+              {isExpanded ? (
+                <BsChevronCompactUp
+                  className={`workout__icon ${theme}`}
+                  size={30}
+                />
+              ) : (
+                <BsChevronCompactDown
+                  className={`workout__icon ${theme}`}
+                  size={30}
+                />
               )}
-            </div>
-            {isExpanded && (
-              <div className='view-prog-page__search-inputs'>
-                <div
-                  className={`view-prog-page__search-input-top-row ${theme}`}
-                >
-                  <TextInput
-                    list='programs'
-                    className={`program-search__search-text-input ${theme}`}
-                    id='program-search-bar'
-                    onChange={handleInputChange}
-                    value={inputValue}
-                    type='search'
-                    placeholder='Program Names'
-                  />
-                  <datalist id='programs'>
-                    {localPrograms.map((program, index) => (
-                      <option key={index} value={program.name} />
-                    ))}
-                  </datalist>
-                  <select
-                    onChange={onGoalChange}
-                    className={`program-search__goals ${theme}`}
-                  >
-                    <option value=''>Goal</option>
-                    {GOAL_TYPES.map((option, index) => (
-                      <option key={index} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div
-                  className={`view-prog-page__search-input-bottom-row ${theme}`}
-                >
-                  <TextInput
-                    className={`program-search__duration ${theme}`}
-                    type='search'
-                    onChange={onDurationChange}
-                    onBlur={onDurationChange}
-                    placeholder='Duration'
-                  />
-                  <select
-                    onChange={onDurationUnitChange}
-                    className={`program-search__duration-unit ${theme}`}
-                  >
-                    <option value=''>Duration Type</option>
-                    {DURATION_TYPES.map((option, index) => (
-                      <option key={index} value={option.label}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                  <TextInput
-                    className={`program-search__days-per-week ${theme}`}
-                    type='search'
-                    onChange={onDaysPerWeekChange}
-                    onBlur={onDaysPerWeekChange}
-                    placeholder='Days Per Week'
-                  />
-                </div>
-
-                <div
-                  className={`view-prog-page__search-input-container ${theme}`}
-                ></div>
-              </div>
+            </button>
+            {!isExpanded && (
+              <p className={`view-prog-page__search-filer-text ${theme}`}>
+                Filter
+              </p>
             )}
           </div>
-        )}
+          {isExpanded && (
+            <div className='view-prog-page__search-inputs'>
+              <div className={`view-prog-page__search-input-top-row ${theme}`}>
+                <TextInput
+                  list='programs'
+                  className={`program-search__search-text-input ${theme}`}
+                  id='program-search-bar'
+                  onChange={handleInputChange}
+                  value={inputValue}
+                  type='search'
+                  placeholder='Program Names'
+                />
+                <datalist id='programs'>
+                  {localPrograms.map((program, index) => (
+                    <option key={index} value={program.name} />
+                  ))}
+                </datalist>
+                <select
+                  onChange={onGoalChange}
+                  className={`program-search__goals ${theme}`}
+                >
+                  <option value=''>Goal</option>
+                  {GOAL_TYPES.map((option, index) => (
+                    <option key={index} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div
+                className={`view-prog-page__search-input-bottom-row ${theme}`}
+              >
+                <TextInput
+                  className={`program-search__duration ${theme}`}
+                  type='search'
+                  onChange={onDurationChange}
+                  onBlur={onDurationChange}
+                  placeholder='Duration'
+                />
+                <select
+                  onChange={onDurationUnitChange}
+                  className={`program-search__duration-unit ${theme}`}
+                >
+                  <option value=''>Duration Type</option>
+                  {DURATION_TYPES.map((option, index) => (
+                    <option key={index} value={option.label}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <TextInput
+                  className={`program-search__days-per-week ${theme}`}
+                  type='search'
+                  onChange={onDaysPerWeekChange}
+                  onBlur={onDaysPerWeekChange}
+                  placeholder='Days Per Week'
+                />
+              </div>
+
+              <div
+                className={`view-prog-page__search-input-container ${theme}`}
+              ></div>
+            </div>
+          )}
+        </div>
       </div>
       <div className='view-prog-page__program-list'>
         {filteredPrograms.length > 0 ? (
@@ -232,7 +237,7 @@ const ProgramPage = () => {
                     Main Goal
                   </p>
                   <p className='view-prog-page__program-details-value'>
-                    {program.main_goal}
+                    {toProperCase(program.main_goal)}
                   </p>
                 </div>
                 <div className='view-prog-page__program-details-section'>
@@ -240,7 +245,8 @@ const ProgramPage = () => {
                     Duration
                   </p>
                   <p className='view-prog-page__program-details-value'>
-                    {program.program_duration} {program.duration_unit}
+                    {program.program_duration}{' '}
+                    {toProperCase(program.duration_unit)}
                   </p>
                 </div>
                 <div className='view-prog-page__program-details-section'>

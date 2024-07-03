@@ -5,12 +5,24 @@
   padding: 10px 0;
   box-sizing: border-box;
 }
+
+.view-prog-page__page-title-container {
+  display: flex;
+  align-items: center;
+  margin: 10px 20px;
+}
 .view-prog-page__page-title {
   font-size: 1.5rem;
   margin-left: 10px;
   font-weight: 400;
   color: var(--gray);
-  margin-left: 20px;
+  margin: 0 20px;
+}
+
+.view-prog-page__title-link {
+  text-decoration: none;
+  color: var(--orange);
+  font-size: 1.2rem;
 }
 
 .view-prog-page__program.light,
@@ -26,7 +38,7 @@
 /* Light theme specific styles */
 .view-prog-page__search-filer-text.light,
 .view-prog-page__remove-program-btn.light,
-..view-prog-page__no-programs.light {
+.view-prog-page__no-programs.light {
   color: var(--dark-text-color);
 }
 
