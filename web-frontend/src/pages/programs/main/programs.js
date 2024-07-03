@@ -7,7 +7,6 @@ import NavBar from '../../../components/Nav/Nav';
 import { ProgramContext } from '../../../contexts/programContext';
 import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
-
 import './programs.css';
 
 const ProgramPage = () => {
@@ -21,7 +20,6 @@ const ProgramPage = () => {
   const [localPrograms, setLocalPrograms] = useState([]);
 
   const { state, deleteProgram } = useContext(ProgramContext);
-
   const { theme } = useTheme();
 
   const handleInputChange = event => {
@@ -34,25 +32,26 @@ const ProgramPage = () => {
     setIsExpanded(!isExpanded);
   };
 
-  // Use useMemo to memoize programs
-  const programs = useMemo(() => {
-    return state.programs ? Object.values(state.programs) : [];
-  }, [state.programs]);
+  const fetchPrograms = async () => {
+    try {
+      const response = await fetch('http://localhost:9025/api/programs/2');
+      const data = await response.json();
+      setLocalPrograms(data);
+    } catch (error) {
+      console.error('Error fetching programs:', error);
+    }
+  };
 
   useEffect(() => {
     // Fetch all programs initially
-    const fetchPrograms = async () => {
-      try {
-        const response = await fetch('http://localhost:9025/api/programs/2');
-        const data = await response.json();
-        setLocalPrograms(data);
-      } catch (error) {
-        console.error('Error fetching programs:', error);
-      }
-    };
-
     fetchPrograms();
   }, []);
+
+  useEffect(() => {
+    if (state.programs) {
+      setLocalPrograms(Object.values(state.programs));
+    }
+  }, [state.programs]);
 
   const filteredPrograms = useMemo(() => {
     return localPrograms.filter(program => {
@@ -107,21 +106,14 @@ const ProgramPage = () => {
 
   const handleDeleteProgram = async programId => {
     await deleteProgram(programId);
-    // Optionally re-fetch programs after deletion
-    try {
-      const response = await fetch('http://localhost:9025/api/programs/2');
-      const data = await response.json();
-      setLocalPrograms(data);
-    } catch (error) {
-      console.error('Error re-fetching programs:', error);
-    }
+    // Re-fetch programs after deletion
+    fetchPrograms();
   };
 
   useEffect(() => {
-    console.log('programs from programs page:', programs);
-  }, [programs]);
+    console.log('Filtered programs:', filteredPrograms);
+  }, [filteredPrograms]);
 
-  console.log('programs from programs page:', programs);
   // if (isLoading) return <div>loading...</div>;
   // if (error) return <div>Error loading programs: {error}</div>;
 
@@ -167,7 +159,7 @@ const ProgramPage = () => {
                   placeholder='Program Names'
                 />
                 <datalist id='programs'>
-                  {programs.map((program, index) => (
+                  {localPrograms.map((program, index) => (
                     <option key={index} value={program.name} />
                   ))}
                 </datalist>
