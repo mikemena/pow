@@ -231,6 +231,8 @@ router.put('/programs/:program_id', async (req, res) => {
 router.delete('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
 
+  console.log(`Attempting to delete program with ID: ${program_id}`);
+
   try {
     // Begin transaction
     await pool.query('BEGIN');

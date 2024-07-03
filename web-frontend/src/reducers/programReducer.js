@@ -32,16 +32,22 @@ function programReducer(state = initialState.programs, action) {
       return updatedState;
 
     case 'DELETE_PROGRAM': {
-      if (!action.payload) {
+      const { programId } = action.payload;
+
+      if (!programId) {
         console.error('Invalid payload for DELETE_PROGRAM', action.payload);
         return state;
       }
 
-      const newPrograms = { ...state };
-      delete newPrograms[action.payload];
+      console.log(`Deleting program with ID: ${programId}`);
+      const newPrograms = { ...state.programs };
+      delete newPrograms[programId];
+
       const newState = {
-        ...newPrograms
+        ...state,
+        programs: newPrograms
       };
+
       console.log('State After DELETE_PROGRAMS:', newState);
       return newState;
     }

@@ -86,6 +86,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteProgram = programId => {
+    console.log(`Dispatching DELETE_PROGRAM for program ID: ${programId}`);
     dispatch({
       type: actionTypes.DELETE_PROGRAM,
       payload: { programId }
