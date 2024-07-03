@@ -182,15 +182,26 @@
     padding: 5px;
     margin: 10px auto;
   }
+  .view-prog-page__page-title-container {
+    display: flex;
+    align-items: center;
+    margin: 5px 5px;
+  }
 
   .view-prog-page__page-title {
-    font-size: 1.5rem;
-    margin-left: 25px;
+    font-size: 1.2rem;
+    margin-left: 10px;
+  }
+
+  .view-prog-page__title-link {
+    text-decoration: none;
+    color: var(--orange);
+    font-size: 1.1rem;
   }
 
   .view-prog-page__program-title {
     margin: 5px 25px;
-    font-size: 1.25rem;
+    font-size: 1.2rem;
   }
   .view-prog-page__program-details {
     flex-direction: column;

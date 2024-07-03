@@ -180,3 +180,11 @@ h4 {
   margin: 0;
   font-weight: normal;
 }
+/* Responsive adjustments for mobile devices */
+@media (max-width: 768px) {
+  input,
+  select,
+  textarea {
+    font-size: 12px;
+  }
+}

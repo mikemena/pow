@@ -1,5 +1,6 @@
 import { useTheme } from '../../contexts/themeContext';
 import './TextInput.css';
+
 const TextInput = ({
   id,
   name,
@@ -8,6 +9,7 @@ const TextInput = ({
   placeholder,
   type = 'text',
   className,
+  onClear,
   ...props
 }) => {
   const theme = useTheme();
