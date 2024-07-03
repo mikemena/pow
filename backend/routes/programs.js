@@ -253,9 +253,7 @@ router.delete('/programs/:program_id', async (req, res) => {
     ]);
 
     // Finally, delete the program itself
-    await pool.query('DELETE FROM programs WHERE program_id = $1', [
-      program_id
-    ]);
+    await pool.query('DELETE FROM programs WHERE id = $1', [program_id]);
 
     // If everything is fine, commit the transaction
     await pool.query('COMMIT');

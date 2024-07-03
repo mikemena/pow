@@ -78,10 +78,17 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const updateProgramDetails = details => {
+  const addProgram = details => {
     dispatch({
-      type: actionTypes.UPDATE_PROGRAM_DETAILS,
+      type: actionTypes.ADD_PROGRAM,
       payload: details
+    });
+  };
+
+  const deleteProgram = programId => {
+    dispatch({
+      type: actionTypes.DELETE_PROGRAM,
+      payload: { programId }
     });
   };
 
@@ -185,7 +192,8 @@ export const ProgramProvider = ({ children }) => {
         state,
         dispatch,
         activeWorkout: state.activeWorkout,
-        updateProgramDetails,
+        addProgram,
+        deleteProgram,
         addWorkout,
         updateWorkout,
         deleteWorkout,

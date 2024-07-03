@@ -1,8 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import useFetchData from '../../../hooks/useFetchData';
 import TextInput from '../../../components/Inputs/TextInput';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
+import { TbHttpDelete } from 'react-icons/tb';
 import NavBar from '../../../components/Nav/Nav';
+import { ProgramContext } from '../../../contexts/programContext';
 import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
 
@@ -16,6 +18,8 @@ const ProgramPage = () => {
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+
+  const { deleteProgram } = useContext(ProgramContext);
 
   const { theme } = useTheme();
 
@@ -84,6 +88,11 @@ const ProgramPage = () => {
 
   const onDaysPerWeekChange = event => {
     setSelectedDaysPerWeek(event.target.value);
+  };
+
+  const handleDeleteProgram = programId => {
+    console.log('Deleting program:', programId);
+    deleteProgram(programId);
   };
 
   console.log('programs from programs page:', programs);
@@ -215,6 +224,12 @@ const ProgramPage = () => {
                 </p>
               </div>
             </div>
+            <button
+              className={`view-prog-page__remove-program-btn ${theme}`}
+              onClick={() => handleDeleteProgram(program.id)}
+            >
+              <TbHttpDelete size={30} />
+            </button>
           </div>
         ))}
       </div>

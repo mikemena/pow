@@ -2,7 +2,7 @@ import { initialState } from './initialState';
 
 function programReducer(state = initialState.programs, action) {
   switch (action.type) {
-    case 'UPDATE_PROGRAM_DETAILS':
+    case 'ADD_PROGRAM':
       const {
         id,
         name,
@@ -30,6 +30,21 @@ function programReducer(state = initialState.programs, action) {
       };
       console.log('Reducer updated program state:', updatedState);
       return updatedState;
+
+    case 'DELETE_PROGRAM': {
+      if (!action.payload) {
+        console.error('Invalid payload for DELETE_PROGRAM', action.payload);
+        return state;
+      }
+
+      const newPrograms = { ...state };
+      delete newPrograms[action.payload];
+      const newState = {
+        ...newPrograms
+      };
+      console.log('State After DELETE_PROGRAMS:', newState);
+      return newState;
+    }
 
     default:
       return state;

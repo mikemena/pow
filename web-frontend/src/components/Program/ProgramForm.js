@@ -8,7 +8,7 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-  const { updateProgramDetails } = useContext(ProgramContext);
+  const { addProgram } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -50,7 +50,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleBlur = () => {
-    updateProgramDetails({
+    addProgram({
       id: program.id,
       name: formValues.programName,
       main_goal: formValues.mainGoal,
@@ -62,7 +62,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    updateProgramDetails({
+    addProgram({
       id: program.id,
       name: formValues.programName,
       main_goal: formValues.mainGoal,
