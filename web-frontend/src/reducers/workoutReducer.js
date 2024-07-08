@@ -64,12 +64,22 @@ function workoutReducer(state = initialState.workouts, action) {
         return state;
       }
 
-      const newWorkouts = { ...state };
-      delete newWorkouts[action.payload];
+      const { [action.payload]: deletedWorkout, ...remainingWorkouts } = state;
+      const reorderedWorkouts = Object.values(remainingWorkouts)
+        .sort((a, b) => a.order - b.order)
+        .map((workout, index) => ({
+          ...workout,
+          order: index + 1
+        }))
+        .reduce((acc, workout) => {
+          acc[workout.id] = workout;
+          return acc;
+        }, {});
+
       const newState = {
-        ...newWorkouts
+        ...reorderedWorkouts
       };
-      // console.log('State After DELETE_WORKOUT:', newState);
+
       return newState;
     }
 
