@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import NavBar from '../../components/Nav/Nav';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { BsChevronCompactLeft } from 'react-icons/bs';
 import { useTheme } from '../../contexts/themeContext';
 import ExerciseSearch from '../../components/Exercise/Search';
@@ -11,6 +11,11 @@ import './select-exercises.css';
 
 const SelectExercisesPage = () => {
   const { state, addExercise, activeWorkout } = useContext(ProgramContext);
+  const location = useLocation();
+  const { selectedExercises: initialSelectedExercises } = location.state || {
+    workoutId: null,
+    selectedExercises: []
+  };
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
@@ -25,10 +30,15 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
-    if (activeWorkout && state.exercises[activeWorkout]) {
-      setSelectedExercises(state.exercises[activeWorkout]);
-    }
-  }, [activeWorkout, state.exercises]);
+    const workoutExercises =
+      activeWorkout && state.exercises[activeWorkout]
+        ? state.exercises[activeWorkout]
+        : [];
+    const mergedExercises = [
+      ...new Set([...initialSelectedExercises, ...workoutExercises])
+    ];
+    setSelectedExercises(mergedExercises);
+  }, [activeWorkout, state.exercises, initialSelectedExercises]);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -90,6 +100,14 @@ const SelectExercisesPage = () => {
       : `${count} Exercises `;
   };
 
+  const isExerciseSelected = exercise => {
+    return selectedExercises.some(
+      selectedExercise =>
+        selectedExercise.id === exercise.id ||
+        selectedExercise.catalog_exercise_id === exercise.id
+    );
+  };
+
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading exercises: {error.message}</div>;
 
@@ -133,9 +151,7 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
-            const isSelected = selectedExercises.some(
-              ex => ex.id === exercise.id
-            );
+            const isSelected = isExerciseSelected(exercise);
             return (
               <Exercise
                 key={exercise.id}
