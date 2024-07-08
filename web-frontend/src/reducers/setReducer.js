@@ -11,7 +11,7 @@ function setReducer(state = initialState.sets, action) {
         id: setId,
         weight,
         reps,
-        order: (state[exerciseId] || []).length + 2
+        order: (state[exerciseId] || []).length + 1
       };
 
       console.log('Adding new set:', newSet);
@@ -43,7 +43,9 @@ function setReducer(state = initialState.sets, action) {
       const { exerciseId, setId } = action.payload;
       console.log('Deleting set with id:', setId);
 
-      const updatedSets = state[exerciseId].filter(set => set.id !== setId);
+      const updatedSets = state[exerciseId]
+        .filter(set => set.id !== setId)
+        .map((set, index) => ({ ...set, order: index + 1 }));
 
       return {
         ...state,
