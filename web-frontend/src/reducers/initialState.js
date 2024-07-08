@@ -24,7 +24,7 @@ export const initialState = {
       exercises: []
     }
   },
-  exercises: {},
+  // exercises: {},
   sets: {},
   activeWorkout: initialWorkoutId
 };
