@@ -35,7 +35,7 @@ export const ProgramProvider = ({ children }) => {
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
-      console.log('Saving program:', newProgram); // Log the program data
+      // console.log('Saving program:', newProgram);
       validateProgramData(newProgram); // Validate data before sending
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
@@ -87,7 +87,7 @@ export const ProgramProvider = ({ children }) => {
 
   const deleteProgram = async programId => {
     try {
-      console.log('Deleting program:', programId);
+      // console.log('Deleting program:', programId);
 
       const response = await fetch(
         `http://localhost:9025/api/programs/${programId}`,
@@ -102,7 +102,7 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Failed to delete program');
       }
 
-      console.log('Dispatching DELETE_PROGRAM for program ID:', programId);
+      // console.log('Dispatching DELETE_PROGRAM for program ID:', programId);
       dispatch({
         type: actionTypes.DELETE_PROGRAM,
         payload: { programId }
@@ -134,12 +134,12 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
-    console.log(
-      'Adding exercise with workoutId:',
-      workoutId,
-      'and exercises:',
-      exercises
-    );
+    // console.log(
+    //   'Adding exercise with workoutId:',
+    //   workoutId,
+    //   'and exercises:',
+    //   exercises
+    // );
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
@@ -154,12 +154,12 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    console.log('Dispatching ADD_SET:', {
-      workoutId,
-      exerciseId,
-      weight,
-      reps
-    });
+    // console.log('Dispatching ADD_SET:', {
+    //   workoutId,
+    //   exerciseId,
+    //   weight,
+    //   reps
+    // });
     dispatch({
       type: actionTypes.ADD_SET,
       payload: { workoutId, exerciseId, weight, reps }
@@ -167,11 +167,11 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
-    console.log('Dispatching UPDATE_SET:', {
-      workoutId,
-      exerciseId,
-      updatedSet
-    });
+    // console.log('Dispatching UPDATE_SET:', {
+    //   workoutId,
+    //   exerciseId,
+    //   updatedSet
+    // });
     dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
@@ -185,14 +185,14 @@ export const ProgramProvider = ({ children }) => {
     const initialState = exercise?.sets || [];
     const additionalSets = state.sets[exerciseId] || [];
     const combinedSets = [...initialState, ...additionalSets];
-    console.log('combinedSets:', combinedSets);
+    // console.log('combinedSets:', combinedSets);
 
-    const exerciseSets = state.sets[exerciseId];
-    console.log('exerciseSets in deleteSet:', exerciseSets);
-    console.log('combinedSets length:', combinedSets.length);
+    // const exerciseSets = state.sets[exerciseId];
+    // console.log('exerciseSets in deleteSet:', exerciseSets);
+    // console.log('combinedSets length:', combinedSets.length);
 
     if (combinedSets.length > 1) {
-      console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
+      // console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
       dispatch({
         type: actionTypes.DELETE_SET,
         payload: { workoutId, exerciseId, setId }

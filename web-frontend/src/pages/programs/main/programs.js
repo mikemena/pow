@@ -116,9 +116,9 @@ const ProgramPage = () => {
     fetchPrograms();
   };
 
-  useEffect(() => {
-    console.log('Filtered programs:', filteredPrograms);
-  }, [filteredPrograms]);
+  // useEffect(() => {
+  //   console.log('Filtered programs:', filteredPrograms);
+  // }, [filteredPrograms]);
 
   return (
     <div>

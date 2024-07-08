@@ -8,10 +8,10 @@ function exerciseReducer(state = {}, action) {
       const currentExercises = state[workoutId] || [];
       const exerciseIds = currentExercises.map(ex => ex.id);
 
-      console.log(
-        'Current exercises before adding new ones:',
-        currentExercises
-      );
+      // console.log(
+      //   'Current exercises before adding new ones:',
+      //   currentExercises
+      // );
 
       // Filter out exercises that already exist in the workout
       const newExercises = exercises
@@ -30,7 +30,7 @@ function exerciseReducer(state = {}, action) {
           ]
         }));
 
-      console.log('New exercises with default sets:', newExercises);
+      // console.log('New exercises with default sets:', newExercises);
 
       return {
         ...state,

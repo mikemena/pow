@@ -81,7 +81,7 @@ router.post('/programs', async (req, res) => {
     workouts = [] // Default to empty array if workouts is undefined
   } = req.body;
 
-  console.log('Received program data:', JSON.stringify(req.body, null, 2));
+  // console.log('Received program data:', JSON.stringify(req.body, null, 2));
 
   // Begin database transaction
   const client = await pool.connect();
@@ -103,7 +103,7 @@ router.post('/programs', async (req, res) => {
     ]);
     const program_id = programResult.rows[0].id;
 
-    console.log('Inserted program:', programResult.rows[0]);
+    // console.log('Inserted program:', programResult.rows[0]);
 
     // Add workouts for each program
     if (Array.isArray(workouts)) {
@@ -118,7 +118,7 @@ router.post('/programs', async (req, res) => {
         ]);
         const workout_id = workoutResult.rows[0].id;
 
-        console.log('Inserted workout:', workoutResult.rows[0]);
+        // console.log('Inserted workout:', workoutResult.rows[0]);
 
         // Add exercises for each workout
         for (const exercise of workout.exercises || []) {
@@ -131,18 +131,18 @@ router.post('/programs', async (req, res) => {
             exercise.order
           ]);
           const exercise_id = exerciseResult.rows[0].id;
-          console.log('exerciseResult ', exerciseResult);
+          // console.log('exerciseResult ', exerciseResult);
 
-          console.log('Inserted exercise:', exerciseResult.rows[0]);
+          // console.log('Inserted exercise:', exerciseResult.rows[0]);
 
           // Add sets for each exercise
           for (const set of exercise.sets || []) {
-            console.log(
-              'Adding set with exercise_id:',
-              exercise_id,
-              'and set:',
-              set
-            );
+            // console.log(
+            //   'Adding set with exercise_id:',
+            //   exercise_id,
+            //   'and set:',
+            //   set
+            // );
             const setQuery = `
               INSERT INTO sets (exercise_id, reps, weight, "order")
               VALUES ($1, $2, $3, $4)`;
@@ -160,7 +160,7 @@ router.post('/programs', async (req, res) => {
     }
 
     await client.query('COMMIT');
-    console.log('Transaction committed successfully');
+    // console.log('Transaction committed successfully');
     res.status(201).json({
       message: 'Program with workouts, exercises, and sets created successfully'
     });
@@ -231,7 +231,7 @@ router.put('/programs/:program_id', async (req, res) => {
 router.delete('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
 
-  console.log(`Attempting to delete program with ID: ${program_id}`);
+  // console.log(`Attempting to delete program with ID: ${program_id}`);
 
   const client = await pool.connect();
 
@@ -240,14 +240,14 @@ router.delete('/programs/:program_id', async (req, res) => {
     await client.query('BEGIN');
 
     // Delete sets associated with the exercises in the workouts of the program
-    console.log('Deleting sets...');
+    // console.log('Deleting sets...');
     await client.query(
       'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
     // Delete exercises associated with the workouts of the program
-    console.log('Deleting exercises...');
+    // console.log('Deleting exercises...');
     await client.query(
       'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
       [program_id]
@@ -260,7 +260,7 @@ router.delete('/programs/:program_id', async (req, res) => {
     ]);
 
     // Finally, delete the program itself
-    console.log('Deleting program...');
+    // console.log('Deleting program...');
     await client.query('DELETE FROM programs WHERE id = $1', [program_id]);
 
     // If everything is fine, commit the transaction

@@ -14,22 +14,22 @@ function setReducer(state = initialState.sets, action) {
         order: (state[exerciseId] || []).length + 2
       };
 
-      console.log('Adding new set:', newSet);
-      console.log('State before:', state);
+      // console.log('Adding new set:', newSet);
+      // console.log('State before:', state);
 
       const newState = {
         ...state,
         [exerciseId]: [...(state[exerciseId] || []), newSet]
       };
 
-      console.log('State after:', newState);
+      // console.log('State after:', newState);
 
       return newState;
     }
 
     case actionTypes.UPDATE_SET: {
       const { exerciseId, updatedSet } = action.payload;
-      console.log('Updating set:', updatedSet);
+      // console.log('Updating set:', updatedSet);
 
       return {
         ...state,
@@ -41,7 +41,7 @@ function setReducer(state = initialState.sets, action) {
 
     case actionTypes.DELETE_SET: {
       const { exerciseId, setId } = action.payload;
-      console.log('Deleting set with id:', setId);
+      // console.log('Deleting set with id:', setId);
 
       const updatedSets = state[exerciseId].filter(set => set.id !== setId);
 

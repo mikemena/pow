@@ -37,7 +37,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   }, [workout]);
 
   useEffect(() => {
-    console.log('UseEffect- Workout component state:', state);
+    // console.log('UseEffect- Workout component state:', state);
   }, [state]);
 
   const handleEditTitleChange = e => {
@@ -76,7 +76,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    console.log('Adding new set for exercise:', exerciseId);
+    // console.log('Adding new set for exercise:', exerciseId);
     addSet(workoutId, exerciseId);
   };
 
@@ -86,12 +86,12 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleChange = (updatedValue, exercise, set) => {
-    console.log('Updating set:', updatedValue);
+    // console.log('Updating set:', updatedValue);
     updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
   };
 
   const handleDeleteSet = (workoutId, exerciseId, setId) => {
-    console.log('Deleting set with id:', setId);
+    // console.log('Deleting set with id:', setId);
     deleteSet(workoutId, exerciseId, setId);
   };
 
@@ -116,15 +116,15 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const exerciseCount = workoutExercises.length;
-  console.log('count exercises:', exerciseCount);
+  // console.log('count exercises:', exerciseCount);
 
-  console.log('allSets:', allSets);
+  // console.log('allSets:', allSets);
 
-  const totalSetsCount = allSets.reduce((total, exercise) => {
-    return total + (exercise.sets ? exercise.sets.length : 0);
-  }, 0);
+  // const totalSetsCount = allSets.reduce((total, exercise) => {
+  //   return total + (exercise.sets ? exercise.sets.length : 0);
+  // }, 0);
 
-  console.log('Total sets count:', totalSetsCount);
+  // console.log('Total sets count:', totalSetsCount);
 
   return (
     <div
