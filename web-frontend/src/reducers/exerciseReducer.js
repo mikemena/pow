@@ -32,10 +32,23 @@ function exerciseReducer(state = {}, action) {
     }
 
     case actionTypes.DELETE_EXERCISE: {
+      if (!action.payload) {
+        console.error('Invalid payload for DELETE_EXERCISE', action.payload);
+        return state;
+      }
       const { workoutId, exerciseId } = action.payload;
+
+      // Filter out the deleted exercise and reorder the remaining exercises
+      const updatedExercises = state[workoutId]
+        .filter(ex => ex.id !== exerciseId)
+        .map((exercise, index) => ({
+          ...exercise,
+          order: index + 1
+        }));
+
       return {
         ...state,
-        [workoutId]: state[workoutId].filter(ex => ex.id !== exerciseId)
+        [workoutId]: updatedExercises
       };
     }
 
