@@ -7,7 +7,7 @@ export function toUpperCase(str) {
 
 // Utility function to convert first letter to uppercase and the rest to lowercase
 export function toProperCase(str) {
-  return str.replace(/\w\S*/g, txt => {
+  return str?.replace(/\w\S*/g, txt => {
     return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
   });
 }
