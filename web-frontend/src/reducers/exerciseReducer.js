@@ -13,7 +13,7 @@ function exerciseReducer(state = {}, action) {
         .map((exercise, index) => ({
           ...exercise,
           order: currentExercises.length + index + 1,
-          id: uuidv4(), // Ensure a unique id for each exercise instance
+          id: uuidv4(),
           catalog_exercise_id: exercise.id,
           sets: [
             {

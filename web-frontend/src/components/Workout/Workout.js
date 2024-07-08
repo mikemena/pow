@@ -73,7 +73,17 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
-    navigate('/select-exercises');
+    const workoutExercises =
+      state.exercises && state.exercises[workoutId]
+        ? state.exercises[workoutId]
+        : [];
+    console.log(
+      'Navigating to select-exercises with selected exercises:',
+      workoutExercises
+    );
+    navigate('/select-exercises', {
+      state: { workoutId, selectedExercises: workoutExercises }
+    });
   };
 
   const handleChange = (updatedValue, exercise, set) => {
