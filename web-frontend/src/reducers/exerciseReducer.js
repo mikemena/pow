@@ -10,8 +10,9 @@ function exerciseReducer(state = {}, action) {
 
       const newExercises = exercises
         .filter(ex => !exerciseIds.includes(ex.id))
-        .map(exercise => ({
+        .map((exercise, index) => ({
           ...exercise,
+          order: currentExercises.length + index + 1,
           id: uuidv4(), // Ensure a unique id for each exercise instance
           catalog_exercise_id: exercise.id,
           sets: [
