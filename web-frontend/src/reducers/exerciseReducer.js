@@ -3,22 +3,16 @@ import { v4 as uuidv4 } from 'uuid';
 
 function exerciseReducer(state = {}, action) {
   switch (action.type) {
-    case actionTypes.ADD_EXERCISE:
+    case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
       const currentExercises = state[workoutId] || [];
       const exerciseIds = currentExercises.map(ex => ex.id);
 
-      console.log(
-        'Current exercises before adding new ones:',
-        currentExercises
-      );
-
-      // Filter out exercises that already exist in the workout
       const newExercises = exercises
         .filter(ex => !exerciseIds.includes(ex.id))
-        .map((exercise, index) => ({
+        .map(exercise => ({
           ...exercise,
-          order: currentExercises.length + index + 1,
+          id: uuidv4(), // Ensure a unique id for each exercise instance
           catalog_exercise_id: exercise.id,
           sets: [
             {
@@ -30,25 +24,19 @@ function exerciseReducer(state = {}, action) {
           ]
         }));
 
-      console.log('New exercises with default sets:', newExercises);
-
       return {
         ...state,
         [workoutId]: [...currentExercises, ...newExercises]
       };
+    }
 
-    case actionTypes.DELETE_EXERCISE:
-      const { workoutId: wId, exerciseId } = action.payload;
-
-      if (!wId || !state[wId]) {
-        console.error('No active workout or workout does not exist:', wId);
-        return state;
-      }
-
+    case actionTypes.DELETE_EXERCISE: {
+      const { workoutId, exerciseId } = action.payload;
       return {
         ...state,
-        [wId]: state[wId].filter(ex => ex.id !== exerciseId)
+        [workoutId]: state[workoutId].filter(ex => ex.id !== exerciseId)
       };
+    }
 
     default:
       return state;

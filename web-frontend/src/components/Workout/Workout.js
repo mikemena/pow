@@ -36,10 +36,6 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     }
   }, [workout]);
 
-  useEffect(() => {
-    console.log('UseEffect- Workout component state:', state);
-  }, [state]);
-
   const handleEditTitleChange = e => {
     setIsEditing(true);
     setWorkoutTitle(e.target.value);
@@ -50,10 +46,6 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
       const updatedWorkout = { ...workout, name: workoutTitle };
       updateWorkout(updatedWorkout);
     }
-    setIsEditing(false);
-  };
-
-  const handleCloseTitleChange = () => {
     setIsEditing(false);
   };
 
@@ -76,7 +68,6 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    console.log('Adding new set for exercise:', exerciseId);
     addSet(workoutId, exerciseId);
   };
 
@@ -86,27 +77,26 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleChange = (updatedValue, exercise, set) => {
-    console.log('Updating set:', updatedValue);
     updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
   };
 
   const handleDeleteSet = (workoutId, exerciseId, setId) => {
-    console.log('Deleting set with id:', setId);
     deleteSet(workoutId, exerciseId, setId);
   };
 
   const workoutExercises = useMemo(
-    () => state.exercises[workout.id] || [],
+    () =>
+      state.exercises && state.exercises[workout.id]
+        ? state.exercises[workout.id]
+        : [],
     [state.exercises, workout.id]
   );
 
   const allSets = useMemo(() => {
-    return workoutExercises.map(exercise => {
-      return {
-        ...exercise,
-        sets: [...(exercise.sets || []), ...(state.sets[exercise.id] || [])]
-      };
-    });
+    return workoutExercises.map(exercise => ({
+      ...exercise,
+      sets: state.sets[exercise.id] || []
+    }));
   }, [workoutExercises, state.sets]);
 
   const exerciseText = count => {
@@ -116,15 +106,6 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const exerciseCount = workoutExercises.length;
-  console.log('count exercises:', exerciseCount);
-
-  console.log('allSets:', allSets);
-
-  const totalSetsCount = allSets.reduce((total, exercise) => {
-    return total + (exercise.sets ? exercise.sets.length : 0);
-  }, 0);
-
-  console.log('Total sets count:', totalSetsCount);
 
   return (
     <div
@@ -163,7 +144,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
               />
               <IoCloseCircleSharp
                 className={`workout__icon ${theme}`}
-                onClick={handleCloseTitleChange}
+                onClick={() => setIsEditing(false)}
                 size={25}
               />
             </div>
