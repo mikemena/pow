@@ -3,63 +3,111 @@ const router = express.Router();
 const { pool } = require('../config/db');
 
 // Endpoint to get all programs for a given user with workouts, exercises, and sets
-
-router.get('/programs/:user_id', async (req, res) => {
+router.get('/users/:user_id/programs', async (req, res) => {
   const { user_id } = req.params;
 
   try {
-    const programs = await pool.query(
+    // Fetch programs for the user
+    const programsResult = await pool.query(
       'SELECT * FROM programs WHERE user_id = $1',
       [parseInt(user_id)]
     );
 
-    if (programs.rows.length === 0) {
+    if (programsResult.rows.length === 0) {
       return res.status(404).json({ message: 'No programs found' });
     }
 
+    const programs = programsResult.rows;
+
     // Get workouts for each program
-    for (const program of programs.rows) {
-      const workouts = await pool.query(
+    for (const program of programs) {
+      const workoutsResult = await pool.query(
         'SELECT * FROM workouts WHERE program_id = $1',
-        [program.program_id]
+        [program.id] // Use the correct column name for program ID
       );
 
-      program.workouts = workouts.rows;
+      program.workouts = workoutsResult.rows;
 
-      // Get exercises and sets for each workout
       for (const workout of program.workouts) {
-        const exercises = await pool.query(
+        const exercisesResult = await pool.query(
           'SELECT e.*, ec.name as exercise_name ' +
             'FROM exercises e ' +
             'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id ' +
             'WHERE e.workout_id = $1',
-          [workout.workout_id]
+          [workout.id] // Use the correct column name for workout ID
         );
 
         workout.exercises = [];
 
-        for (const exercise of exercises.rows) {
-          const sets = await pool.query(
+        for (const exercise of exercisesResult.rows) {
+          const setsResult = await pool.query(
             'SELECT * FROM sets WHERE exercise_id = $1',
-            [exercise.exercise_id]
+            [exercise.id] // Use the correct column name for exercise ID
           );
 
-          // Construct the full exercise object with sets
           workout.exercises.push({
-            exercise_id: exercise.exercise_id,
-            exercise_name: exercise.exercise_name,
-            order: exercise.order,
-            catalog_exercise_id: exercise.catalog_exercise_id,
-            sets: sets.rows // Add sets directly to the exercise object
+            ...exercise,
+            sets: setsResult.rows
           });
         }
-
-        // Log after adding sets to the exercise object
-        // console.log(`Workout with exercises and sets ${workout.id}:`, workout);
       }
     }
 
-    res.json(programs.rows);
+    res.json(programs); // Return an array of programs
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+});
+
+// Endpoint to get program details (workouts, exercises, sets) for a given program id
+router.get('/programs/:program_id', async (req, res) => {
+  const { program_id } = req.params;
+
+  try {
+    const programsResult = await pool.query(
+      'SELECT * FROM programs WHERE id = $1',
+      [parseInt(program_id)]
+    );
+
+    if (programsResult.rows.length === 0) {
+      return res.status(404).json({ message: 'No programs found' });
+    }
+
+    const program = programsResult.rows[0];
+
+    const workoutsResult = await pool.query(
+      'SELECT * FROM workouts WHERE program_id = $1',
+      [program.id] // Use the correct column name for program ID
+    );
+
+    program.workouts = workoutsResult.rows;
+
+    for (const workout of program.workouts) {
+      const exercisesResult = await pool.query(
+        'SELECT e.*, ec.name as exercise_name ' +
+          'FROM exercises e ' +
+          'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id ' +
+          'WHERE e.workout_id = $1',
+        [workout.id] // Use the correct column name for workout ID
+      );
+
+      workout.exercises = [];
+
+      for (const exercise of exercisesResult.rows) {
+        const setsResult = await pool.query(
+          'SELECT * FROM sets WHERE exercise_id = $1',
+          [exercise.id] // Use the correct column name for exercise ID
+        );
+
+        workout.exercises.push({
+          ...exercise,
+          sets: setsResult.rows
+        });
+      }
+    }
+
+    res.json(program);
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');

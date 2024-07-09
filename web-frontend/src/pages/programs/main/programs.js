@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useContext, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import TextInput from '../../../components/Inputs/TextInput';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { TbHttpDelete } from 'react-icons/tb';
@@ -19,9 +19,11 @@ const ProgramPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [localPrograms, setLocalPrograms] = useState([]);
+  const [clickedProgram, setClickedProgram] = useState(null);
 
   const { state, deleteProgram } = useContext(ProgramContext);
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const handleInputChange = event => {
     const newValue = event.target.value;
@@ -35,9 +37,12 @@ const ProgramPage = () => {
 
   const fetchPrograms = async () => {
     try {
-      const response = await fetch('http://localhost:9025/api/programs/2');
+      const response = await fetch(
+        'http://localhost:9025/api/users/2/programs'
+      );
       const data = await response.json();
       setLocalPrograms(data || []);
+      console.log('Programs fetched:', data);
     } catch (error) {
       console.error('Error fetching programs:', error);
     }
@@ -116,9 +121,12 @@ const ProgramPage = () => {
     fetchPrograms();
   };
 
-  // useEffect(() => {
-  //   console.log('Filtered programs:', filteredPrograms);
-  // }, [filteredPrograms]);
+  const handleProgramClick = programId => {
+    setClickedProgram(programId);
+    setTimeout(() => {
+      navigate(`/programs/${programId}`);
+    }, 300); // Delay to allow animation to complete
+  };
 
   return (
     <div>
@@ -228,7 +236,10 @@ const ProgramPage = () => {
           filteredPrograms.map(program => (
             <div
               key={program.id}
-              className={`view-prog-page__program ${theme}`}
+              to={`/programs/${program.id}`}
+              className={`view-prog-page__program ${theme} ${
+                clickedProgram === program.id ? 'program-click-animation' : ''
+              }`}
             >
               <h2 className='view-prog-page__program-title'>{program.name}</h2>
               <div className='view-prog-page__program-details'>
