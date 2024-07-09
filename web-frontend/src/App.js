@@ -5,6 +5,7 @@ import HomePage from './pages/home/home';
 import ExercisesListPage from './pages/exercises/exercises';
 import SelectExercisesPage from './pages/exercises/select-exercises';
 import ProgramPage from './pages/programs/main/programs';
+import ProgramDetailsPage from './pages/programs/detail/program';
 import CreateProgramPage from './pages/programs/create/program';
 import ProgressPage from './pages/progress/main/progress';
 import ProfilePage from './pages/profile/main/profile';
@@ -29,6 +30,7 @@ const App = () => {
           <Route path='/exercises' element={<ExercisesListPage />} />
           <Route path='/select-exercises' element={<SelectExercisesPage />} />
           <Route path='/programs' element={<ProgramPage />} />
+          <Route path='/programs/:id' element={<ProgramDetailsPage />} />
           <Route path='/create-program' element={<CreateProgramPage />} />
           <Route path='/progress' element={<ProgressPage />} />
           <Route path='/profile' element={<ProfilePage />} />
