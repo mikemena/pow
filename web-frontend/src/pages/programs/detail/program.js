@@ -49,6 +49,12 @@ const ProgramDetailsPage = () => {
     }));
   };
 
+  const exerciseText = count => {
+    if (count === 0) return 'No Exercises';
+    if (count === 1) return '1 Exercise';
+    return `${count} Exercises`;
+  };
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
@@ -119,8 +125,14 @@ const ProgramDetailsPage = () => {
                   )}
                 </button>
               </div>
-              <h1>{workout.name}</h1>
-              <h2>{workout.id}</h2>
+              <div className={`prog-details-page__workout-summary ${theme}`}>
+                <h1 className={`prog-details-page__workout-name ${theme}`}>
+                  {workout.name}
+                </h1>
+                <span className={`prog-details-page__exercise-count ${theme}`}>
+                  {exerciseText(workout.exercises.length)}
+                </span>
+              </div>
             </div>
             {expandedWorkouts[workout.id] && (
               <div className='prog-details-page__exercise-container'>

@@ -39,14 +39,16 @@
 }
 
 /* Light theme specific styles */
-.prog-details-page__workout-filer-text.light {
-  color: var(--dark-text-color);
+.prog-details-page__workout-name.light {
+  color: var(--dark-green);
 }
 
 /* Dark theme specific styles */
-.prog-details-page__workout-filer-text.dark {
+.prog-details-page__workout-name.dark {
   color: var(--light-text-color);
 }
+
+/* styles for program header section */
 
 .prog-details-page__program-title {
   color: var(--orange);
@@ -86,11 +88,41 @@
   margin-top: 20px;
 }
 
+/* styles for workout section */
+
 .prog-details-page__workout-expand-container {
-  width: 100%;
   display: flex;
   align-items: center;
-  gap: 5px;
+}
+
+.prog-details-page__workout-container {
+  max-width: 750px;
+  margin: 0 auto 20px;
+  padding: 10px 0;
+}
+
+.prog-details-page__workout-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.prog-details-page__workout-summary {
+  flex: 1; /* Take up remaining space */
+  text-align: center; /* Center text within the summary div */
+}
+
+.prog-details-page__workout-name {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.prog-details-page__exercise-count {
+  font-size: 16px;
+  color: gray;
 }
 
 .prog-details-page__workout-expand-btn {
@@ -106,6 +138,12 @@
 .prog-details-page__workout-filer-text {
   font-size: 1.1rem;
   margin: 0;
+}
+
+.prog-details-page__exercise-count {
+  font-size: 1.1rem;
+  margin: 0;
+  color: var(--gray);
 }
 
 /* Responsive adjustments for mobile devices */
