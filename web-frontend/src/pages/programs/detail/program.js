@@ -136,20 +136,33 @@ const ProgramDetailsPage = () => {
             </div>
             {expandedWorkouts[workout.id] && (
               <div className='prog-details-page__exercise-container'>
-                <div>
-                  {workout.exercises.map(exercise => (
-                    <div key={exercise.id}>
-                      <h3>{exercise.exercise_name}</h3>
+                {workout.exercises.map((exercise, index) => (
+                  <div key={exercise.id} className='exercise-container'>
+                    <div className='exercise-header'>
+                      <span className='exercise-index'>{index + 1}</span>
+                      <h3 className='exercise-name'>
+                        {exercise.exercise_name}
+                      </h3>
+                      <span className='exercise-muscle'>
+                        {exercise.muscle_group}
+                      </span>
+                    </div>
+                    <div className='exercise-sets'>
+                      <div className='set-header'>
+                        <span>Set</span>
+                        <span>Weight</span>
+                        <span>Reps</span>
+                      </div>
                       {exercise.sets.map(set => (
-                        <div key={set.id}>
-                          <p>
-                            Set {set.order}: {set.reps} reps at {set.weight} lbs
-                          </p>
+                        <div key={set.id} className='set-row'>
+                          <span>{set.order}</span>
+                          <span>{set.weight}</span>
+                          <span>{set.reps}</span>
                         </div>
                       ))}
                     </div>
-                  ))}
-                </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
