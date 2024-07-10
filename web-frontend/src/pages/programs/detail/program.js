@@ -14,6 +14,7 @@ const ProgramDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const { theme } = useTheme();
 
@@ -41,8 +42,11 @@ const ProgramDetailsPage = () => {
     fetchProgramDetails();
   }, [program_id]);
 
-  const handleExpand = () => {
-    setIsExpanded(!isExpanded);
+  const handleExpand = workoutId => {
+    setExpandedWorkouts(prev => ({
+      ...prev,
+      [workoutId]: !prev[workoutId]
+    }));
   };
 
   if (loading) return <div>Loading...</div>;
@@ -100,9 +104,9 @@ const ProgramDetailsPage = () => {
               <div className='prog-details-page__workout-expand-container'>
                 <button
                   className='prog-details-page__workout-expand-btn'
-                  onClick={handleExpand}
+                  onClick={() => handleExpand(workout.id)}
                 >
-                  {isExpanded ? (
+                  {expandedWorkouts[workout.id] ? (
                     <BsChevronCompactUp
                       className={`workout__icon ${theme}`}
                       size={30}
@@ -116,8 +120,9 @@ const ProgramDetailsPage = () => {
                 </button>
               </div>
               <h1>{workout.name}</h1>
+              <h2>{workout.id}</h2>
             </div>
-            {isExpanded && (
+            {expandedWorkouts[workout.id] && (
               <div className='prog-details-page__exercise-container'>
                 <div>
                   {workout.exercises.map(exercise => (
