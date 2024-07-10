@@ -121,11 +121,8 @@ const ProgramPage = () => {
     fetchPrograms();
   };
 
-  const handleProgramClick = programId => {
-    setClickedProgram(programId);
-    setTimeout(() => {
-      navigate(`/programs/${programId}`);
-    }, 300); // Delay to allow animation to complete
+  const handleProgramClick = program => {
+    navigate(`/programs/${program.id}`);
   };
 
   return (
@@ -234,48 +231,54 @@ const ProgramPage = () => {
       <div className='view-prog-page__program-list'>
         {filteredPrograms.length > 0 ? (
           filteredPrograms.map(program => (
-            <div
+            <Link
               key={program.id}
               to={`/programs/${program.id}`}
-              className={`view-prog-page__program ${theme} ${
-                clickedProgram === program.id ? 'program-click-animation' : ''
-              }`}
+              onClick={() => handleProgramClick(program)}
             >
-              <h2 className='view-prog-page__program-title'>{program.name}</h2>
-              <div className='view-prog-page__program-details'>
-                <div className='view-prog-page__program-details-section'>
-                  <p className='view-prog-page__program-details-label'>
-                    Main Goal
-                  </p>
-                  <p className='view-prog-page__program-details-value'>
-                    {toProperCase(program.main_goal)}
-                  </p>
-                </div>
-                <div className='view-prog-page__program-details-section'>
-                  <p className='view-prog-page__program-details-label'>
-                    Duration
-                  </p>
-                  <p className='view-prog-page__program-details-value'>
-                    {program.program_duration}{' '}
-                    {toProperCase(program.duration_unit)}
-                  </p>
-                </div>
-                <div className='view-prog-page__program-details-section'>
-                  <p className='view-prog-page__program-details-label'>
-                    Days Per Week
-                  </p>
-                  <p className='view-prog-page__program-details-value'>
-                    {program.days_per_week}
-                  </p>
-                </div>
-              </div>
-              <button
-                className={`view-prog-page__remove-program-btn ${theme}`}
-                onClick={() => handleDeleteProgram(program.id)}
+              <div
+                className={`view-prog-page__program ${theme} ${
+                  clickedProgram === program.id ? 'program-click-animation' : ''
+                }`}
               >
-                <TbHttpDelete size={30} />
-              </button>
-            </div>
+                <h2 className='view-prog-page__program-title'>
+                  {program.name}
+                </h2>
+                <div className='view-prog-page__program-details'>
+                  <div className='view-prog-page__program-details-section'>
+                    <p className='view-prog-page__program-details-label'>
+                      Main Goal
+                    </p>
+                    <p className='view-prog-page__program-details-value'>
+                      {toProperCase(program.main_goal)}
+                    </p>
+                  </div>
+                  <div className='view-prog-page__program-details-section'>
+                    <p className='view-prog-page__program-details-label'>
+                      Duration
+                    </p>
+                    <p className='view-prog-page__program-details-value'>
+                      {program.program_duration}{' '}
+                      {toProperCase(program.duration_unit)}
+                    </p>
+                  </div>
+                  <div className='view-prog-page__program-details-section'>
+                    <p className='view-prog-page__program-details-label'>
+                      Days Per Week
+                    </p>
+                    <p className='view-prog-page__program-details-value'>
+                      {program.days_per_week}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  className={`view-prog-page__remove-program-btn ${theme}`}
+                  onClick={() => handleDeleteProgram(program.id)}
+                >
+                  <TbHttpDelete size={30} />
+                </button>
+              </div>
+            </Link>
           ))
         ) : (
           <p className={`view-prog-page__no-programs ${theme}`}>

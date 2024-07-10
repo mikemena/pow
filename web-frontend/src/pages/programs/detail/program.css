@@ -1,0 +1,25 @@
+.prog-details-page__title-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  margin-left: 20px;
+}
+
+.prog-details-page__back-icon {
+  margin-right: 2px;
+  font-size: 24px;
+  color: var(--gray);
+}
+
+.prog-details-page__back-text {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--gray);
+}
+
+.prog-details-page__button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
