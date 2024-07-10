@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { IoChevronBackOutline } from 'react-icons/io5';
+import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import Button from '../../../components/Inputs/Button';
 import NavBar from '../../../components/Nav/Nav';
 import { useTheme } from '../../../contexts/themeContext';
@@ -12,6 +13,7 @@ const ProgramDetailsPage = () => {
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   const { theme } = useTheme();
 
@@ -38,6 +40,10 @@ const ProgramDetailsPage = () => {
 
     fetchProgramDetails();
   }, [program_id]);
+
+  const handleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -86,24 +92,52 @@ const ProgramDetailsPage = () => {
       <div>
         {/* Display workouts, exercises, and sets here */}
         {program.workouts.map(workout => (
-          <div key={workout.id}>
-            <h2>{workout.name}</h2>
-            {workout.exercises.map(exercise => (
-              <div key={exercise.id}>
-                <h3>{exercise.exercise_name}</h3>
-                {exercise.sets.map(set => (
-                  <div key={set.id}>
-                    <p>
-                      Set {set.order}: {set.reps} reps at {set.weight} lbs
-                    </p>
-                  </div>
-                ))}
+          <div
+            key={workout.id}
+            className={`prog-details-page__workout-container ${theme}`}
+          >
+            <div className='prog-details-page__workout-header'>
+              <div className='prog-details-page__workout-expand-container'>
+                <button
+                  className='prog-details-page__workout-expand-btn'
+                  onClick={handleExpand}
+                >
+                  {isExpanded ? (
+                    <BsChevronCompactUp
+                      className={`workout__icon ${theme}`}
+                      size={30}
+                    />
+                  ) : (
+                    <BsChevronCompactDown
+                      className={`workout__icon ${theme}`}
+                      size={30}
+                    />
+                  )}
+                </button>
               </div>
-            ))}
+              <h1>{workout.name}</h1>
+            </div>
+            {isExpanded && (
+              <div className='prog-details-page__exercise-container'>
+                <div>
+                  {workout.exercises.map(exercise => (
+                    <div key={exercise.id}>
+                      <h3>{exercise.exercise_name}</h3>
+                      {exercise.sets.map(set => (
+                        <div key={set.id}>
+                          <p>
+                            Set {set.order}: {set.reps} reps at {set.weight} lbs
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
-      <div className='view-prog-page__program-list'>{program.id}</div>
       <div className='prog-details-page__button-container'>
         <Button type='button' onClick={console.log('edit program')}>
           Edit

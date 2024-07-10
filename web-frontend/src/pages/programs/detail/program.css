@@ -27,13 +27,25 @@
   background-color: var(--gray);
 }
 
-.prog-details-page__program.light {
+.prog-details-page__program.light,
+.prog-details-page__workout-container.light {
   background-color: rgb(204, 204, 202);
   box-shadow: rgba(72, 73, 74, 0.2) 0px 8px 24px;
 }
-.prog-details-page__program.dark {
+.prog-details-page__program.dark,
+.prog-details-page__workout-container.dark {
   background-color: rgb(50, 49, 54);
   box-shadow: rgba(184, 186, 187, 0.2) 0px 8px 24px;
+}
+
+/* Light theme specific styles */
+.prog-details-page__workout-filer-text.light {
+  color: var(--dark-text-color);
+}
+
+/* Dark theme specific styles */
+.prog-details-page__workout-filer-text.dark {
+  color: var(--light-text-color);
 }
 
 .prog-details-page__program-title {
@@ -72,6 +84,28 @@
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+}
+
+.prog-details-page__workout-expand-container {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.prog-details-page__workout-expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.prog-details-page__workout-filer-text {
+  font-size: 1.1rem;
+  margin: 0;
 }
 
 /* Responsive adjustments for mobile devices */
