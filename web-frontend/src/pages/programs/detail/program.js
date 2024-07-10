@@ -4,6 +4,7 @@ import { IoChevronBackOutline } from 'react-icons/io5';
 import Button from '../../../components/Inputs/Button';
 import NavBar from '../../../components/Nav/Nav';
 import { useTheme } from '../../../contexts/themeContext';
+import { toProperCase } from '../../../utils/stringUtils';
 import './program.css';
 
 const ProgramDetailsPage = () => {
@@ -52,14 +53,37 @@ const ProgramDetailsPage = () => {
           <IoChevronBackOutline className='prog-details-page__back-icon' />
           <span className='prog-details-page__back-text'>Back</span>
         </Link>
+        <div className={`prog-details-page__program ${theme}`}>
+          <h2 className='prog-details-page__program-title'>{program.name}</h2>
+          <div className='prog-details-page__program-details'>
+            <div className='prog-details-page__program-details-section'>
+              <p className='prog-details-page__program-details-label'>
+                Main Goal
+              </p>
+              <p className='prog-details-page__program-details-value'>
+                {toProperCase(program.main_goal)}
+              </p>
+            </div>
+            <div className='prog-details-page__program-details-section'>
+              <p className='prog-details-page__program-details-label'>
+                Duration
+              </p>
+              <p className='prog-details-page__program-details-value'>
+                {program.program_duration} {toProperCase(program.duration_unit)}
+              </p>
+            </div>
+            <div className='prog-details-page__program-details-section'>
+              <p className='prog-details-page__program-details-label'>
+                Days Per Week
+              </p>
+              <p className='prog-details-page__program-details-value'>
+                {program.days_per_week}
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
       <div>
-        <h1>{program.name}</h1>
-        <p>Main Goal: {program.main_goal}</p>
-        <p>
-          Duration: {program.program_duration} {program.duration_unit}
-        </p>
-        <p>Days Per Week: {program.days_per_week}</p>
         {/* Display workouts, exercises, and sets here */}
         {program.workouts.map(workout => (
           <div key={workout.id}>
