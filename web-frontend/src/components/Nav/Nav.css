@@ -15,6 +15,13 @@
   padding: 0 30px;
   margin-bottom: 1px;
 }
+.navbar__logo {
+  max-height: 100%; /* Ensure the logo does not exceed the navbar height */
+  display: flex;
+  align-items: center; /* Center vertically */
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+}
 
 .navbar_menu-container {
   display: flex;

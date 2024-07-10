@@ -45,13 +45,9 @@ const ProgramDetailsPage = () => {
     <div>
       <NavBar />
       <div className='prog-details-page'>
-        <Link
-          className={`prog-details-page__title-link ${theme}`}
-          to='/programs'
-        >
-          <IoChevronBackOutline className='prog-details-page__back-icon' />
-          <span className='prog-details-page__back-text'>Back</span>
-        </Link>
+        <div className='prog-details-pageback-icon'>
+          <Link to='/programs'>Back</Link>
+        </div>
       </div>
       <div>
         <h1>{program.name}</h1>

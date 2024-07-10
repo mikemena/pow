@@ -26,7 +26,7 @@ const Navbar = () => {
         <Link
           to='/'
           onClick={() => handleNavClick('/')}
-          className='navbar_logo'
+          className='navbar__logo'
         >
           <h1 className={`navbar__site-name ${theme}`}>WRKT</h1>
         </Link>
