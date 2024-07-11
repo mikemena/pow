@@ -61,127 +61,132 @@ const ProgramDetailsPage = () => {
     <div>
       <NavBar />
       <div className='prog-details-page'>
-        <Link
-          className={`prog-details-page__title-link ${theme}`}
-          to='/programs'
-        >
-          <IoChevronBackOutline className='prog-details-page__back-icon' />
-          <span className='prog-details-page__back-text'>Back</span>
-        </Link>
-        <div className={`prog-details-page__program ${theme}`}>
-          <h2 className='prog-details-page__program-title'>{program.name}</h2>
-          <div className='prog-details-page__program-details'>
-            <div className='prog-details-page__program-details-section'>
-              <p className='prog-details-page__program-details-label'>
-                Main Goal
-              </p>
-              <p className='prog-details-page__program-details-value'>
-                {toProperCase(program.main_goal)}
-              </p>
-            </div>
-            <div className='prog-details-page__program-details-section'>
-              <p className='prog-details-page__program-details-label'>
-                Duration
-              </p>
-              <p className='prog-details-page__program-details-value'>
-                {program.program_duration} {toProperCase(program.duration_unit)}
-              </p>
-            </div>
-            <div className='prog-details-page__program-details-section'>
-              <p className='prog-details-page__program-details-label'>
-                Days Per Week
-              </p>
-              <p className='prog-details-page__program-details-value'>
-                {program.days_per_week}
-              </p>
+        <div className='prog-details-page__header'>
+          <Link
+            className={`prog-details-page__title-link ${theme}`}
+            to='/programs'
+          >
+            <IoChevronBackOutline className='prog-details-page__back-icon' />
+            <span className='prog-details-page__back-text'>Back</span>
+          </Link>
+          <div className={`prog-details-page__program ${theme}`}>
+            <h2 className='prog-details-page__program-title'>{program.name}</h2>
+            <div className='prog-details-page__program-details'>
+              <div className='prog-details-page__program-details-section'>
+                <p className='prog-details-page__program-details-label'>
+                  Main Goal
+                </p>
+                <p className='prog-details-page__program-details-value'>
+                  {toProperCase(program.main_goal)}
+                </p>
+              </div>
+              <div className='prog-details-page__program-details-section'>
+                <p className='prog-details-page__program-details-label'>
+                  Duration
+                </p>
+                <p className='prog-details-page__program-details-value'>
+                  {program.program_duration}{' '}
+                  {toProperCase(program.duration_unit)}
+                </p>
+              </div>
+              <div className='prog-details-page__program-details-section'>
+                <p className='prog-details-page__program-details-label'>
+                  Days Per Week
+                </p>
+                <p className='prog-details-page__program-details-value'>
+                  {program.days_per_week}
+                </p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div>
-        {/* Display workouts, exercises, and sets here */}
-        {program.workouts.map(workout => (
-          <div
-            key={workout.id}
-            className={`prog-details-page__workout-container ${theme}`}
-          >
-            <div className='prog-details-page__workout-header'>
-              <div className='prog-details-page__workout-expand-container'>
-                <button
-                  className='prog-details-page__workout-expand-btn'
-                  onClick={() => handleExpand(workout.id)}
-                >
-                  {expandedWorkouts[workout.id] ? (
-                    <BsChevronCompactUp
-                      className={`workout__icon ${theme}`}
-                      size={30}
-                    />
-                  ) : (
-                    <BsChevronCompactDown
-                      className={`workout__icon ${theme}`}
-                      size={30}
-                    />
-                  )}
-                </button>
-              </div>
-              <div className={`prog-details-page__workout-summary ${theme}`}>
-                <h1 className={`prog-details-page__workout-name ${theme}`}>
-                  {workout.name}
-                </h1>
-                <span className={`prog-details-page__exercise-count ${theme}`}>
-                  {exerciseText(workout.exercises.length)}
-                </span>
-              </div>
-            </div>
-            {expandedWorkouts[workout.id] && (
-              <div className='prog-details-page__exercise-container'>
-                {workout.exercises.map((exercise, index) => (
-                  <div
-                    key={exercise.id}
-                    className='prog-details-page__exercise-container'
+        <div>
+          {/* Display workouts, exercises, and sets here */}
+          {program.workouts.map(workout => (
+            <div
+              key={workout.id}
+              className={`prog-details-page__workout-container ${theme}`}
+            >
+              <div className='prog-details-page__workout-header'>
+                <div className='prog-details-page__workout-expand-container'>
+                  <button
+                    className='prog-details-page__workout-expand-btn'
+                    onClick={() => handleExpand(workout.id)}
                   >
-                    <div className='prog-details-page__exercise-header'>
-                      <span className='prog-details-page__exercise-index'>
-                        {index + 1}
-                      </span>
-                      <h3 className='prog-details-page__exercise-name'>
-                        {exercise.exercise_name}
-                      </h3>
-                      <span className='prog-details-page__exercise-muscle'>
-                        {exercise.muscle_group}
-                      </span>
-                    </div>
-                    <div className='prog-details-page__exercise-sets'>
-                      <div className='prog-details-page__set-header'>
-                        <span>Set</span>
-                        <span>Weight</span>
-                        <span>Reps</span>
-                      </div>
-                      {exercise.sets.map(set => (
-                        <div
-                          key={set.id}
-                          className='prog-details-page__set-row'
-                        >
-                          <span>{set.order}</span>
-                          <span>{set.weight}</span>
-                          <span>{set.reps}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+                    {expandedWorkouts[workout.id] ? (
+                      <BsChevronCompactUp
+                        className={`workout__icon ${theme}`}
+                        size={30}
+                      />
+                    ) : (
+                      <BsChevronCompactDown
+                        className={`workout__icon ${theme}`}
+                        size={30}
+                      />
+                    )}
+                  </button>
+                </div>
+                <div className={`prog-details-page__workout-summary ${theme}`}>
+                  <h1 className={`prog-details-page__workout-name ${theme}`}>
+                    {workout.name}
+                  </h1>
+                  <span
+                    className={`prog-details-page__exercise-count ${theme}`}
+                  >
+                    {exerciseText(workout.exercises.length)}
+                  </span>
+                </div>
               </div>
-            )}
-          </div>
-        ))}
-      </div>
-      <div className='prog-details-page__button-container'>
-        <Button type='button' onClick={console.log('edit program')}>
-          Edit
-        </Button>
-        <Button type='submit' onClick={console.log('delete program')}>
-          Delete
-        </Button>
+              {expandedWorkouts[workout.id] && (
+                <div className='prog-details-page__exercise-container'>
+                  {workout.exercises.map((exercise, index) => (
+                    <div
+                      key={exercise.id}
+                      className='prog-details-page__exercise-container'
+                    >
+                      <div className='prog-details-page__exercise-header'>
+                        <span className='prog-details-page__exercise-index'>
+                          {index + 1}
+                        </span>
+                        <h3 className='prog-details-page__exercise-name'>
+                          {exercise.exercise_name}
+                        </h3>
+                        <span className='prog-details-page__exercise-muscle'>
+                          {exercise.muscle_group}
+                        </span>
+                      </div>
+                      <div className='prog-details-page__exercise-sets'>
+                        <div className='prog-details-page__set-header'>
+                          <span>Set</span>
+                          <span>Weight</span>
+                          <span>Reps</span>
+                        </div>
+                        {exercise.sets.map(set => (
+                          <div
+                            key={set.id}
+                            className='prog-details-page__set-row'
+                          >
+                            <span>{set.order}</span>
+                            <span>{set.weight}</span>
+                            <span>{set.reps}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        <div className='prog-details-page__button-container'>
+          <Button type='button' onClick={console.log('edit program')}>
+            Edit
+          </Button>
+          <Button type='submit' onClick={console.log('delete program')}>
+            Delete
+          </Button>
+        </div>
       </div>
     </div>
   );
