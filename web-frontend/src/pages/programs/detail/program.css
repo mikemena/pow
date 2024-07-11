@@ -3,7 +3,8 @@
   align-items: center;
   text-decoration: none;
   color: inherit;
-  margin-left: 20px;
+  margin: 20px 0;
+  padding-left: 55px;
 }
 
 .prog-details-page__back-icon {
@@ -152,25 +153,25 @@
   margin-top: 20px;
 }
 
-.exercise-container {
+.prog-details-page__exercise-container {
   border-bottom: 1px solid #ccc;
   padding: 10px 0;
 }
 
-.exercise-header {
+.prog-details-page__exercise-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.exercise-index {
+.prog-details-page__exercise-index {
   font-size: 18px;
   font-weight: bold;
   color: #888;
   margin-right: 10px;
 }
 
-.exercise-name {
+.prog-details-page__exercise-name {
   font-size: 18px;
   font-weight: bold;
   color: #333;
@@ -179,35 +180,47 @@
   margin: 0;
 }
 
-.exercise-muscle {
+.prog-details-page__exercise-muscle {
   font-size: 16px;
   font-weight: bold;
   color: #f90;
   margin-left: 10px;
 }
 
-.exercise-sets {
+.prog-details-page__exercise-sets {
   margin-top: 10px;
 }
 
-.set-header,
-.set-row {
+.prog-details-page__set-header,
+.prog-details-page__set-row {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   text-align: center;
 }
 
-.set-header {
+.prog-details-page__set-header {
   font-weight: bold;
   color: #888;
 }
 
-.set-row {
+.prog-details-page__set-row {
   margin-top: 5px;
 }
 
-.set-row span {
+.prog-details-page__set-row span {
   color: #333;
+}
+
+/* styles for buttons */
+
+.prog-details-page__button-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  margin-top: 20px;
+}
+
+.prog-details-page__button-container button {
+  margin: 0 10px;
 }
 
 /* Responsive adjustments for mobile devices */

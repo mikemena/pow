@@ -13,7 +13,6 @@ const ProgramDetailsPage = () => {
   const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isExpanded, setIsExpanded] = useState(false);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const { theme } = useTheme();
@@ -137,24 +136,32 @@ const ProgramDetailsPage = () => {
             {expandedWorkouts[workout.id] && (
               <div className='prog-details-page__exercise-container'>
                 {workout.exercises.map((exercise, index) => (
-                  <div key={exercise.id} className='exercise-container'>
-                    <div className='exercise-header'>
-                      <span className='exercise-index'>{index + 1}</span>
-                      <h3 className='exercise-name'>
+                  <div
+                    key={exercise.id}
+                    className='prog-details-page__exercise-container'
+                  >
+                    <div className='prog-details-page__exercise-header'>
+                      <span className='prog-details-page__exercise-index'>
+                        {index + 1}
+                      </span>
+                      <h3 className='prog-details-page__exercise-name'>
                         {exercise.exercise_name}
                       </h3>
-                      <span className='exercise-muscle'>
+                      <span className='prog-details-page__exercise-muscle'>
                         {exercise.muscle_group}
                       </span>
                     </div>
-                    <div className='exercise-sets'>
-                      <div className='set-header'>
+                    <div className='prog-details-page__exercise-sets'>
+                      <div className='prog-details-page__set-header'>
                         <span>Set</span>
                         <span>Weight</span>
                         <span>Reps</span>
                       </div>
                       {exercise.sets.map(set => (
-                        <div key={set.id} className='set-row'>
+                        <div
+                          key={set.id}
+                          className='prog-details-page__set-row'
+                        >
                           <span>{set.order}</span>
                           <span>{set.weight}</span>
                           <span>{set.reps}</span>
