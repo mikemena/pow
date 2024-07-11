@@ -108,7 +108,7 @@
 
 .prog-details-page__workout-container {
   max-width: 750px;
-  margin: 0 auto 20px;
+  margin: 10px auto 20px;
   padding: 10px 0;
 }
 
@@ -160,41 +160,48 @@
 /* styles for exercises */
 
 .prog-details-page__exercise-container {
-  margin-top: 20px;
+  padding: 0;
 }
 
-.prog-details-page__exercise-container {
-  border-bottom: 1px solid #ccc;
+.prog-details-page__exercise-wrapper {
+  margin-top: 20px;
+
+  border-top: 1px solid #dedede;
   padding: 10px 0;
 }
 
 .prog-details-page__exercise-header {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
+  align-items: flex-start;
 }
 
-.prog-details-page__exercise-index {
+.prog-details-page__exercise-order {
   font-size: 18px;
   font-weight: bold;
   color: #888;
-  margin-right: 10px;
+  margin: 0 10px;
+}
+.prog-details-page__exercise-info {
+  flex: 1;
 }
 
 .prog-details-page__exercise-name {
-  font-size: 18px;
+  font-size: 1.2rem;
   font-weight: bold;
-  color: #333;
-  flex: 1;
-  text-align: left;
+  color: var(--black);
   margin: 0;
 }
 
-.prog-details-page__exercise-muscle {
-  font-size: 16px;
-  font-weight: bold;
-  color: #f90;
-  margin-left: 10px;
+.prog-details-page__exercise-details {
+  margin-top: 5px;
+}
+
+.prog-details-page__exercise-muscle,
+.prog-details-page__exercise-equipment {
+  display: block;
+  font-size: 1.1rem;
+  color: var(--gray);
+  padding-bottom: 5px;
 }
 
 .prog-details-page__exercise-sets {
@@ -209,12 +216,14 @@
 }
 
 .prog-details-page__set-header {
+  font-size: 1rem;
   font-weight: bold;
-  color: #888;
+  color: var(--gray);
 }
 
 .prog-details-page__set-row {
   margin-top: 5px;
+  font-size: 1rem;
 }
 
 .prog-details-page__set-row span {

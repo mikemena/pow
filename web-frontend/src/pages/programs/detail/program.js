@@ -139,21 +139,28 @@ const ProgramDetailsPage = () => {
               </div>
               {expandedWorkouts[workout.id] && (
                 <div className='prog-details-page__exercise-container'>
-                  {workout.exercises.map((exercise, index) => (
+                  {workout.exercises.map(exercise => (
                     <div
                       key={exercise.id}
-                      className='prog-details-page__exercise-container'
+                      className='prog-details-page__exercise-wrapper'
                     >
                       <div className='prog-details-page__exercise-header'>
-                        <span className='prog-details-page__exercise-index'>
+                        <span className='prog-details-page__exercise-order'>
                           {exercise.order}
                         </span>
-                        <h3 className='prog-details-page__exercise-name'>
-                          {exercise.exercise_name}
-                        </h3>
-                        <span className='prog-details-page__exercise-muscle'>
-                          {exercise.muscle_group}
-                        </span>
+                        <div className='prog-details-page__exercise-info'>
+                          <h3 className='prog-details-page__exercise-name'>
+                            {exercise.exercise_name}
+                          </h3>
+                          <div className='prog-details-page__exercise-details'>
+                            <span className='prog-details-page__exercise-muscle'>
+                              Muscle: {exercise.muscle}
+                            </span>
+                            <span className='prog-details-page__exercise-equipment'>
+                              Equipment: {exercise.equipment}
+                            </span>
+                          </div>
+                        </div>
                       </div>
                       <div className='prog-details-page__exercise-sets'>
                         <div className='prog-details-page__set-header'>
