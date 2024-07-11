@@ -146,7 +146,7 @@ const ProgramDetailsPage = () => {
                     >
                       <div className='prog-details-page__exercise-header'>
                         <span className='prog-details-page__exercise-index'>
-                          {index + 1}
+                          {exercise.order}
                         </span>
                         <h3 className='prog-details-page__exercise-name'>
                           {exercise.exercise_name}
