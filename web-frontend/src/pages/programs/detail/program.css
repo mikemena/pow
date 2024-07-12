@@ -69,21 +69,22 @@
 
 .prog-details-page__program-details {
   display: flex;
-  margin: 5px 10px;
-  flex-wrap: nowrap;
-  align-items: center;
+  margin: 5px 0;
+
+  width: 100%;
 }
 
 .prog-details-page__program-details-section {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
+  width: 100%;
 }
 
 .prog-details-page__program-details-label {
   font-size: 16px;
   text-transform: uppercase;
-  margin: 0 5px;
+  margin: 0 15px;
   color: var(--gray);
 }
 .prog-details-page__program-details-value {
