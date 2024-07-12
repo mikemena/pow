@@ -57,6 +57,10 @@ const ProgramDetailsPage = () => {
     return `${count} Exercises`;
   };
 
+  const handleProgramClick = program => {
+    navigate(`/edit-program/${program.id}`);
+  };
+
   const handleDeleteProgram = async programId => {
     await deleteProgram(programId);
     navigate('/programs');
@@ -195,9 +199,14 @@ const ProgramDetailsPage = () => {
           ))}
         </div>
         <div className='prog-details-page__button-container'>
-          <Button type='button' onClick={console.log('edit program')}>
-            Edit
-          </Button>
+          {' '}
+          <Link
+            key={program.id}
+            to={`/programs/${program.id}/edit`}
+            style={{ textDecoration: 'none' }}
+          >
+            <Button type='button'>Edit</Button>
+          </Link>
           <Button type='submit' onClick={() => handleDeleteProgram(program.id)}>
             Delete
           </Button>

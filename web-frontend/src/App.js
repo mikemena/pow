@@ -7,6 +7,7 @@ import SelectExercisesPage from './pages/exercises/select-exercises';
 import ProgramPage from './pages/programs/main/programs';
 import ProgramDetailsPage from './pages/programs/detail/program';
 import CreateProgramPage from './pages/programs/create/program';
+import EditProgramPage from './pages/programs/edit/program';
 import ProgressPage from './pages/progress/main/progress';
 import ProfilePage from './pages/profile/main/profile';
 import { ProgramProvider } from './contexts/programContext';
@@ -35,6 +36,10 @@ const App = () => {
             element={<ProgramDetailsPage />}
           />
           <Route path='/create-program' element={<CreateProgramPage />} />
+          <Route
+            path='/programs/:program_id/edit'
+            element={<EditProgramPage />}
+          />
           <Route path='/progress' element={<ProgressPage />} />
           <Route path='/profile' element={<ProfilePage />} />
         </Routes>
