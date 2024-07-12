@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { ProgramContext } from '../../../contexts/programContext';
 import { IoChevronBackOutline } from 'react-icons/io5';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import Button from '../../../components/Inputs/Button';
@@ -14,8 +15,10 @@ const ProgramDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  const { deleteProgram } = useContext(ProgramContext);
 
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProgramDetails = async () => {
@@ -52,6 +55,11 @@ const ProgramDetailsPage = () => {
     if (count === 0) return 'No Exercises';
     if (count === 1) return '1 Exercise';
     return `${count} Exercises`;
+  };
+
+  const handleDeleteProgram = async programId => {
+    await deleteProgram(programId);
+    navigate('/programs');
   };
 
   if (loading) return <div>Loading...</div>;
@@ -190,7 +198,7 @@ const ProgramDetailsPage = () => {
           <Button type='button' onClick={console.log('edit program')}>
             Edit
           </Button>
-          <Button type='submit' onClick={console.log('delete program')}>
+          <Button type='submit' onClick={() => handleDeleteProgram(program.id)}>
             Delete
           </Button>
         </div>
