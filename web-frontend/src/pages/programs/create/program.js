@@ -76,7 +76,7 @@ const CreateProgram = () => {
 
   return (
     <div>
-      <NavBar isEditing='true' />
+      <NavBar isEditing='false' />
       <div className='create-prog-page'>
         <div className='create-prog-page__toggle-container'>
           <Toggle />
@@ -85,7 +85,7 @@ const CreateProgram = () => {
           <div className='create-prog-page__left-container'>
             <ProgramForm
               program={state.programs[Object.keys(state.programs)[0]]}
-              isEditing={true}
+              isEditing={false}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
