@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
-
+import { useParams, Link } from 'react-router-dom';
 import { IoChevronBackOutline } from 'react-icons/io5';
-
 import Button from '../../../components/Inputs/Button';
 import NavBar from '../../../components/Nav/Nav';
 import { useTheme } from '../../../contexts/themeContext';
@@ -11,12 +9,13 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const { program_id } = useParams();
+  const [program, setProgram] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { theme } = useTheme();
 
   useEffect(() => {
-    const fetchProgramDetails = async () => {
+    const fetchProgram = async () => {
       try {
         console.log(`Fetching program details for ID: ${program_id}`);
         const response = await fetch(
@@ -26,6 +25,7 @@ const ProgramDetailsPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        setProgram(data);
         console.log('Program details fetched:', data);
       } catch (err) {
         console.error('Error fetching program details:', err.message);
@@ -35,7 +35,7 @@ const ProgramDetailsPage = () => {
       }
     };
 
-    fetchProgramDetails();
+    fetchProgram();
   }, [program_id]);
 
   if (loading) return <div>Loading...</div>;
