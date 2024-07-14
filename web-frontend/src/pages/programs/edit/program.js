@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
-import { IoChevronBackOutline } from 'react-icons/io5';
 import Button from '../../../components/Inputs/Button';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
@@ -10,7 +9,7 @@ import Toggle from '../../../components/Inputs/Toggle';
 
 import './program.css';
 
-const ProgramDetailsPage = () => {
+const EditProgram = () => {
   const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { program_id } = useParams();
@@ -80,9 +79,7 @@ const ProgramDetailsPage = () => {
   };
 
   const handleAddWorkout = event => {
-    const currentProgramId = Object.keys(state.programs)[0];
-    // console.log('currentProgramId:', currentProgramId);
-    // console.log('handleAddWorkout called from CreateProgram.js');
+    const currentProgramId = program.id;
     event.preventDefault();
     dispatch({
       type: 'ADD_WORKOUT',
@@ -92,7 +89,7 @@ const ProgramDetailsPage = () => {
 
   const handleSaveProgram = async () => {
     try {
-      await saveProgram(state.programs[Object.keys(state.programs)[0]]);
+      await saveProgram(program);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -112,7 +109,7 @@ const ProgramDetailsPage = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={state.programs[Object.keys(state.programs)[0]]}
+              program={program}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
@@ -154,4 +151,4 @@ const ProgramDetailsPage = () => {
   );
 };
 
-export default ProgramDetailsPage;
+export default EditProgram;

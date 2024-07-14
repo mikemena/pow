@@ -15,7 +15,7 @@ const ProgramDetailsPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram } = useContext(ProgramContext);
+  const { deleteProgram, dispatch } = useContext(ProgramContext);
 
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -33,6 +33,7 @@ const ProgramDetailsPage = () => {
         const data = await response.json();
         console.log('Program details fetched:', data);
         setProgram(data);
+        dispatch({ type: 'SET_PROGRAM', payload: data });
       } catch (err) {
         console.error('Error fetching program details:', err.message);
         setError(err.message);
@@ -42,7 +43,7 @@ const ProgramDetailsPage = () => {
     };
 
     fetchProgramDetails();
-  }, [program_id]);
+  }, [program_id, dispatch]);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({
@@ -55,10 +56,6 @@ const ProgramDetailsPage = () => {
     if (count === 0) return 'No Exercises';
     if (count === 1) return '1 Exercise';
     return `${count} Exercises`;
-  };
-
-  const handleProgramClick = program => {
-    navigate(`/edit-program/${program.id}`);
   };
 
   const handleDeleteProgram = async programId => {
