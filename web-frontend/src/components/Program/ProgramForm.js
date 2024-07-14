@@ -6,11 +6,17 @@ import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toUpperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
+const ProgramForm = ({
+  program,
+  isEditing,
+  isExpanded,
+  onToggleExpand,
+  onSave
+}) => {
   const { theme } = useTheme();
   const { addProgram } = useContext(ProgramContext);
 
-  const [formValues, setFormValues] = useState({
+  const initializeFormValues = program => ({
     programName: program?.name || '',
     mainGoal: program?.main_goal || '',
     programDuration: program?.program_duration || '',
@@ -22,18 +28,10 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
     }`
   });
 
+  const [formValues, setFormValues] = useState(initializeFormValues(program));
+
   useEffect(() => {
-    setFormValues({
-      programName: program?.name || '',
-      mainGoal: program?.main_goal || '',
-      programDuration: program?.program_duration || '',
-      durationUnit: program?.duration_unit || '',
-      daysPerWeek: program?.days_per_week || '',
-      workouts: program?.workouts || [],
-      programDurationDisplay: `${program?.program_duration || ''} ${
-        toUpperCase(program?.duration_unit) || ''
-      }`
-    });
+    setFormValues(initializeFormValues(program));
   }, [program]);
 
   const handleChange = e => {
@@ -49,27 +47,18 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
     });
   };
 
-  const handleBlur = () => {
-    addProgram({
-      id: program.id,
-      name: formValues.programName,
-      main_goal: formValues.mainGoal,
-      program_duration: formValues.programDuration,
-      duration_unit: formValues.durationUnit,
-      days_per_week: formValues.daysPerWeek
-    });
-  };
-
   const handleSubmit = e => {
     e.preventDefault();
-    addProgram({
-      id: program.id,
+    const programData = {
+      id: program?.id,
       name: formValues.programName,
       main_goal: formValues.mainGoal,
       program_duration: formValues.programDuration,
       duration_unit: formValues.durationUnit,
       days_per_week: formValues.daysPerWeek
-    });
+    };
+
+    isEditing ? onSave(programData) : addProgram(programData);
   };
 
   const handleProgramExpand = () => {
@@ -113,7 +102,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
               name='programName'
               value={formValues.programName}
               onChange={handleChange}
-              onBlur={handleBlur}
               disabled={!isEditing}
               maxLength={84}
             />
@@ -130,7 +118,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
               name='mainGoal'
               value={formValues.mainGoal}
               onChange={handleChange}
-              onBlur={handleBlur}
               disabled={!isEditing}
             >
               {GOAL_TYPES.map(goal => (
@@ -154,7 +141,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
                 name='programDuration'
                 value={formValues.programDuration}
                 onChange={handleChange}
-                onBlur={handleBlur}
                 min={1}
               />
               <select
@@ -162,7 +148,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
                 name='durationUnit'
                 value={formValues.durationUnit}
                 onChange={handleChange}
-                onBlur={handleBlur}
               >
                 {DURATION_TYPES.map(duration => (
                   <option key={duration.id} value={duration.value}>
@@ -185,7 +170,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
               name='daysPerWeek'
               value={formValues.daysPerWeek}
               onChange={handleChange}
-              onBlur={handleBlur}
               disabled={!isEditing}
               min={1}
             />

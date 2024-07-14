@@ -99,6 +99,7 @@ const CreateProgram = () => {
                   <Workout
                     key={workout.id}
                     workout={workout}
+                    isEditing={false}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />

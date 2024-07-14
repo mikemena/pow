@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import { IoChevronBackOutline } from 'react-icons/io5';
 import Button from '../../../components/Inputs/Button';
@@ -7,7 +7,6 @@ import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
 import Toggle from '../../../components/Inputs/Toggle';
-import { useTheme } from '../../../contexts/themeContext';
 
 import './program.css';
 
@@ -21,7 +20,6 @@ const ProgramDetailsPage = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -35,6 +33,7 @@ const ProgramDetailsPage = () => {
         }
         const data = await response.json();
         setProgram(data);
+        dispatch({ type: 'SET_PROGRAM', payload: data });
         console.log('Program details fetched:', data);
       } catch (err) {
         console.error('Error fetching program details:', err.message);
@@ -45,14 +44,14 @@ const ProgramDetailsPage = () => {
     };
 
     fetchProgram();
-  }, [program_id]);
+  }, [program_id, dispatch]);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false; // collapse all
+        acc[key] = false;
         return acc;
       }, {}),
       [workoutId]: !isCurrentlyExpanded
@@ -128,6 +127,7 @@ const ProgramDetailsPage = () => {
                   <Workout
                     key={workout.id}
                     workout={workout}
+                    isEditing={true}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />
