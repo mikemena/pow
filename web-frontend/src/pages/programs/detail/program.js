@@ -23,7 +23,7 @@ const ProgramDetailsPage = () => {
   useEffect(() => {
     const fetchProgramDetails = async () => {
       try {
-        console.log(`Fetching program details for ID: ${program_id}`);
+        // console.log(`Fetching program details for ID: ${program_id}`);
         const response = await fetch(
           `http://localhost:9025/api/programs/${program_id}`
         );
@@ -31,7 +31,7 @@ const ProgramDetailsPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Program details fetched:', data);
+        // console.log('Program details fetched:', data);
         setProgram(data);
         dispatch({ type: 'SET_PROGRAM', payload: data });
       } catch (err) {

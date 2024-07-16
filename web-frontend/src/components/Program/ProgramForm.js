@@ -6,17 +6,11 @@ import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toUpperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-const ProgramForm = ({
-  program,
-  isEditing,
-  isExpanded,
-  onToggleExpand,
-  onSave
-}) => {
+const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
   const { addProgram } = useContext(ProgramContext);
 
-  const initializeFormValues = program => ({
+  const [formValues, setFormValues] = useState({
     programName: program?.name || '',
     mainGoal: program?.main_goal || '',
     programDuration: program?.program_duration || '',
@@ -28,10 +22,18 @@ const ProgramForm = ({
     }`
   });
 
-  const [formValues, setFormValues] = useState(initializeFormValues(program));
-
   useEffect(() => {
-    setFormValues(initializeFormValues(program));
+    setFormValues({
+      programName: program?.name || '',
+      mainGoal: program?.main_goal || '',
+      programDuration: program?.program_duration || '',
+      durationUnit: program?.duration_unit || '',
+      daysPerWeek: program?.days_per_week || '',
+      workouts: program?.workouts || [],
+      programDurationDisplay: `${program?.program_duration || ''} ${
+        toUpperCase(program?.duration_unit) || ''
+      }`
+    });
   }, [program]);
 
   const handleChange = e => {
@@ -47,18 +49,27 @@ const ProgramForm = ({
     });
   };
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    const programData = {
-      id: program?.id,
+  const handleBlur = () => {
+    addProgram({
+      id: program.id,
       name: formValues.programName,
       main_goal: formValues.mainGoal,
       program_duration: formValues.programDuration,
       duration_unit: formValues.durationUnit,
       days_per_week: formValues.daysPerWeek
-    };
+    });
+  };
 
-    isEditing ? onSave(programData) : addProgram(programData);
+  const handleSubmit = e => {
+    e.preventDefault();
+    addProgram({
+      id: program.id,
+      name: formValues.programName,
+      main_goal: formValues.mainGoal,
+      program_duration: formValues.programDuration,
+      duration_unit: formValues.durationUnit,
+      days_per_week: formValues.daysPerWeek
+    });
   };
 
   const handleProgramExpand = () => {
@@ -102,6 +113,7 @@ const ProgramForm = ({
               name='programName'
               value={formValues.programName}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               maxLength={84}
             />
@@ -118,6 +130,7 @@ const ProgramForm = ({
               name='mainGoal'
               value={formValues.mainGoal}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
             >
               {GOAL_TYPES.map(goal => (
@@ -141,6 +154,7 @@ const ProgramForm = ({
                 name='programDuration'
                 value={formValues.programDuration}
                 onChange={handleChange}
+                onBlur={handleBlur}
                 min={1}
               />
               <select
@@ -148,6 +162,7 @@ const ProgramForm = ({
                 name='durationUnit'
                 value={formValues.durationUnit}
                 onChange={handleChange}
+                onBlur={handleBlur}
               >
                 {DURATION_TYPES.map(duration => (
                   <option key={duration.id} value={duration.value}>
@@ -170,6 +185,7 @@ const ProgramForm = ({
               name='daysPerWeek'
               value={formValues.daysPerWeek}
               onChange={handleChange}
+              onBlur={handleBlur}
               disabled={!isEditing}
               min={1}
             />

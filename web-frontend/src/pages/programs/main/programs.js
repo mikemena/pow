@@ -42,7 +42,7 @@ const ProgramPage = () => {
       );
       const data = await response.json();
       setLocalPrograms(data || []);
-      console.log('Programs fetched:', data);
+      // console.log('Programs fetched:', data);
     } catch (error) {
       console.error('Error fetching programs:', error);
     }

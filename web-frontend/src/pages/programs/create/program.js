@@ -76,7 +76,7 @@ const CreateProgram = () => {
 
   return (
     <div>
-      <NavBar isEditing='false' />
+      <NavBar isEditing='true' />
       <div className='create-prog-page'>
         <div className='create-prog-page__toggle-container'>
           <Toggle />
@@ -85,7 +85,7 @@ const CreateProgram = () => {
           <div className='create-prog-page__left-container'>
             <ProgramForm
               program={state.programs[Object.keys(state.programs)[0]]}
-              isEditing={false}
+              isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
@@ -99,7 +99,6 @@ const CreateProgram = () => {
                   <Workout
                     key={workout.id}
                     workout={workout}
-                    isEditing={false}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />

@@ -1,15 +1,17 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
+import { IoChevronBackOutline } from 'react-icons/io5';
 import Button from '../../../components/Inputs/Button';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';
 import NavBar from '../../../components/Nav/Nav';
 import Toggle from '../../../components/Inputs/Toggle';
+import { useTheme } from '../../../contexts/themeContext';
 
 import './program.css';
 
-const EditProgram = () => {
+const ProgramDetailsPage = () => {
   const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { program_id } = useParams();
@@ -19,6 +21,7 @@ const EditProgram = () => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+  const { theme } = useTheme();
 
   useEffect(() => {
     const fetchProgram = async () => {
@@ -32,7 +35,6 @@ const EditProgram = () => {
         }
         const data = await response.json();
         setProgram(data);
-        dispatch({ type: 'SET_PROGRAM', payload: data });
         console.log('Program details fetched:', data);
       } catch (err) {
         console.error('Error fetching program details:', err.message);
@@ -43,14 +45,14 @@ const EditProgram = () => {
     };
 
     fetchProgram();
-  }, [program_id, dispatch]);
+  }, [program_id]);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false;
+        acc[key] = false; // collapse all
         return acc;
       }, {}),
       [workoutId]: !isCurrentlyExpanded
@@ -79,7 +81,9 @@ const EditProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    const currentProgramId = program.id;
+    const currentProgramId = Object.keys(state.programs)[0];
+    // console.log('currentProgramId:', currentProgramId);
+    // console.log('handleAddWorkout called from CreateProgram.js');
     event.preventDefault();
     dispatch({
       type: 'ADD_WORKOUT',
@@ -89,7 +93,7 @@ const EditProgram = () => {
 
   const handleSaveProgram = async () => {
     try {
-      await saveProgram(program);
+      await saveProgram(state.programs[Object.keys(state.programs)[0]]);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -109,7 +113,7 @@ const EditProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={program}
+              program={state.programs[Object.keys(state.programs)[0]]}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
@@ -123,8 +127,8 @@ const EditProgram = () => {
                 return (
                   <Workout
                     key={workout.id}
-                    workout={workout}
                     isEditing={true}
+                    workout={workout}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />
@@ -151,4 +155,4 @@ const EditProgram = () => {
   );
 };
 
-export default EditProgram;
+export default ProgramDetailsPage;

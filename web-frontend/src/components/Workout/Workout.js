@@ -10,9 +10,10 @@ import TextInput from '../Inputs/TextInput';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { useNavigate } from 'react-router-dom';
+
 import './Workout.css';
 
-const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
+const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   const {
     state,
     deleteWorkout,
@@ -24,6 +25,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
     updateSet,
     deleteSet
   } = useContext(ProgramContext);
+  const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
   }, [workout]);
 
   const handleEditTitleChange = e => {
+    setIsEditing(true);
     setWorkoutTitle(e.target.value);
   };
 
@@ -43,6 +46,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
       const updatedWorkout = { ...workout, name: workoutTitle };
       updateWorkout(updatedWorkout);
     }
+    setIsEditing(false);
   };
 
   const handleDeleteWorkout = workoutId => {
@@ -73,6 +77,10 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
       state.exercises && state.exercises[workoutId]
         ? state.exercises[workoutId]
         : [];
+    console.log(
+      'Navigating to select-exercises with selected exercises:',
+      workoutExercises
+    );
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises: workoutExercises }
     });
@@ -146,7 +154,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
               />
               <IoCloseCircleSharp
                 className={`workout__icon ${theme}`}
-                onClick={() => setWorkoutTitle(workout.name)}
+                onClick={() => setIsEditing(false)}
                 size={25}
               />
             </div>
@@ -226,6 +234,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
                     <MdAddBox size={25} />
                   </button>
                 </div>
+
                 <div className='workout__weights-column'>
                   {exercise.sets && exercise.sets.length > 0
                     ? exercise.sets.map(set => (
@@ -248,9 +257,10 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
                     : null}
                   <div className='workout__blank'></div>
                 </div>
+
                 <div className='workout__reps-column'>
                   {exercise.sets && exercise.sets.length > 0
-                    ? exercise.sets.map(set => (
+                    ? exercise.sets.map((set, setIndex) => (
                         <div key={set.id} className='workout__set'>
                           <TextInput
                             className={`workout__set-reps ${theme}`}
@@ -292,6 +302,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand, isEditing }) => {
                     : null}
                   <div className='workout__blank'></div>
                 </div>
+
                 <div className='workout__exercise-controls'>
                   <div className={`workout__drag-handle ${theme}`}>
                     <MdDragHandle size={25} />
