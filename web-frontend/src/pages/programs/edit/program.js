@@ -11,7 +11,7 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const ProgramDetailsPage = () => {
-  const { saveProgram, dispatch, setActiveWorkout, clearState } =
+  const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { program_id } = useParams();
   const [program, setProgram] = useState(null);
@@ -32,9 +32,30 @@ const ProgramDetailsPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setProgram(data);
-        dispatch({ type: 'SET_PROGRAM', payload: data });
         console.log('Program details fetched:', data);
+
+        // Update state in context with fetched data
+        dispatch({ type: 'SET_PROGRAM', payload: data });
+
+        // Update workouts, exercises, and sets in context
+        data.workouts.forEach(workout => {
+          dispatch({
+            type: 'ADD_WORKOUT',
+            payload: { programId: data.id, workout }
+          });
+          workout.exercises.forEach(exercise => {
+            dispatch({
+              type: 'ADD_EXERCISE',
+              payload: { workoutId: workout.id, exercise }
+            });
+            exercise.sets.forEach(set => {
+              dispatch({
+                type: 'ADD_SET',
+                payload: { exerciseId: exercise.id, set }
+              });
+            });
+          });
+        });
       } catch (err) {
         console.error('Error fetching program details:', err.message);
         setError(err.message);
@@ -101,6 +122,10 @@ const ProgramDetailsPage = () => {
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
+  console.log('Program:', program);
+
+  console.log('program.workouts:', program.workouts);
+
   return (
     <div>
       <NavBar isEditing='true' />
@@ -111,13 +136,13 @@ const ProgramDetailsPage = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={program}
+              program={state.programs[Object.keys(state.programs)[0]]}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {program.workouts && program.workouts.length > 0 ? (
-              program.workouts.map(workout => {
+            {state.workouts && Object.keys(state.workouts).length > 0 ? (
+              Object.values(state.workouts).map(workout => {
                 if (!workout || !workout.id) {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
