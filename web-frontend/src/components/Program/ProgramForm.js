@@ -23,17 +23,20 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   });
 
   useEffect(() => {
-    setFormValues({
-      programName: program?.name || '',
-      mainGoal: program?.main_goal || '',
-      programDuration: program?.program_duration || '',
-      durationUnit: program?.duration_unit || '',
-      daysPerWeek: program?.days_per_week || '',
-      workouts: program?.workouts || [],
-      programDurationDisplay: `${program?.program_duration || ''} ${
-        toUpperCase(program?.duration_unit) || ''
-      }`
-    });
+    if (program) {
+      console.log('Updating form values with program:', program);
+      setFormValues({
+        programName: program.name || '',
+        mainGoal: program.main_goal || '',
+        programDuration: program.program_duration || '',
+        durationUnit: program.duration_unit || '',
+        daysPerWeek: program.days_per_week || '',
+        workouts: program.workouts || [],
+        programDurationDisplay: `${program.program_duration || ''} ${
+          toUpperCase(program.duration_unit) || ''
+        }`
+      });
+    }
   }, [program]);
 
   const handleChange = e => {

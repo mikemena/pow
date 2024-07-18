@@ -23,8 +23,8 @@ const EditProgram = () => {
 
   useEffect(() => {
     const fetchProgram = async () => {
-      setLoading(true); // Assume setLoading is defined to handle UI loading state
       try {
+        console.log(`Fetching program details for ID: ${program_id}`);
         const response = await fetch(
           `http://localhost:9025/api/programs/${program_id}`
         );
@@ -32,9 +32,13 @@ const EditProgram = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
+        console.log('Program details fetched:', data);
 
+        // Update state in context with fetched data
         dispatch({ type: 'SET_PROGRAM', payload: data });
+        setProgram(data);
 
+        // Update workouts, exercises, and sets in context
         data.workouts.forEach(workout => {
           dispatch({
             type: 'ADD_WORKOUT',
@@ -43,8 +47,8 @@ const EditProgram = () => {
           workout.exercises.forEach(exercise => {
             dispatch({
               type: 'ADD_EXERCISE',
-              payload: { workoutId: workout.id, exercises: [exercise] }
-            }); // Ensure payload matches expected structure
+              payload: { workoutId: workout.id, exercise }
+            });
             exercise.sets.forEach(set => {
               dispatch({
                 type: 'ADD_SET',
@@ -54,15 +58,15 @@ const EditProgram = () => {
           });
         });
       } catch (err) {
-        console.error('Error fetching program details:', err);
-        setError(err.message); // Assume setError is defined to handle error state in UI
+        console.error('Error fetching program details:', err.message);
+        setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProgram();
-  }, [program_id, dispatch]); // Ensure dependencies are correctly managed
+  }, [program_id, dispatch]);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -133,7 +137,7 @@ const EditProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={state.programs[Object.keys(state.programs)[0]]}
+              program={program}
               isEditing={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
