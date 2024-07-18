@@ -142,8 +142,8 @@ const EditProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {state.workouts && Object.keys(state.workouts).length > 0 ? (
-              Object.values(state.workouts).map(workout => {
+            {program && program.workouts && program.workouts.length > 0 ? (
+              program.workouts.map(workout => {
                 if (!workout || !workout.id) {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
