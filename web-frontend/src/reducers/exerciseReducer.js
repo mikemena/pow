@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 function exerciseReducer(state = {}, action) {
   switch (action.type) {
     case actionTypes.ADD_EXERCISE: {
-      const { workoutId, exercises } = action.payload;
+      const { workoutId, exercises = [] } = action.payload;
       const currentExercises = state[workoutId] || [];
       const exerciseIds = currentExercises.map(ex => ex.id);
 

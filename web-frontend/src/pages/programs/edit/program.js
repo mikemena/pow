@@ -10,7 +10,7 @@ import Toggle from '../../../components/Inputs/Toggle';
 
 import './program.css';
 
-const ProgramDetailsPage = () => {
+const EditProgram = () => {
   const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { program_id } = useParams();
@@ -23,8 +23,8 @@ const ProgramDetailsPage = () => {
 
   useEffect(() => {
     const fetchProgram = async () => {
+      setLoading(true); // Assume setLoading is defined to handle UI loading state
       try {
-        console.log(`Fetching program details for ID: ${program_id}`);
         const response = await fetch(
           `http://localhost:9025/api/programs/${program_id}`
         );
@@ -32,12 +32,9 @@ const ProgramDetailsPage = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Program details fetched:', data);
 
-        // Update state in context with fetched data
         dispatch({ type: 'SET_PROGRAM', payload: data });
 
-        // Update workouts, exercises, and sets in context
         data.workouts.forEach(workout => {
           dispatch({
             type: 'ADD_WORKOUT',
@@ -46,8 +43,8 @@ const ProgramDetailsPage = () => {
           workout.exercises.forEach(exercise => {
             dispatch({
               type: 'ADD_EXERCISE',
-              payload: { workoutId: workout.id, exercise }
-            });
+              payload: { workoutId: workout.id, exercises: [exercise] }
+            }); // Ensure payload matches expected structure
             exercise.sets.forEach(set => {
               dispatch({
                 type: 'ADD_SET',
@@ -57,15 +54,15 @@ const ProgramDetailsPage = () => {
           });
         });
       } catch (err) {
-        console.error('Error fetching program details:', err.message);
-        setError(err.message);
+        console.error('Error fetching program details:', err);
+        setError(err.message); // Assume setError is defined to handle error state in UI
       } finally {
         setLoading(false);
       }
     };
 
     fetchProgram();
-  }, [program_id, dispatch]);
+  }, [program_id, dispatch]); // Ensure dependencies are correctly managed
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -124,7 +121,7 @@ const ProgramDetailsPage = () => {
 
   console.log('Program:', program);
 
-  console.log('program.workouts:', program.workouts);
+  // console.log('program.workouts:', program.workouts);
 
   return (
     <div>
@@ -178,4 +175,4 @@ const ProgramDetailsPage = () => {
   );
 };
 
-export default ProgramDetailsPage;
+export default EditProgram;
