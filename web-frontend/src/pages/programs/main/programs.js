@@ -119,6 +119,7 @@ const ProgramPage = () => {
     await deleteProgram(programId);
     // Re-fetch programs after deletion
     fetchPrograms();
+    navigate(`/programs/`);
   };
 
   const handleProgramClick = program => {

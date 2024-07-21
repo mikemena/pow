@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 
 import './Workout.css';
 
-const Workout = ({ workout, isExpanded, onToggleExpand }) => {
+const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   const {
     state,
     deleteWorkout,
@@ -25,7 +25,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
     updateSet,
     deleteSet
   } = useContext(ProgramContext);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -37,7 +37,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   }, [workout]);
 
   const handleEditTitleChange = e => {
-    setIsEditing(true);
+    setIsEditingTitle(true);
     setWorkoutTitle(e.target.value);
   };
 
@@ -46,7 +46,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
       const updatedWorkout = { ...workout, name: workoutTitle };
       updateWorkout(updatedWorkout);
     }
-    setIsEditing(false);
+    setIsEditingTitle(false);
   };
 
   const handleDeleteWorkout = workoutId => {
@@ -68,46 +68,109 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
   };
 
   const handleAddSet = (workoutId, exerciseId) => {
-    addSet(workoutId, exerciseId);
+    if (isEditing) {
+      // For editing existing programs
+      const updatedWorkout = {
+        ...workout,
+        exercises: workout.exercises.map(ex =>
+          ex.id === exerciseId
+            ? {
+                ...ex,
+                sets: [
+                  ...ex.sets,
+                  {
+                    id: Date.now(),
+                    order: ex.sets.length + 1,
+                    weight: '',
+                    reps: ''
+                  }
+                ]
+              }
+            : ex
+        )
+      };
+      updateWorkout(updatedWorkout);
+    } else {
+      // For new programs
+      addSet(workoutId, exerciseId);
+    }
   };
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
-    const workoutExercises =
-      state.exercises && state.exercises[workoutId]
-        ? state.exercises[workoutId]
-        : [];
+    const selectedExercises = isEditing
+      ? workout.exercises || []
+      : state.exercises[workoutId] || [];
     console.log(
       'Navigating to select-exercises with selected exercises:',
-      workoutExercises
+      selectedExercises
     );
     navigate('/select-exercises', {
-      state: { workoutId, selectedExercises: workoutExercises }
+      state: { workoutId, selectedExercises, isEditing }
     });
   };
 
   const handleChange = (updatedValue, exercise, set) => {
-    updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
+    if (isEditing) {
+      // For editing existing programs
+      const updatedWorkout = {
+        ...workout,
+        exercises: workout.exercises.map(ex =>
+          ex.id === exercise.id
+            ? {
+                ...ex,
+                sets: ex.sets.map(s =>
+                  s.id === set.id ? { ...s, ...updatedValue } : s
+                )
+              }
+            : ex
+        )
+      };
+      updateWorkout(updatedWorkout);
+    } else {
+      // For new programs
+      updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
+    }
   };
 
   const handleDeleteSet = (workoutId, exerciseId, setId) => {
-    deleteSet(workoutId, exerciseId, setId);
+    if (isEditing) {
+      // For editing existing programs
+      const updatedWorkout = {
+        ...workout,
+        exercises: workout.exercises.map(ex =>
+          ex.id === exerciseId
+            ? {
+                ...ex,
+                sets: ex.sets.filter(s => s.id !== setId)
+              }
+            : ex
+        )
+      };
+      updateWorkout(updatedWorkout);
+    } else {
+      // For new programs
+      deleteSet(workoutId, exerciseId, setId);
+    }
   };
 
-  const workoutExercises = useMemo(
-    () =>
-      state.exercises && state.exercises[workout.id]
-        ? state.exercises[workout.id]
-        : [],
-    [state.exercises, workout.id]
-  );
+  const workoutExercises = useMemo(() => {
+    if (isEditing && workout.exercises) {
+      // For editing existing programs
+      return workout.exercises;
+    } else if (state.exercises && state.exercises[workout.id]) {
+      // For new programs or when exercises are in state
+      return state.exercises[workout.id];
+    }
+    return [];
+  }, [isEditing, workout, state.exercises]);
 
   const allSets = useMemo(() => {
     return workoutExercises.map(exercise => ({
       ...exercise,
-      sets: state.sets[exercise.id] || []
+      sets: isEditing ? exercise.sets || [] : state.sets[exercise.id] || []
     }));
-  }, [workoutExercises, state.sets]);
+  }, [isEditing, workoutExercises, state.sets]);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -138,7 +201,7 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
           )}
         </button>
         <div className='workout__title-container'>
-          {isEditing ? (
+          {isEditingTitle ? (
             <div>
               <input
                 className={`workout__title-input ${theme}`}
@@ -154,17 +217,17 @@ const Workout = ({ workout, isExpanded, onToggleExpand }) => {
               />
               <IoCloseCircleSharp
                 className={`workout__icon ${theme}`}
-                onClick={() => setIsEditing(false)}
+                onClick={() => setIsEditingTitle(false)}
                 size={25}
               />
             </div>
           ) : (
             <h2 className={`workout__title ${theme}`}>{workoutTitle}</h2>
           )}
-          {isExpanded && !isEditing && (
+          {isExpanded && !isEditingTitle && (
             <TbPencil
               className={`workout__icon pencil-icon ${theme}`}
-              onClick={() => setIsEditing(true)}
+              onClick={() => setIsEditingTitle(true)}
               size={25}
             />
           )}

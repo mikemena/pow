@@ -154,12 +154,28 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    // console.log('Dispatching ADD_SET:', {
-    //   workoutId,
-    //   exerciseId,
-    //   weight,
-    //   reps
-    // });
+    console.log('Adding set for workout:', workoutId, 'exercise:', exerciseId);
+
+    // Check if the workout exists
+    if (!state.workouts[workoutId]) {
+      console.error('Workout not found:', workoutId);
+      return;
+    }
+
+    // Check if the exercise exists
+    const exerciseExists = state.exercises[workoutId]?.some(
+      ex => ex.id === exerciseId
+    );
+    if (!exerciseExists) {
+      console.error(
+        'Exercise not found:',
+        exerciseId,
+        'in workout:',
+        workoutId
+      );
+      return;
+    }
+
     dispatch({
       type: actionTypes.ADD_SET,
       payload: { workoutId, exerciseId, weight, reps }

@@ -11,8 +11,14 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
-    useContext(ProgramContext);
+  const {
+    state,
+    saveProgram,
+    dispatch,
+    setActiveWorkout,
+    clearState,
+    setProgramForEditing
+  } = useContext(ProgramContext);
   const { program_id } = useParams();
   const [program, setProgram] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
@@ -35,7 +41,7 @@ const EditProgram = () => {
         console.log('Program details fetched:', data);
 
         // Update state in context with fetched data
-        dispatch({ type: 'SET_PROGRAM', payload: data });
+        setProgramForEditing(data);
         setProgram(data);
 
         // Update workouts, exercises, and sets in context
@@ -66,7 +72,7 @@ const EditProgram = () => {
     };
 
     fetchProgram();
-  }, [program_id, dispatch]);
+  }, [program_id, dispatch, setProgramForEditing]);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
