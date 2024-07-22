@@ -228,77 +228,85 @@ router.post('/programs', async (req, res) => {
 router.put('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
   const {
+    user_id,
     name,
     program_duration,
     days_per_week,
     duration_unit,
     main_goal,
-    workouts
+    workouts = []
   } = req.body;
 
+  // Begin database transaction
+  const client = await pool.connect();
+
   try {
-    // Begin transaction
-    await pool.query('BEGIN');
+    await client.query('BEGIN');
 
     // Update the program details
-    await pool.query(
-      `UPDATE programs
-       SET name = $1, program_duration = $2, duration_unit = $3, days_per_week = $4, main_goal = $5
-       WHERE id = $6`,
-      [
-        name,
-        program_duration,
-        duration_unit,
-        days_per_week,
-        main_goal,
-        program_id
-      ]
-    );
+    const programQuery = `
+      UPDATE programs
+      SET user_id = $1, name = $2, program_duration = $3, days_per_week = $4, duration_unit = $5, main_goal = $6
+      WHERE id = $7`;
+    await client.query(programQuery, [
+      user_id,
+      name,
+      program_duration,
+      days_per_week,
+      duration_unit,
+      main_goal,
+      program_id
+    ]);
 
     // Delete existing workouts, exercises, and sets for the program
-    await pool.query(
+    await client.query(
       'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
-    await pool.query(
+    await client.query(
       'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
       [program_id]
     );
-    await pool.query('DELETE FROM workouts WHERE program_id = $1', [
+    await client.query('DELETE FROM workouts WHERE program_id = $1', [
       program_id
     ]);
 
     // Insert new workouts, exercises, and sets
     for (const workout of workouts) {
-      const workoutResult = await pool.query(
-        `INSERT INTO workouts (name, program_id) VALUES ($1, $2) RETURNING id`,
-        [workout.name, program_id]
+      const workoutResult = await client.query(
+        `INSERT INTO workouts (program_id, name, "order")
+        VALUES ($1, $2, $3) RETURNING id`,
+        [program_id, workout.name, workout.order]
       );
-      const workoutId = workoutResult.rows[0].id;
+      const workout_id = workoutResult.rows[0].id;
 
-      for (const exercise of workout.exercises) {
-        const exerciseResult = await pool.query(
-          `INSERT INTO exercises (name, muscle, workout_id) VALUES ($1, $2, $3) RETURNING id`,
-          [exercise.name, exercise.muscle, workoutId]
+      // Add exercises for each workout
+      for (const exercise of workout.exercises || []) {
+        const exerciseResult = await client.query(
+          `INSERT INTO exercises (workout_id, catalog_exercise_id, "order")
+          VALUES ($1, $2, $3) RETURNING id`,
+          [workout_id, exercise.catalog_exercise_id, exercise.order]
         );
-        const exerciseId = exerciseResult.rows[0].id;
+        const exercise_id = exerciseResult.rows[0].id;
 
-        for (const set of exercise.sets) {
-          await pool.query(
-            `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
-            [set.weight, set.reps, set.order, exerciseId]
+        // Add sets for each exercise
+        for (const set of exercise.sets || []) {
+          await client.query(
+            `INSERT INTO sets (exercise_id, reps, weight, "order")
+            VALUES ($1, $2, $3, $4)`,
+            [exercise_id, set.reps, set.weight, set.order]
           );
         }
       }
     }
 
     // If everything is fine, commit the transaction
-    await pool.query('COMMIT');
+    await client.query('COMMIT');
 
     res.json({ message: 'Program updated successfully' });
   } catch (err) {
     // If there is any error, rollback the transaction
-    await pool.query('ROLLBACK');
+    await client.query('ROLLBACK');
     console.error(err);
     res.status(500).send('Server error');
   }
