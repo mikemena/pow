@@ -11,14 +11,8 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const {
-    state,
-    saveProgram,
-    dispatch,
-    setActiveWorkout,
-    clearState,
-    setProgramForEditing
-  } = useContext(ProgramContext);
+  const { updateProgram, dispatch, setActiveWorkout, clearState } =
+    useContext(ProgramContext);
   const { program_id } = useParams();
   const [program, setProgram] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
@@ -30,7 +24,6 @@ const EditProgram = () => {
   useEffect(() => {
     const fetchProgram = async () => {
       try {
-        console.log(`Fetching program details for ID: ${program_id}`);
         const response = await fetch(
           `http://localhost:9025/api/programs/${program_id}`
         );
@@ -38,33 +31,11 @@ const EditProgram = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        console.log('Program details fetched:', data);
 
-        // Update state in context with fetched data
-        setProgramForEditing(data);
+        // Update context state with fetched program data
+        dispatch({ type: 'SET_PROGRAM', payload: data });
         setProgram(data);
-
-        // Update workouts, exercises, and sets in context
-        data.workouts.forEach(workout => {
-          dispatch({
-            type: 'ADD_WORKOUT',
-            payload: { programId: data.id, workout }
-          });
-          workout.exercises.forEach(exercise => {
-            dispatch({
-              type: 'ADD_EXERCISE',
-              payload: { workoutId: workout.id, exercise }
-            });
-            exercise.sets.forEach(set => {
-              dispatch({
-                type: 'ADD_SET',
-                payload: { exerciseId: exercise.id, set }
-              });
-            });
-          });
-        });
       } catch (err) {
-        console.error('Error fetching program details:', err.message);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -72,7 +43,7 @@ const EditProgram = () => {
     };
 
     fetchProgram();
-  }, [program_id, dispatch, setProgramForEditing]);
+  }, [program_id, dispatch]);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -117,9 +88,9 @@ const EditProgram = () => {
     }
   };
 
-  const handleSaveProgram = async () => {
+  const handleUpdateProgram = async () => {
     try {
-      await saveProgram(program);
+      await updateProgram(program.id);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -173,7 +144,7 @@ const EditProgram = () => {
           <Button type='button' onClick={handleAddWorkout}>
             Add Workout
           </Button>
-          <Button type='submit' onClick={handleSaveProgram}>
+          <Button type='submit' onClick={handleUpdateProgram}>
             Save
           </Button>
           <Button type='button' onClick={handleCancel}>

@@ -8,7 +8,7 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-  const { addProgram } = useContext(ProgramContext);
+  const { dispatch } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -53,25 +53,31 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleBlur = () => {
-    addProgram({
-      id: program.id,
-      name: formValues.programName,
-      main_goal: formValues.mainGoal,
-      program_duration: formValues.programDuration,
-      duration_unit: formValues.durationUnit,
-      days_per_week: formValues.daysPerWeek
+    dispatch({
+      type: 'ADD_PROGRAM',
+      payload: {
+        id: program.id,
+        name: formValues.programName,
+        main_goal: formValues.mainGoal,
+        program_duration: formValues.programDuration,
+        duration_unit: formValues.durationUnit,
+        days_per_week: formValues.daysPerWeek
+      }
     });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
-    addProgram({
-      id: program.id,
-      name: formValues.programName,
-      main_goal: formValues.mainGoal,
-      program_duration: formValues.programDuration,
-      duration_unit: formValues.durationUnit,
-      days_per_week: formValues.daysPerWeek
+    dispatch({
+      type: 'ADD_PROGRAM',
+      payload: {
+        id: program.id,
+        name: formValues.programName,
+        main_goal: formValues.mainGoal,
+        program_duration: formValues.programDuration,
+        duration_unit: formValues.durationUnit,
+        days_per_week: formValues.daysPerWeek
+      }
     });
   };
 

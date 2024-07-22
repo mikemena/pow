@@ -62,6 +62,50 @@ export const ProgramProvider = ({ children }) => {
     }
   };
 
+  const updateProgram = async programId => {
+    const updatedProgram = {
+      ...state.programs[programId],
+      workouts: Object.values(state.workouts).map(workout => ({
+        ...workout,
+        exercises: (state.exercises[workout.id] || []).map(exercise => ({
+          ...exercise,
+          sets: state.sets[exercise.id] || []
+        })),
+        order: workout.order || 1
+      }))
+    };
+
+    dispatch({ type: actionTypes.SAVE_PROGRAM_START });
+    try {
+      validateProgramData(updatedProgram); // Validate data before sending
+      const response = await fetch(
+        `http://localhost:9025/api/programs/${programId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedProgram)
+        }
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text(); // Get the response text
+        console.error('Error updating program:', errorText); // Log the error text
+        throw new Error('Network response was not ok');
+      }
+      const savedProgram = await response.json();
+      dispatch({
+        type: actionTypes.SAVE_PROGRAM_SUCCESS,
+        payload: savedProgram
+      });
+    } catch (error) {
+      console.error('Failed to update program:', error);
+      dispatch({
+        type: actionTypes.SAVE_PROGRAM_FAILURE,
+        payload: error.message
+      });
+    }
+  };
+
   const validateProgramData = programData => {
     if (!programData.workouts || !Array.isArray(programData.workouts)) {
       throw new Error('Workouts should be an array.');
@@ -229,6 +273,7 @@ export const ProgramProvider = ({ children }) => {
         dispatch,
         activeWorkout: state.activeWorkout,
         addProgram,
+        updateProgram,
         deleteProgram,
         addWorkout,
         updateWorkout,
