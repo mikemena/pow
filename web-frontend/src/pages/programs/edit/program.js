@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
-import { IoChevronBackOutline } from 'react-icons/io5';
 import Button from '../../../components/Inputs/Button';
 import Workout from '../../../components/Workout/Workout';
 import ProgramForm from '../../../components/Program/ProgramForm';

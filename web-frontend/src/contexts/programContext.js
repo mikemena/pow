@@ -94,7 +94,7 @@ export const ProgramProvider = ({ children }) => {
       }
       const savedProgram = await response.json();
       dispatch({
-        type: actionTypes.SAVE_PROGRAM_SUCCESS,
+        type: actionTypes.UPDATE_PROGRAM,
         payload: savedProgram
       });
     } catch (error) {
