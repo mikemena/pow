@@ -69,11 +69,18 @@ export const ProgramProvider = ({ children }) => {
         ...workout,
         exercises: (state.exercises[workout.id] || []).map(exercise => ({
           ...exercise,
-          sets: state.sets[exercise.id] || []
+          sets: state.sets[exercise.id] || [],
+          // Preserve existing exercise IDs
+          id: exercise.id.includes('-') ? null : exercise.id
         })),
+        // Preserve existing workout IDs
+        id: workout.id.includes('-') ? null : workout.id,
         order: workout.order || 1
-      }))
+      })),
+      id: programId
     };
+
+    console.log('Updated program data being sent to API:', updatedProgram);
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {

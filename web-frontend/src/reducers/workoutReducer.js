@@ -51,7 +51,8 @@ function workoutReducer(state = initialState.workouts, action) {
         ...state,
         [action.payload.id]: {
           ...workout,
-          ...action.payload
+          ...action.payload,
+          id: action.payload.id
         }
       };
       // console.log('State After UPDATE_WORKOUT:', newState);

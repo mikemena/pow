@@ -34,7 +34,9 @@ function setReducer(state = initialState.sets, action) {
       return {
         ...state,
         [exerciseId]: state[exerciseId].map(set =>
-          set.id === updatedSet.id ? { ...set, ...updatedSet } : set
+          set.id === updatedSet.id
+            ? { ...set, ...updatedSet, id: updatedSet.id }
+            : set
         )
       };
     }

@@ -31,6 +31,23 @@ function exerciseReducer(state = {}, action) {
       };
     }
 
+    case actionTypes.UPDATE_EXERCISE: {
+      const { workoutId, updatedExercise } = action.payload;
+      return {
+        ...state,
+        [workoutId]: state[workoutId].map(exercise =>
+          exercise.id === updatedExercise.id
+            ? {
+                ...exercise,
+                ...updatedExercise,
+                // Ensure the exercise ID is preserved
+                id: updatedExercise.id
+              }
+            : exercise
+        )
+      };
+    }
+
     case actionTypes.DELETE_EXERCISE: {
       if (!action.payload) {
         console.error('Invalid payload for DELETE_EXERCISE', action.payload);

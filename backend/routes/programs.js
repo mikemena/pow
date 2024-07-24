@@ -228,86 +228,105 @@ router.post('/programs', async (req, res) => {
 router.put('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
   const {
-    user_id,
     name,
     program_duration,
     days_per_week,
     duration_unit,
     main_goal,
-    workouts = []
+    workouts
   } = req.body;
 
-  // Begin database transaction
-  const client = await pool.connect();
-
   try {
-    await client.query('BEGIN');
+    // Begin transaction
+    await pool.query('BEGIN');
 
     // Update the program details
-    const programQuery = `
-      UPDATE programs
-      SET user_id = $1, name = $2, program_duration = $3, days_per_week = $4, duration_unit = $5, main_goal = $6
-      WHERE id = $7`;
-    await client.query(programQuery, [
-      user_id,
-      name,
-      program_duration,
-      days_per_week,
-      duration_unit,
-      main_goal,
-      program_id
-    ]);
-
-    // Delete existing workouts, exercises, and sets for the program
-    await client.query(
-      'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
-      [program_id]
+    await pool.query(
+      `UPDATE programs
+       SET name = $1, program_duration = $2, duration_unit = $3, days_per_week = $4, main_goal = $5
+       WHERE id = $6`,
+      [
+        name,
+        program_duration,
+        duration_unit,
+        days_per_week,
+        main_goal,
+        program_id
+      ]
     );
-    await client.query(
-      'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
-      [program_id]
-    );
-    await client.query('DELETE FROM workouts WHERE program_id = $1', [
-      program_id
-    ]);
 
-    // Insert new workouts, exercises, and sets
+    // Loop through each workout to update or insert
     for (const workout of workouts) {
-      const workoutResult = await client.query(
-        `INSERT INTO workouts (program_id, name, "order")
-        VALUES ($1, $2, $3) RETURNING id`,
-        [program_id, workout.name, workout.order]
-      );
-      const workout_id = workoutResult.rows[0].id;
+      let workoutId;
 
-      // Add exercises for each workout
-      for (const exercise of workout.exercises || []) {
-        const exerciseResult = await client.query(
-          `INSERT INTO exercises (workout_id, catalog_exercise_id, "order")
-          VALUES ($1, $2, $3) RETURNING id`,
-          [workout_id, exercise.catalog_exercise_id, exercise.order]
+      if (workout.id) {
+        // Update existing workout
+        await pool.query(
+          `UPDATE workouts SET name = $1, "order" = $2 WHERE id = $3 AND program_id = $4`,
+          [workout.name, workout.order, workout.id, program_id]
         );
-        const exercise_id = exerciseResult.rows[0].id;
+        workoutId = workout.id;
+      } else {
+        // Insert new workout
+        const workoutResult = await pool.query(
+          `INSERT INTO workouts (name, program_id, "order") VALUES ($1, $2, $3) RETURNING id`,
+          [workout.name, program_id, workout.order]
+        );
+        workoutId = workoutResult.rows[0].id;
+      }
 
-        // Add sets for each exercise
-        for (const set of exercise.sets || []) {
-          await client.query(
-            `INSERT INTO sets (exercise_id, reps, weight, "order")
-            VALUES ($1, $2, $3, $4)`,
-            [exercise_id, set.reps, set.weight, set.order]
+      // Loop through each exercise to update or insert
+      for (const exercise of workout.exercises) {
+        let exerciseId;
+
+        if (exercise.id) {
+          // Update existing exercise
+          await pool.query(
+            `UPDATE exercises SET catalog_exercise_id = $1, "order" = $2 WHERE id = $3 AND workout_id = $4`,
+            [
+              exercise.catalog_exercise_id,
+              exercise.order,
+              exercise.id,
+              workoutId
+            ]
           );
+          exerciseId = exercise.id;
+        } else {
+          // Insert new exercise
+          const exerciseResult = await pool.query(
+            `INSERT INTO exercises (catalog_exercise_id, workout_id, "order") VALUES ($1, $2, $3) RETURNING id`,
+            [exercise.catalog_exercise_id, workoutId, exercise.order]
+          );
+          exerciseId = exerciseResult.rows[0].id;
+        }
+
+        // Loop through each set to update or insert
+        for (const set of exercise.sets) {
+          if (set.id) {
+            // Update existing set
+            await pool.query(
+              `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
+              [set.weight, set.reps, set.order, set.id, exerciseId]
+            );
+          } else {
+            // Insert new set
+            await pool.query(
+              `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
+              [set.weight, set.reps, set.order, exerciseId]
+            );
+          }
         }
       }
     }
 
     // If everything is fine, commit the transaction
-    await client.query('COMMIT');
+    await pool.query('COMMIT');
 
     res.json({ message: 'Program updated successfully' });
   } catch (err) {
     // If there is any error, rollback the transaction
-    await client.query('ROLLBACK');
-    console.error(err);
+    await pool.query('ROLLBACK');
+    console.error('Error during transaction:', err);
     res.status(500).send('Server error');
   }
 });
