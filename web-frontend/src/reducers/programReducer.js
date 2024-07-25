@@ -81,7 +81,7 @@ function programReducer(state = initialState.programs, action) {
         return state;
       }
 
-      const updatedProgram = {
+      const updatedState = {
         ...state,
         [id]: {
           ...existingProgram, // Spread the existing program details
@@ -94,10 +94,7 @@ function programReducer(state = initialState.programs, action) {
         }
       };
 
-      return {
-        ...state,
-        [updatedProgram.id]: updatedProgram
-      };
+      return updatedState;
     }
 
     case 'SET_PROGRAM': {

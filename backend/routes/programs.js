@@ -14,7 +14,7 @@ router.get('/users/:user_id/programs', async (req, res) => {
     );
 
     if (programsResult.rows.length === 0) {
-      return res.status(404).json({ message: 'No programs found' });
+      return res.json([]);
     }
 
     const programs = programsResult.rows;

@@ -45,6 +45,7 @@ const ProgramPage = () => {
       // console.log('Programs fetched:', data);
     } catch (error) {
       console.error('Error fetching programs:', error);
+      setLocalPrograms([]);
     }
   };
 
@@ -176,8 +177,8 @@ const ProgramPage = () => {
                   placeholder='Program Names'
                 />
                 <datalist id='programs'>
-                  {localPrograms.map((program, index) => (
-                    <option key={index} value={program.name} />
+                  {localPrograms.map(program => (
+                    <option key={program.id} value={program.name} />
                   ))}
                 </datalist>
                 <select
@@ -185,8 +186,8 @@ const ProgramPage = () => {
                   className={`program-search__goals ${theme}`}
                 >
                   <option value=''>Goal</option>
-                  {GOAL_TYPES.map((option, index) => (
-                    <option key={index} value={option.value}>
+                  {GOAL_TYPES.map(option => (
+                    <option key={option.value} value={option.value}>
                       {option.label}
                     </option>
                   ))}
@@ -208,7 +209,7 @@ const ProgramPage = () => {
                 >
                   <option value=''>Duration Type</option>
                   {DURATION_TYPES.map((option, index) => (
-                    <option key={index} value={option.label}>
+                    <option key={option.value} value={option.label}>
                       {option.label}
                     </option>
                   ))}

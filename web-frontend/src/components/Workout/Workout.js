@@ -157,10 +157,7 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   const workoutExercises = useMemo(() => {
     if (isEditing && workout.exercises) {
       // For editing existing programs
-      return workout.exercises.map(exercise => ({
-        ...exercise,
-        name: exercise.exercise_name // Map exercise_name to name
-      }));
+      return workout.exercises;
     } else if (state.exercises && state.exercises[workout.id]) {
       // For new programs or when exercises are in state
       return state.exercises[workout.id];

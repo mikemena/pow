@@ -67,17 +67,13 @@ export const ProgramProvider = ({ children }) => {
       ...state.programs[programId],
       workouts: Object.values(state.workouts)
         .map(workout => {
-          console.log('Processing workout:', workout);
           if (!workout.id || workout.id.includes('-')) {
-            console.log('Excluding invalid workout:', workout);
             return null; // Exclude invalid or temporary workouts
           }
 
           const updatedExercises = (state.exercises[workout.id] || [])
             .map(exercise => {
-              console.log('Processing exercise:', exercise);
               if (!exercise.id || exercise.id.includes('-')) {
-                console.log('Excluding invalid exercise:', exercise);
                 return null; // Exclude invalid or temporary exercises
               }
 
@@ -121,6 +117,10 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
+      console.log(
+        'Dispatching UPDATE_PROGRAM_SUCCESS with payload:',
+        savedProgram
+      );
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_SUCCESS,
         payload: savedProgram
