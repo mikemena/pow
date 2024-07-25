@@ -65,22 +65,43 @@ export const ProgramProvider = ({ children }) => {
   const updateProgram = async programId => {
     const updatedProgram = {
       ...state.programs[programId],
-      workouts: Object.values(state.workouts).map(workout => ({
-        ...workout,
-        exercises: (state.exercises[workout.id] || []).map(exercise => ({
-          ...exercise,
-          sets: state.sets[exercise.id] || [],
-          // Preserve existing exercise IDs
-          id: exercise.id.includes('-') ? null : exercise.id
-        })),
-        // Preserve existing workout IDs
-        id: workout.id.includes('-') ? null : workout.id,
-        order: workout.order || 1
-      })),
+      workouts: Object.values(state.workouts)
+        .map(workout => {
+          console.log('Processing workout:', workout);
+          if (!workout.id || workout.id.includes('-')) {
+            console.log('Excluding invalid workout:', workout);
+            return null; // Exclude invalid or temporary workouts
+          }
+
+          const updatedExercises = (state.exercises[workout.id] || [])
+            .map(exercise => {
+              console.log('Processing exercise:', exercise);
+              if (!exercise.id || exercise.id.includes('-')) {
+                console.log('Excluding invalid exercise:', exercise);
+                return null; // Exclude invalid or temporary exercises
+              }
+
+              return {
+                ...exercise,
+                sets: state.sets[exercise.id] || [],
+                id: exercise.id
+              };
+            })
+            .filter(exercise => exercise !== null); // Remove null exercises
+
+          return {
+            ...workout,
+            exercises: updatedExercises,
+            id: workout.id,
+            programId: programId
+          };
+        })
+        .filter(workout => workout !== null), // Remove null workouts
       id: programId
     };
 
-    console.log('Updated program data being sent to API:', updatedProgram);
+    console.log('Original Program:', state.programs[programId]);
+    console.log('Updated Program Data being sent to API:', updatedProgram);
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
@@ -101,7 +122,7 @@ export const ProgramProvider = ({ children }) => {
       }
       const savedProgram = await response.json();
       dispatch({
-        type: actionTypes.UPDATE_PROGRAM,
+        type: actionTypes.UPDATE_PROGRAM_SUCCESS,
         payload: savedProgram
       });
     } catch (error) {

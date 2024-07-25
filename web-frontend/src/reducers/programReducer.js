@@ -64,6 +64,42 @@ function programReducer(state = initialState.programs, action) {
       return updatedState;
     }
 
+    case 'UPDATE_PROGRAM_SUCCESS': {
+      const {
+        id,
+        name,
+        program_duration,
+        duration_unit,
+        days_per_week,
+        main_goal,
+        user_id
+      } = action.payload;
+
+      const existingProgram = state[id];
+      if (!existingProgram) {
+        console.error('Program not found:', id);
+        return state;
+      }
+
+      const updatedProgram = {
+        ...state,
+        [id]: {
+          ...existingProgram, // Spread the existing program details
+          name,
+          program_duration,
+          duration_unit,
+          days_per_week,
+          main_goal,
+          user_id
+        }
+      };
+
+      return {
+        ...state,
+        [updatedProgram.id]: updatedProgram
+      };
+    }
+
     case 'SET_PROGRAM': {
       const {
         id,
