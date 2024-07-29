@@ -3,9 +3,6 @@ import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
 
 function workoutReducer(state = initialState.workouts, action) {
-  // console.log('Action Type:', action.type);
-  // console.log('State Before:', state);
-
   switch (action.type) {
     case actionTypes.ADD_WORKOUT: {
       if (!action.payload || !action.payload.programId) {
@@ -28,7 +25,7 @@ function workoutReducer(state = initialState.workouts, action) {
         ...state,
         [workoutId]: newWorkout
       };
-      // console.log('State After ADD_WORKOUT:', newState);
+
       return newState;
     }
 
@@ -54,7 +51,7 @@ function workoutReducer(state = initialState.workouts, action) {
           ...action.payload
         }
       };
-      // console.log('State After UPDATE_WORKOUT:', newState);
+
       return newState;
     }
 
@@ -84,7 +81,6 @@ function workoutReducer(state = initialState.workouts, action) {
     }
 
     default:
-      // console.log('State After Default:', state);
       return state;
   }
 }

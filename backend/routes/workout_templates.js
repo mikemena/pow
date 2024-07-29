@@ -22,15 +22,11 @@ router.get('/workout-templates/:program_id', async (req, res) => {
         [workout.workout_id]
       );
 
-      // Log after fetching exercises for a workout
-
       workout.exercises = exercises.rows.map(e => ({
         exercise_id: e.exercise_id,
         exercise_name: e.exercise_name,
         catalog_exercise_id: e.catalog_exercise_id
       }));
-      // Log after modifying the workout object
-      // console.log(`Workout with exercises ${workout.workout_id}:`, workout);
     }
 
     res.json(workouts.rows);

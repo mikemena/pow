@@ -44,7 +44,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   const handleSaveTitle = () => {
     if (workout) {
       const updatedWorkout = { ...workout, name: workoutTitle };
-      console.log('Saving updated workout title:', updatedWorkout);
       updateWorkout(updatedWorkout);
     }
     setIsEditingTitle(false);
@@ -102,10 +101,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
     const selectedExercises = isEditing
       ? workout.exercises || []
       : state.exercises[workoutId] || [];
-    console.log(
-      'Navigating to select-exercises with selected exercises:',
-      selectedExercises
-    );
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isEditing }
     });
@@ -127,7 +122,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
             : ex
         )
       };
-      console.log('Updating workout with new set values:', updatedWorkout);
       updateWorkout(updatedWorkout);
     } else {
       // For new programs

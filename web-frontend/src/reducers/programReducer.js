@@ -1,40 +1,48 @@
 import { initialState } from './initialState';
 
 function programReducer(state = initialState, action) {
+  console.log('Action Type:', action.type);
+  console.log('State Before:', state);
+
   switch (action.type) {
     case 'ADD_PROGRAM':
+      console.log('Action Type:', action.type);
+      console.log('State Before:', state);
+      console.log('Payload for ADD_PROGRAM:', action.payload);
       const {
         id,
         name,
         program_duration,
         duration_unit,
         days_per_week,
-        main_goal
+        main_goal,
+        user_id
       } = action.payload;
 
-      if (!state.programs[id]) {
-        console.error('Program not found:', id);
-        return state; // Return the current state if the program ID does not exist.
-      }
+      const updatedPrograms = {
+        ...state.programs,
+        [id]: {
+          id,
+          name,
+          program_duration,
+          duration_unit,
+          days_per_week,
+          main_goal,
+          user_id
+        }
+      };
 
       const updatedState = {
         ...state,
-        programs: {
-          ...state.programs,
-          [id]: {
-            ...state.programs[id], // Spread the existing program details
-            name,
-            program_duration,
-            duration_unit,
-            days_per_week,
-            main_goal
-          }
-        }
+        programs: updatedPrograms
       };
       console.log('Reducer updated program state:', updatedState);
       return updatedState;
 
     case 'UPDATE_PROGRAM': {
+      console.log('Action Type:', action.type);
+      console.log('State Before:', state);
+      console.log('Payload for UPDATE_PROGRAM:', action.payload);
       const {
         id,
         name,
@@ -51,26 +59,30 @@ function programReducer(state = initialState, action) {
         return state;
       }
 
-      const updatedState = {
-        ...state,
-        programs: {
-          ...state.programs,
-          [id]: {
-            ...existingProgram, // Spread the existing program details
-            name,
-            program_duration,
-            duration_unit,
-            days_per_week,
-            main_goal,
-            user_id
-          }
+      const updatedPrograms = {
+        ...state.programs,
+        [id]: {
+          ...existingProgram,
+          name,
+          program_duration,
+          duration_unit,
+          days_per_week,
+          main_goal,
+          user_id
         }
       };
 
+      const updatedState = {
+        ...state,
+        programs: updatedPrograms
+      };
+
+      console.log('Reducer updated program state:', updatedState);
       return updatedState;
     }
 
     case 'UPDATE_PROGRAM_SUCCESS': {
+      console.log('Payload for UPDATE_PROGRAM_SUCCESS:', action.payload);
       const {
         id,
         name,
@@ -87,26 +99,30 @@ function programReducer(state = initialState, action) {
         return state;
       }
 
-      const updatedState = {
-        ...state,
-        programs: {
-          ...state.programs,
-          [id]: {
-            ...existingProgram, // Spread the existing program details
-            name,
-            program_duration,
-            duration_unit,
-            days_per_week,
-            main_goal,
-            user_id
-          }
+      const updatedPrograms = {
+        ...state.programs,
+        [id]: {
+          ...existingProgram,
+          name,
+          program_duration,
+          duration_unit,
+          days_per_week,
+          main_goal,
+          user_id
         }
       };
 
+      const updatedState = {
+        ...state,
+        programs: updatedPrograms
+      };
+
+      console.log('Reducer updated program state:', updatedState);
       return updatedState;
     }
 
     case 'SET_PROGRAM': {
+      console.log('Payload for SET_PROGRAM:', action.payload);
       const {
         id,
         name,
@@ -142,7 +158,6 @@ function programReducer(state = initialState, action) {
         return state;
       }
 
-      // console.log(`Deleting program with ID: ${programId}`);
       const newPrograms = { ...state.programs };
       delete newPrograms[programId];
 

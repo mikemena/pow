@@ -36,7 +36,6 @@ export const ProgramProvider = ({ children }) => {
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
-      // console.log('Saving program:', newProgram);
       validateProgramData(newProgram); // Validate data before sending
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
@@ -97,8 +96,6 @@ export const ProgramProvider = ({ children }) => {
       id: programId
     };
 
-    console.log('Updated Program Data being sent to API:', updatedProgram);
-
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       validateProgramData(updatedProgram); // Validate data before sending
@@ -117,10 +114,7 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
-      console.log(
-        'Dispatching UPDATE_PROGRAM_SUCCESS with payload:',
-        savedProgram
-      );
+
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_SUCCESS,
         payload: savedProgram
@@ -150,11 +144,9 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const addProgram = details => {
-    dispatch({
-      type: actionTypes.ADD_PROGRAM,
-      payload: details
-    });
+  const addProgram = program => {
+    console.log('Adding Program:', program);
+    dispatch({ type: 'ADD_PROGRAM', payload: program });
   };
 
   const setCurrentProgram = program => {
@@ -166,8 +158,6 @@ export const ProgramProvider = ({ children }) => {
 
   const deleteProgram = async programId => {
     try {
-      // console.log('Deleting program:', programId);
-
       const response = await fetch(
         `http://localhost:9025/api/programs/${programId}`,
         {
@@ -181,7 +171,6 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Failed to delete program');
       }
 
-      // console.log('Dispatching DELETE_PROGRAM for program ID:', programId);
       dispatch({
         type: actionTypes.DELETE_PROGRAM,
         payload: { programId }
@@ -213,12 +202,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
-    // console.log(
-    //   'Adding exercise with workoutId:',
-    //   workoutId,
-    //   'and exercises:',
-    //   exercises
-    // );
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
@@ -233,8 +216,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    console.log('Adding set for workout:', workoutId, 'exercise:', exerciseId);
-
     // Check if the workout exists
     if (!state.workouts[workoutId]) {
       console.error('Workout not found:', workoutId);
@@ -262,11 +243,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
-    // console.log('Dispatching UPDATE_SET:', {
-    //   workoutId,
-    //   exerciseId,
-    //   updatedSet
-    // });
     dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
@@ -280,14 +256,8 @@ export const ProgramProvider = ({ children }) => {
     const initialState = exercise?.sets || [];
     const additionalSets = state.sets[exerciseId] || [];
     const combinedSets = [...initialState, ...additionalSets];
-    // console.log('combinedSets:', combinedSets);
-
-    // const exerciseSets = state.sets[exerciseId];
-    // console.log('exerciseSets in deleteSet:', exerciseSets);
-    // console.log('combinedSets length:', combinedSets.length);
 
     if (combinedSets.length > 1) {
-      // console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
       dispatch({
         type: actionTypes.DELETE_SET,
         payload: { workoutId, exerciseId, setId }

@@ -20,10 +20,6 @@ const ProgramDetailsPage = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  console.log('state', state);
-
-  console.log({ 'state.currentProgram': state.currentProgram });
-
   useEffect(() => {
     if (state.currentProgram) {
       setProgram(state.currentProgram);

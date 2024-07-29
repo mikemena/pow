@@ -8,7 +8,7 @@ import { useTheme } from '../../contexts/themeContext';
 
 const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   const { theme } = useTheme();
-  const { dispatch } = useContext(ProgramContext);
+  const { dispatch, addProgram } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
     programName: program?.name || '',
@@ -24,7 +24,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
 
   useEffect(() => {
     if (program) {
-      console.log('Updating form values with program:', program);
       setFormValues({
         programName: program.name || '',
         mainGoal: program.main_goal || '',
@@ -53,6 +52,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleBlur = () => {
+    console.log('Form Values on Blur:', formValues);
     dispatch({
       type: 'ADD_PROGRAM',
       payload: {
@@ -61,13 +61,15 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
         main_goal: formValues.mainGoal,
         program_duration: formValues.programDuration,
         duration_unit: formValues.durationUnit,
-        days_per_week: formValues.daysPerWeek
+        days_per_week: formValues.daysPerWeek,
+        user_id: program.user_id
       }
     });
   };
 
   const handleSubmit = e => {
     e.preventDefault();
+    console.log('Form Values on Submit:', formValues);
     dispatch({
       type: 'ADD_PROGRAM',
       payload: {
@@ -76,7 +78,8 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
         main_goal: formValues.mainGoal,
         program_duration: formValues.programDuration,
         duration_unit: formValues.durationUnit,
-        days_per_week: formValues.daysPerWeek
+        days_per_week: formValues.daysPerWeek,
+        user_id: program.user_id
       }
     });
   };

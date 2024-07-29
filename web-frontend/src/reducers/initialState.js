@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 
-// Static IDs for initial state
 const initialProgramId = uuidv4();
 const initialWorkoutId = uuidv4();
 

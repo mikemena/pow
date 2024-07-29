@@ -13,7 +13,7 @@ const EditProgram = () => {
   const { state, updateProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
 
-  const [program, setProgram] = useState(null);
+  const [program, setProgram] = useState(state.currentProgram);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
@@ -22,8 +22,6 @@ const EditProgram = () => {
       setProgram(state.currentProgram);
     }
   }, [state.currentProgram]);
-
-  console.log('state.currentProgram:', state.currentProgram);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -70,7 +68,18 @@ const EditProgram = () => {
 
   const handleUpdateProgram = async () => {
     try {
-      await updateProgram(program.id);
+      const updatedProgram = {
+        ...program,
+        workouts: program.workouts.map(workout => ({
+          ...workout,
+          exercises: workout.exercises.map(exercise => ({
+            ...exercise,
+            sets: exercise.sets || []
+          }))
+        }))
+      };
+      dispatch({ type: 'UPDATE_PROGRAM', payload: updatedProgram });
+      await updateProgram(program.id); // Assuming updateProgram makes an API call to update the program
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -78,10 +87,6 @@ const EditProgram = () => {
   };
 
   if (!program) return <div>Loading...</div>;
-
-  console.log('Program:', program);
-
-  // console.log('program.workouts:', program.workouts);
 
   return (
     <div>
