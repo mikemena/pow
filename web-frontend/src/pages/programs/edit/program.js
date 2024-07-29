@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Button from '../../../components/Inputs/Button';
 import Workout from '../../../components/Workout/Workout';
@@ -10,39 +10,20 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const { updateProgram, dispatch, setActiveWorkout, clearState } =
+  const { state, updateProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
-  const { program_id } = useParams();
+
   const [program, setProgram] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchProgram = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:9025/api/programs/${program_id}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+    if (state.currentProgram) {
+      setProgram(state.currentProgram);
+    }
+  }, [state.currentProgram]);
 
-        // Update context state with fetched program data
-        dispatch({ type: 'SET_PROGRAM', payload: data });
-        setProgram(data);
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProgram();
-  }, [program_id, dispatch]);
+  console.log('state.currentProgram:', state.currentProgram);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -96,8 +77,7 @@ const EditProgram = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (!program) return <div>Loading...</div>;
 
   console.log('Program:', program);
 
@@ -118,7 +98,7 @@ const EditProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {program && program.workouts && program.workouts.length > 0 ? (
+            {program.workouts && program.workouts.length > 0 ? (
               program.workouts.map(workout => {
                 if (!workout || !workout.id) {
                   console.error('Invalid workout object:', workout); // Log invalid workout object

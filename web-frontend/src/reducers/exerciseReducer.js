@@ -24,7 +24,6 @@ function exerciseReducer(state = {}, action) {
             }
           ]
         }));
-
       return {
         ...state,
         [workoutId]: [...currentExercises, ...newExercises]

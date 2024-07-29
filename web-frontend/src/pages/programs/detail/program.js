@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import { IoChevronBackOutline } from 'react-icons/io5';
@@ -10,40 +10,45 @@ import { toProperCase } from '../../../utils/stringUtils';
 import './program.css';
 
 const ProgramDetailsPage = () => {
+  const { state } = useContext(ProgramContext);
   const { program_id } = useParams();
-  const [program, setProgram] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [program, setProgram] = useState(state.currentProgram);
+  const [loading, setLoading] = useState(!state.currentProgram);
   const [error, setError] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, dispatch } = useContext(ProgramContext);
-
+  const { deleteProgram } = useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProgramDetails = async () => {
-      try {
-        // console.log(`Fetching program details for ID: ${program_id}`);
-        const response = await fetch(
-          `http://localhost:9025/api/programs/${program_id}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        // console.log('Program details fetched:', data);
-        setProgram(data);
-        dispatch({ type: 'SET_PROGRAM', payload: data });
-      } catch (err) {
-        console.error('Error fetching program details:', err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  console.log('state', state);
 
-    fetchProgramDetails();
-  }, [program_id, dispatch]);
+  console.log({ 'state.currentProgram': state.currentProgram });
+
+  useEffect(() => {
+    if (state.currentProgram) {
+      setProgram(state.currentProgram);
+      setLoading(false);
+    } else {
+      // Fetch program if not available in context
+      const fetchProgram = async () => {
+        try {
+          const response = await fetch(
+            `http://localhost:9025/api/programs/${program_id}`
+          );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const data = await response.json();
+          setProgram(data);
+        } catch (err) {
+          setError(err.message);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchProgram();
+    }
+  }, [program_id, state.currentProgram]);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({

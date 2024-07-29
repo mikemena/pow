@@ -1,6 +1,7 @@
 import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
+// import { programReducer } from '../reducers/programReducer';
 import { initialState } from '../reducers/initialState';
 
 export const ProgramContext = createContext();
@@ -96,7 +97,6 @@ export const ProgramProvider = ({ children }) => {
       id: programId
     };
 
-    console.log('Original Program:', state.programs[programId]);
     console.log('Updated Program Data being sent to API:', updatedProgram);
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
@@ -154,6 +154,13 @@ export const ProgramProvider = ({ children }) => {
     dispatch({
       type: actionTypes.ADD_PROGRAM,
       payload: details
+    });
+  };
+
+  const setCurrentProgram = program => {
+    dispatch({
+      type: actionTypes.SET_CURRENT_PROGRAM,
+      payload: program
     });
   };
 
@@ -302,6 +309,7 @@ export const ProgramProvider = ({ children }) => {
         activeWorkout: state.activeWorkout,
         addProgram,
         updateProgram,
+        setCurrentProgram,
         deleteProgram,
         addWorkout,
         updateWorkout,

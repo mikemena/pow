@@ -19,9 +19,8 @@ const ProgramPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
   const [localPrograms, setLocalPrograms] = useState([]);
-  const [clickedProgram, setClickedProgram] = useState(null);
 
-  const { state, deleteProgram } = useContext(ProgramContext);
+  const { state, dispatch, deleteProgram } = useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -124,6 +123,8 @@ const ProgramPage = () => {
   };
 
   const handleProgramClick = program => {
+    console.log('Program clicked:', program);
+    dispatch({ type: 'SET_CURRENT_PROGRAM', payload: program });
     navigate(`/programs/${program.id}`);
   };
 
@@ -238,11 +239,7 @@ const ProgramPage = () => {
               to={`/programs/${program.id}`}
               onClick={() => handleProgramClick(program)}
             >
-              <div
-                className={`view-prog-page__program ${theme} ${
-                  clickedProgram === program.id ? 'program-click-animation' : ''
-                }`}
-              >
+              <div className={`view-prog-page__program ${theme} `}>
                 <h2 className='view-prog-page__program-title'>
                   {program.name}
                 </h2>

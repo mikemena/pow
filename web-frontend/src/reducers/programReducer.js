@@ -1,6 +1,6 @@
 import { initialState } from './initialState';
 
-function programReducer(state = initialState.programs, action) {
+function programReducer(state = initialState, action) {
   switch (action.type) {
     case 'ADD_PROGRAM':
       const {
@@ -12,20 +12,23 @@ function programReducer(state = initialState.programs, action) {
         main_goal
       } = action.payload;
 
-      if (!state[id]) {
+      if (!state.programs[id]) {
         console.error('Program not found:', id);
         return state; // Return the current state if the program ID does not exist.
       }
 
       const updatedState = {
         ...state,
-        [id]: {
-          ...state[id], // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal
+        programs: {
+          ...state.programs,
+          [id]: {
+            ...state.programs[id], // Spread the existing program details
+            name,
+            program_duration,
+            duration_unit,
+            days_per_week,
+            main_goal
+          }
         }
       };
       console.log('Reducer updated program state:', updatedState);
@@ -42,7 +45,7 @@ function programReducer(state = initialState.programs, action) {
         user_id
       } = action.payload;
 
-      const existingProgram = state[id];
+      const existingProgram = state.programs[id];
       if (!existingProgram) {
         console.error('Program not found:', id);
         return state;
@@ -50,14 +53,17 @@ function programReducer(state = initialState.programs, action) {
 
       const updatedState = {
         ...state,
-        [id]: {
-          ...existingProgram, // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
+        programs: {
+          ...state.programs,
+          [id]: {
+            ...existingProgram, // Spread the existing program details
+            name,
+            program_duration,
+            duration_unit,
+            days_per_week,
+            main_goal,
+            user_id
+          }
         }
       };
 
@@ -75,7 +81,7 @@ function programReducer(state = initialState.programs, action) {
         user_id
       } = action.payload;
 
-      const existingProgram = state[id];
+      const existingProgram = state.programs[id];
       if (!existingProgram) {
         console.error('Program not found:', id);
         return state;
@@ -83,14 +89,17 @@ function programReducer(state = initialState.programs, action) {
 
       const updatedState = {
         ...state,
-        [id]: {
-          ...existingProgram, // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
+        programs: {
+          ...state.programs,
+          [id]: {
+            ...existingProgram, // Spread the existing program details
+            name,
+            program_duration,
+            duration_unit,
+            days_per_week,
+            main_goal,
+            user_id
+          }
         }
       };
 
@@ -110,14 +119,17 @@ function programReducer(state = initialState.programs, action) {
 
       return {
         ...state,
-        [id]: {
-          id,
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
+        programs: {
+          ...state.programs,
+          [id]: {
+            id,
+            name,
+            program_duration,
+            duration_unit,
+            days_per_week,
+            main_goal,
+            user_id
+          }
         }
       };
     }

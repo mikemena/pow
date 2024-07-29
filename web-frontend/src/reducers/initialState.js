@@ -5,6 +5,7 @@ const initialProgramId = uuidv4();
 const initialWorkoutId = uuidv4();
 
 export const initialState = {
+  currentProgram: null,
   programs: {
     [initialProgramId]: {
       user_id: 2,
@@ -24,7 +25,7 @@ export const initialState = {
       exercises: []
     }
   },
-  // exercises: {},
+  exercises: {},
   sets: {},
   activeWorkout: initialWorkoutId
 };
