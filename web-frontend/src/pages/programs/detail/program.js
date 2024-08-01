@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import React, { useState, useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import { IoChevronBackOutline } from 'react-icons/io5';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
@@ -10,40 +10,17 @@ import { toProperCase } from '../../../utils/stringUtils';
 import './program.css';
 
 const ProgramDetailsPage = () => {
-  const { program_id } = useParams();
-  const [program, setProgram] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, dispatch } = useContext(ProgramContext);
+  const { deleteProgram, state, dispatch } = useContext(ProgramContext);
+
+  console.log(state);
 
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchProgramDetails = async () => {
-      try {
-        // console.log(`Fetching program details for ID: ${program_id}`);
-        const response = await fetch(
-          `http://localhost:9025/api/programs/${program_id}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        // console.log('Program details fetched:', data);
-        setProgram(data);
-        dispatch({ type: 'SET_PROGRAM', payload: data });
-      } catch (err) {
-        console.error('Error fetching program details:', err.message);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProgramDetails();
-  }, [program_id, dispatch]);
+  const { selectedProgram } = state;
+  const program = selectedProgram.selectedProgram;
+  console.log(program);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({
@@ -63,8 +40,7 @@ const ProgramDetailsPage = () => {
     navigate('/programs');
   };
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (!selectedProgram) return <div>Loading...</div>;
 
   return (
     <div>
@@ -79,7 +55,9 @@ const ProgramDetailsPage = () => {
             <span className='prog-details-page__back-text'>Back</span>
           </Link>
           <div className={`prog-details-page__program ${theme}`}>
-            <h2 className='prog-details-page__program-title'>{program.name}</h2>
+            <h2 className='prog-details-page__program-title'>
+              {selectedProgram.name}
+            </h2>
             <div className='prog-details-page__program-details'>
               <div className='prog-details-page__program-details-section'>
                 <p className='prog-details-page__program-details-label'>

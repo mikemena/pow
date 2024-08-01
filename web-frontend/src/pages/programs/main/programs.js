@@ -21,7 +21,8 @@ const ProgramPage = () => {
   const [localPrograms, setLocalPrograms] = useState([]);
   const [clickedProgram, setClickedProgram] = useState(null);
 
-  const { state, deleteProgram } = useContext(ProgramContext);
+  const { state, dispatch, deleteProgram, setSelectedProgram } =
+    useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -124,8 +125,12 @@ const ProgramPage = () => {
   };
 
   const handleProgramClick = program => {
+    dispatch(setSelectedProgram(program));
     navigate(`/programs/${program.id}`);
   };
+
+  const program = state.selectedProgram;
+  console.log({ 'selected program': program });
 
   return (
     <div>

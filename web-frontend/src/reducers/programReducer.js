@@ -97,31 +97,6 @@ function programReducer(state = initialState.programs, action) {
       return updatedState;
     }
 
-    case 'SET_PROGRAM': {
-      const {
-        id,
-        name,
-        program_duration,
-        duration_unit,
-        days_per_week,
-        main_goal,
-        user_id
-      } = action.payload;
-
-      return {
-        ...state,
-        [id]: {
-          id,
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
-        }
-      };
-    }
-
     case 'DELETE_PROGRAM': {
       const { programId } = action.payload;
 

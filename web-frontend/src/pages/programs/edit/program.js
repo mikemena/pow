@@ -29,11 +29,6 @@ const EditProgram = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const data = await response.json();
-
-        // Update context state with fetched program data
-        dispatch({ type: 'SET_PROGRAM', payload: data });
-        setProgram(data);
       } catch (err) {
         setError(err.message);
       } finally {

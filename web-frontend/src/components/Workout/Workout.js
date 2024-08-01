@@ -14,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import './Workout.css';
 
 const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
+  console.log('Workout component rendered with workout:', workout);
   const {
     state,
     deleteWorkout,

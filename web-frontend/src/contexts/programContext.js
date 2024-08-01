@@ -8,6 +8,11 @@ export const ProgramContext = createContext();
 export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
+  const setSelectedProgram = program => ({
+    type: actionTypes.SET_SELECTED_PROGRAM,
+    payload: program
+  });
+
   const setActiveWorkout = workoutId => {
     if (!workoutId) {
       console.error('Attempted to set active workout without a valid ID');
@@ -300,6 +305,7 @@ export const ProgramProvider = ({ children }) => {
         state,
         dispatch,
         activeWorkout: state.activeWorkout,
+        setSelectedProgram,
         addProgram,
         updateProgram,
         deleteProgram,

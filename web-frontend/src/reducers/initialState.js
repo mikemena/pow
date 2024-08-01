@@ -26,5 +26,6 @@ export const initialState = {
   },
   // exercises: {},
   sets: {},
-  activeWorkout: initialWorkoutId
+  activeWorkout: initialWorkoutId,
+  selectedProgram: null
 };
