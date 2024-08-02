@@ -8,10 +8,13 @@ export const ProgramContext = createContext();
 export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
-  const setSelectedProgram = program => ({
-    type: actionTypes.SET_SELECTED_PROGRAM,
-    payload: program
-  });
+  const setSelectedProgram = program => {
+    console.log('Dispatching SET_SELECTED_PROGRAM with:', program);
+    dispatch({
+      type: actionTypes.SET_SELECTED_PROGRAM,
+      payload: program
+    });
+  };
 
   const setActiveWorkout = workoutId => {
     if (!workoutId) {

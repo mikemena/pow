@@ -11,16 +11,18 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, state, dispatch } = useContext(ProgramContext);
-
-  console.log(state);
+  const { deleteProgram, state } = useContext(ProgramContext);
 
   const { theme } = useTheme();
   const navigate = useNavigate();
 
   const { selectedProgram } = state;
-  const program = selectedProgram.selectedProgram;
-  console.log(program);
+  console.log('ProgramDetailsPage state:', state);
+
+  if (!selectedProgram) return <div>Loading...</div>;
+
+  const program = selectedProgram.selectedProgram || selectedProgram;
+  console.log('ProgramDetailsPage selectedProgram:', program);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({
@@ -39,8 +41,6 @@ const ProgramDetailsPage = () => {
     await deleteProgram(programId);
     navigate('/programs');
   };
-
-  if (!selectedProgram) return <div>Loading...</div>;
 
   return (
     <div>
@@ -64,7 +64,7 @@ const ProgramDetailsPage = () => {
                   Main Goal
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {toProperCase(program.main_goal)}
+                  {toProperCase(selectedProgram.main_goal)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -73,7 +73,7 @@ const ProgramDetailsPage = () => {
                 </p>
                 <p className='prog-details-page__program-details-value'>
                   {program.program_duration}{' '}
-                  {toProperCase(program.duration_unit)}
+                  {toProperCase(selectedProgram.duration_unit)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -81,7 +81,7 @@ const ProgramDetailsPage = () => {
                   Days Per Week
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {program.days_per_week}
+                  {selectedProgram.days_per_week}
                 </p>
               </div>
             </div>

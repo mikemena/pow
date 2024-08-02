@@ -125,7 +125,8 @@ const ProgramPage = () => {
   };
 
   const handleProgramClick = program => {
-    dispatch(setSelectedProgram(program));
+    console.log('Selected program:', program);
+    setSelectedProgram(program);
     navigate(`/programs/${program.id}`);
   };
 

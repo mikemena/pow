@@ -3,8 +3,10 @@ import { workoutReducer } from './workoutReducer';
 import { exerciseReducer } from './exerciseReducer';
 import { setReducer } from './setReducer.js';
 import { activeWorkoutReducer } from './activeWorkoutReducer.js';
+import { selectedProgramReducer } from './selectedProgramReducer.js';
 import { initialState } from './initialState';
 import { actionTypes } from '../actions/actionTypes';
+
 const combineReducers = reducers => {
   return (state = {}, action) => {
     let hasChanged = false;
@@ -24,7 +26,8 @@ const rootReducer = combineReducers({
   workouts: workoutReducer,
   exercises: exerciseReducer,
   sets: setReducer,
-  activeWorkout: activeWorkoutReducer
+  activeWorkout: activeWorkoutReducer,
+  selectedProgram: selectedProgramReducer
 });
 
 const mainReducer = (state, action) => {

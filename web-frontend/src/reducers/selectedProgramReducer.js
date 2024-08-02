@@ -7,6 +7,7 @@ function selectedProgramReducer(state = initialState, action) {
 
   switch (action.type) {
     case actionTypes.SET_SELECTED_PROGRAM:
+      console.log('Setting selectedProgram:', action.payload);
       return {
         ...state,
         selectedProgram: action.payload
