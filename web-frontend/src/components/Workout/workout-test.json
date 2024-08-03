@@ -1,0 +1,38 @@
+[
+  {
+    "id": 250,
+    "name": "WX",
+    "program_id": 213,
+    "order": 1,
+    "exercises": [
+      {
+        "id": 258,
+        "workout_id": 250,
+        "catalog_exercise_id": 10,
+        "order": 1,
+        "exercise_name": "Lateral Bicep Curls",
+        "sets": [
+          {
+            "id": 286,
+            "exercise_id": 258,
+            "reps": 10,
+            "weight": 24,
+            "order": 1
+          }
+        ]
+      }
+    ]
+  }
+]
+
+
+
+
+{
+  "6692bc38-7f9c-4734-9e41-74c0d2bbaec0": {
+      "id": "6692bc38-7f9c-4734-9e41-74c0d2bbaec0",
+      "name": "Workout 1",
+      "programId": "2460219e-2d0c-432b-a937-ee1793063f18",
+      "exercises": []
+  }
+}

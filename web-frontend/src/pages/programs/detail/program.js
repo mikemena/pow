@@ -55,16 +55,14 @@ const ProgramDetailsPage = () => {
             <span className='prog-details-page__back-text'>Back</span>
           </Link>
           <div className={`prog-details-page__program ${theme}`}>
-            <h2 className='prog-details-page__program-title'>
-              {selectedProgram.name}
-            </h2>
+            <h2 className='prog-details-page__program-title'>{program.name}</h2>
             <div className='prog-details-page__program-details'>
               <div className='prog-details-page__program-details-section'>
                 <p className='prog-details-page__program-details-label'>
                   Main Goal
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {toProperCase(selectedProgram.main_goal)}
+                  {toProperCase(program.main_goal)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -73,7 +71,7 @@ const ProgramDetailsPage = () => {
                 </p>
                 <p className='prog-details-page__program-details-value'>
                   {program.program_duration}{' '}
-                  {toProperCase(selectedProgram.duration_unit)}
+                  {toProperCase(program.duration_unit)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -81,7 +79,7 @@ const ProgramDetailsPage = () => {
                   Days Per Week
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {selectedProgram.days_per_week}
+                  {program.days_per_week}
                 </p>
               </div>
             </div>

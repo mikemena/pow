@@ -72,7 +72,7 @@ const CreateProgram = () => {
     return <div>Loading or no programs available...</div>;
   }
 
-  //console.log('State:', state); // Log the state
+  console.log('workouts in Create:', state.workouts);
 
   return (
     <div>

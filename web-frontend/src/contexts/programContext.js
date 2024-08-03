@@ -2,6 +2,7 @@ import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { initialState } from '../reducers/initialState';
+import { standardizeWorkout } from '../utils/standardizeWorkout';
 
 export const ProgramContext = createContext();
 
@@ -75,14 +76,46 @@ export const ProgramProvider = ({ children }) => {
       ...state.programs[programId],
       workouts: Object.values(state.workouts)
         .map(workout => {
-          if (!workout.id || workout.id.includes('-')) {
-            return null; // Exclude invalid or temporary workouts
+          console.log('Processing workout:', workout);
+
+          if (!workout || !workout.id) {
+            console.log('Excluding workout due to missing id:', workout);
+            return null; // Exclude workouts without an id
+          }
+
+          const isTemporaryId =
+            typeof workout.id === 'string' && workout.id.includes('-');
+
+          if (isTemporaryId) {
+            console.log('Temporary workout ID detected:', workout.id);
+            // You might want to handle temporary IDs differently
+            // For example, you could generate a new temporary integer ID
+            workout.id = Math.floor(Math.random() * -1000000); // Negative to distinguish from DB IDs
+          } else if (typeof workout.id !== 'number') {
+            console.log('Converting workout ID to number:', workout.id);
+            workout.id = parseInt(workout.id, 10);
+            if (isNaN(workout.id)) {
+              console.log('Invalid workout ID, excluding:', workout);
+              return null;
+            }
           }
 
           const updatedExercises = (state.exercises[workout.id] || [])
             .map(exercise => {
-              if (!exercise.id || exercise.id.includes('-')) {
-                return null; // Exclude invalid or temporary exercises
+              if (!exercise || !exercise.id) {
+                return null; // Exclude exercises without an id
+              }
+
+              const isExerciseTemporaryId =
+                typeof exercise.id === 'string' && exercise.id.includes('-');
+
+              if (isExerciseTemporaryId) {
+                exercise.id = Math.floor(Math.random() * -1000000); // Temporary negative ID
+              } else if (typeof exercise.id !== 'number') {
+                exercise.id = parseInt(exercise.id, 10);
+                if (isNaN(exercise.id)) {
+                  return null;
+                }
               }
 
               return {
@@ -91,7 +124,7 @@ export const ProgramProvider = ({ children }) => {
                 id: exercise.id
               };
             })
-            .filter(exercise => exercise !== null); // Remove null exercises
+            .filter(exercise => exercise !== null);
 
           return {
             ...workout,
@@ -193,16 +226,20 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addWorkout = workout => {
+    const standardizedWorkout = standardizeWorkout(workout);
+    console.log('Adding standardized workout:', standardizedWorkout);
     dispatch({
       type: actionTypes.ADD_WORKOUT,
-      payload: workout
+      payload: standardizedWorkout
     });
   };
 
   const updateWorkout = workout => {
+    const standardizedWorkout = standardizeWorkout(workout);
+    console.log('Updating standardized workout:', standardizedWorkout);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
-      payload: workout
+      payload: standardizedWorkout
     });
   };
 
@@ -214,12 +251,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
-    // console.log(
-    //   'Adding exercise with workoutId:',
-    //   workoutId,
-    //   'and exercises:',
-    //   exercises
-    // );
+    console.log('Dispatching ADD_EXERCISE with:', { workoutId, exercises });
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
@@ -237,15 +269,14 @@ export const ProgramProvider = ({ children }) => {
     console.log('Adding set for workout:', workoutId, 'exercise:', exerciseId);
 
     // Check if the workout exists
-    if (!state.workouts[workoutId]) {
+    const workout = state.workouts[workoutId];
+    if (!workout) {
       console.error('Workout not found:', workoutId);
       return;
     }
 
     // Check if the exercise exists
-    const exerciseExists = state.exercises[workoutId]?.some(
-      ex => ex.id === exerciseId
-    );
+    const exerciseExists = workout.exercises.some(ex => ex.id === exerciseId);
     if (!exerciseExists) {
       console.error(
         'Exercise not found:',

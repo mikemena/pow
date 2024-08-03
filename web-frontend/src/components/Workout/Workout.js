@@ -70,7 +70,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
 
   const handleAddSet = (workoutId, exerciseId) => {
     if (isEditing) {
-      // For editing existing programs
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
@@ -92,7 +91,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
       };
       updateWorkout(updatedWorkout);
     } else {
-      // For new programs
       addSet(workoutId, exerciseId);
     }
   };
@@ -113,7 +111,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
 
   const handleChange = (updatedValue, exercise, set) => {
     if (isEditing) {
-      // For editing existing programs
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
@@ -129,14 +126,12 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
       };
       updateWorkout(updatedWorkout);
     } else {
-      // For new programs
       updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
     }
   };
 
   const handleDeleteSet = (workoutId, exerciseId, setId) => {
     if (isEditing) {
-      // For editing existing programs
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
@@ -150,26 +145,31 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
       };
       updateWorkout(updatedWorkout);
     } else {
-      // For new programs
       deleteSet(workoutId, exerciseId, setId);
     }
   };
 
   const workoutExercises = useMemo(() => {
     if (isEditing && workout.exercises) {
-      // For editing existing programs
       return workout.exercises;
-    } else if (state.exercises && state.exercises[workout.id]) {
-      // For new programs or when exercises are in state
-      return state.exercises[workout.id];
+    } else if (
+      state.workouts[workout.id] &&
+      state.workouts[workout.id].exercises
+    ) {
+      return state.workouts[workout.id].exercises;
     }
     return [];
-  }, [isEditing, workout, state.exercises]);
+  }, [isEditing, workout, state.workouts]);
 
   const allSets = useMemo(() => {
+    console.log('workoutExercises:', workoutExercises);
     return workoutExercises.map(exercise => ({
       ...exercise,
-      sets: isEditing ? exercise.sets || [] : state.sets[exercise.id] || []
+      sets: isEditing
+        ? exercise.sets || []
+        : state.sets && state.sets[exercise.id]
+        ? state.sets[exercise.id]
+        : []
     }));
   }, [isEditing, workoutExercises, state.sets]);
 
