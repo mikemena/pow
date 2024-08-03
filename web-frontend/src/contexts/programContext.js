@@ -3,6 +3,7 @@ import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { initialState } from '../reducers/initialState';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
+import { v4 as uuidv4 } from 'uuid';
 
 export const ProgramContext = createContext();
 
@@ -208,17 +209,25 @@ export const ProgramProvider = ({ children }) => {
     }
   };
 
-  const addWorkout = workout => {
-    const standardizedWorkout = standardizeWorkout(workout);
-
-    dispatch({
-      type: actionTypes.ADD_WORKOUT,
-      payload: standardizedWorkout
-    });
+  const addWorkout = programId => {
+    const newWorkout = {
+      id: uuidv4(),
+      name: 'New Workout',
+      programId: programId,
+      exercises: [],
+      order: Object.keys(state.workouts).length + 1
+    };
+    console.log('Add Standardized Workout:', newWorkout);
+    dispatch({ type: actionTypes.ADD_WORKOUT, payload: newWorkout });
   };
 
   const updateWorkout = workout => {
     const standardizedWorkout = standardizeWorkout(workout);
+    if (!standardizedWorkout) {
+      console.error('Invalid workout object:', workout);
+      return;
+    }
+    console.log('Edit Standardized Workout:', standardizedWorkout);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: standardizedWorkout

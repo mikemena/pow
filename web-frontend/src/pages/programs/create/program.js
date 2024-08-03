@@ -9,8 +9,14 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { state, saveProgram, dispatch, setActiveWorkout, clearState } =
-    useContext(ProgramContext);
+  const {
+    state,
+    saveProgram,
+    dispatch,
+    addWorkout,
+    setActiveWorkout,
+    clearState
+  } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const navigate = useNavigate();
@@ -58,13 +64,9 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    const currentProgramId = Object.keys(state.programs)[0];
-
     event.preventDefault();
-    dispatch({
-      type: 'ADD_WORKOUT',
-      payload: { programId: currentProgramId }
-    });
+    const currentProgramId = Object.keys(state.programs)[0];
+    addWorkout(currentProgramId);
   };
 
   if (!state || !state.programs || Object.keys(state.programs).length === 0) {

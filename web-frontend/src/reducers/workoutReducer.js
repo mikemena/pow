@@ -4,17 +4,35 @@ import { initialState } from './initialState';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 
 function workoutReducer(state = initialState.workouts, action) {
+  console.log('Action Type:', action.type);
+  console.log('State Before:', state);
+  console.log('Action Payload:', action.payload);
+
   switch (action.type) {
     case actionTypes.ADD_WORKOUT:
+      console.log('Action Type: ADD_WORKOUT');
+      console.log('State Before:', state);
+      console.log('Action Payload:', action.payload);
+
+      const newWorkout = standardizeWorkout(action.payload);
+      if (!newWorkout) return state;
+      console.log('Adding workout in reducer:', newWorkout);
+      if (!newWorkout) {
+        console.error('Failed to standardize workout:', action.payload);
+        return state;
+      }
       return {
         ...state,
-        [action.payload.id]: standardizeWorkout(action.payload)
+        [newWorkout.id]: newWorkout
       };
 
     case actionTypes.UPDATE_WORKOUT:
+      const updatedWorkout = standardizeWorkout(action.payload);
+      if (!updatedWorkout) return state;
+      console.log('Updating workout in reducer:', updatedWorkout);
       return {
         ...state,
-        [action.payload.id]: standardizeWorkout(action.payload)
+        [updatedWorkout.id]: updatedWorkout
       };
 
     case actionTypes.ADD_EXERCISE:
