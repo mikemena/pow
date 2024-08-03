@@ -59,8 +59,7 @@ const CreateProgram = () => {
 
   const handleAddWorkout = event => {
     const currentProgramId = Object.keys(state.programs)[0];
-    // console.log('currentProgramId:', currentProgramId);
-    // console.log('handleAddWorkout called from CreateProgram.js');
+
     event.preventDefault();
     dispatch({
       type: 'ADD_WORKOUT',
@@ -71,8 +70,6 @@ const CreateProgram = () => {
   if (!state || !state.programs || Object.keys(state.programs).length === 0) {
     return <div>Loading or no programs available...</div>;
   }
-
-  console.log('workouts in Create:', state.workouts);
 
   return (
     <div>

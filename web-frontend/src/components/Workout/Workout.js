@@ -14,7 +14,6 @@ import { useNavigate } from 'react-router-dom';
 import './Workout.css';
 
 const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
-  console.log('Workout component rendered with workout:', workout);
   const {
     state,
     deleteWorkout,
@@ -100,10 +99,7 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
     const selectedExercises = isEditing
       ? workout.exercises || []
       : state.exercises[workoutId] || [];
-    console.log(
-      'Navigating to select-exercises with selected exercises:',
-      selectedExercises
-    );
+
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isEditing }
     });
@@ -162,7 +158,6 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   }, [isEditing, workout, state.workouts]);
 
   const allSets = useMemo(() => {
-    console.log('workoutExercises:', workoutExercises);
     return workoutExercises.map(exercise => ({
       ...exercise,
       sets: isEditing

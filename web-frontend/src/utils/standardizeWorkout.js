@@ -3,7 +3,7 @@ export const standardizeWorkout = workout => {
     id: workout.id || '',
     name: workout.name || '',
     programId: workout.programId || '',
-    exercises: workout.exercises || [], // Ensure exercises is always an array
+    exercises: workout.exercises || [],
     order: workout.order || 1
   };
 };

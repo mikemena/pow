@@ -24,7 +24,6 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
 
   useEffect(() => {
     if (program) {
-      console.log('Updating form values with program:', program);
       setFormValues({
         programName: program.name || '',
         mainGoal: program.main_goal || '',

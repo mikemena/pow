@@ -28,7 +28,7 @@ function programReducer(state = initialState.programs, action) {
           main_goal
         }
       };
-      console.log('Reducer updated program state:', updatedState);
+
       return updatedState;
 
     case 'UPDATE_PROGRAM': {
@@ -105,7 +105,6 @@ function programReducer(state = initialState.programs, action) {
         return state;
       }
 
-      // console.log(`Deleting program with ID: ${programId}`);
       const newPrograms = { ...state.programs };
       delete newPrograms[programId];
 
@@ -114,7 +113,6 @@ function programReducer(state = initialState.programs, action) {
         programs: newPrograms
       };
 
-      // console.log('State After DELETE_PROGRAMS:', newState);
       return newState;
     }
 

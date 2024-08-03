@@ -17,12 +17,10 @@ const ProgramDetailsPage = () => {
   const navigate = useNavigate();
 
   const { selectedProgram } = state;
-  console.log('ProgramDetailsPage state:', state);
 
   if (!selectedProgram) return <div>Loading...</div>;
 
   const program = selectedProgram.selectedProgram || selectedProgram;
-  console.log('ProgramDetailsPage selectedProgram:', program);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({

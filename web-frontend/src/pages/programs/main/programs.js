@@ -43,7 +43,6 @@ const ProgramPage = () => {
       );
       const data = await response.json();
       setLocalPrograms(data || []);
-      // console.log('Programs fetched:', data);
     } catch (error) {
       console.error('Error fetching programs:', error);
       setLocalPrograms([]);
@@ -125,13 +124,9 @@ const ProgramPage = () => {
   };
 
   const handleProgramClick = program => {
-    console.log('Selected program:', program);
     setSelectedProgram(program);
     navigate(`/programs/${program.id}`);
   };
-
-  const program = state.selectedProgram;
-  console.log({ 'selected program': program });
 
   return (
     <div>

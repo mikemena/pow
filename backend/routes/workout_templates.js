@@ -30,7 +30,6 @@ router.get('/workout-templates/:program_id', async (req, res) => {
         catalog_exercise_id: e.catalog_exercise_id
       }));
       // Log after modifying the workout object
-      // console.log(`Workout with exercises ${workout.workout_id}:`, workout);
     }
 
     res.json(workouts.rows);

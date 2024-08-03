@@ -10,7 +10,6 @@ export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
   const setSelectedProgram = program => {
-    console.log('Dispatching SET_SELECTED_PROGRAM with:', program);
     dispatch({
       type: actionTypes.SET_SELECTED_PROGRAM,
       payload: program
@@ -44,7 +43,6 @@ export const ProgramProvider = ({ children }) => {
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
-      // console.log('Saving program:', newProgram);
       validateProgramData(newProgram); // Validate data before sending
       const response = await fetch('http://localhost:9025/api/programs', {
         method: 'POST',
@@ -76,10 +74,7 @@ export const ProgramProvider = ({ children }) => {
       ...state.programs[programId],
       workouts: Object.values(state.workouts)
         .map(workout => {
-          console.log('Processing workout:', workout);
-
           if (!workout || !workout.id) {
-            console.log('Excluding workout due to missing id:', workout);
             return null; // Exclude workouts without an id
           }
 
@@ -87,15 +82,12 @@ export const ProgramProvider = ({ children }) => {
             typeof workout.id === 'string' && workout.id.includes('-');
 
           if (isTemporaryId) {
-            console.log('Temporary workout ID detected:', workout.id);
             // You might want to handle temporary IDs differently
             // For example, you could generate a new temporary integer ID
             workout.id = Math.floor(Math.random() * -1000000); // Negative to distinguish from DB IDs
           } else if (typeof workout.id !== 'number') {
-            console.log('Converting workout ID to number:', workout.id);
             workout.id = parseInt(workout.id, 10);
             if (isNaN(workout.id)) {
-              console.log('Invalid workout ID, excluding:', workout);
               return null;
             }
           }
@@ -137,9 +129,6 @@ export const ProgramProvider = ({ children }) => {
       id: programId
     };
 
-    console.log('Original Program:', state.programs[programId]);
-    console.log('Updated Program Data being sent to API:', updatedProgram);
-
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       validateProgramData(updatedProgram); // Validate data before sending
@@ -158,10 +147,7 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
-      console.log(
-        'Dispatching UPDATE_PROGRAM_SUCCESS with payload:',
-        savedProgram
-      );
+
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_SUCCESS,
         payload: savedProgram
@@ -200,8 +186,6 @@ export const ProgramProvider = ({ children }) => {
 
   const deleteProgram = async programId => {
     try {
-      // console.log('Deleting program:', programId);
-
       const response = await fetch(
         `http://localhost:9025/api/programs/${programId}`,
         {
@@ -215,7 +199,6 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Failed to delete program');
       }
 
-      // console.log('Dispatching DELETE_PROGRAM for program ID:', programId);
       dispatch({
         type: actionTypes.DELETE_PROGRAM,
         payload: { programId }
@@ -227,7 +210,7 @@ export const ProgramProvider = ({ children }) => {
 
   const addWorkout = workout => {
     const standardizedWorkout = standardizeWorkout(workout);
-    console.log('Adding standardized workout:', standardizedWorkout);
+
     dispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: standardizedWorkout
@@ -236,7 +219,6 @@ export const ProgramProvider = ({ children }) => {
 
   const updateWorkout = workout => {
     const standardizedWorkout = standardizeWorkout(workout);
-    console.log('Updating standardized workout:', standardizedWorkout);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: standardizedWorkout
@@ -251,7 +233,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
-    console.log('Dispatching ADD_EXERCISE with:', { workoutId, exercises });
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises }
@@ -266,8 +247,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    console.log('Adding set for workout:', workoutId, 'exercise:', exerciseId);
-
     // Check if the workout exists
     const workout = state.workouts[workoutId];
     if (!workout) {
@@ -294,11 +273,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateSet = (workoutId, exerciseId, updatedSet) => {
-    // console.log('Dispatching UPDATE_SET:', {
-    //   workoutId,
-    //   exerciseId,
-    //   updatedSet
-    // });
     dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }
@@ -312,14 +286,8 @@ export const ProgramProvider = ({ children }) => {
     const initialState = exercise?.sets || [];
     const additionalSets = state.sets[exerciseId] || [];
     const combinedSets = [...initialState, ...additionalSets];
-    // console.log('combinedSets:', combinedSets);
-
-    // const exerciseSets = state.sets[exerciseId];
-    // console.log('exerciseSets in deleteSet:', exerciseSets);
-    // console.log('combinedSets length:', combinedSets.length);
 
     if (combinedSets.length > 1) {
-      // console.log('Dispatching DELETE_SET:', { workoutId, exerciseId, setId });
       dispatch({
         type: actionTypes.DELETE_SET,
         payload: { workoutId, exerciseId, setId }

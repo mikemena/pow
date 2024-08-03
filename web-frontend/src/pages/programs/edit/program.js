@@ -18,12 +18,10 @@ const EditProgram = () => {
   const navigate = useNavigate();
 
   const { selectedProgram } = state;
-  console.log('ProgramDetailsPage state:', state);
 
   if (!selectedProgram) return <div>Loading...</div>;
 
   const program = selectedProgram.selectedProgram || selectedProgram;
-  console.log('ProgramDetailsPage selectedProgram:', program);
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -76,8 +74,6 @@ const EditProgram = () => {
       console.error('Failed to save the program:', error);
     }
   };
-
-  console.log('program.workouts:', program.workouts);
 
   return (
     <div>
