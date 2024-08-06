@@ -1,3 +1,4 @@
+// ProgramDetailsPage.js
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
@@ -12,15 +13,16 @@ import './program.css';
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const { deleteProgram, state } = useContext(ProgramContext);
-
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  const { selectedProgram } = state;
+  console.log('Entire state in ProgramDetailsPage:', state);
 
-  if (!selectedProgram) return <div>Loading...</div>;
+  const program = state.programs.selectedProgram;
 
-  const program = selectedProgram.selectedProgram || selectedProgram;
+  if (!program) {
+    return <div>Loading...</div>;
+  }
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({
@@ -34,8 +36,6 @@ const ProgramDetailsPage = () => {
     if (count === 1) return '1 Exercise';
     return `${count} Exercises`;
   };
-
-  console.log('program.workouts.exercises:', program.workouts.exercises);
 
   const handleDeleteProgram = async programId => {
     await deleteProgram(programId);
@@ -86,7 +86,6 @@ const ProgramDetailsPage = () => {
           </div>
         </div>
         <div>
-          {/* Display workouts, exercises, and sets here */}
           {program.workouts.map(workout => (
             <div
               key={workout.id}
@@ -174,7 +173,6 @@ const ProgramDetailsPage = () => {
           ))}
         </div>
         <div className='prog-details-page__button-container'>
-          {' '}
           <Link
             key={program.id}
             to={`/programs/${program.id}/edit`}

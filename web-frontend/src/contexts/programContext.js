@@ -12,6 +12,7 @@ export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
   const setSelectedProgram = program => {
+    console.log('Setting selected program:', program);
     dispatch({
       type: actionTypes.SET_SELECTED_PROGRAM,
       payload: program

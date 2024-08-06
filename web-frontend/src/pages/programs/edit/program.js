@@ -12,16 +12,14 @@ import './program.css';
 const EditProgram = () => {
   const { state, updateProgram, dispatch, setActiveWorkout, clearState } =
     useContext(ProgramContext);
-
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-
   const navigate = useNavigate();
 
-  const { selectedProgram } = state;
+  const program = state.programs.selectedProgram;
 
-  if (!selectedProgram) return <div>Loading...</div>;
-
-  const program = selectedProgram.selectedProgram || selectedProgram;
+  if (!program) {
+    return <div>Loading...</div>;
+  }
 
   const handleExpandWorkout = workoutId => {
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
@@ -90,9 +88,7 @@ const EditProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {selectedProgram &&
-            program.workouts &&
-            program.workouts.length > 0 ? (
+            {program && program.workouts && program.workouts.length > 0 ? (
               program.workouts.map(workout => {
                 if (!workout || !workout.id) {
                   console.error('Invalid workout object:', workout); // Log invalid workout object

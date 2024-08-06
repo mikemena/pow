@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react';
+import React, {
+  useState,
+  useMemo,
+  useContext,
+  useEffect,
+  useCallback
+} from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import TextInput from '../../../components/Inputs/TextInput';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
@@ -125,10 +131,14 @@ const ProgramPage = () => {
     navigate(`/programs/`);
   };
 
-  const handleProgramClick = program => {
-    setSelectedProgram(program);
-    navigate(`/programs/${program.id}`);
-  };
+  const handleProgramClick = useCallback(
+    program => {
+      console.log('Clicking program:', program);
+      setSelectedProgram(program);
+      navigate(`/programs/${program.id}`);
+    },
+    [setSelectedProgram, navigate]
+  );
 
   return (
     <div>
