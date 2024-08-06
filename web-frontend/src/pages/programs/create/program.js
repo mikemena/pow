@@ -9,14 +9,8 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const {
-    state,
-    saveProgram,
-    dispatch,
-    addWorkout,
-    setActiveWorkout,
-    clearState
-  } = useContext(ProgramContext);
+  const { state, saveProgram, addWorkout, setActiveWorkout, clearState } =
+    useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const navigate = useNavigate();

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { actionTypes } from '../actions/actionTypes';
 import { initialState } from './initialState';
+import exerciseUtils from '../utils/exercise.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 
 function workoutReducer(state = initialState.workouts, action) {
@@ -36,26 +37,74 @@ function workoutReducer(state = initialState.workouts, action) {
       };
 
     case actionTypes.ADD_EXERCISE:
-      const { workoutId, exercises } = action.payload;
+      const { workoutId: workoutIdAddEx, exercises } = action.payload;
+      const existingWorkout = state[workoutIdAddEx];
+
+      if (!existingWorkout) {
+        console.error(`Workout with id ${workoutIdAddEx} not found`);
+        return state;
+      }
+
+      const updatedExrc = [
+        ...existingWorkout.exercises,
+        ...exercises.map(ex => exerciseUtils.standardizeExercise(ex))
+      ];
 
       return {
         ...state,
-        [workoutId]: {
-          ...state[workoutId],
-          exercises: [
-            ...state[workoutId].exercises,
-            ...exercises.map(ex => ({ ...ex, sets: ex.sets || [] }))
-          ]
+        [workoutIdAddEx]: {
+          ...existingWorkout,
+          exercises: updatedExrc
+        }
+      };
+
+    case actionTypes.UPDATE_EXERCISE:
+      const { workoutId: wId4, exercise } = action.payload;
+      const workout4 = state[wId4];
+      if (!workout4) return state;
+
+      const updatedExercises4 = workout4.exercises.map(ex =>
+        ex.id === exercise.id ? { ...ex, ...exercise } : ex
+      );
+
+      return {
+        ...state,
+        [wId4]: {
+          ...workout4,
+          exercises: updatedExercises4
+        }
+      };
+
+    case actionTypes.DELETE_EXERCISE:
+      const { workoutId: wId5, exerciseId: exId5 } = action.payload;
+      const workout5 = state[wId5];
+      if (!workout5) return state;
+
+      const remainingExercises = workout5.exercises.filter(
+        ex => ex.id !== exId5
+      );
+
+      return {
+        ...state,
+        [wId5]: {
+          ...workout5,
+          exercises: remainingExercises
         }
       };
 
     case actionTypes.ADD_SET:
-      const { exerciseId, weight, reps } = action.payload;
-      const workout = state[action.payload.workoutId];
+      const {
+        workoutId: workoutIdAddSet,
+        exerciseId,
+        weight,
+        reps
+      } = action.payload;
+      const workout = state[workoutIdAddSet];
       if (!workout) return state;
 
       const updatedExercises = workout.exercises.map(exercise => {
-        if (exercise.id === exerciseId) {
+        const exrcId = exerciseUtils.getExerciseId(exercise);
+        if (exrcId === exerciseId) {
           return {
             ...exercise,
             sets: [
@@ -69,9 +118,64 @@ function workoutReducer(state = initialState.workouts, action) {
 
       return {
         ...state,
-        [action.payload.workoutId]: {
+        [workoutIdAddSet]: {
           ...workout,
           exercises: updatedExercises
+        }
+      };
+
+    case actionTypes.UPDATE_SET:
+      const { workoutId: wId2, exerciseId: exId, updatedSet } = action.payload;
+      const workout2 = state[wId2];
+      if (!workout2) return state;
+
+      const updatedExercises2 = workout2.exercises.map(exercise => {
+        if (exercise.id === exId) {
+          return {
+            ...exercise,
+            sets: exercise.sets.map(set =>
+              set.id === updatedSet.id ? { ...set, ...updatedSet } : set
+            )
+          };
+        }
+        return exercise;
+      });
+
+      return {
+        ...state,
+        [wId2]: {
+          ...workout2,
+          exercises: updatedExercises2
+        }
+      };
+
+    case actionTypes.DELETE_SET:
+      const {
+        workoutId: workoutIdDeleteSet,
+        exerciseId: exerciseIdDeleteSet,
+        setId: setIdDeleteSet
+      } = action.payload;
+      const workoutDeleteSet = state[workoutIdDeleteSet];
+      if (!workoutDeleteSet) return state;
+
+      const updatedExercisesDeleteSet = workoutDeleteSet.exercises.map(
+        exercise => {
+          const exerciseIdToCompare = exerciseUtils.getExerciseId(exercise);
+          if (exerciseIdToCompare === exerciseIdDeleteSet) {
+            return {
+              ...exercise,
+              sets: exercise.sets.filter(set => set.id !== setIdDeleteSet)
+            };
+          }
+          return exercise;
+        }
+      );
+
+      return {
+        ...state,
+        [workoutIdDeleteSet]: {
+          ...workoutDeleteSet,
+          exercises: updatedExercisesDeleteSet
         }
       };
 

@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useContext, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import { ProgramContext } from '../../contexts/programContext';
 import NavBar from '../../components/Nav/Nav';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -30,15 +31,16 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
-    const workoutExercises =
-      activeWorkout && state.exercises[activeWorkout]
-        ? state.exercises[activeWorkout]
-        : [];
-    const mergedExercises = [
-      ...new Set([...initialSelectedExercises, ...workoutExercises])
-    ];
-    setSelectedExercises(mergedExercises);
-  }, [activeWorkout, state.exercises, initialSelectedExercises]);
+    if (activeWorkout && state.workouts[activeWorkout]) {
+      const workoutExercises = state.workouts[activeWorkout].exercises || [];
+      const mergedExercises = [
+        ...new Set([...initialSelectedExercises, ...workoutExercises])
+      ];
+      setSelectedExercises(mergedExercises);
+    } else {
+      setSelectedExercises(initialSelectedExercises);
+    }
+  }, [activeWorkout, state.workouts, initialSelectedExercises]);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -83,7 +85,14 @@ const SelectExercisesPage = () => {
       return;
     }
 
-    addExercise(activeWorkout, selectedExercises);
+    // Map exercises to include both UUID and catalog_exercise_id
+    const exercisesWithIds = selectedExercises.map(ex => ({
+      ...ex,
+      tempId: uuidv4(),
+      catalog_exercise_id: ex.id
+    }));
+
+    addExercise(activeWorkout, exercisesWithIds);
     navigate('/create-program');
   };
 

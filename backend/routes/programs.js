@@ -131,6 +131,8 @@ router.post('/programs', async (req, res) => {
     workouts = [] // Default to empty array if workouts is undefined
   } = req.body;
 
+  console.log('Incoming request body:', JSON.stringify(req.body, null, 2));
+
   // Begin database transaction
   const client = await pool.connect();
 

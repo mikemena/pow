@@ -10,7 +10,7 @@ import TextInput from '../Inputs/TextInput';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { useNavigate } from 'react-router-dom';
-
+import exerciseUtils from '../../utils/exercise';
 import './Workout.css';
 
 const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
@@ -67,38 +67,28 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
     }
   };
 
-  const handleAddSet = (workoutId, exerciseId) => {
-    if (isEditing) {
-      const updatedWorkout = {
-        ...workout,
-        exercises: workout.exercises.map(ex =>
-          ex.id === exerciseId
-            ? {
-                ...ex,
-                sets: [
-                  ...ex.sets,
-                  {
-                    id: Date.now(),
-                    order: ex.sets.length + 1,
-                    weight: '',
-                    reps: ''
-                  }
-                ]
-              }
-            : ex
-        )
-      };
-      updateWorkout(updatedWorkout);
-    } else {
-      addSet(workoutId, exerciseId);
+  const handleAddSet = exercise => {
+    const exerciseId = exerciseUtils.getExerciseId(exercise);
+    if (!activeWorkout) {
+      console.error('No active workout found.');
+      return;
     }
+
+    console.log('handleAddSet called with exerciseId:', exerciseId);
+
+    addSet(activeWorkout, exerciseId);
   };
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
-    const selectedExercises = isEditing
-      ? workout.exercises || []
-      : state.exercises[workoutId] || [];
+
+    let selectedExercises = [];
+
+    if (isEditing) {
+      selectedExercises = workout.exercises || [];
+    } else {
+      selectedExercises = state.workouts[workoutId]?.exercises || [];
+    }
 
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isEditing }
@@ -131,7 +121,7 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
-          ex.id === exerciseId
+          exerciseUtils.getExerciseId(ex) === exerciseId
             ? {
                 ...ex,
                 sets: ex.sets.filter(s => s.id !== setId)
@@ -148,10 +138,7 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   const workoutExercises = useMemo(() => {
     if (isEditing && workout.exercises) {
       return workout.exercises;
-    } else if (
-      state.workouts[workout.id] &&
-      state.workouts[workout.id].exercises
-    ) {
+    } else if (state.workouts && state.workouts[workout.id]) {
       return state.workouts[workout.id].exercises;
     }
     return [];
@@ -160,13 +147,9 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
   const allSets = useMemo(() => {
     return workoutExercises.map(exercise => ({
       ...exercise,
-      sets: isEditing
-        ? exercise.sets || []
-        : state.sets && state.sets[exercise.id]
-        ? state.sets[exercise.id]
-        : []
+      sets: exercise.sets || []
     }));
-  }, [isEditing, workoutExercises, state.sets]);
+  }, [workoutExercises]);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -255,8 +238,11 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
             <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
           </div>
           {workoutExercises.length > 0 ? (
-            allSets.map((exercise, index) => (
-              <div key={exercise.id} className='workout__each-exercise'>
+            allSets.map(exercise => (
+              <div
+                key={exerciseUtils.getExerciseId(exercise)}
+                className='workout__each-exercise'
+              >
                 <div className='workout__exercise-column'>
                   <div className='workout__exercise-info'>
                     <div className={`workout__drag-order-container ${theme}`}>
@@ -287,7 +273,7 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
                       </div>
                     ))}
                   <button
-                    onClick={() => handleAddSet(workout.id, exercise.id)}
+                    onClick={() => handleAddSet(exercise)}
                     className='workout__add-set-btn'
                   >
                     <MdAddBox size={25} />
@@ -318,47 +304,43 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
                 </div>
 
                 <div className='workout__reps-column'>
-                  {exercise.sets && exercise.sets.length > 0
-                    ? exercise.sets.map((set, setIndex) => (
-                        <div key={set.id} className='workout__set'>
-                          <TextInput
-                            className={`workout__set-reps ${theme}`}
-                            onChange={e =>
-                              handleChange(
-                                { reps: e.target.value },
-                                exercise,
-                                set
-                              )
-                            }
-                            value={set.reps}
-                            type='number'
-                          />
-                        </div>
-                      ))
-                    : null}
+                  {exercise.sets.map(set => (
+                    <div key={set.id} className='workout__set'>
+                      <TextInput
+                        className={`workout__set-reps ${theme}`}
+                        onChange={e =>
+                          handleChange({ reps: e.target.value }, exercise, set)
+                        }
+                        value={set.reps}
+                        type='number'
+                      />
+                    </div>
+                  ))}
                   <div className='workout__blank'></div>
                 </div>
                 <div className='workout__delete-set-column'>
-                  {exercise.sets && exercise.sets.length > 0
-                    ? exercise.sets.map((set, setIndex) => (
-                        <div key={set.id} className='workout__set'>
-                          {setIndex > 0 ? (
-                            <button
-                              onClick={() =>
-                                handleDeleteSet(workout.id, exercise.id, set.id)
-                              }
-                              className='workout__delete-set-btn'
-                            >
-                              <RiDeleteBack2Fill size={25} />
-                            </button>
-                          ) : (
-                            <div className='workout__set'>
-                              <div className='workout__no-delete-set-btn' />
-                            </div>
-                          )}
+                  {exercise.sets.map((set, setIndex) => (
+                    <div key={set.id} className='workout__set'>
+                      {setIndex > 0 ? (
+                        <button
+                          onClick={() =>
+                            handleDeleteSet(
+                              workout.id,
+                              exerciseUtils.getExerciseId(exercise),
+                              set.id
+                            )
+                          }
+                          className='workout__delete-set-btn'
+                        >
+                          <RiDeleteBack2Fill size={25} />
+                        </button>
+                      ) : (
+                        <div className='workout__set'>
+                          <div className='workout__no-delete-set-btn' />
                         </div>
-                      ))
-                    : null}
+                      )}
+                    </div>
+                  ))}
                   <div className='workout__blank'></div>
                 </div>
 
@@ -369,7 +351,10 @@ const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleDeleteExercise(workout.id, exercise.id)
+                      handleDeleteExercise(
+                        workout.id,
+                        exerciseUtils.getExerciseId(exercise)
+                      )
                     }
                   >
                     <TbHttpDelete size={30} />

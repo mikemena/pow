@@ -3,6 +3,7 @@ import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { initialState } from '../reducers/initialState';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
+import exerciseUtils from '../utils/exercise.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const ProgramContext = createContext();
@@ -34,13 +35,19 @@ export const ProgramProvider = ({ children }) => {
       ...state.programs[programId],
       workouts: Object.values(state.workouts).map(workout => ({
         ...workout,
-        exercises: (state.exercises[workout.id] || []).map(exercise => ({
-          ...exercise,
-          sets: state.sets[exercise.id] || []
+        exercises: workout.exercises.map(exercise => ({
+          catalog_exercise_id: exercise.catalog_exercise_id,
+          order: exercise.order || 1,
+          sets: exercise.sets.map((set, index) => ({
+            ...set,
+            order: index + 1
+          }))
         })),
         order: workout.order || 1
       }))
     };
+
+    console.log('Saving program with payload:', newProgram);
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
@@ -242,9 +249,23 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addExercise = (workoutId, exercises) => {
+    const standardizedExercises = exercises.map(ex => ({
+      ...ex,
+      tempId: ex.tempId || uuidv4(),
+      catalog_exercise_id: ex.catalog_exercise_id || ex.id,
+      sets: ex.sets || []
+    }));
+
     dispatch({
       type: actionTypes.ADD_EXERCISE,
-      payload: { workoutId, exercises }
+      payload: { workoutId, exercises: standardizedExercises }
+    });
+  };
+
+  const updateExercise = (workoutId, exercise) => {
+    dispatch({
+      type: actionTypes.UPDATE_EXERCISE,
+      payload: { workoutId, exercise }
     });
   };
 
@@ -256,16 +277,17 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    // Check if the workout exists
     const workout = state.workouts[workoutId];
+
     if (!workout) {
       console.error('Workout not found:', workoutId);
       return;
     }
 
-    // Check if the exercise exists
-    const exerciseExists = workout.exercises.some(ex => ex.id === exerciseId);
-    if (!exerciseExists) {
+    const exercise = workout.exercises.find(
+      ex => ex.tempId === exerciseId || ex.id === exerciseId
+    );
+    if (!exercise) {
       console.error(
         'Exercise not found:',
         exerciseId,
@@ -274,10 +296,11 @@ export const ProgramProvider = ({ children }) => {
       );
       return;
     }
+    const exrcId = exerciseUtils.getExerciseId(exercise);
 
     dispatch({
       type: actionTypes.ADD_SET,
-      payload: { workoutId, exerciseId, weight, reps }
+      payload: { workoutId, exerciseId: exrcId, weight, reps }
     });
   };
 
@@ -289,21 +312,44 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteSet = (workoutId, exerciseId, setId) => {
-    const exercise = state.exercises[workoutId].find(
-      ex => ex.id === exerciseId
-    );
-    const initialState = exercise?.sets || [];
-    const additionalSets = state.sets[exerciseId] || [];
-    const combinedSets = [...initialState, ...additionalSets];
-
-    if (combinedSets.length > 1) {
-      dispatch({
-        type: actionTypes.DELETE_SET,
-        payload: { workoutId, exerciseId, setId }
-      });
-    } else {
-      console.log('Cannot delete the only remaining set.');
+    const workout = state.workouts[workoutId];
+    if (!workout) {
+      console.error('Workout not found:', workoutId);
+      return;
     }
+
+    const exercise = workout.exercises.find(
+      ex => exerciseUtils.getExerciseId(ex) === exerciseId
+    );
+    if (!exercise) {
+      console.error(
+        'Exercise not found:',
+        exerciseId,
+        'in workout:',
+        workoutId
+      );
+      return;
+    }
+
+    const updatedSets = exercise.sets.filter(set => set.id !== setId);
+    if (updatedSets.length === exercise.sets.length) {
+      console.error('Set not found:', setId, 'in exercise:', exerciseId);
+      return;
+    }
+
+    const updatedExercises = workout.exercises.map(ex =>
+      exerciseUtils.getExerciseId(ex) === exerciseId
+        ? { ...ex, sets: updatedSets }
+        : ex
+    );
+
+    dispatch({
+      type: actionTypes.UPDATE_WORKOUT,
+      payload: {
+        ...workout,
+        exercises: updatedExercises
+      }
+    });
   };
 
   const clearState = () => {
@@ -325,6 +371,7 @@ export const ProgramProvider = ({ children }) => {
         deleteWorkout,
         setActiveWorkout,
         addExercise,
+        updateExercise,
         deleteExercise,
         addSet,
         updateSet,

@@ -1,7 +1,5 @@
 import { programReducer } from './programReducer';
 import { workoutReducer } from './workoutReducer';
-import { exerciseReducer } from './exerciseReducer';
-import { setReducer } from './setReducer.js';
 import { activeWorkoutReducer } from './activeWorkoutReducer.js';
 import { selectedProgramReducer } from './selectedProgramReducer.js';
 import { initialState } from './initialState';
@@ -24,15 +22,13 @@ const combineReducers = reducers => {
 const rootReducer = combineReducers({
   programs: programReducer,
   workouts: workoutReducer,
-  exercises: exerciseReducer,
-  sets: setReducer,
   activeWorkout: activeWorkoutReducer,
   selectedProgram: selectedProgramReducer
 });
 
 const mainReducer = (state, action) => {
   if (action.type === actionTypes.CLEAR_STATE) {
-    return initialState; // Reset state to initial state
+    return initialState;
   }
   return rootReducer(state, action);
 };
