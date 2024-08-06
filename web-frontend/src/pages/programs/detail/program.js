@@ -35,6 +35,8 @@ const ProgramDetailsPage = () => {
     return `${count} Exercises`;
   };
 
+  console.log('program.workouts.exercises:', program.workouts.exercises);
+
   const handleDeleteProgram = async programId => {
     await deleteProgram(programId);
     navigate('/programs');
@@ -116,7 +118,9 @@ const ProgramDetailsPage = () => {
                   <span
                     className={`prog-details-page__exercise-count ${theme}`}
                   >
-                    {exerciseText(workout.exercises.length)}
+                    {exerciseText(
+                      workout.exercises ? workout.exercises.length : 0
+                    )}
                   </span>
                 </div>
               </div>
