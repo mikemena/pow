@@ -2,6 +2,12 @@ import { initialState } from './initialState';
 
 function programReducer(state = initialState.programs, action) {
   switch (action.type) {
+    case 'SET_SELECTED_PROGRAM':
+      return {
+        ...state,
+        selectedProgram: action.payload
+      };
+
     case 'ADD_PROGRAM':
       const {
         id,

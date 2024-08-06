@@ -1,7 +1,6 @@
 import { programReducer } from './programReducer';
 import { workoutReducer } from './workoutReducer';
 import { activeWorkoutReducer } from './activeWorkoutReducer.js';
-import { selectedProgramReducer } from './selectedProgramReducer.js';
 import { initialState } from './initialState';
 import { actionTypes } from '../actions/actionTypes';
 
@@ -22,8 +21,7 @@ const combineReducers = reducers => {
 const rootReducer = combineReducers({
   programs: programReducer,
   workouts: workoutReducer,
-  activeWorkout: activeWorkoutReducer,
-  selectedProgram: selectedProgramReducer
+  activeWorkout: activeWorkoutReducer
 });
 
 const mainReducer = (state, action) => {

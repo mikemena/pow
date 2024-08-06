@@ -21,7 +21,7 @@ const ProgramPage = () => {
   const [localPrograms, setLocalPrograms] = useState([]);
   const [clickedProgram, setClickedProgram] = useState(null);
 
-  const { state, dispatch, deleteProgram, setSelectedProgram } =
+  const { state, deleteProgram, setSelectedProgram } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -99,6 +99,8 @@ const ProgramPage = () => {
     selectedDaysPerWeek,
     localPrograms
   ]);
+
+  console.log('filteredPrograms:', filteredPrograms);
 
   const onGoalChange = event => {
     setSelectedMainGoal(event.target.value);
