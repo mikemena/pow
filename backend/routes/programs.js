@@ -30,9 +30,11 @@ router.get('/users/:user_id/programs', async (req, res) => {
 
       for (const workout of program.workouts) {
         const exercisesResult = await pool.query(
-          'SELECT e.*, ec.name as exercise_name ' +
+          'SELECT e.*, ec.name as name, mg.name as muscle, eq.name as equipment ' +
             'FROM exercises e ' +
             'JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id ' +
+            'JOIN muscle_groups mg ON ec.muscle_group_id = mg.id ' +
+            'JOIN equipment_catalog eq ON ec.equipment_id = eq.id ' +
             'WHERE e.workout_id = $1',
           [workout.id] // Use the correct column name for workout ID
         );
@@ -85,7 +87,7 @@ router.get('/programs/:program_id', async (req, res) => {
 
     for (const workout of program.workouts) {
       const exercisesResult = await pool.query(
-        'SELECT e.*, ex.name as exercise_name, mg.name as muscle, eq.name as equipment ' +
+        'SELECT e.*, ex.name as name, mg.name as muscle, eq.name as equipment ' +
           'FROM exercises e ' +
           'JOIN exercise_catalog ex ON e.catalog_exercise_id = ex.id ' +
           'JOIN muscle_groups mg ON ex.muscle_group_id = mg.id ' +

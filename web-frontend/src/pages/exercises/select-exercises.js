@@ -93,6 +93,7 @@ const SelectExercisesPage = () => {
     }));
 
     addExercise(activeWorkout, exercisesWithIds);
+    console.log('Added exercises:', exercisesWithIds);
     navigate('/create-program');
   };
 
