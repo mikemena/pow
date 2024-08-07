@@ -41,68 +41,46 @@ function programReducer(state = initialState.programs, action) {
       return updatedState;
 
     case 'UPDATE_PROGRAM': {
-      const {
-        id,
-        name,
-        program_duration,
-        duration_unit,
-        days_per_week,
-        main_goal,
-        user_id
-      } = action.payload;
+      const updatedProgram = action.payload;
+      console.log('Updating program in reducer:', updatedProgram);
 
-      const existingProgram = state[id];
-      if (!existingProgram) {
-        console.error('Program not found:', id);
-        return state;
+      // Check if the program exists in the selectedProgram
+      const existingProgram = state.selectedProgram;
+
+      if (!existingProgram || existingProgram.id !== updatedProgram.id) {
+        console.warn(
+          `Program with id ${updatedProgram.id} does not match the selected program. This may cause unexpected behavior.`
+        );
       }
 
       const updatedState = {
         ...state,
-        [id]: {
-          ...existingProgram, // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
+        selectedProgram: {
+          ...existingProgram,
+          ...updatedProgram
         }
       };
 
+      console.log('Updated state after UPDATE_PROGRAM:', updatedState);
       return updatedState;
     }
 
     case 'UPDATE_PROGRAM_SUCCESS': {
-      const {
-        id,
-        name,
-        program_duration,
-        duration_unit,
-        days_per_week,
-        main_goal,
-        user_id
-      } = action.payload;
+      const updatedProgram = action.payload;
+      console.log('Updating program in reducer:', updatedProgram);
 
-      const existingProgram = state[id];
-      if (!existingProgram) {
-        console.error('Program not found:', id);
+      if (!updatedProgram || !updatedProgram.id) {
+        console.error('Invalid program data received:', updatedProgram);
         return state;
       }
 
       const updatedState = {
         ...state,
-        [id]: {
-          ...existingProgram, // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal,
-          user_id
-        }
+        [updatedProgram.id]: updatedProgram,
+        selectedProgram: updatedProgram
       };
 
+      console.log('Updated state after UPDATE_PROGRAM_SUCCESS:', updatedState);
       return updatedState;
     }
 

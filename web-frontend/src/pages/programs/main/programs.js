@@ -69,6 +69,11 @@ const ProgramPage = () => {
   const filteredPrograms = useMemo(() => {
     if (!Array.isArray(localPrograms)) return [];
     return localPrograms.filter(program => {
+      // Ensure the program is a valid object with an id
+      if (!program || typeof program !== 'object' || !program.id) {
+        return false;
+      }
+
       const matchesMainGoal =
         !selectedMainGoal ||
         selectedMainGoal === 'All' ||

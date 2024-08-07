@@ -52,8 +52,9 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleBlur = () => {
+    const action = isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM';
     dispatch({
-      type: 'ADD_PROGRAM',
+      type: action,
       payload: {
         id: program.id,
         name: formValues.programName,
@@ -66,9 +67,10 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleSubmit = e => {
+    const action = isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM';
     e.preventDefault();
     dispatch({
-      type: 'ADD_PROGRAM',
+      type: action,
       payload: {
         id: program.id,
         name: formValues.programName,
@@ -79,6 +81,11 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
       }
     });
   };
+
+  console.log(
+    'Dispatching action:',
+    isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM'
+  );
 
   const handleProgramExpand = () => {
     onToggleExpand(program);

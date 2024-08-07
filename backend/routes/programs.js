@@ -311,7 +311,43 @@ router.put('/programs/:program_id', async (req, res) => {
     // If everything is fine, commit the transaction
     await pool.query('COMMIT');
 
-    res.json({ message: 'Program updated successfully' });
+    // Fetch the updated program data
+    const programResult = await pool.query(
+      `SELECT * FROM programs WHERE id = $1`,
+      [program_id]
+    );
+    const updatedProgram = programResult.rows[0];
+
+    // Fetch updated workouts
+    const workoutsResult = await pool.query(
+      `SELECT * FROM workouts WHERE program_id = $1 ORDER BY "order"`,
+      [program_id]
+    );
+    updatedProgram.workouts = workoutsResult.rows;
+
+    // Fetch exercises and sets for each workout
+    for (let workout of updatedProgram.workouts) {
+      const exercisesResult = await pool.query(
+        'SELECT e.*, ex.name as name, mg.name as muscle, eq.name as equipment ' +
+          'FROM exercises e ' +
+          'JOIN exercise_catalog ex ON e.catalog_exercise_id = ex.id ' +
+          'JOIN muscle_groups mg ON ex.muscle_group_id = mg.id ' +
+          'JOIN equipment_catalog eq ON ex.equipment_id = eq.id ' +
+          'WHERE e.workout_id = $1',
+        [workout.id]
+      );
+      workout.exercises = exercisesResult.rows;
+
+      for (let exercise of workout.exercises) {
+        const setsResult = await pool.query(
+          `SELECT * FROM sets WHERE exercise_id = $1 ORDER BY "order"`,
+          [exercise.id]
+        );
+        exercise.sets = setsResult.rows;
+      }
+    }
+
+    res.json(updatedProgram);
   } catch (err) {
     // If there is any error, rollback the transaction
     await pool.query('ROLLBACK');

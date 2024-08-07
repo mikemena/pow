@@ -79,50 +79,38 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateProgram = async programId => {
+    const program = state.programs[programId] || state.programs.selectedProgram;
+    if (!program) {
+      console.error('Program not found:', programId);
+      throw new Error('Program not found');
+    }
+
     const updatedProgram = {
-      ...state.programs[programId],
+      ...program,
       workouts: Object.values(state.workouts)
+        .filter(
+          workout =>
+            workout.programId === programId || workout.program_id === programId
+        )
         .map(workout => {
-          if (!workout || !workout.id) {
+          if (!workout || (!workout.id && workout.id !== 0)) {
             return null; // Exclude workouts without an id
           }
 
-          const isTemporaryId =
-            typeof workout.id === 'string' && workout.id.includes('-');
+          const workoutId = workout.id.toString();
 
-          if (isTemporaryId) {
-            // You might want to handle temporary IDs differently
-            // For example, you could generate a new temporary integer ID
-            workout.id = Math.floor(Math.random() * -1000000); // Negative to distinguish from DB IDs
-          } else if (typeof workout.id !== 'number') {
-            workout.id = parseInt(workout.id, 10);
-            if (isNaN(workout.id)) {
-              return null;
-            }
-          }
-
-          const updatedExercises = (state.exercises[workout.id] || [])
+          const updatedExercises = (workout.exercises || [])
             .map(exercise => {
-              if (!exercise || !exercise.id) {
+              if (!exercise || (!exercise.id && exercise.id !== 0)) {
                 return null; // Exclude exercises without an id
               }
 
-              const isExerciseTemporaryId =
-                typeof exercise.id === 'string' && exercise.id.includes('-');
-
-              if (isExerciseTemporaryId) {
-                exercise.id = Math.floor(Math.random() * -1000000); // Temporary negative ID
-              } else if (typeof exercise.id !== 'number') {
-                exercise.id = parseInt(exercise.id, 10);
-                if (isNaN(exercise.id)) {
-                  return null;
-                }
-              }
+              const exerciseId = exercise.id.toString();
 
               return {
                 ...exercise,
-                sets: state.sets[exercise.id] || [],
-                id: exercise.id
+                sets: exercise.sets || [],
+                id: exerciseId
               };
             })
             .filter(exercise => exercise !== null);
@@ -130,7 +118,7 @@ export const ProgramProvider = ({ children }) => {
           return {
             ...workout,
             exercises: updatedExercises,
-            id: workout.id,
+            id: workoutId,
             programId: programId
           };
         })
@@ -138,9 +126,14 @@ export const ProgramProvider = ({ children }) => {
       id: programId
     };
 
+    console.log('Updating program:', programId);
+    console.log('Current state:', state);
+    console.log('Updated program before API call:', updatedProgram);
+
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       validateProgramData(updatedProgram); // Validate data before sending
+
       const response = await fetch(
         `http://localhost:9025/api/programs/${programId}`,
         {
@@ -151,8 +144,8 @@ export const ProgramProvider = ({ children }) => {
       );
 
       if (!response.ok) {
-        const errorText = await response.text(); // Get the response text
-        console.error('Error updating program:', errorText); // Log the error text
+        const errorText = await response.text();
+        console.error('Error updating program:', errorText);
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
