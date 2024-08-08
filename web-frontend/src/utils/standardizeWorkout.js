@@ -7,7 +7,7 @@ export const standardizeWorkout = workout => {
   return {
     id: workout.id || '',
     name: workout.name || '',
-    programId: workout.programId || '',
+    programId: workout.programId || workout.program_id || '',
     exercises: workout.exercises || [],
     order: workout.order || 1
   };

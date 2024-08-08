@@ -23,13 +23,13 @@ const Workout = ({
   const {
     state,
     deleteWorkout,
-    deleteExercise,
+    removeExercise,
     updateWorkout,
     addSet,
     activeWorkout,
     setActiveWorkout,
     updateSet,
-    deleteSet
+    removeSet
   } = useContext(ProgramContext);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
@@ -62,8 +62,8 @@ const Workout = ({
     }
   };
 
-  const handleDeleteExercise = (workoutId, exerciseId) => {
-    deleteExercise(workoutId, exerciseId);
+  const handleRemoveExercise = (workoutId, exerciseId) => {
+    removeExercise(workoutId, exerciseId);
   };
 
   const handleWorkoutExpand = () => {
@@ -122,7 +122,7 @@ const Workout = ({
     }
   };
 
-  const handleDeleteSet = (workoutId, exerciseId, setId) => {
+  const handleRemoveSet = (workoutId, exerciseId, setId) => {
     if (isEditing) {
       const updatedWorkout = {
         ...workout,
@@ -137,7 +137,7 @@ const Workout = ({
       };
       updateWorkout(updatedWorkout);
     } else {
-      deleteSet(workoutId, exerciseId, setId);
+      removeSet(workoutId, exerciseId, setId);
     }
   };
 
@@ -330,7 +330,7 @@ const Workout = ({
                       {setIndex > 0 ? (
                         <button
                           onClick={() =>
-                            handleDeleteSet(
+                            handleRemoveSet(
                               workout.id,
                               exerciseUtils.getExerciseId(exercise),
                               set.id
@@ -357,7 +357,7 @@ const Workout = ({
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleDeleteExercise(
+                      handleRemoveExercise(
                         workout.id,
                         exerciseUtils.getExerciseId(exercise)
                       )

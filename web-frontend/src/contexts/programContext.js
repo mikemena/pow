@@ -122,13 +122,14 @@ export const ProgramProvider = ({ children }) => {
             programId: programId
           };
         })
-        .filter(workout => workout !== null), // Remove null workouts
-      id: programId
+        .filter(workout => workout !== null)
     };
 
     console.log('Updating program:', programId);
-    console.log('Current state:', state);
-    console.log('Updated program before API call:', updatedProgram);
+    console.log(
+      'Updated program before API call:',
+      JSON.stringify(updatedProgram, null, 2)
+    );
 
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
@@ -263,9 +264,9 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const deleteExercise = (workoutId, exerciseId) => {
+  const removeExercise = (workoutId, exerciseId) => {
     dispatch({
-      type: actionTypes.DELETE_EXERCISE,
+      type: actionTypes.REMOVE_EXERCISE,
       payload: { workoutId, exerciseId }
     });
   };
@@ -305,7 +306,7 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const deleteSet = (workoutId, exerciseId, setId) => {
+  const removeSet = (workoutId, exerciseId, setId) => {
     const workout = state.workouts[workoutId];
     if (!workout) {
       console.error('Workout not found:', workoutId);
@@ -366,10 +367,10 @@ export const ProgramProvider = ({ children }) => {
         setActiveWorkout,
         addExercise,
         updateExercise,
-        deleteExercise,
+        removeExercise,
         addSet,
         updateSet,
-        deleteSet,
+        removeSet,
         saveProgram,
         clearState
       }}

@@ -75,7 +75,7 @@ function workoutReducer(state = initialState.workouts, action) {
         }
       };
 
-    case actionTypes.DELETE_EXERCISE:
+    case actionTypes.REMOVE_EXERCISE:
       const { workoutId: wId5, exerciseId: exId5 } = action.payload;
       const workout5 = state[wId5];
       if (!workout5) return state;
@@ -149,7 +149,7 @@ function workoutReducer(state = initialState.workouts, action) {
         }
       };
 
-    case actionTypes.DELETE_SET:
+    case actionTypes.REMOVE_SET:
       const {
         workoutId: workoutIdDeleteSet,
         exerciseId: exerciseIdDeleteSet,

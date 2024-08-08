@@ -16,6 +16,7 @@ const EditProgram = () => {
   const navigate = useNavigate();
 
   const program = state.programs.selectedProgram;
+  console.log('Entire state in EditProgram:', program);
 
   if (!program) {
     return <div>Loading...</div>;
@@ -66,6 +67,15 @@ const EditProgram = () => {
 
   const handleUpdateProgram = async () => {
     try {
+      const updatedProgram = {
+        ...program,
+        workouts: state.workouts
+          ? Object.values(state.workouts)
+          : program.workouts
+      };
+      console.log('Program before update (program):', program);
+      console.log('Workouts before update (state.workouts):', state.workouts);
+      console.log('Updated program:', updatedProgram);
       await updateProgram(program.id);
       navigate('/programs');
     } catch (error) {
