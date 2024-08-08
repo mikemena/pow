@@ -79,6 +79,7 @@ const CreateProgram = () => {
             <ProgramForm
               program={state.programs[Object.keys(state.programs)[0]]}
               isEditing={true}
+              isNewProgram={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
@@ -92,6 +93,7 @@ const CreateProgram = () => {
                   <Workout
                     key={workout.id}
                     workout={workout}
+                    isNewProgram={true}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />

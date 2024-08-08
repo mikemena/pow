@@ -85,6 +85,7 @@ const EditProgram = () => {
             <ProgramForm
               program={program}
               isEditing={true}
+              isNewProgram={false}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
@@ -98,6 +99,7 @@ const EditProgram = () => {
                   <Workout
                     key={workout.id}
                     isEditing={true}
+                    isNewProgram={false}
                     workout={workout}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}

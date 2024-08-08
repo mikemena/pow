@@ -61,14 +61,43 @@ const ProgramPage = () => {
   }, []);
 
   useEffect(() => {
+    console.log('localPrograms updated:', localPrograms);
+  }, [localPrograms]);
+
+  useEffect(() => {
     if (state.programs) {
-      setLocalPrograms(Object.values(state.programs));
+      const programsArray = Object.values(state.programs);
+      const uniquePrograms = programsArray.reduce((acc, program) => {
+        if (program && program.id) {
+          acc[program.id] = program;
+        }
+        return acc;
+      }, {});
+      setLocalPrograms(Object.values(uniquePrograms));
     }
+
+    return () => {
+      // This cleanup function will run before the next effect or unmount
+      setLocalPrograms([]);
+    };
   }, [state.programs]);
 
   const filteredPrograms = useMemo(() => {
+    console.log('Filtering programs from:', localPrograms);
     if (!Array.isArray(localPrograms)) return [];
-    return localPrograms.filter(program => {
+
+    const uniquePrograms = Array.from(
+      new Set(localPrograms.map(JSON.stringify))
+    )
+      .map(JSON.parse)
+      .reduce((acc, program) => {
+        if (program && program.id) {
+          acc[program.id] = program;
+        }
+        return acc;
+      }, {});
+
+    return Object.values(uniquePrograms).filter(program => {
       // Ensure the program is a valid object with an id
       if (!program || typeof program !== 'object' || !program.id) {
         return false;

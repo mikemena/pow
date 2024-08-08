@@ -6,7 +6,13 @@ import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { toUpperCase } from '../../utils/stringUtils';
 import { useTheme } from '../../contexts/themeContext';
 
-const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
+const ProgramForm = ({
+  program,
+  isEditing,
+  isNewProgram,
+  isExpanded,
+  onToggleExpand
+}) => {
   const { theme } = useTheme();
   const { dispatch } = useContext(ProgramContext);
 
@@ -52,7 +58,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleBlur = () => {
-    const action = isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM';
+    const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
     dispatch({
       type: action,
       payload: {
@@ -67,7 +73,7 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
   };
 
   const handleSubmit = e => {
-    const action = isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM';
+    const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
     e.preventDefault();
     dispatch({
       type: action,
@@ -82,9 +88,11 @@ const ProgramForm = ({ program, isEditing, isExpanded, onToggleExpand }) => {
     });
   };
 
+  console.log('isnewProgram:', isNewProgram);
+
   console.log(
     'Dispatching action:',
-    isEditing ? 'UPDATE_PROGRAM' : 'ADD_PROGRAM'
+    isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM'
   );
 
   const handleProgramExpand = () => {

@@ -13,7 +13,13 @@ import { useNavigate } from 'react-router-dom';
 import exerciseUtils from '../../utils/exercise';
 import './Workout.css';
 
-const Workout = ({ workout, isEditing, isExpanded, onToggleExpand }) => {
+const Workout = ({
+  workout,
+  isEditing,
+  isNewProgram,
+  isExpanded,
+  onToggleExpand
+}) => {
   const {
     state,
     deleteWorkout,
