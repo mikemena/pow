@@ -69,14 +69,25 @@ const EditProgram = () => {
     try {
       const updatedProgram = {
         ...program,
-        workouts: state.workouts
-          ? Object.values(state.workouts)
-          : program.workouts
+        workouts: program.workouts.map(workout => {
+          const updatedWorkout = state.workouts[workout.id];
+          return updatedWorkout
+            ? {
+                ...updatedWorkout,
+                exercises: updatedWorkout.exercises.map(exercise => ({
+                  ...exercise,
+                  sets: exercise.sets.map(set => ({
+                    ...set,
+                    weight: parseInt(set.weight, 10) || 0,
+                    reps: parseInt(set.reps, 10) || 0
+                  }))
+                }))
+              }
+            : workout;
+        })
       };
-      console.log('Program before update (program):', program);
-      console.log('Workouts before update (state.workouts):', state.workouts);
-      console.log('Updated program:', updatedProgram);
-      await updateProgram(program.id);
+      console.log('Updated program before save:', updatedProgram);
+      await updateProgram(updatedProgram);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -105,12 +116,13 @@ const EditProgram = () => {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
                 }
+                const fullWorkout = state.workouts[workout.id] || workout;
                 return (
                   <Workout
                     key={workout.id}
                     isEditing={true}
                     isNewProgram={false}
-                    workout={workout}
+                    workout={fullWorkout}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />

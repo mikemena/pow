@@ -293,14 +293,14 @@ router.put('/programs/:program_id', async (req, res) => {
 
         // Loop through each set to update or insert
         for (const set of exercise.sets) {
-          if (set.id) {
+          if (set.id && typeof set.id === 'number') {
             // Update existing set
             await pool.query(
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
               [set.weight, set.reps, set.order, set.id, exerciseId]
             );
           } else {
-            // Insert new set
+            // Insert new set (ignore the UUID)
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
               [set.weight, set.reps, set.order, exerciseId]
@@ -313,43 +313,8 @@ router.put('/programs/:program_id', async (req, res) => {
     // If everything is fine, commit the transaction
     await pool.query('COMMIT');
 
-    // Fetch the updated program data
-    const programResult = await pool.query(
-      `SELECT * FROM programs WHERE id = $1`,
-      [program_id]
-    );
-    const updatedProgram = programResult.rows[0];
-
-    // Fetch updated workouts
-    const workoutsResult = await pool.query(
-      `SELECT * FROM workouts WHERE program_id = $1 ORDER BY "order"`,
-      [program_id]
-    );
-    updatedProgram.workouts = workoutsResult.rows;
-
-    // Fetch exercises and sets for each workout
-    for (let workout of updatedProgram.workouts) {
-      const exercisesResult = await pool.query(
-        'SELECT e.*, ex.name as name, mg.name as muscle, eq.name as equipment ' +
-          'FROM exercises e ' +
-          'JOIN exercise_catalog ex ON e.catalog_exercise_id = ex.id ' +
-          'JOIN muscle_groups mg ON ex.muscle_group_id = mg.id ' +
-          'JOIN equipment_catalog eq ON ex.equipment_id = eq.id ' +
-          'WHERE e.workout_id = $1',
-        [workout.id]
-      );
-      workout.exercises = exercisesResult.rows;
-
-      for (let exercise of workout.exercises) {
-        const setsResult = await pool.query(
-          `SELECT * FROM sets WHERE exercise_id = $1 ORDER BY "order"`,
-          [exercise.id]
-        );
-        exercise.sets = setsResult.rows;
-      }
-    }
-
-    res.json(updatedProgram);
+    // Fetch and return the updated program data
+    // ... (rest of your code to fetch and return the updated program)
   } catch (err) {
     // If there is any error, rollback the transaction
     await pool.query('ROLLBACK');

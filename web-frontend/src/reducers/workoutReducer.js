@@ -28,12 +28,10 @@ function workoutReducer(state = initialState.workouts, action) {
       };
 
     case actionTypes.UPDATE_WORKOUT:
-      const updatedWorkout = standardizeWorkout(action.payload);
-      if (!updatedWorkout) return state;
-      console.log('Updating workout in reducer:', updatedWorkout);
+      console.log('Updating workout in reducer:', action.payload);
       return {
         ...state,
-        [updatedWorkout.id]: updatedWorkout
+        [action.payload.id]: action.payload
       };
 
     case actionTypes.ADD_EXERCISE:
@@ -99,28 +97,29 @@ function workoutReducer(state = initialState.workouts, action) {
         weight,
         reps
       } = action.payload;
-      const workout = state[workoutIdAddSet];
-      if (!workout) return state;
-
-      const updatedExercises = workout.exercises.map(exercise => {
-        const exrcId = exerciseUtils.getExerciseId(exercise);
-        if (exrcId === exerciseId) {
-          return {
-            ...exercise,
-            sets: [
-              ...exercise.sets,
-              { id: uuidv4(), weight, reps, order: exercise.sets.length + 1 }
-            ]
-          };
-        }
-        return exercise;
-      });
+      const workoutToUpdate = state[workoutIdAddSet];
+      if (!workoutToUpdate) return state;
 
       return {
         ...state,
         [workoutIdAddSet]: {
-          ...workout,
-          exercises: updatedExercises
+          ...workoutToUpdate,
+          exercises: workoutToUpdate.exercises.map(exercise =>
+            exerciseUtils.getExerciseId(exercise) === exerciseId
+              ? {
+                  ...exercise,
+                  sets: [
+                    ...exercise.sets,
+                    {
+                      id: uuidv4(),
+                      weight,
+                      reps,
+                      order: exercise.sets.length + 1
+                    }
+                  ]
+                }
+              : exercise
+          )
         }
       };
 

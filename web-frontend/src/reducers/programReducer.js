@@ -44,25 +44,11 @@ function programReducer(state = initialState.programs, action) {
       const updatedProgram = action.payload;
       console.log('Updating program in reducer:', updatedProgram);
 
-      // Check if the program exists in the selectedProgram
-      const existingProgram = state.selectedProgram;
-
-      if (!existingProgram || existingProgram.id !== updatedProgram.id) {
-        console.warn(
-          `Program with id ${updatedProgram.id} does not match the selected program. This may cause unexpected behavior.`
-        );
-      }
-
-      const updatedState = {
+      return {
         ...state,
-        selectedProgram: {
-          ...existingProgram,
-          ...updatedProgram
-        }
+        selectedProgram: updatedProgram,
+        [updatedProgram.id]: updatedProgram
       };
-
-      console.log('Updated state after UPDATE_PROGRAM:', updatedState);
-      return updatedState;
     }
 
     case 'UPDATE_PROGRAM_SUCCESS': {
@@ -83,6 +69,17 @@ function programReducer(state = initialState.programs, action) {
       console.log('Updated state after UPDATE_PROGRAM_SUCCESS:', updatedState);
       return updatedState;
     }
+
+    case 'UPDATE_PROGRAM_WORKOUT':
+      return {
+        ...state,
+        selectedProgram: {
+          ...state.selectedProgram,
+          workouts: state.selectedProgram.workouts.map(workout =>
+            workout.id === action.payload.id ? action.payload : workout
+          )
+        }
+      };
 
     case 'DELETE_PROGRAM': {
       const { programId } = action.payload;

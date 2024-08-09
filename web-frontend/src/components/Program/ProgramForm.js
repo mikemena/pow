@@ -62,7 +62,7 @@ const ProgramForm = ({
     dispatch({
       type: action,
       payload: {
-        id: program.id,
+        ...program,
         name: formValues.programName,
         main_goal: formValues.mainGoal,
         program_duration: formValues.programDuration,
@@ -78,7 +78,7 @@ const ProgramForm = ({
     dispatch({
       type: action,
       payload: {
-        id: program.id,
+        ...program,
         name: formValues.programName,
         main_goal: formValues.mainGoal,
         program_duration: formValues.programDuration,

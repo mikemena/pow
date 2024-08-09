@@ -17,6 +17,13 @@ export const ProgramProvider = ({ children }) => {
       type: actionTypes.SET_SELECTED_PROGRAM,
       payload: program
     });
+
+    program.workouts.forEach(workout => {
+      dispatch({
+        type: actionTypes.UPDATE_WORKOUT,
+        payload: workout
+      });
+    });
   };
 
   const setActiveWorkout = workoutId => {
@@ -78,65 +85,15 @@ export const ProgramProvider = ({ children }) => {
     }
   };
 
-  const updateProgram = async programId => {
-    const program = state.programs[programId] || state.programs.selectedProgram;
-    if (!program) {
-      console.error('Program not found:', programId);
-      throw new Error('Program not found');
-    }
-
-    const updatedProgram = {
-      ...program,
-      workouts: Object.values(state.workouts)
-        .filter(
-          workout =>
-            workout.programId === programId || workout.program_id === programId
-        )
-        .map(workout => {
-          if (!workout || (!workout.id && workout.id !== 0)) {
-            return null; // Exclude workouts without an id
-          }
-
-          const workoutId = workout.id.toString();
-
-          const updatedExercises = (workout.exercises || [])
-            .map(exercise => {
-              if (!exercise || (!exercise.id && exercise.id !== 0)) {
-                return null; // Exclude exercises without an id
-              }
-
-              const exerciseId = exercise.id.toString();
-
-              return {
-                ...exercise,
-                sets: exercise.sets || [],
-                id: exerciseId
-              };
-            })
-            .filter(exercise => exercise !== null);
-
-          return {
-            ...workout,
-            exercises: updatedExercises,
-            id: workoutId,
-            programId: programId
-          };
-        })
-        .filter(workout => workout !== null)
-    };
-
-    console.log('Updating program:', programId);
-    console.log(
-      'Updated program before API call:',
-      JSON.stringify(updatedProgram, null, 2)
-    );
-
+  const updateProgram = async updatedProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
-      validateProgramData(updatedProgram); // Validate data before sending
+      validateProgramData(updatedProgram);
+
+      console.log('Sending updated program to server:', updatedProgram);
 
       const response = await fetch(
-        `http://localhost:9025/api/programs/${programId}`,
+        `http://localhost:9025/api/programs/${updatedProgram.id}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -162,6 +119,17 @@ export const ProgramProvider = ({ children }) => {
         payload: error.message
       });
     }
+  };
+
+  const updateWorkoutAndProgram = updatedWorkout => {
+    dispatch({
+      type: actionTypes.UPDATE_WORKOUT,
+      payload: updatedWorkout
+    });
+    dispatch({
+      type: actionTypes.UPDATE_PROGRAM_WORKOUT,
+      payload: updatedWorkout
+    });
   };
 
   const validateProgramData = programData => {
@@ -272,15 +240,23 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
+    console.log('Adding set. Current workouts state:', state.workouts);
+    console.log(
+      'Adding set for workoutId:',
+      workoutId,
+      'exerciseId:',
+      exerciseId
+    );
     const workout = state.workouts[workoutId];
 
     if (!workout) {
       console.error('Workout not found:', workoutId);
+      console.log('Available workout IDs:', Object.keys(state.workouts));
       return;
     }
 
     const exercise = workout.exercises.find(
-      ex => ex.tempId === exerciseId || ex.id === exerciseId
+      ex => exerciseUtils.getExerciseId(ex) === exerciseId
     );
     if (!exercise) {
       console.error(
@@ -291,11 +267,10 @@ export const ProgramProvider = ({ children }) => {
       );
       return;
     }
-    const exrcId = exerciseUtils.getExerciseId(exercise);
 
     dispatch({
       type: actionTypes.ADD_SET,
-      payload: { workoutId, exerciseId: exrcId, weight, reps }
+      payload: { workoutId, exerciseId, weight, reps }
     });
   };
 
@@ -360,6 +335,7 @@ export const ProgramProvider = ({ children }) => {
         setSelectedProgram,
         addProgram,
         updateProgram,
+        updateWorkoutAndProgram,
         deleteProgram,
         addWorkout,
         updateWorkout,

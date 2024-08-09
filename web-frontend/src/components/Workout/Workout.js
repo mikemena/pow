@@ -14,7 +14,7 @@ import exerciseUtils from '../../utils/exercise';
 import './Workout.css';
 
 const Workout = ({
-  workout,
+  workout: initialWorkout,
   isEditing,
   isNewProgram,
   isExpanded,
@@ -25,12 +25,21 @@ const Workout = ({
     deleteWorkout,
     removeExercise,
     updateWorkout,
+    updateWorkoutAndProgram,
     addSet,
     activeWorkout,
     setActiveWorkout,
-    updateSet,
     removeSet
   } = useContext(ProgramContext);
+
+  // Get the most up-to-date workout data from the state
+  const workout = useMemo(() => {
+    const stateWorkout = state.workouts[initialWorkout.id];
+    console.log('Workout from state:', stateWorkout);
+    console.log('Initial workout:', initialWorkout);
+    return stateWorkout || initialWorkout;
+  }, [state.workouts, initialWorkout]);
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
@@ -50,7 +59,7 @@ const Workout = ({
   const handleSaveTitle = () => {
     if (workout) {
       const updatedWorkout = { ...workout, name: workoutTitle };
-      updateWorkout(updatedWorkout);
+      updateWorkoutAndProgram(updatedWorkout);
     }
     setIsEditingTitle(false);
   };
@@ -75,14 +84,16 @@ const Workout = ({
 
   const handleAddSet = exercise => {
     const exerciseId = exerciseUtils.getExerciseId(exercise);
-    if (!activeWorkout) {
+    console.log('Adding set for workout:', workout);
+    if (!workout || !workout.id) {
       console.error('No active workout found.');
       return;
     }
 
     console.log('handleAddSet called with exerciseId:', exerciseId);
+    console.log('handleAddSet called with workoutId:', workout.id);
 
-    addSet(activeWorkout, exerciseId);
+    addSet(workout.id, exerciseId);
   };
 
   const handleAddExercises = workoutId => {
@@ -102,24 +113,22 @@ const Workout = ({
   };
 
   const handleChange = (updatedValue, exercise, set) => {
-    if (isEditing) {
-      const updatedWorkout = {
-        ...workout,
-        exercises: workout.exercises.map(ex =>
-          ex.id === exercise.id
-            ? {
-                ...ex,
-                sets: ex.sets.map(s =>
-                  s.id === set.id ? { ...s, ...updatedValue } : s
-                )
-              }
-            : ex
-        )
-      };
-      updateWorkout(updatedWorkout);
-    } else {
-      updateSet(workout.id, exercise.id, { ...set, ...updatedValue });
-    }
+    const updatedSet = { ...set, ...updatedValue };
+    console.log('Updating set:', updatedSet);
+
+    const updatedWorkout = {
+      ...workout,
+      exercises: workout.exercises.map(ex =>
+        ex.id === exercise.id
+          ? {
+              ...ex,
+              sets: ex.sets.map(s => (s.id === set.id ? updatedSet : s))
+            }
+          : ex
+      )
+    };
+    console.log('Updating workout:', updatedWorkout);
+    updateWorkout(updatedWorkout);
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
@@ -147,15 +156,8 @@ const Workout = ({
     } else if (state.workouts && state.workouts[workout.id]) {
       return state.workouts[workout.id].exercises;
     }
-    return [];
+    return workout.exercises || [];
   }, [isEditing, workout, state.workouts]);
-
-  const allSets = useMemo(() => {
-    return workoutExercises.map(exercise => ({
-      ...exercise,
-      sets: exercise.sets || []
-    }));
-  }, [workoutExercises]);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -244,7 +246,7 @@ const Workout = ({
             <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
           </div>
           {workoutExercises.length > 0 ? (
-            allSets.map(exercise => (
+            workoutExercises.map(exercise => (
               <div
                 key={exerciseUtils.getExerciseId(exercise)}
                 className='workout__each-exercise'
