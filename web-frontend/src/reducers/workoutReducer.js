@@ -10,6 +10,8 @@ function workoutReducer(state = initialState.workouts, action) {
   console.log('Action Payload:', action.payload);
 
   switch (action.type) {
+    // Workout Reducers
+
     case actionTypes.ADD_WORKOUT:
       console.log('Action Type: ADD_WORKOUT');
       console.log('State Before:', state);
@@ -37,6 +39,33 @@ function workoutReducer(state = initialState.workouts, action) {
         }
       };
 
+    case actionTypes.DELETE_WORKOUT: {
+      if (!action.payload) {
+        console.error('Invalid payload for DELETE_WORKOUT', action.payload);
+        return state;
+      }
+
+      const { [action.payload]: deletedWorkout, ...remainingWorkouts } = state;
+      const reorderedWorkouts = Object.values(remainingWorkouts)
+        .sort((a, b) => a.order - b.order)
+        .map((workout, index) => ({
+          ...workout,
+          order: index + 1
+        }))
+        .reduce((acc, workout) => {
+          acc[workout.id] = workout;
+          return acc;
+        }, {});
+
+      const newState = {
+        ...reorderedWorkouts
+      };
+
+      return newState;
+    }
+
+    // Exercise Reducers
+
     case actionTypes.ADD_EXERCISE:
       const { workoutId: workoutIdAddEx, exercises } = action.payload;
       const existingWorkout = state[workoutIdAddEx];
@@ -46,33 +75,33 @@ function workoutReducer(state = initialState.workouts, action) {
         return state;
       }
 
-      const updatedExrc = [
+      // Create a Set of existing exercise IDs
+      const existingExerciseIds = new Set(
+        existingWorkout.exercises.map(ex => ex.id)
+      );
+
+      console.log('Set of Existing Exercise IDs:', existingExerciseIds);
+
+      // Filter out duplicates and add only new exercises
+      const newExercises = exercises.filter(
+        ex => !existingExerciseIds.has(ex.id)
+      );
+
+      console.log('New Exercises:', newExercises);
+
+      // Combine existing exercises with new ones
+      const updatedExercisesAfterAdd = [
         ...existingWorkout.exercises,
-        ...exercises.map(ex => exerciseUtils.standardizeExercise(ex))
+        ...newExercises.map(ex => exerciseUtils.standardizeExercise(ex))
       ];
+
+      console.log('Updated Exercises After Add:', updatedExercisesAfterAdd);
 
       return {
         ...state,
         [workoutIdAddEx]: {
           ...existingWorkout,
-          exercises: updatedExrc
-        }
-      };
-
-    case actionTypes.UPDATE_EXERCISE:
-      const { workoutId: wId4, exercise } = action.payload;
-      const workout4 = state[wId4];
-      if (!workout4) return state;
-
-      const updatedExercises4 = workout4.exercises.map(ex =>
-        ex.id === exercise.id ? { ...ex, ...exercise } : ex
-      );
-
-      return {
-        ...state,
-        [wId4]: {
-          ...workout4,
-          exercises: updatedExercises4
+          exercises: updatedExercisesAfterAdd
         }
       };
 
@@ -81,7 +110,7 @@ function workoutReducer(state = initialState.workouts, action) {
       const workout5 = state[wId5];
       if (!workout5) return state;
 
-      const updatedExercises = workout5.exercises.filter(
+      const updatedExercisesAfterRemove = workout5.exercises.filter(
         exercise => exercise.id !== exId5 && exercise.tempId !== exId5
       );
 
@@ -89,9 +118,11 @@ function workoutReducer(state = initialState.workouts, action) {
         ...state,
         [wId5]: {
           ...workout5,
-          exercises: updatedExercises
+          exercises: updatedExercisesAfterRemove
         }
       };
+
+    // Set Reducers
 
     case actionTypes.ADD_SET:
       const {
@@ -131,23 +162,25 @@ function workoutReducer(state = initialState.workouts, action) {
       const workout2 = state[wId2];
       if (!workout2) return state;
 
-      const updatedExercises2 = workout2.exercises.map(exercise => {
-        if (exercise.id === exId) {
-          return {
-            ...exercise,
-            sets: exercise.sets.map(set =>
-              set.id === updatedSet.id ? { ...set, ...updatedSet } : set
-            )
-          };
+      const updatedExercisesAfterSetUpdate = workout2.exercises.map(
+        exercise => {
+          if (exercise.id === exId) {
+            return {
+              ...exercise,
+              sets: exercise.sets.map(set =>
+                set.id === updatedSet.id ? { ...set, ...updatedSet } : set
+              )
+            };
+          }
+          return exercise;
         }
-        return exercise;
-      });
+      );
 
       return {
         ...state,
         [wId2]: {
           ...workout2,
-          exercises: updatedExercises2
+          exercises: updatedExercisesAfterSetUpdate
         }
       };
 
@@ -180,31 +213,6 @@ function workoutReducer(state = initialState.workouts, action) {
           exercises: updatedExercisesDeleteSet
         }
       };
-
-    case actionTypes.DELETE_WORKOUT: {
-      if (!action.payload) {
-        console.error('Invalid payload for DELETE_WORKOUT', action.payload);
-        return state;
-      }
-
-      const { [action.payload]: deletedWorkout, ...remainingWorkouts } = state;
-      const reorderedWorkouts = Object.values(remainingWorkouts)
-        .sort((a, b) => a.order - b.order)
-        .map((workout, index) => ({
-          ...workout,
-          order: index + 1
-        }))
-        .reduce((acc, workout) => {
-          acc[workout.id] = workout;
-          return acc;
-        }, {});
-
-      const newState = {
-        ...reorderedWorkouts
-      };
-
-      return newState;
-    }
 
     default:
       return state;
