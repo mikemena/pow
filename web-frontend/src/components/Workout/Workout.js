@@ -72,6 +72,8 @@ const Workout = ({
   };
 
   const handleRemoveExercise = (workoutId, exerciseId) => {
+    console.log('Removing exercise:', exerciseId);
+    console.log('From workout:', workoutId);
     removeExercise(workoutId, exerciseId);
   };
 

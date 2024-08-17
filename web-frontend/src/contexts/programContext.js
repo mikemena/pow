@@ -233,6 +233,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const removeExercise = (workoutId, exerciseId) => {
+    console.log('Removing exercise:', exerciseId, 'from workout:', workoutId);
     dispatch({
       type: actionTypes.REMOVE_EXERCISE,
       payload: { workoutId, exerciseId }

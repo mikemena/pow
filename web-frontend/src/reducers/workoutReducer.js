@@ -78,15 +78,15 @@ function workoutReducer(state = initialState.workouts, action) {
       const workout5 = state[wId5];
       if (!workout5) return state;
 
-      const remainingExercises = workout5.exercises.filter(
-        ex => ex.id !== exId5
+      const updatedExercises = workout5.exercises.filter(
+        exercise => exercise.id !== exId5 && exercise.tempId !== exId5
       );
 
       return {
         ...state,
         [wId5]: {
           ...workout5,
-          exercises: remainingExercises
+          exercises: updatedExercises
         }
       };
 
