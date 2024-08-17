@@ -70,17 +70,6 @@ function programReducer(state = initialState.programs, action) {
       return updatedState;
     }
 
-    case 'UPDATE_PROGRAM_WORKOUT':
-      return {
-        ...state,
-        selectedProgram: {
-          ...state.selectedProgram,
-          workouts: state.selectedProgram.workouts.map(workout =>
-            workout.id === action.payload.id ? action.payload : workout
-          )
-        }
-      };
-
     case 'DELETE_PROGRAM': {
       const { programId } = action.payload;
 

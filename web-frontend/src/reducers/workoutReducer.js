@@ -31,7 +31,10 @@ function workoutReducer(state = initialState.workouts, action) {
       console.log('Updating workout in reducer:', action.payload);
       return {
         ...state,
-        [action.payload.id]: action.payload
+        [action.payload.id]: {
+          ...state[action.payload.id],
+          ...action.payload
+        }
       };
 
     case actionTypes.ADD_EXERCISE:

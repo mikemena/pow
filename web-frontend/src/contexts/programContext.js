@@ -126,10 +126,6 @@ export const ProgramProvider = ({ children }) => {
       type: actionTypes.UPDATE_WORKOUT,
       payload: updatedWorkout
     });
-    dispatch({
-      type: actionTypes.UPDATE_PROGRAM_WORKOUT,
-      payload: updatedWorkout
-    });
   };
 
   const validateProgramData = programData => {
