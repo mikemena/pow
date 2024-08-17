@@ -12,7 +12,7 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, state } = useContext(ProgramContext);
+  const { deleteProgram, state, clearState } = useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -42,6 +42,12 @@ const ProgramDetailsPage = () => {
     navigate('/programs');
   };
 
+  const handleBackClick = event => {
+    clearState();
+    event.preventDefault();
+    navigate('/programs');
+  };
+
   return (
     <div>
       <NavBar />
@@ -49,7 +55,8 @@ const ProgramDetailsPage = () => {
         <div className='prog-details-page__header'>
           <Link
             className={`prog-details-page__title-link ${theme}`}
-            to='/programs'
+            onClick={handleBackClick}
+            // to='/programs'
           >
             <IoChevronBackOutline className='prog-details-page__back-icon' />
             <span className='prog-details-page__back-text'>Back</span>
