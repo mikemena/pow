@@ -85,8 +85,11 @@ const SelectExercisesPage = () => {
       return;
     }
 
-    // Map exercises to include both UUID and catalog_exercise_id
-    const exercisesWithIds = selectedExercises.map(ex => ({
+    const uniqueExercises = Array.from(
+      new Map(selectedExercises.map(item => [item.id, item])).values()
+    );
+
+    const exercisesWithIds = uniqueExercises.map(ex => ({
       ...ex,
       tempId: uuidv4(),
       catalog_exercise_id: ex.id
@@ -102,13 +105,15 @@ const SelectExercisesPage = () => {
   };
 
   const exerciseText = selectedExercises => {
-    const count = selectedExercises?.length ?? 0;
-    return count === 0
+    const uniqueCount = new Set(selectedExercises.map(ex => ex.id)).size;
+    return uniqueCount === 0
       ? 'No Exercises '
-      : count === 1
+      : uniqueCount === 1
       ? '1 Exercise '
-      : `${count} Exercises `;
+      : `${uniqueCount} Exercises `;
   };
+
+  console.log('Selected Exercises:', selectedExercises);
 
   const isExerciseSelected = exercise => {
     return selectedExercises.some(
