@@ -242,10 +242,25 @@ export const ProgramProvider = ({ children }) => {
       return;
     }
 
-    dispatch({
-      type: actionTypes.TOGGLE_EXERCISE_SELECTION,
-      payload: { exerciseIdForToggle: exerciseId, exerciseData: exerciseData }
-    });
+    const workout = state.workouts[state.activeWorkout];
+    const exerciseExists = workout.exercises.some(ex => ex.id === exerciseId);
+
+    if (exerciseExists) {
+      // If the exercise exists, remove it
+      dispatch({
+        type: actionTypes.REMOVE_EXERCISE,
+        payload: { workoutId: state.activeWorkout, exerciseId }
+      });
+    } else {
+      // If the exercise doesn't exist, add it
+      dispatch({
+        type: actionTypes.TOGGLE_EXERCISE_SELECTION,
+        payload: {
+          exerciseIdForToggle: exerciseId,
+          exerciseData: exerciseData
+        }
+      });
+    }
   };
 
   // Set Actions

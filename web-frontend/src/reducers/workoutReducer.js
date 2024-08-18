@@ -133,13 +133,12 @@ function workoutReducer(state = initialState.workouts, action) {
         };
       } else {
         // Exercise exists, toggle its selection
+        const updatedExercises = state.exercises.filter(
+          (ex, index) => index !== existingExerciseIndex
+        );
         updatedState = {
           ...state,
-          exercises: state.exercises.map((ex, index) =>
-            index === existingExerciseIndex
-              ? { ...ex, selected: !ex.selected }
-              : ex
-          )
+          exercises: updatedExercises
         };
       }
 
