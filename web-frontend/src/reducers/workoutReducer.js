@@ -127,7 +127,15 @@ function workoutReducer(state = initialState.workouts, action) {
               muscle: exerciseData.muscle,
               equipment: exerciseData.equipment,
               order: state.exercises.length + 1,
-              selected: true
+              selected: true,
+              sets: [
+                {
+                  id: uuidv4(),
+                  weight: 10, // Default weight
+                  reps: 10, // Default reps
+                  order: 1
+                }
+              ]
             }
           ]
         };

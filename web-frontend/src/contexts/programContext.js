@@ -44,16 +44,18 @@ export const ProgramProvider = ({ children }) => {
     const newProgram = {
       ...state.programs[programId],
       workouts: Object.values(state.workouts).map(workout => ({
-        ...workout,
+        id: workout.id,
+        name: workout.name,
+        order: workout.order || 1,
         exercises: workout.exercises.map(exercise => ({
-          catalog_exercise_id: exercise.catalog_exercise_id,
+          catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
           order: exercise.order || 1,
           sets: exercise.sets.map((set, index) => ({
-            ...set,
-            order: index + 1
+            reps: set.reps,
+            weight: set.weight,
+            order: set.order || index + 1
           }))
-        })),
-        order: workout.order || 1
+        }))
       }))
     };
 
