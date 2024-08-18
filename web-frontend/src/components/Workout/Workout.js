@@ -16,7 +16,6 @@ import './Workout.css';
 const Workout = ({
   workout: initialWorkout,
   isEditing,
-  isNewProgram,
   isExpanded,
   onToggleExpand
 }) => {
@@ -314,7 +313,7 @@ const Workout = ({
                 </div>
 
                 <div className='workout__reps-column'>
-                  {exercise.sets.map(set => (
+                  {exercise?.sets?.map(set => (
                     <div key={set.id} className='workout__set'>
                       <TextInput
                         className={`workout__set-reps ${theme}`}
@@ -329,7 +328,7 @@ const Workout = ({
                   <div className='workout__blank'></div>
                 </div>
                 <div className='workout__delete-set-column'>
-                  {exercise.sets.map((set, setIndex) => (
+                  {exercise?.sets?.map((set, setIndex) => (
                     <div key={set.id} className='workout__set'>
                       {setIndex > 0 ? (
                         <button

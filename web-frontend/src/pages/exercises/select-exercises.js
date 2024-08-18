@@ -1,8 +1,7 @@
-import React, { useState, useMemo, useContext, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import React, { useState, useMemo, useContext } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import NavBar from '../../components/Nav/Nav';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { BsChevronCompactLeft } from 'react-icons/bs';
 import { useTheme } from '../../contexts/themeContext';
 import ExerciseSearch from '../../components/Exercise/Search';
@@ -11,16 +10,12 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { state, addExercise, activeWorkout } = useContext(ProgramContext);
-  const location = useLocation();
-  const { selectedExercises: initialSelectedExercises } = location.state || {
-    workoutId: null,
-    selectedExercises: []
-  };
+  const { state, toggleExerciseSelection, activeWorkout } =
+    useContext(ProgramContext);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const [selectedExercises, setSelectedExercises] = useState([]);
   const navigate = useNavigate();
   const { theme } = useTheme();
 
@@ -29,18 +24,6 @@ const SelectExercisesPage = () => {
     isLoading,
     error
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
-
-  useEffect(() => {
-    if (activeWorkout && state.workouts[activeWorkout]) {
-      const workoutExercises = state.workouts[activeWorkout].exercises || [];
-      const mergedExercises = [
-        ...new Set([...initialSelectedExercises, ...workoutExercises])
-      ];
-      setSelectedExercises(mergedExercises);
-    } else {
-      setSelectedExercises(initialSelectedExercises);
-    }
-  }, [activeWorkout, state.workouts, initialSelectedExercises]);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -63,40 +46,19 @@ const SelectExercisesPage = () => {
   const handleMuscleChange = value => setSelectedMuscle(value);
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
-  const toggleExerciseSelection = exercise => {
-    setSelectedExercises(prevSelected => {
-      const isSelected = prevSelected.some(ex => ex.id === exercise.id);
-      if (isSelected) {
-        return prevSelected.filter(ex => ex.id !== exercise.id);
-      } else {
-        return [...prevSelected, exercise];
-      }
+  const handleToggleExercise = exercise => {
+    toggleExerciseSelection(exercise.id, {
+      name: exercise.name,
+      muscle: exercise.muscle,
+      equipment: exercise.equipment
     });
   };
 
-  const handleAddExercises = () => {
-    if (selectedExercises.length === 0) {
-      alert('No exercises selected to add.');
-      return;
-    }
-
+  const handleSaveExercises = () => {
     if (!activeWorkout) {
       alert('No active workout selected.');
       return;
     }
-
-    const uniqueExercises = Array.from(
-      new Map(selectedExercises.map(item => [item.id, item])).values()
-    );
-
-    const exercisesWithIds = uniqueExercises.map(ex => ({
-      ...ex,
-      tempId: uuidv4(),
-      catalog_exercise_id: ex.id
-    }));
-
-    addExercise(activeWorkout, exercisesWithIds);
-    console.log('Added exercises:', exercisesWithIds);
     navigate('/create-program');
   };
 
@@ -104,23 +66,15 @@ const SelectExercisesPage = () => {
     navigate('/create-program');
   };
 
-  const exerciseText = selectedExercises => {
-    const uniqueCount = new Set(selectedExercises.map(ex => ex.id)).size;
-    return uniqueCount === 0
+  const exerciseText = () => {
+    const selectedExercises =
+      state.workouts[activeWorkout]?.exercises.filter(ex => ex.selected) || [];
+    const count = selectedExercises.length;
+    return count === 0
       ? 'No Exercises '
-      : uniqueCount === 1
+      : count === 1
       ? '1 Exercise '
-      : `${uniqueCount} Exercises `;
-  };
-
-  console.log('Selected Exercises:', selectedExercises);
-
-  const isExerciseSelected = exercise => {
-    return selectedExercises.some(
-      selectedExercise =>
-        selectedExercise.id === exercise.id ||
-        selectedExercise.catalog_exercise_id === exercise.id
-    );
+      : `${count} Exercises `;
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -140,20 +94,20 @@ const SelectExercisesPage = () => {
           <div className='select-exercise__title-container'>
             <h1 className={`select-exercise__title ${theme}`}>
               {`Adding exercises for ${
-                activeWorkout?.name || 'your selected workout'
+                state.workouts[activeWorkout]?.name || 'your selected workout'
               }`}
             </h1>
             <div className='select-exercise__subtitle'>
               <span className={`select-exercise__count ${theme}`}>
-                {exerciseText(selectedExercises)}
+                {exerciseText()}
               </span>
             </div>
           </div>
           <button
-            onClick={handleAddExercises}
+            onClick={handleSaveExercises}
             className='select-exercise__add-exercise-btn'
           >
-            Add
+            Save
           </button>
         </div>
         <div className='select-exercise__filters'>
@@ -166,7 +120,13 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
-            const isSelected = isExerciseSelected(exercise);
+            const workoutExercise = state.workouts[
+              activeWorkout
+            ]?.exercises.find(
+              ex =>
+                ex.id === exercise.id || ex.catalog_exercise_id === exercise.id
+            );
+            const isSelected = workoutExercise?.selected || false;
             return (
               <Exercise
                 key={exercise.id}
@@ -175,7 +135,7 @@ const SelectExercisesPage = () => {
                 equipment={exercise.equipment}
                 image={`http://localhost:9025/${exercise.file_path}`}
                 isSelected={isSelected}
-                onClick={() => toggleExerciseSelection(exercise)}
+                onClick={() => handleToggleExercise(exercise)}
               />
             );
           })}

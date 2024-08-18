@@ -105,13 +105,57 @@ function workoutReducer(state = initialState.workouts, action) {
         }
       };
 
+    case actionTypes.TOGGLE_EXERCISE_SELECTION:
+      const { exerciseIdForToggle, exerciseData } = action.payload;
+      console.log('Toggling exercise:', exerciseIdForToggle);
+      console.log('Current exercises:', state.exercises);
+
+      const existingExerciseIndex = state.exercises.findIndex(
+        ex => ex.id === exerciseIdForToggle || ex.tempId === exerciseIdForToggle
+      );
+
+      let updatedState;
+      if (existingExerciseIndex === -1) {
+        // Exercise doesn't exist, add it
+        updatedState = {
+          ...state,
+          exercises: [
+            ...state.exercises,
+            {
+              id: exerciseIdForToggle,
+              name: exerciseData.name,
+              muscle: exerciseData.muscle,
+              equipment: exerciseData.equipment,
+              order: state.exercises.length + 1,
+              selected: true
+            }
+          ]
+        };
+      } else {
+        // Exercise exists, toggle its selection
+        updatedState = {
+          ...state,
+          exercises: state.exercises.map((ex, index) =>
+            index === existingExerciseIndex
+              ? { ...ex, selected: !ex.selected }
+              : ex
+          )
+        };
+      }
+
+      console.log('Updated state:', updatedState);
+      return updatedState;
+
     case actionTypes.REMOVE_EXERCISE:
       const { workoutId: wId5, exerciseId: exId5 } = action.payload;
       const workout5 = state[wId5];
       if (!workout5) return state;
 
       const updatedExercisesAfterRemove = workout5.exercises.filter(
-        exercise => exercise.id !== exId5 && exercise.tempId !== exId5
+        exercise =>
+          exercise.id !== exId5 &&
+          exercise.tempId !== exId5 &&
+          exercise.catalog_exercise_id !== exId5
       );
 
       return {

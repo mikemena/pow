@@ -11,6 +11,8 @@ export const ProgramContext = createContext();
 export const ProgramProvider = ({ children }) => {
   const [state, dispatch] = useReducer(rootReducer, initialState);
 
+  // Program Actions
+
   const setSelectedProgram = program => {
     console.log('Setting selected program:', program);
     dispatch({
@@ -175,6 +177,8 @@ export const ProgramProvider = ({ children }) => {
     }
   };
 
+  // Workout Actions
+
   const addWorkout = programId => {
     const newWorkout = {
       id: uuidv4(),
@@ -207,24 +211,20 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
+  // Exercise Actions
+
   const addExercise = (workoutId, exercises) => {
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       tempId: ex.tempId || uuidv4(),
       catalog_exercise_id: ex.catalog_exercise_id || ex.id,
-      sets: ex.sets || []
+      sets: ex.sets || [],
+      selected: true
     }));
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises: standardizedExercises }
-    });
-  };
-
-  const updateExercise = (workoutId, exercise) => {
-    dispatch({
-      type: actionTypes.UPDATE_EXERCISE,
-      payload: { workoutId, exercise }
     });
   };
 
@@ -235,6 +235,20 @@ export const ProgramProvider = ({ children }) => {
       payload: { workoutId, exerciseId }
     });
   };
+
+  const toggleExerciseSelection = (exerciseId, exerciseData) => {
+    if (!state.activeWorkout) {
+      console.error('No active workout selected');
+      return;
+    }
+
+    dispatch({
+      type: actionTypes.TOGGLE_EXERCISE_SELECTION,
+      payload: { exerciseIdForToggle: exerciseId, exerciseData: exerciseData }
+    });
+  };
+
+  // Set Actions
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
     console.log('Adding set. Current workouts state:', state.workouts);
@@ -339,7 +353,7 @@ export const ProgramProvider = ({ children }) => {
         deleteWorkout,
         setActiveWorkout,
         addExercise,
-        updateExercise,
+        toggleExerciseSelection,
         removeExercise,
         addSet,
         updateSet,

@@ -28,6 +28,26 @@ const mainReducer = (state, action) => {
   if (action.type === actionTypes.CLEAR_STATE) {
     return initialState;
   }
+
+  if (action.type === actionTypes.TOGGLE_EXERCISE_SELECTION) {
+    const activeWorkoutId = state.activeWorkout;
+    if (!activeWorkoutId) {
+      console.error('No active workout when trying to toggle exercise');
+      return state;
+    }
+
+    return {
+      ...state,
+      workouts: {
+        ...state.workouts,
+        [activeWorkoutId]: workoutReducer(
+          state.workouts[activeWorkoutId],
+          action
+        )
+      }
+    };
+  }
+
   return rootReducer(state, action);
 };
 
