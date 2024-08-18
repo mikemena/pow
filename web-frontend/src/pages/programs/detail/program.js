@@ -19,6 +19,7 @@ const ProgramDetailsPage = () => {
   console.log('Entire state in ProgramDetailsPage:', state);
 
   const program = state.programs.selectedProgram;
+  console.log('Entire state in ProgramDetailsPage:', program);
 
   if (!program) {
     return <div>Loading...</div>;
@@ -56,7 +57,6 @@ const ProgramDetailsPage = () => {
           <Link
             className={`prog-details-page__title-link ${theme}`}
             onClick={handleBackClick}
-            // to='/programs'
           >
             <IoChevronBackOutline className='prog-details-page__back-icon' />
             <span className='prog-details-page__back-text'>Back</span>
@@ -143,7 +143,7 @@ const ProgramDetailsPage = () => {
                         </span>
                         <div className='prog-details-page__exercise-info'>
                           <h3 className='prog-details-page__exercise-name'>
-                            {exercise.exercise_name}
+                            {exercise.name}
                           </h3>
                           <div className='prog-details-page__exercise-details'>
                             <span className='prog-details-page__exercise-muscle'>

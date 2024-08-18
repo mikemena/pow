@@ -16,6 +16,7 @@ import './Workout.css';
 const Workout = ({
   workout: initialWorkout,
   isEditing,
+  isNewProgram,
   isExpanded,
   onToggleExpand
 }) => {
@@ -99,17 +100,18 @@ const Workout = ({
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
+    console.log('isEditing:', isNewProgram);
 
     let selectedExercises = [];
 
-    if (isEditing) {
+    if (isNewProgram) {
       selectedExercises = workout.exercises || [];
     } else {
       selectedExercises = state.workouts[workoutId]?.exercises || [];
     }
 
     navigate('/select-exercises', {
-      state: { workoutId, selectedExercises, isEditing }
+      state: { workoutId, selectedExercises, isNewProgram }
     });
   };
 
