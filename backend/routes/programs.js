@@ -133,8 +133,6 @@ router.post('/programs', async (req, res) => {
     workouts = [] // Default to empty array if workouts is undefined
   } = req.body;
 
-  console.log('Incoming request body:', JSON.stringify(req.body, null, 2));
-
   // Begin database transaction
   const client = await pool.connect();
 
@@ -215,8 +213,6 @@ router.post('/programs', async (req, res) => {
 // Endpoint to update a program with its workouts, exercises, and sets for a given user
 
 router.put('/programs/:program_id', async (req, res) => {
-  console.log('Received program data:', JSON.stringify(req.body, null, 2));
-
   const { program_id } = req.params;
   const {
     name,

@@ -49,11 +49,9 @@ const ProgramPage = () => {
         'http://localhost:9025/api/users/2/programs'
       );
       const data = await response.json();
-      console.log('Fetched programs:', data);
 
       // Normalize the fetched data
       const standardizedPrograms = standardizePrograms(data);
-      console.log('Standardized programs:', standardizedPrograms);
 
       setLocalPrograms(standardizedPrograms || []);
     } catch (error) {
@@ -66,10 +64,6 @@ const ProgramPage = () => {
     // Fetch all programs initially
     fetchPrograms();
   }, []);
-
-  useEffect(() => {
-    console.log('localPrograms updated:', localPrograms);
-  }, [localPrograms]);
 
   useEffect(() => {
     if (state.programs) {
@@ -90,7 +84,6 @@ const ProgramPage = () => {
   }, [state.programs]);
 
   const filteredPrograms = useMemo(() => {
-    console.log('Filtering programs from:', localPrograms);
     if (!Array.isArray(localPrograms)) return [];
 
     return localPrograms.filter(programObj => {
@@ -136,8 +129,6 @@ const ProgramPage = () => {
     localPrograms
   ]);
 
-  console.log('filteredPrograms:', filteredPrograms);
-
   const onGoalChange = event => {
     setSelectedMainGoal(event.target.value);
   };
@@ -163,7 +154,6 @@ const ProgramPage = () => {
 
   const handleProgramClick = useCallback(
     program => {
-      console.log('Clicking program:', program);
       setSelectedProgram(program);
       navigate(`/programs/${program.id}`);
     },

@@ -8,7 +8,6 @@ function programReducer(state = initialState, action) {
         console.error('Invalid program data received:', updatedProgram);
         return state;
       }
-      console.log('Setting selected program in reducer:', updatedProgram);
       return {
         ...state,
         program: updatedProgram
@@ -69,7 +68,6 @@ function programReducer(state = initialState, action) {
 
     case 'UPDATE_PROGRAM': {
       const updatedProgram = action.payload;
-      console.log('Updating program in reducer:', updatedProgram);
 
       return {
         ...state,
@@ -82,7 +80,6 @@ function programReducer(state = initialState, action) {
 
     case 'UPDATE_PROGRAM_SUCCESS': {
       const updatedProgram = action.payload;
-      console.log('Updating program in reducer:', updatedProgram);
 
       if (!updatedProgram || !updatedProgram.id) {
         console.error('Invalid program data received:', updatedProgram);

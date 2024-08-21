@@ -66,7 +66,6 @@ const CreateProgram = () => {
   if (!state || !state.program) {
     return <div>Loading or no programs available...</div>;
   }
-  console.log('Entire state in CreateProgram:', state.program);
 
   return (
     <div>

@@ -15,10 +15,7 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  console.log('Entire state in EditProgram:', state);
-
   const program = state.program;
-  console.log('Entire state in EditProgram:', program);
 
   if (!program) {
     return <div>Loading...</div>;
@@ -88,15 +85,13 @@ const EditProgram = () => {
             : workout;
         })
       };
-      console.log('Updated program before save:', updatedProgram);
+
       await updateProgram(updatedProgram);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
     }
   };
-
-  console.log('Entire state in EditProgram:', state.programs);
 
   return (
     <div>

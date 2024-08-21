@@ -14,7 +14,6 @@ export const ProgramProvider = ({ children }) => {
   // Program Actions
 
   const setSelectedProgram = program => {
-    console.log('Setting selected program:', program);
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
       payload: { ...program, selected: true }
@@ -52,8 +51,6 @@ export const ProgramProvider = ({ children }) => {
       }))
     };
 
-    console.log('Saving program with payload:', newProgram);
-
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       validateProgramData(newProgram); // Validate data before sending
@@ -86,8 +83,6 @@ export const ProgramProvider = ({ children }) => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
     try {
       validateProgramData(updatedProgram);
-
-      console.log('Sending updated program to server:', updatedProgram);
 
       const response = await fetch(
         `http://localhost:9025/api/programs/${updatedProgram.id}`,
@@ -182,7 +177,7 @@ export const ProgramProvider = ({ children }) => {
       exercises: [],
       order: Object.keys(state.program.workouts).length + 1
     };
-    console.log('Add Standardized Workout:', newWorkout);
+
     dispatch({ type: actionTypes.ADD_WORKOUT, payload: newWorkout });
   };
 
@@ -192,7 +187,7 @@ export const ProgramProvider = ({ children }) => {
       console.error('Invalid workout object:', workout);
       return;
     }
-    console.log('Edit Standardized Workout:', standardizedWorkout);
+
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: standardizedWorkout
@@ -200,7 +195,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteWorkout = workoutId => {
-    console.log('Deleting workout:', workoutId);
     dispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: workoutId
@@ -225,7 +219,6 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const removeExercise = (workoutId, exerciseId) => {
-    console.log('Removing exercise:', exerciseId, 'from workout:', workoutId);
     dispatch({
       type: actionTypes.REMOVE_EXERCISE,
       payload: { workoutId, exerciseId }
@@ -262,13 +255,6 @@ export const ProgramProvider = ({ children }) => {
   // Set Actions
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    console.log('Adding set. Current workouts state:', state.workouts);
-    console.log(
-      'Adding set for workoutId:',
-      workoutId,
-      'exerciseId:',
-      exerciseId
-    );
     const workout = state.workouts[workoutId];
 
     if (!workout) {

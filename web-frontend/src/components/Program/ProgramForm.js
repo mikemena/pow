@@ -88,13 +88,6 @@ const ProgramForm = ({
     });
   };
 
-  console.log('isnewProgram:', isNewProgram);
-
-  console.log(
-    'Dispatching action:',
-    isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM'
-  );
-
   const handleProgramExpand = () => {
     onToggleExpand(program);
   };

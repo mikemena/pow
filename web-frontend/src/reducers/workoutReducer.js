@@ -9,13 +9,8 @@ function workoutReducer(state = initialState, action) {
     // Workout Reducers
 
     case actionTypes.ADD_WORKOUT:
-      console.log('Action Type: ADD_WORKOUT');
-      console.log('State Before:', state);
-      console.log('Action Payload:', action.payload);
-
       const newWorkout = standardizeWorkout(action.payload);
       if (!newWorkout) return state;
-      console.log('Adding workout in reducer:', newWorkout);
       if (!newWorkout) {
         console.error('Failed to standardize workout:', action.payload);
         return state;
@@ -29,7 +24,6 @@ function workoutReducer(state = initialState, action) {
       };
 
     case actionTypes.UPDATE_WORKOUT:
-      console.log('Updating workout in reducer:', action.payload);
       return {
         ...state,
         program: {
@@ -90,14 +84,10 @@ function workoutReducer(state = initialState, action) {
             workout.exercises.map(ex => ex.id || ex.tempId)
           );
 
-          console.log('Set of Existing Exercise IDs:', existingExerciseIds);
-
           // Filter out duplicates and add only new exercises
           const newExercises = exercises.filter(
             ex => !existingExerciseIds.has(ex.id || ex.tempId)
           );
-
-          console.log('New Exercises:', newExercises);
 
           // Combine existing exercises with new ones
           const updatedExercisesAfterAdd = [

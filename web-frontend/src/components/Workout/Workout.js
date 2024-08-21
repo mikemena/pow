@@ -37,7 +37,7 @@ const Workout = ({
     const stateWorkout = state.program.workouts.find(
       w => w.id === initialWorkout.id || w.tempId === initialWorkout.tempId
     );
-    console.log('State Workout:', stateWorkout);
+
     return stateWorkout || initialWorkout;
   }, [state.program.workouts, initialWorkout]);
 
@@ -66,7 +66,6 @@ const Workout = ({
   };
 
   const handleDeleteWorkout = workoutId => {
-    console.log('Deleting workout:', workoutId);
     deleteWorkout(workoutId);
     if (activeWorkout === workoutId) {
       setActiveWorkout(null);
@@ -74,8 +73,6 @@ const Workout = ({
   };
 
   const handleRemoveExercise = (workoutId, exerciseId) => {
-    console.log('Removing exercise:', exerciseId);
-    console.log('From workout:', workoutId);
     removeExercise(workoutId, exerciseId);
   };
 
@@ -88,14 +85,11 @@ const Workout = ({
 
   const handleAddSet = exercise => {
     const exerciseId = exerciseUtils.getExerciseId(exercise);
-    console.log('Adding set for workout:', workout);
+
     if (!workout || !workout.id) {
       console.error('No active workout found.');
       return;
     }
-
-    console.log('handleAddSet called with exerciseId:', exerciseId);
-    console.log('handleAddSet called with workoutId:', workout.id);
 
     addSet(workout.id, exerciseId);
   };
@@ -110,7 +104,6 @@ const Workout = ({
 
   const handleChange = (updatedValue, exercise, set) => {
     const updatedSet = { ...set, ...updatedValue };
-    console.log('Updating set:', updatedSet);
 
     const updatedWorkout = {
       ...workout,
@@ -123,7 +116,7 @@ const Workout = ({
           : ex
       )
     };
-    console.log('Updating workout:', updatedWorkout);
+
     updateWorkout(updatedWorkout);
   };
 

@@ -16,19 +16,7 @@ const ProgramDetailsPage = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log('Entire state in ProgramDetailsPage:', state);
-
-    if (!state.program) {
-      console.error('No program is currently selected');
-    } else {
-      console.log('Selected Program Details:', state.program);
-    }
-  }, [state]);
-
   const program = state.programs.program;
-  console.log('Program in ProgramDetailsPage:', program);
-  console.log('just state:', state);
 
   if (!state.programs.program) {
     return <div>Loading...</div>;
