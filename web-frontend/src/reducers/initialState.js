@@ -7,22 +7,20 @@ const initialWorkoutId = uuidv4();
 export const initialState = {
   program: {
     user_id: 2,
-    id: null,
-    tempId: initialProgramId,
+    id: initialProgramId,
     name: 'Program 1',
     program_duration: 0,
     duration_unit: 'Days',
     days_per_week: 0,
-    main_goal: 'Strength',
-    selected: initialProgramId,
-    workouts: [
-      {
-        id: null,
-        tempId: initialWorkoutId,
-        name: 'Workout 1',
-        active: true,
-        exercises: []
-      }
-    ]
-  }
+    main_goal: 'Strength'
+  },
+  workouts: {
+    [initialProgramId]: {
+      id: initialWorkoutId,
+      name: 'Workout 1',
+      exercises: []
+    }
+  },
+  activeWorkout: initialWorkoutId,
+  selectedProgram: null
 };

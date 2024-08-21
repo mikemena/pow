@@ -16,9 +16,7 @@ function workoutReducer(state = initialState, action) {
 
       return {
         ...state,
-        program: {
-          ...state.program,
-          workouts: state.program.workouts.map(workout => {
+          workouts: state.workouts.map(workout => {
             const isActive =
               workout.id === workoutId || workout.tempId === workoutId;
             console.log(`Workout ${workoutId}: Setting active to ${isActive}`);
