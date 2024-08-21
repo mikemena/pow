@@ -15,14 +15,19 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.program;
+  const program = state.programs.program;
+  console.log('state.program', state);
+  console.log('state.program', state.program);
+  console.log('state.program.workouts', state.program.workouts);
 
-  if (!program) {
-    return <div>Loading...</div>;
+  if (!state || !state.program) {
+    return <div>Loading or no programs available...</div>;
   }
 
   const handleExpandWorkout = workoutId => {
+    console.log('workoutId in create page', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
+    console.log('isCurrentlyExpanded in create page', isCurrentlyExpanded);
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {

@@ -4,13 +4,18 @@ function programReducer(state = initialState, action) {
   switch (action.type) {
     case 'SET_SELECTED_PROGRAM': {
       const updatedProgram = action.payload;
+
       if (!updatedProgram || !updatedProgram.id) {
         console.error('Invalid program data received:', updatedProgram);
         return state;
       }
+
       return {
         ...state,
-        program: updatedProgram
+        program: {
+          ...state.program,
+          ...updatedProgram
+        }
       };
     }
 

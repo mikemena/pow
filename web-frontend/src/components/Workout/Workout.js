@@ -28,7 +28,6 @@ const Workout = ({
     updateWorkoutAndProgram,
     addSet,
     activeWorkout,
-    setActiveWorkout,
     removeSet
   } = useContext(ProgramContext);
 
@@ -67,9 +66,6 @@ const Workout = ({
 
   const handleDeleteWorkout = workoutId => {
     deleteWorkout(workoutId);
-    if (activeWorkout === workoutId) {
-      setActiveWorkout(null);
-    }
   };
 
   const handleRemoveExercise = (workoutId, exerciseId) => {
@@ -78,9 +74,6 @@ const Workout = ({
 
   const handleWorkoutExpand = () => {
     onToggleExpand(workout.id);
-    if (activeWorkout !== workout.id) {
-      setActiveWorkout(workout.id);
-    }
   };
 
   const handleAddSet = exercise => {
@@ -95,7 +88,6 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
-    setActiveWorkout(workoutId);
     const selectedExercises = workout.exercises || [];
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isNewProgram }

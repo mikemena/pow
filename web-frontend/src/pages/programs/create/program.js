@@ -13,6 +13,8 @@ const CreateProgram = () => {
     useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
+  console.log('state in create page', state);
+
   const navigate = useNavigate();
 
   const handleSaveProgram = async () => {
@@ -25,7 +27,9 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
+    console.log('workoutId in create page', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
+    console.log('isCurrentlyExpanded in create page', isCurrentlyExpanded);
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {

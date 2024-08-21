@@ -9,7 +9,10 @@ import { v4 as uuidv4 } from 'uuid';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(rootReducer, initialState);
+  const [state, dispatch] = useReducer(rootReducer, {
+    ...initialState,
+    program: { ...initialState.program }
+  });
 
   // Program Actions
 
@@ -17,17 +20,6 @@ export const ProgramProvider = ({ children }) => {
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
       payload: { ...program, selected: true }
-    });
-  };
-
-  const setActiveWorkout = workoutId => {
-    if (!workoutId) {
-      console.error('Attempted to set active workout without a valid ID');
-      return; // Optionally return to avoid dispatching undefined ID
-    }
-    dispatch({
-      type: actionTypes.SET_ACTIVE_WORKOUT,
-      payload: workoutId
     });
   };
 
@@ -168,6 +160,18 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Workout Actions
+
+  const setActiveWorkout = workoutId => {
+    console.log('workoutId in setActiveWorkout in context', workoutId);
+    if (!workoutId) {
+      console.error('Attempted to set active workout without a valid ID');
+      return; // Optionally return to avoid dispatching undefined ID
+    }
+    dispatch({
+      type: actionTypes.SET_ACTIVE_WORKOUT,
+      payload: workoutId // This ID can be either tempId or id
+    });
+  };
 
   const addWorkout = programId => {
     const newWorkout = {

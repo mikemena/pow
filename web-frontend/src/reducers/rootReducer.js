@@ -19,7 +19,7 @@ const combineReducers = reducers => {
 };
 
 const rootReducer = combineReducers({
-  programs: programReducer,
+  program: programReducer,
   workouts: workoutReducer,
   activeWorkout: activeWorkoutReducer
 });

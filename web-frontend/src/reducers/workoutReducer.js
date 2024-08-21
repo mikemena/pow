@@ -8,6 +8,29 @@ function workoutReducer(state = initialState, action) {
   switch (action.type) {
     // Workout Reducers
 
+    case actionTypes.SET_ACTIVE_WORKOUT: {
+      const workoutId = action.payload;
+
+      console.log('Workout ID to activate:', workoutId);
+      console.log('State before activating workout:', state.program.workouts);
+
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          workouts: state.program.workouts.map(workout => {
+            const isActive =
+              workout.id === workoutId || workout.tempId === workoutId;
+            console.log(`Workout ${workoutId}: Setting active to ${isActive}`);
+            return {
+              ...workout,
+              active: isActive
+            };
+          })
+        }
+      };
+    }
+
     case actionTypes.ADD_WORKOUT:
       const newWorkout = standardizeWorkout(action.payload);
       if (!newWorkout) return state;
