@@ -1,15 +1,39 @@
 import { initialState } from './initialState';
 
-function programReducer(state = initialState.programs, action) {
+function programReducer(state = initialState, action) {
   switch (action.type) {
-    case 'SET_SELECTED_PROGRAM':
-      console.log('SET_SELECTED_PROGRAM action:', action.payload);
-      const newState = {
+    case 'SET_SELECTED_PROGRAM': {
+      const updatedProgram = action.payload;
+      if (!updatedProgram || !updatedProgram.id) {
+        console.error('Invalid program data received:', updatedProgram);
+        return state;
+      }
+      console.log('Setting selected program in reducer:', updatedProgram);
+      return {
         ...state,
-        selectedProgram: action.payload
+        program: updatedProgram
       };
-      console.log('New state after SET_SELECTED_PROGRAM:', newState);
-      return newState;
+    }
+
+    case 'DESELECT_PROGRAM': {
+      const { programId } = action.payload;
+
+      if (
+        !state.program ||
+        (state.program.id !== programId && state.program.tempId !== programId)
+      ) {
+        console.error('Program not found or invalid payload:', action.payload);
+        return state;
+      }
+
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          selected: false
+        }
+      };
+    }
 
     case 'ADD_PROGRAM':
       const {
@@ -21,24 +45,27 @@ function programReducer(state = initialState.programs, action) {
         main_goal
       } = action.payload;
 
-      if (!state[id]) {
+      if (
+        !state.program ||
+        (state.program.id !== id && state.program.tempId !== id)
+      ) {
         console.error('Program not found:', id);
         return state; // Return the current state if the program ID does not exist.
       }
 
-      const updatedState = {
-        ...state,
-        [id]: {
-          ...state[id], // Spread the existing program details
-          name,
-          program_duration,
-          duration_unit,
-          days_per_week,
-          main_goal
-        }
+      const updatedProgram = {
+        ...state.program,
+        name,
+        program_duration,
+        duration_unit,
+        days_per_week,
+        main_goal
       };
 
-      return updatedState;
+      return {
+        ...state,
+        program: updatedProgram
+      };
 
     case 'UPDATE_PROGRAM': {
       const updatedProgram = action.payload;
@@ -46,8 +73,10 @@ function programReducer(state = initialState.programs, action) {
 
       return {
         ...state,
-        selectedProgram: updatedProgram,
-        [updatedProgram.id]: updatedProgram
+        program: {
+          ...state.program, // Spread the existing program details to preserve other fields like workouts
+          ...updatedProgram // Overwrite with the updated program details
+        }
       };
     }
 
@@ -60,33 +89,34 @@ function programReducer(state = initialState.programs, action) {
         return state;
       }
 
-      const updatedState = {
+      return {
         ...state,
-        [updatedProgram.id]: updatedProgram,
-        selectedProgram: updatedProgram
+        program: {
+          ...state.program,
+          ...updatedProgram // Overwrite the program with the updated data
+        },
+        selectedProgram: updatedProgram.id // Optionally update the selected program ID
       };
-
-      console.log('Updated state after UPDATE_PROGRAM_SUCCESS:', updatedState);
-      return updatedState;
     }
 
     case 'DELETE_PROGRAM': {
       const { programId } = action.payload;
 
-      if (!programId) {
-        console.error('Invalid payload for DELETE_PROGRAM', action.payload);
+      if (
+        !programId ||
+        (state.program.id !== programId && state.program.tempId !== programId)
+      ) {
+        console.error('Program not found or invalid payload:', action.payload);
         return state;
       }
 
-      const newPrograms = { ...state.programs };
-      delete newPrograms[programId];
-
-      const newState = {
+      // Reset the state to remove the program
+      return {
         ...state,
-        programs: newPrograms
+        program: null, // or initialState.program to reset to initial state
+        selectedProgram: null, // Resetting selected program as well
+        activeWorkout: null // Reset any active workout associated with the program
       };
-
-      return newState;
     }
 
     default:

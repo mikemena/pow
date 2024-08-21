@@ -16,15 +16,8 @@ export const ProgramProvider = ({ children }) => {
   const setSelectedProgram = program => {
     console.log('Setting selected program:', program);
     dispatch({
-      type: actionTypes.SET_SELECTED_PROGRAM,
-      payload: program
-    });
-
-    program.workouts.forEach(workout => {
-      dispatch({
-        type: actionTypes.UPDATE_WORKOUT,
-        payload: workout
-      });
+      type: 'SET_SELECTED_PROGRAM',
+      payload: { ...program, selected: true }
     });
   };
 
@@ -187,7 +180,7 @@ export const ProgramProvider = ({ children }) => {
       name: 'New Workout',
       programId: programId,
       exercises: [],
-      order: Object.keys(state.workouts).length + 1
+      order: Object.keys(state.program.workouts).length + 1
     };
     console.log('Add Standardized Workout:', newWorkout);
     dispatch({ type: actionTypes.ADD_WORKOUT, payload: newWorkout });
@@ -207,6 +200,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const deleteWorkout = workoutId => {
+    console.log('Deleting workout:', workoutId);
     dispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: workoutId

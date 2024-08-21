@@ -1,5 +1,5 @@
 // ProgramDetailsPage.js
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import { IoChevronBackOutline } from 'react-icons/io5';
@@ -16,12 +16,21 @@ const ProgramDetailsPage = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  console.log('Entire state in ProgramDetailsPage:', state);
+  useEffect(() => {
+    console.log('Entire state in ProgramDetailsPage:', state);
 
-  const program = state.programs.selectedProgram;
-  console.log('Entire state in ProgramDetailsPage:', program);
+    if (!state.program) {
+      console.error('No program is currently selected');
+    } else {
+      console.log('Selected Program Details:', state.program);
+    }
+  }, [state]);
 
-  if (!program) {
+  const program = state.programs.program;
+  console.log('Program in ProgramDetailsPage:', program);
+  console.log('just state:', state);
+
+  if (!state.programs.program) {
     return <div>Loading...</div>;
   }
 

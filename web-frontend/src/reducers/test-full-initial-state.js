@@ -14,13 +14,32 @@ export const initialState = {
     duration_unit: 'Days',
     days_per_week: 0,
     main_goal: 'Strength',
+    selected: true,
     workouts: [
       {
         id: initialWorkoutId,
         tempId: null,
         name: 'Workout 1',
         active: true,
-        exercises: []
+        exercises: [
+          {
+            id: uuidv4(),
+            tempId: null,
+            name: 'Exercise 1',
+            active: true,
+            order: 1,
+            sets: [
+              {
+                id: uuidv4(),
+                tempId: null,
+                order: 1,
+                reps: 10,
+                weight: 100,
+                unit: 'lbs'
+              }
+            ]
+          }
+        ]
       }
     ]
   }

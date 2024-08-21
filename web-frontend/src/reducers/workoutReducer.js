@@ -4,11 +4,7 @@ import { initialState } from './initialState';
 import exerciseUtils from '../utils/exercise.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 
-function workoutReducer(state = initialState.workouts, action) {
-  console.log('Action Type:', action.type);
-  console.log('State Before:', state);
-  console.log('Action Payload:', action.payload);
-
+function workoutReducer(state = initialState, action) {
   switch (action.type) {
     // Workout Reducers
 
@@ -26,16 +22,24 @@ function workoutReducer(state = initialState.workouts, action) {
       }
       return {
         ...state,
-        [newWorkout.id]: newWorkout
+        program: {
+          ...state.program,
+          workouts: [...state.program.workouts, newWorkout]
+        }
       };
 
     case actionTypes.UPDATE_WORKOUT:
       console.log('Updating workout in reducer:', action.payload);
       return {
         ...state,
-        [action.payload.id]: {
-          ...state[action.payload.id],
-          ...action.payload
+        program: {
+          ...state.program,
+          workouts: state.program.workouts.map(workout =>
+            workout.id === action.payload.id ||
+            workout.tempId === action.payload.tempId
+              ? action.payload
+              : workout
+          )
         }
       };
 
@@ -56,120 +60,156 @@ function workoutReducer(state = initialState.workouts, action) {
           acc[workout.id] = workout;
           return acc;
         }, {});
+      console.log('Reordered Workouts:', reorderedWorkouts);
 
-      const newState = {
-        ...reorderedWorkouts
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          workouts: state.program.workouts.filter(
+            workout =>
+              workout.id !== action.payload && workout.tempId !== action.payload
+          )
+        }
       };
-
-      return newState;
     }
 
     // Exercise Reducers
 
     case actionTypes.ADD_EXERCISE:
       const { workoutId: workoutIdAddEx, exercises } = action.payload;
-      const existingWorkout = state[workoutIdAddEx];
 
-      if (!existingWorkout) {
-        console.error(`Workout with id ${workoutIdAddEx} not found`);
-        return state;
-      }
+      // Find the workout that needs to be updated
+      const workoutsForAddExercise = state.program.workouts.map(workout => {
+        if (
+          workout.id === workoutIdAddEx ||
+          workout.tempId === workoutIdAddEx
+        ) {
+          // Create a Set of existing exercise IDs
+          const existingExerciseIds = new Set(
+            workout.exercises.map(ex => ex.id || ex.tempId)
+          );
 
-      // Create a Set of existing exercise IDs
-      const existingExerciseIds = new Set(
-        existingWorkout.exercises.map(ex => ex.id)
-      );
+          console.log('Set of Existing Exercise IDs:', existingExerciseIds);
 
-      console.log('Set of Existing Exercise IDs:', existingExerciseIds);
+          // Filter out duplicates and add only new exercises
+          const newExercises = exercises.filter(
+            ex => !existingExerciseIds.has(ex.id || ex.tempId)
+          );
 
-      // Filter out duplicates and add only new exercises
-      const newExercises = exercises.filter(
-        ex => !existingExerciseIds.has(ex.id)
-      );
+          console.log('New Exercises:', newExercises);
 
-      console.log('New Exercises:', newExercises);
+          // Combine existing exercises with new ones
+          const updatedExercisesAfterAdd = [
+            ...workout.exercises,
+            ...newExercises.map(ex => ({
+              ...exerciseUtils.standardizeExercise(ex),
+              id: ex.id || null,
+              tempId: ex.tempId || uuidv4() // Generate tempId for new exercises if not present
+            }))
+          ];
 
-      // Combine existing exercises with new ones
-      const updatedExercisesAfterAdd = [
-        ...existingWorkout.exercises,
-        ...newExercises.map(ex => exerciseUtils.standardizeExercise(ex))
-      ];
-
-      console.log('Updated Exercises After Add:', updatedExercisesAfterAdd);
+          return {
+            ...workout,
+            exercises: updatedExercisesAfterAdd
+          };
+        }
+        return workout;
+      });
 
       return {
         ...state,
-        [workoutIdAddEx]: {
-          ...existingWorkout,
-          exercises: updatedExercisesAfterAdd
+        program: {
+          ...state.program,
+          workouts: workoutsForAddExercise
         }
       };
 
     case actionTypes.TOGGLE_EXERCISE_SELECTION:
-      const { exerciseIdForToggle, exerciseData } = action.payload;
-      console.log('Toggling exercise:', exerciseIdForToggle);
-      console.log('Current exercises:', state.exercises);
+      const { workoutId, exerciseIdForToggle, exerciseData } = action.payload;
 
-      const existingExerciseIndex = state.exercises.findIndex(
-        ex => ex.id === exerciseIdForToggle || ex.tempId === exerciseIdForToggle
-      );
+      // Find the workout that needs to be updated
+      const workoutsForToggleExercise = state.program.workouts.map(workout => {
+        if (workout.id === workoutId || workout.tempId === workoutId) {
+          // Find if the exercise already exists
+          const existingExerciseIndex = workout.exercises.findIndex(
+            ex =>
+              ex.id === exerciseIdForToggle || ex.tempId === exerciseIdForToggle
+          );
 
-      let updatedState;
-      if (existingExerciseIndex === -1) {
-        // Exercise doesn't exist, add it
-        updatedState = {
-          ...state,
-          exercises: [
-            ...state.exercises,
-            {
-              id: exerciseIdForToggle,
-              name: exerciseData.name,
-              muscle: exerciseData.muscle,
-              equipment: exerciseData.equipment,
-              order: state.exercises.length + 1,
-              selected: true,
-              sets: [
-                {
-                  id: uuidv4(),
-                  weight: 10, // Default weight
-                  reps: 10, // Default reps
-                  order: 1
-                }
-              ]
-            }
-          ]
-        };
-      } else {
-        // Exercise exists, toggle its selection
-        const updatedExercises = state.exercises.filter(
-          (ex, index) => index !== existingExerciseIndex
-        );
-        updatedState = {
-          ...state,
-          exercises: updatedExercises
-        };
-      }
+          let updatedExercises;
+          if (existingExerciseIndex === -1) {
+            // Exercise doesn't exist, add it
+            updatedExercises = [
+              ...workout.exercises,
+              {
+                id: exerciseIdForToggle || uuidv4(), // Use provided id or generate tempId
+                tempId: exerciseIdForToggle ? null : uuidv4(), // Set tempId if new
+                name: exerciseData.name,
+                muscle: exerciseData.muscle,
+                equipment: exerciseData.equipment,
+                order: workout.exercises.length + 1,
+                selected: true,
+                sets: [
+                  {
+                    id: uuidv4(),
+                    weight: 10, // Default weight
+                    reps: 10, // Default reps
+                    order: 1
+                  }
+                ]
+              }
+            ];
+          } else {
+            // Exercise exists, toggle its selection by removing it
+            updatedExercises = workout.exercises.filter(
+              (ex, index) => index !== existingExerciseIndex
+            );
+          }
 
-      console.log('Updated state:', updatedState);
-      return updatedState;
-
-    case actionTypes.REMOVE_EXERCISE:
-      const { workoutId: wId5, exerciseId: exId5 } = action.payload;
-      const workout5 = state[wId5];
-      if (!workout5) return state;
-
-      const updatedExercisesAfterRemove = workout5.exercises.filter(
-        exercise =>
-          exercise.id !== exId5 &&
-          exercise.tempId !== exId5 &&
-          exercise.catalog_exercise_id !== exId5
-      );
+          return {
+            ...workout,
+            exercises: updatedExercises
+          };
+        }
+        return workout;
+      });
 
       return {
         ...state,
-        [wId5]: {
-          ...workout5,
-          exercises: updatedExercisesAfterRemove
+        program: {
+          ...state.program,
+          workouts: workoutsForToggleExercise
+        }
+      };
+
+    case actionTypes.REMOVE_EXERCISE:
+      const { workoutId: wId5, exerciseId: exId5 } = action.payload;
+
+      // Find the workout that needs to be updated
+      const workoutsForRemoveExercise = state.program.workouts.map(workout => {
+        if (workout.id === wId5 || workout.tempId === wId5) {
+          // Filter out the exercise to be removed
+          const updatedExercises = workout.exercises.filter(
+            exercise =>
+              exercise.id !== exId5 &&
+              exercise.tempId !== exId5 &&
+              exercise.catalog_exercise_id !== exId5
+          );
+
+          return {
+            ...workout,
+            exercises: updatedExercises
+          };
+        }
+        return workout;
+      });
+
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          workouts: workoutsForRemoveExercise
         }
       };
 
@@ -178,60 +218,89 @@ function workoutReducer(state = initialState.workouts, action) {
     case actionTypes.ADD_SET:
       const {
         workoutId: workoutIdAddSet,
-        exerciseId,
-        weight,
-        reps
+        exerciseId: exerciseIdAddSet,
+        newSet
       } = action.payload;
-      const workoutToUpdate = state[workoutIdAddSet];
-      if (!workoutToUpdate) return state;
+
+      // Find the workout that needs to be updated
+      const workoutsForAddSet = state.program.workouts.map(workout => {
+        if (
+          workout.id === workoutIdAddSet ||
+          workout.tempId === workoutIdAddSet
+        ) {
+          // Find the exercise within the workout that needs to be updated
+          const updatedExercises = workout.exercises.map(exercise => {
+            if (
+              exercise.id === exerciseIdAddSet ||
+              exercise.tempId === exerciseIdAddSet
+            ) {
+              // Add the new set to the exercise
+              const updatedSets = [
+                ...exercise.sets,
+                { ...newSet, id: uuidv4() }
+              ];
+
+              return {
+                ...exercise,
+                sets: updatedSets
+              };
+            }
+            return exercise;
+          });
+
+          return {
+            ...workout,
+            exercises: updatedExercises
+          };
+        }
+        return workout;
+      });
 
       return {
         ...state,
-        [workoutIdAddSet]: {
-          ...workoutToUpdate,
-          exercises: workoutToUpdate.exercises.map(exercise =>
-            exerciseUtils.getExerciseId(exercise) === exerciseId
-              ? {
-                  ...exercise,
-                  sets: [
-                    ...exercise.sets,
-                    {
-                      id: uuidv4(),
-                      weight,
-                      reps,
-                      order: exercise.sets.length + 1
-                    }
-                  ]
-                }
-              : exercise
-          )
+        program: {
+          ...state.program,
+          workouts: workoutsForAddSet
         }
       };
 
     case actionTypes.UPDATE_SET:
       const { workoutId: wId2, exerciseId: exId, updatedSet } = action.payload;
-      const workout2 = state[wId2];
-      if (!workout2) return state;
 
-      const updatedExercisesAfterSetUpdate = workout2.exercises.map(
-        exercise => {
-          if (exercise.id === exId) {
-            return {
-              ...exercise,
-              sets: exercise.sets.map(set =>
-                set.id === updatedSet.id ? { ...set, ...updatedSet } : set
-              )
-            };
-          }
-          return exercise;
+      // Find the workout that needs to be updated
+      const workoutsForUpdateSet = state.program.workouts.map(workout => {
+        if (workout.id === wId2 || workout.tempId === wId2) {
+          // Find the exercise within the workout that needs to be updated
+          const updatedExercises = workout.exercises.map(exercise => {
+            if (exercise.id === exId || exercise.tempId === exId) {
+              // Update the specific set within the exercise
+              const updatedSets = exercise.sets.map(set =>
+                set.id === updatedSet.id || set.tempId === updatedSet.tempId
+                  ? { ...set, ...updatedSet }
+                  : set
+              );
+
+              return {
+                ...exercise,
+                sets: updatedSets
+              };
+            }
+            return exercise;
+          });
+
+          return {
+            ...workout,
+            exercises: updatedExercises
+          };
         }
-      );
+        return workout;
+      });
 
       return {
         ...state,
-        [wId2]: {
-          ...workout2,
-          exercises: updatedExercisesAfterSetUpdate
+        program: {
+          ...state.program,
+          workouts: workoutsForUpdateSet
         }
       };
 
@@ -241,27 +310,46 @@ function workoutReducer(state = initialState.workouts, action) {
         exerciseId: exerciseIdDeleteSet,
         setId: setIdDeleteSet
       } = action.payload;
-      const workoutDeleteSet = state[workoutIdDeleteSet];
-      if (!workoutDeleteSet) return state;
 
-      const updatedExercisesDeleteSet = workoutDeleteSet.exercises.map(
-        exercise => {
-          const exerciseIdToCompare = exerciseUtils.getExerciseId(exercise);
-          if (exerciseIdToCompare === exerciseIdDeleteSet) {
-            return {
-              ...exercise,
-              sets: exercise.sets.filter(set => set.id !== setIdDeleteSet)
-            };
-          }
-          return exercise;
+      // Find the workout that needs to be updated
+      const workoutsForRemoveSet = state.program.workouts.map(workout => {
+        if (
+          workout.id === workoutIdDeleteSet ||
+          workout.tempId === workoutIdDeleteSet
+        ) {
+          // Find the exercise within the workout that needs to be updated
+          const updatedExercises = workout.exercises.map(exercise => {
+            if (
+              exercise.id === exerciseIdDeleteSet ||
+              exercise.tempId === exerciseIdDeleteSet
+            ) {
+              // Remove the specific set from the exercise
+              const updatedSets = exercise.sets.filter(
+                set =>
+                  set.id !== setIdDeleteSet && set.tempId !== setIdDeleteSet
+              );
+
+              return {
+                ...exercise,
+                sets: updatedSets
+              };
+            }
+            return exercise;
+          });
+
+          return {
+            ...workout,
+            exercises: updatedExercises
+          };
         }
-      );
+        return workout;
+      });
 
       return {
         ...state,
-        [workoutIdDeleteSet]: {
-          ...workoutDeleteSet,
-          exercises: updatedExercisesDeleteSet
+        program: {
+          ...state.program,
+          workouts: workoutsForRemoveSet
         }
       };
 

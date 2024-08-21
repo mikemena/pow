@@ -17,7 +17,7 @@ const CreateProgram = () => {
 
   const handleSaveProgram = async () => {
     try {
-      await saveProgram(state.programs[Object.keys(state.programs)[0]]);
+      await saveProgram(state.program);
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -59,13 +59,14 @@ const CreateProgram = () => {
 
   const handleAddWorkout = event => {
     event.preventDefault();
-    const currentProgramId = Object.keys(state.programs)[0];
+    const currentProgramId = state.program.tempId || state.program.id;
     addWorkout(currentProgramId);
   };
 
-  if (!state || !state.programs || Object.keys(state.programs).length === 0) {
+  if (!state || !state.program) {
     return <div>Loading or no programs available...</div>;
   }
+  console.log('Entire state in CreateProgram:', state.program);
 
   return (
     <div>
@@ -77,28 +78,26 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={state.programs[Object.keys(state.programs)[0]]}
+              program={state.program}
               isEditing={true}
               isNewProgram={true}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {state.workouts && Object.keys(state.workouts).length > 0 ? (
-              Object.values(state.workouts).map(workout => {
-                if (!workout || !workout.id) {
-                  console.error('Invalid workout object:', workout); // Log invalid workout object
-                  return null;
-                }
-                return (
-                  <Workout
-                    key={workout.id}
-                    workout={workout}
-                    isNewProgram={true}
-                    isExpanded={expandedWorkouts[workout.id] || false}
-                    onToggleExpand={() => handleExpandWorkout(workout.id)}
-                  />
-                );
-              })
+            {state.program.workouts && state.program.workouts.length > 0 ? (
+              state.program.workouts.map(workout => (
+                <Workout
+                  key={workout.id || workout.tempId}
+                  workout={workout}
+                  isNewProgram={true}
+                  isExpanded={
+                    expandedWorkouts[workout.id || workout.tempId] || false
+                  }
+                  onToggleExpand={() =>
+                    handleExpandWorkout(workout.id || workout.tempId)
+                  }
+                />
+              ))
             ) : (
               <div>No workouts available</div>
             )}

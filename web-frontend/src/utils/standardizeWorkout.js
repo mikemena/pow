@@ -5,10 +5,11 @@ export const standardizeWorkout = workout => {
   }
 
   return {
-    id: workout.id || '',
+    id: workout.id || null,
+    tempId: workout.tempId || null,
     name: workout.name || '',
-    programId: workout.programId || workout.program_id || '',
-    exercises: workout.exercises || [],
-    order: workout.order || 1
+    active: workout.active || false,
+    order: workout.order || 1,
+    exercises: workout.exercises || []
   };
 };

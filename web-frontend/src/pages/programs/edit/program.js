@@ -15,7 +15,9 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.programs.selectedProgram;
+  console.log('Entire state in EditProgram:', state);
+
+  const program = state.program;
   console.log('Entire state in EditProgram:', program);
 
   if (!program) {
@@ -94,6 +96,8 @@ const EditProgram = () => {
     }
   };
 
+  console.log('Entire state in EditProgram:', state.programs);
+
   return (
     <div>
       <NavBar isEditing='true' />
@@ -116,7 +120,7 @@ const EditProgram = () => {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
                 }
-                const fullWorkout = state.workouts[workout.id] || workout;
+                const fullWorkout = program.workouts[workout.id] || workout;
                 return (
                   <Workout
                     key={workout.id}

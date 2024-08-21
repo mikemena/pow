@@ -34,11 +34,12 @@ const Workout = ({
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
-    const stateWorkout = state.workouts[initialWorkout.id];
-    console.log('Workout from state:', stateWorkout);
-    console.log('Initial workout:', initialWorkout);
+    const stateWorkout = state.program.workouts.find(
+      w => w.id === initialWorkout.id || w.tempId === initialWorkout.tempId
+    );
+    console.log('State Workout:', stateWorkout);
     return stateWorkout || initialWorkout;
-  }, [state.workouts, initialWorkout]);
+  }, [state.program.workouts, initialWorkout]);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
@@ -65,6 +66,7 @@ const Workout = ({
   };
 
   const handleDeleteWorkout = workoutId => {
+    console.log('Deleting workout:', workoutId);
     deleteWorkout(workoutId);
     if (activeWorkout === workoutId) {
       setActiveWorkout(null);
@@ -100,16 +102,7 @@ const Workout = ({
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
-    console.log('isEditing:', isNewProgram);
-
-    let selectedExercises = [];
-
-    if (isNewProgram) {
-      selectedExercises = workout.exercises || [];
-    } else {
-      selectedExercises = state.workouts[workoutId]?.exercises || [];
-    }
-
+    const selectedExercises = workout.exercises || [];
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isNewProgram }
     });

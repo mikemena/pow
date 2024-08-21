@@ -14,6 +14,7 @@ import { ProgramContext } from '../../../contexts/programContext';
 import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
 import { toProperCase } from '../../../utils/stringUtils';
+import standardizePrograms from '../../../utils/standardizePrograms.js';
 import './programs.css';
 
 const ProgramPage = () => {
@@ -48,7 +49,13 @@ const ProgramPage = () => {
         'http://localhost:9025/api/users/2/programs'
       );
       const data = await response.json();
-      setLocalPrograms(data || []);
+      console.log('Fetched programs:', data);
+
+      // Normalize the fetched data
+      const standardizedPrograms = standardizePrograms(data);
+      console.log('Standardized programs:', standardizedPrograms);
+
+      setLocalPrograms(standardizedPrograms || []);
     } catch (error) {
       console.error('Error fetching programs:', error);
       setLocalPrograms([]);
@@ -86,19 +93,8 @@ const ProgramPage = () => {
     console.log('Filtering programs from:', localPrograms);
     if (!Array.isArray(localPrograms)) return [];
 
-    const uniquePrograms = Array.from(
-      new Set(localPrograms.map(JSON.stringify))
-    )
-      .map(JSON.parse)
-      .reduce((acc, program) => {
-        if (program && program.id) {
-          acc[program.id] = program;
-        }
-        return acc;
-      }, {});
-
-    return Object.values(uniquePrograms).filter(program => {
-      // Ensure the program is a valid object with an id
+    return localPrograms.filter(programObj => {
+      const program = programObj.program;
       if (!program || typeof program !== 'object' || !program.id) {
         return false;
       }
@@ -224,9 +220,10 @@ const ProgramPage = () => {
                   placeholder='Program Names'
                 />
                 <datalist id='programs'>
-                  {localPrograms.map(program => (
-                    <option key={program.id} value={program.name} />
-                  ))}
+                  {localPrograms.map(programObj => {
+                    const program = programObj.program; // Access the nested program object
+                    return <option key={program.id} value={program.name} />;
+                  })}
                 </datalist>
                 <select
                   onChange={onGoalChange}
@@ -279,56 +276,61 @@ const ProgramPage = () => {
       </div>
       <div className='view-prog-page__program-list'>
         {filteredPrograms.length > 0 ? (
-          filteredPrograms.map(program => (
-            <Link
-              key={program.id}
-              to={`/programs/${program.id}`}
-              onClick={() => handleProgramClick(program)}
-            >
-              <div
-                className={`view-prog-page__program ${theme} ${
-                  clickedProgram === program.id ? 'program-click-animation' : ''
-                }`}
+          filteredPrograms.map(programObj => {
+            const program = programObj.program;
+            return (
+              <Link
+                key={program.id}
+                to={`/programs/${program.id}`}
+                onClick={() => handleProgramClick(program)}
               >
-                <h2 className='view-prog-page__program-title'>
-                  {program.name}
-                </h2>
-                <div className='view-prog-page__program-details'>
-                  <div className='view-prog-page__program-details-section'>
-                    <p className='view-prog-page__program-details-label'>
-                      Main Goal
-                    </p>
-                    <p className='view-prog-page__program-details-value'>
-                      {toProperCase(program.main_goal)}
-                    </p>
-                  </div>
-                  <div className='view-prog-page__program-details-section'>
-                    <p className='view-prog-page__program-details-label'>
-                      Duration
-                    </p>
-                    <p className='view-prog-page__program-details-value'>
-                      {program.program_duration}{' '}
-                      {toProperCase(program.duration_unit)}
-                    </p>
-                  </div>
-                  <div className='view-prog-page__program-details-section'>
-                    <p className='view-prog-page__program-details-label'>
-                      Days Per Week
-                    </p>
-                    <p className='view-prog-page__program-details-value'>
-                      {program.days_per_week}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  className={`view-prog-page__remove-program-btn ${theme}`}
-                  onClick={() => handleDeleteProgram(program.id)}
+                <div
+                  className={`view-prog-page__program ${theme} ${
+                    clickedProgram === program.id
+                      ? 'program-click-animation'
+                      : ''
+                  }`}
                 >
-                  <TbHttpDelete size={30} />
-                </button>
-              </div>
-            </Link>
-          ))
+                  <h2 className='view-prog-page__program-title'>
+                    {program.name}
+                  </h2>
+                  <div className='view-prog-page__program-details'>
+                    <div className='view-prog-page__program-details-section'>
+                      <p className='view-prog-page__program-details-label'>
+                        Main Goal
+                      </p>
+                      <p className='view-prog-page__program-details-value'>
+                        {toProperCase(program.main_goal)}
+                      </p>
+                    </div>
+                    <div className='view-prog-page__program-details-section'>
+                      <p className='view-prog-page__program-details-label'>
+                        Duration
+                      </p>
+                      <p className='view-prog-page__program-details-value'>
+                        {program.program_duration}{' '}
+                        {toProperCase(program.duration_unit)}
+                      </p>
+                    </div>
+                    <div className='view-prog-page__program-details-section'>
+                      <p className='view-prog-page__program-details-label'>
+                        Days Per Week
+                      </p>
+                      <p className='view-prog-page__program-details-value'>
+                        {program.days_per_week}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    className={`view-prog-page__remove-program-btn ${theme}`}
+                    onClick={() => handleDeleteProgram(program.id)}
+                  >
+                    <TbHttpDelete size={30} />
+                  </button>
+                </div>
+              </Link>
+            );
+          })
         ) : (
           <p className={`view-prog-page__no-programs ${theme}`}>
             No Programs Exist.{' '}
