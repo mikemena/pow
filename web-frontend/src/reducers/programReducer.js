@@ -15,17 +15,15 @@ function programReducer(state = initialState, action) {
         program: {
           ...state.program,
           ...updatedProgram
-        }
+        },
+        selectedProgram: updatedProgram.id
       };
     }
 
     case 'DESELECT_PROGRAM': {
       const { programId } = action.payload;
 
-      if (
-        !state.program ||
-        (state.program.id !== programId && state.program.tempId !== programId)
-      ) {
+      if (!state.program || state.program.id !== programId) {
         console.error('Program not found or invalid payload:', action.payload);
         return state;
       }
@@ -35,7 +33,8 @@ function programReducer(state = initialState, action) {
         program: {
           ...state.program,
           selected: false
-        }
+        },
+        selectedProgram: null
       };
     }
 
@@ -49,12 +48,9 @@ function programReducer(state = initialState, action) {
         main_goal
       } = action.payload;
 
-      if (
-        !state.program ||
-        (state.program.id !== id && state.program.tempId !== id)
-      ) {
+      if (!state.program || state.program.id !== id) {
         console.error('Program not found:', id);
-        return state; // Return the current state if the program ID does not exist.
+        return state;
       }
 
       const updatedProgram = {
@@ -77,8 +73,8 @@ function programReducer(state = initialState, action) {
       return {
         ...state,
         program: {
-          ...state.program, // Spread the existing program details to preserve other fields like workouts
-          ...updatedProgram // Overwrite with the updated program details
+          ...state.program,
+          ...updatedProgram
         }
       };
     }
@@ -95,19 +91,16 @@ function programReducer(state = initialState, action) {
         ...state,
         program: {
           ...state.program,
-          ...updatedProgram // Overwrite the program with the updated data
+          ...updatedProgram
         },
-        selectedProgram: updatedProgram.id // Optionally update the selected program ID
+        selectedProgram: updatedProgram.id
       };
     }
 
     case 'DELETE_PROGRAM': {
       const { programId } = action.payload;
 
-      if (
-        !programId ||
-        (state.program.id !== programId && state.program.tempId !== programId)
-      ) {
+      if (!programId || state.program.id !== programId) {
         console.error('Program not found or invalid payload:', action.payload);
         return state;
       }
@@ -115,9 +108,9 @@ function programReducer(state = initialState, action) {
       // Reset the state to remove the program
       return {
         ...state,
-        program: null, // or initialState.program to reset to initial state
-        selectedProgram: null, // Resetting selected program as well
-        activeWorkout: null // Reset any active workout associated with the program
+        program: null,
+        selectedProgram: null,
+        activeWorkout: null
       };
     }
 

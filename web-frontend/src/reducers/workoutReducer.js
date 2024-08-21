@@ -16,15 +16,13 @@ function workoutReducer(state = initialState, action) {
 
       return {
         ...state,
-          workouts: state.workouts.map(workout => {
-            const isActive =
-              workout.id === workoutId || workout.tempId === workoutId;
-            console.log(`Workout ${workoutId}: Setting active to ${isActive}`);
-            return {
-              ...workout,
-              active: isActive
-            };
-          })
+        activeWorkout: workoutId,
+        workouts: {
+          ...state.workouts,
+          [workoutId]: {
+            ...state.workouts[workoutId],
+            active: true
+          }
         }
       };
     }
