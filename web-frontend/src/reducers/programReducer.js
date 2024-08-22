@@ -1,21 +1,11 @@
 function programReducer(state, action) {
   switch (action.type) {
-    case 'SET_PROGRAMS': {
-      return {
-        ...state,
-        ...action.payload
-      };
-    }
-
     case 'SET_SELECTED_PROGRAM':
+      console.log('Setting selected program:', action.payload);
       return {
-        ...state,
-        selectedProgram: action.payload.program
-          ? action.payload.program.id
-          : null,
-        program: action.payload.program || null,
-        programs: action.payload.programs || {},
-        workouts: action.payload.workouts || {}
+        selectedProgram: action.payload.program,
+        selectedWorkouts: action.payload.workouts,
+        activeWorkout: action.payload.activeWorkout
       };
 
     case 'DESELECT_PROGRAM': {

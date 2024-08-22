@@ -16,27 +16,11 @@ export const ProgramProvider = ({ children }) => {
 
   // Program Actions
 
-  const setPrograms = useCallback(
-    (programs, workouts, activeWorkout, selectedProgram) => {
-      dispatch({
-        type: 'SET_PROGRAMS',
-        payload: {
-          programs,
-          workouts,
-          activeWorkout,
-          selectedProgram
-        }
-      });
-    },
-    [dispatch]
-  );
-
-  const setSelectedProgram = ({ program, programs, workouts }) => {
+  const setSelectedProgram = ({ program, workouts }) => {
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
       payload: {
         program: program || null,
-        programs: programs || {},
         workouts: workouts || {}
       }
     });
@@ -365,7 +349,7 @@ export const ProgramProvider = ({ children }) => {
         state,
         dispatch,
         activeWorkout: state.activeWorkout,
-        setPrograms,
+
         setSelectedProgram,
         addProgram,
         updateProgram,

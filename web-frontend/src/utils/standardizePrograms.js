@@ -2,8 +2,7 @@ const standardizePrograms = (fetchedPrograms, selectedProgramId = null) => {
   const standardizedState = {
     programs: {},
     workouts: {},
-    activeWorkout: null,
-    selectedProgram: selectedProgramId
+    activeWorkout: null
   };
 
   fetchedPrograms.forEach(program => {
@@ -19,11 +18,6 @@ const standardizePrograms = (fetchedPrograms, selectedProgramId = null) => {
       days_per_week: program.days_per_week || 0,
       main_goal: program.main_goal || ''
     };
-
-    // Set the selected program ID if applicable
-    if (program.id === selectedProgramId) {
-      standardizedState.selectedProgram = programId;
-    }
 
     // Standardize workouts, grouping them by programId
     (program.workouts || []).forEach(workout => {

@@ -33,8 +33,7 @@ const ProgramPage = () => {
 
   const [programList, setProgramList] = useState(initialProgramList);
 
-  const { state, deleteProgram, setSelectedProgram } =
-    useContext(ProgramContext);
+  const { deleteProgram, setSelectedProgram } = useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -62,6 +61,7 @@ const ProgramPage = () => {
         programs: standardizedData.programs,
         workouts: standardizedData.workouts
       });
+      console.log('standardizedData:', standardizedData);
     } catch (error) {
       console.error('Error fetching programs:', error);
     }
@@ -139,15 +139,20 @@ const ProgramPage = () => {
 
   const handleProgramClick = useCallback(
     program => {
-      console.log('program:', program);
+      console.log('Selected program:', program);
+
+      // Filter workouts for the selected program
+      const programWorkouts = Object.values(programList.workouts).filter(
+        workout => workout.programId === program.id
+      );
 
       setSelectedProgram({
         program: program,
-        workouts: state.workouts
+        workouts: programWorkouts
       });
       navigate(`/programs/${program.id}`);
     },
-    [setSelectedProgram, navigate, state.workouts]
+    [setSelectedProgram, navigate, programList.workouts]
   );
 
   console.log('filteredPrograms', filteredPrograms);
