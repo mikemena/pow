@@ -1,14 +1,12 @@
 function programReducer(state, action) {
   switch (action.type) {
     case 'SET_PROGRAMS': {
-      const { programs, workouts, activeWorkout, selectedProgram } =
-        action.payload;
       return {
         ...state,
-        programs,
-        workouts,
-        activeWorkout,
-        selectedProgram
+        programs: action.payload.programs || {},
+        workouts: action.payload.workouts || {},
+        activeWorkout: action.payload.activeWorkout || null,
+        selectedProgram: action.payload.selectedProgram || null
       };
     }
 

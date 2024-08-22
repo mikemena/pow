@@ -16,6 +16,18 @@ export const ProgramProvider = ({ children }) => {
 
   // Program Actions
 
+  const setPrograms = (programs, workouts, activeWorkout, selectedProgram) => {
+    dispatch({
+      type: 'SET_PROGRAMS',
+      payload: {
+        programs,
+        workouts,
+        activeWorkout,
+        selectedProgram
+      }
+    });
+  };
+
   const setSelectedProgram = ({ program, programs, workouts }) => {
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
@@ -350,6 +362,7 @@ export const ProgramProvider = ({ children }) => {
         state,
         dispatch,
         activeWorkout: state.activeWorkout,
+        setPrograms,
         setSelectedProgram,
         addProgram,
         updateProgram,

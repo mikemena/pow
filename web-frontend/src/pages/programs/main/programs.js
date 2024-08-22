@@ -76,53 +76,57 @@ const ProgramPage = () => {
   }, [fetchPrograms]);
 
   const filteredPrograms = useMemo(() => {
-    if (!programs || typeof programs !== 'object') {
-      return [];
-    }
+    return Object.values(programs);
+  }, [programs]);
 
-    return Object.values(programs).filter(program => {
-      console.log('Checking program:', program);
-      if (!program || typeof program !== 'object' || !program.id) {
-        console.log('Skipping invalid program:', program);
-        return false;
-      }
+  // const filteredPrograms = useMemo(() => {
+  //   if (!programs || typeof programs !== 'object') {
+  //     return [];
+  //   }
 
-      const matchesMainGoal =
-        !selectedMainGoal ||
-        selectedMainGoal === 'All' ||
-        program.main_goal === selectedMainGoal;
-      const matchesDuration =
-        !selectedDuration ||
-        selectedDuration === 'All' ||
-        program.program_duration === parseInt(selectedDuration);
-      const matchesDurationUnit =
-        !selectedDurationUnit ||
-        selectedDurationUnit === 'All' ||
-        program.duration_unit.toLowerCase() ===
-          selectedDurationUnit.toLowerCase();
-      const matchesDaysPerWeek =
-        !selectedDaysPerWeek ||
-        selectedDaysPerWeek === 'All' ||
-        program.days_per_week === parseInt(selectedDaysPerWeek);
-      const matchesSearchTerm =
-        !searchTerm ||
-        program.name.toLowerCase().includes(searchTerm.toLowerCase());
-      return (
-        matchesMainGoal &&
-        matchesDuration &&
-        matchesDurationUnit &&
-        matchesDaysPerWeek &&
-        matchesSearchTerm
-      );
-    });
-  }, [
-    searchTerm,
-    selectedMainGoal,
-    selectedDuration,
-    selectedDurationUnit,
-    selectedDaysPerWeek,
-    programs
-  ]);
+  //   return Object.values(programs).filter(program => {
+  //     console.log('Checking program:', program);
+  //     if (!program || typeof program !== 'object' || !program.id) {
+  //       console.log('Skipping invalid program:', program);
+  //       return false;
+  //     }
+
+  //     const matchesMainGoal =
+  //       !selectedMainGoal ||
+  //       selectedMainGoal === 'All' ||
+  //       program.main_goal === selectedMainGoal;
+  //     const matchesDuration =
+  //       !selectedDuration ||
+  //       selectedDuration === 'All' ||
+  //       program.program_duration === parseInt(selectedDuration);
+  //     const matchesDurationUnit =
+  //       !selectedDurationUnit ||
+  //       selectedDurationUnit === 'All' ||
+  //       program.duration_unit.toLowerCase() ===
+  //         selectedDurationUnit.toLowerCase();
+  //     const matchesDaysPerWeek =
+  //       !selectedDaysPerWeek ||
+  //       selectedDaysPerWeek === 'All' ||
+  //       program.days_per_week === parseInt(selectedDaysPerWeek);
+  //     const matchesSearchTerm =
+  //       !searchTerm ||
+  //       program.name.toLowerCase().includes(searchTerm.toLowerCase());
+  //     return (
+  //       matchesMainGoal &&
+  //       matchesDuration &&
+  //       matchesDurationUnit &&
+  //       matchesDaysPerWeek &&
+  //       matchesSearchTerm
+  //     );
+  //   });
+  // }, [
+  //   searchTerm,
+  //   selectedMainGoal,
+  //   selectedDuration,
+  //   selectedDurationUnit,
+  //   selectedDaysPerWeek,
+  //   programs
+  // ]);
 
   const onGoalChange = event => {
     setSelectedMainGoal(event.target.value);
