@@ -25,14 +25,18 @@ const ProgramPage = () => {
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [clickedProgram, setClickedProgram] = useState(null);
 
-  const { state, dispatch, deleteProgram, setSelectedProgram } =
+  const initialProgramList = {
+    programs: {},
+    workouts: {}
+  };
+
+  const [programList, setProgramList] = useState(initialProgramList);
+
+  const { state, deleteProgram, setSelectedProgram } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
-
-  const programs = state.programs;
 
   const handleInputChange = event => {
     const newValue = event.target.value;
@@ -53,80 +57,62 @@ const ProgramPage = () => {
       console.log('data:', data);
 
       // Normalize the fetched data
-      const standardizedPrograms = standardizePrograms(data);
-      console.log('standardizedPrograms:', standardizedPrograms);
-
-      // Dispatch an action to update the state with fetched programs
-      dispatch({
-        type: 'SET_PROGRAMS',
-        payload: {
-          programs: standardizedPrograms.programs,
-          workouts: standardizedPrograms.workouts,
-          activeWorkout: standardizedPrograms.activeWorkout || null,
-          selectedProgram: standardizedPrograms.selectedProgram || null
-        }
+      const standardizedData = standardizePrograms(data);
+      setProgramList({
+        programs: standardizedData.programs,
+        workouts: standardizedData.workouts
       });
     } catch (error) {
       console.error('Error fetching programs:', error);
     }
-  }, [dispatch]);
+  }, []);
 
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
 
   const filteredPrograms = useMemo(() => {
-    return Object.values(programs);
-  }, [programs]);
+    return Object.values(programList.programs).filter(program => {
+      if (!program || typeof program !== 'object' || !program.id) {
+        return false;
+      }
 
-  // const filteredPrograms = useMemo(() => {
-  //   if (!programs || typeof programs !== 'object') {
-  //     return [];
-  //   }
-
-  //   return Object.values(programs).filter(program => {
-  //     console.log('Checking program:', program);
-  //     if (!program || typeof program !== 'object' || !program.id) {
-  //       console.log('Skipping invalid program:', program);
-  //       return false;
-  //     }
-
-  //     const matchesMainGoal =
-  //       !selectedMainGoal ||
-  //       selectedMainGoal === 'All' ||
-  //       program.main_goal === selectedMainGoal;
-  //     const matchesDuration =
-  //       !selectedDuration ||
-  //       selectedDuration === 'All' ||
-  //       program.program_duration === parseInt(selectedDuration);
-  //     const matchesDurationUnit =
-  //       !selectedDurationUnit ||
-  //       selectedDurationUnit === 'All' ||
-  //       program.duration_unit.toLowerCase() ===
-  //         selectedDurationUnit.toLowerCase();
-  //     const matchesDaysPerWeek =
-  //       !selectedDaysPerWeek ||
-  //       selectedDaysPerWeek === 'All' ||
-  //       program.days_per_week === parseInt(selectedDaysPerWeek);
-  //     const matchesSearchTerm =
-  //       !searchTerm ||
-  //       program.name.toLowerCase().includes(searchTerm.toLowerCase());
-  //     return (
-  //       matchesMainGoal &&
-  //       matchesDuration &&
-  //       matchesDurationUnit &&
-  //       matchesDaysPerWeek &&
-  //       matchesSearchTerm
-  //     );
-  //   });
-  // }, [
-  //   searchTerm,
-  //   selectedMainGoal,
-  //   selectedDuration,
-  //   selectedDurationUnit,
-  //   selectedDaysPerWeek,
-  //   programs
-  // ]);
+      const matchesMainGoal =
+        !selectedMainGoal ||
+        selectedMainGoal === 'All' ||
+        program.main_goal === selectedMainGoal;
+      const matchesDuration =
+        !selectedDuration ||
+        selectedDuration === 'All' ||
+        program.program_duration === parseInt(selectedDuration);
+      const matchesDurationUnit =
+        !selectedDurationUnit ||
+        selectedDurationUnit === 'All' ||
+        program.duration_unit.toLowerCase() ===
+          selectedDurationUnit.toLowerCase();
+      const matchesDaysPerWeek =
+        !selectedDaysPerWeek ||
+        selectedDaysPerWeek === 'All' ||
+        program.days_per_week === parseInt(selectedDaysPerWeek);
+      const matchesSearchTerm =
+        !searchTerm ||
+        program.name.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        matchesMainGoal &&
+        matchesDuration &&
+        matchesDurationUnit &&
+        matchesDaysPerWeek &&
+        matchesSearchTerm
+      );
+    });
+  }, [
+    searchTerm,
+    selectedMainGoal,
+    selectedDuration,
+    selectedDurationUnit,
+    selectedDaysPerWeek,
+    programList.programs
+  ]);
 
   const onGoalChange = event => {
     setSelectedMainGoal(event.target.value);
@@ -216,7 +202,7 @@ const ProgramPage = () => {
                   placeholder='Program Names'
                 />
                 <datalist id='programs'>
-                  {Object.values(programs).map(program => (
+                  {Object.values(programList.programs).map(program => (
                     <option key={program.id} value={program.name} />
                   ))}
                 </datalist>
@@ -277,11 +263,7 @@ const ProgramPage = () => {
               to={`/programs/${program.id}`}
               onClick={() => handleProgramClick(program)}
             >
-              <div
-                className={`view-prog-page__program ${theme} ${
-                  clickedProgram === program.id ? 'program-click-animation' : ''
-                }`}
-              >
+              <div className={`view-prog-page__program ${theme}`}>
                 <h2 className='view-prog-page__program-title'>
                   {program.name}
                 </h2>

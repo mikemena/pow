@@ -1,4 +1,4 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, useCallback } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { initialState } from '../reducers/initialState';
@@ -16,17 +16,20 @@ export const ProgramProvider = ({ children }) => {
 
   // Program Actions
 
-  const setPrograms = (programs, workouts, activeWorkout, selectedProgram) => {
-    dispatch({
-      type: 'SET_PROGRAMS',
-      payload: {
-        programs,
-        workouts,
-        activeWorkout,
-        selectedProgram
-      }
-    });
-  };
+  const setPrograms = useCallback(
+    (programs, workouts, activeWorkout, selectedProgram) => {
+      dispatch({
+        type: 'SET_PROGRAMS',
+        payload: {
+          programs,
+          workouts,
+          activeWorkout,
+          selectedProgram
+        }
+      });
+    },
+    [dispatch]
+  );
 
   const setSelectedProgram = ({ program, programs, workouts }) => {
     dispatch({

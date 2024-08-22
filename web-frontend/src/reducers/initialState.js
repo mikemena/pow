@@ -21,6 +21,5 @@ export const initialState = {
       exercises: []
     }
   },
-  activeWorkout: initialWorkoutId,
-  selectedProgram: null
+  activeWorkout: initialWorkoutId
 };

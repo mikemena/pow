@@ -3,10 +3,7 @@ function programReducer(state, action) {
     case 'SET_PROGRAMS': {
       return {
         ...state,
-        programs: action.payload.programs || {},
-        workouts: action.payload.workouts || {},
-        activeWorkout: action.payload.activeWorkout || null,
-        selectedProgram: action.payload.selectedProgram || null
+        ...action.payload
       };
     }
 
