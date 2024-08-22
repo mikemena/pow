@@ -5,7 +5,7 @@ function programReducer(state, action) {
       return {
         selectedProgram: action.payload.program,
         selectedWorkouts: action.payload.workouts,
-        activeWorkout: action.payload.activeWorkout
+        activeWorkout: null
       };
 
     case 'DESELECT_PROGRAM': {

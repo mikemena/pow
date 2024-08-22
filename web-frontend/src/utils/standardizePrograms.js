@@ -1,8 +1,7 @@
-const standardizePrograms = (fetchedPrograms, selectedProgramId = null) => {
+const standardizePrograms = fetchedPrograms => {
   const standardizedState = {
     programs: {},
-    workouts: {},
-    activeWorkout: null
+    workouts: {}
   };
 
   fetchedPrograms.forEach(program => {
