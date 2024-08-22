@@ -8,6 +8,15 @@ function workoutReducer(state = initialState, action) {
   switch (action.type) {
     // Workout Reducers
 
+    case 'SET_WORKOUTS':
+      return {
+        ...state,
+        workouts: action.payload.reduce((acc, workout) => {
+          acc[workout.id] = { ...workout, programId: workout.programId };
+          return acc;
+        }, {})
+      };
+
     case actionTypes.SET_ACTIVE_WORKOUT: {
       const workoutId = action.payload;
 

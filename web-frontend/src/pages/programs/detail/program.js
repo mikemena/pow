@@ -1,4 +1,3 @@
-// ProgramDetailsPage.js
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
@@ -16,11 +15,20 @@ const ProgramDetailsPage = () => {
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  const program = state.programs.program;
-
-  if (!state.programs.program) {
+  // Access the selected program
+  const selectedProgramId = state.selectedProgram;
+  const program = state.program;
+  const workouts = Object.values(state.workouts).filter(
+    workout => workout.programId === selectedProgramId
+  );
+  if (!program) {
     return <div>Loading...</div>;
   }
+
+  console.log('State in details page:', state);
+  console.log('Selected Program ID:', selectedProgramId);
+  console.log('Selected Program:', program);
+  console.log('Workouts for this Program:', workouts);
 
   const handleExpand = workoutId => {
     setExpandedWorkouts(prev => ({
@@ -90,7 +98,7 @@ const ProgramDetailsPage = () => {
           </div>
         </div>
         <div>
-          {program.workouts.map(workout => (
+          {workouts.map(workout => (
             <div
               key={workout.id}
               className={`prog-details-page__workout-container ${theme}`}

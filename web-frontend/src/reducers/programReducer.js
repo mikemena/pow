@@ -1,24 +1,27 @@
-import { initialState } from './initialState';
-
-function programReducer(state = initialState, action) {
+function programReducer(state, action) {
   switch (action.type) {
-    case 'SET_SELECTED_PROGRAM': {
-      const updatedProgram = action.payload;
-
-      if (!updatedProgram || !updatedProgram.id) {
-        console.error('Invalid program data received:', updatedProgram);
-        return state;
-      }
-
+    case 'SET_PROGRAMS': {
+      const { programs, workouts, activeWorkout, selectedProgram } =
+        action.payload;
       return {
         ...state,
-        program: {
-          ...state.program,
-          ...updatedProgram
-        },
-        selectedProgram: updatedProgram.id
+        programs,
+        workouts,
+        activeWorkout,
+        selectedProgram
       };
     }
+
+    case 'SET_SELECTED_PROGRAM':
+      return {
+        ...state,
+        selectedProgram: action.payload.program
+          ? action.payload.program.id
+          : null,
+        program: action.payload.program || null,
+        programs: action.payload.programs || {},
+        workouts: action.payload.workouts || {}
+      };
 
     case 'DESELECT_PROGRAM': {
       const { programId } = action.payload;

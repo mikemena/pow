@@ -25,13 +25,14 @@ const ProgramPage = () => {
   const [selectedDaysPerWeek, setSelectedDaysPerWeek] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
-  const [localPrograms, setLocalPrograms] = useState([]);
   const [clickedProgram, setClickedProgram] = useState(null);
 
-  const { state, deleteProgram, setSelectedProgram } =
+  const { state, dispatch, deleteProgram, setSelectedProgram } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
+
+  const programs = state.programs;
 
   const handleInputChange = event => {
     const newValue = event.target.value;
@@ -43,7 +44,7 @@ const ProgramPage = () => {
     setIsExpanded(!isExpanded);
   };
 
-  const fetchPrograms = async () => {
+  const fetchPrograms = useCallback(async () => {
     try {
       const response = await fetch(
         'http://localhost:9025/api/users/2/programs'
@@ -55,33 +56,37 @@ const ProgramPage = () => {
       const standardizedPrograms = standardizePrograms(data);
       console.log('standardizedPrograms:', standardizedPrograms);
 
-      setLocalPrograms(standardizedPrograms || []);
+      // Dispatch an action to update the state with fetched programs
+      dispatch({
+        type: 'SET_PROGRAMS',
+        payload: {
+          programs: standardizedPrograms.programs,
+          workouts: standardizedPrograms.workouts,
+          activeWorkout: standardizedPrograms.activeWorkout || null,
+          selectedProgram: standardizedPrograms.selectedProgram || null
+        }
+      });
     } catch (error) {
       console.error('Error fetching programs:', error);
-      setLocalPrograms([]);
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     fetchPrograms();
-  }, []);
-
-  useEffect(() => {
-    // Set localPrograms from state.programs
-    if (state.programs) {
-      setLocalPrograms(Object.values(state.programs));
-    }
-  }, [state.programs]);
+  }, [fetchPrograms]);
 
   const filteredPrograms = useMemo(() => {
-    if (!localPrograms || typeof localPrograms !== 'object') return [];
+    if (!programs || typeof programs !== 'object') {
+      return [];
+    }
 
-    const programsArray = Object.values(localPrograms.programs);
-
-    return programsArray.filter(program => {
+    return Object.values(programs).filter(program => {
+      console.log('Checking program:', program);
       if (!program || typeof program !== 'object' || !program.id) {
+        console.log('Skipping invalid program:', program);
         return false;
       }
+
       const matchesMainGoal =
         !selectedMainGoal ||
         selectedMainGoal === 'All' ||
@@ -116,7 +121,7 @@ const ProgramPage = () => {
     selectedDuration,
     selectedDurationUnit,
     selectedDaysPerWeek,
-    localPrograms
+    programs
   ]);
 
   const onGoalChange = event => {
@@ -144,14 +149,18 @@ const ProgramPage = () => {
 
   const handleProgramClick = useCallback(
     program => {
-      setSelectedProgram(program);
+      console.log('program:', program);
+
+      setSelectedProgram({
+        program: program,
+        workouts: state.workouts
+      });
       navigate(`/programs/${program.id}`);
     },
-    [setSelectedProgram, navigate]
+    [setSelectedProgram, navigate, state.workouts]
   );
 
-  console.log('localPrograms:', localPrograms);
-  console.log('filteredPrograms:', filteredPrograms);
+  console.log('filteredPrograms', filteredPrograms);
 
   return (
     <div>
@@ -203,7 +212,7 @@ const ProgramPage = () => {
                   placeholder='Program Names'
                 />
                 <datalist id='programs'>
-                  {localPrograms.map(program => (
+                  {Object.values(programs).map(program => (
                     <option key={program.id} value={program.name} />
                   ))}
                 </datalist>

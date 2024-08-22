@@ -16,12 +16,18 @@ export const ProgramProvider = ({ children }) => {
 
   // Program Actions
 
-  const setSelectedProgram = program => {
+  const setSelectedProgram = ({ program, programs, workouts }) => {
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
-      payload: { ...program, selected: true }
+      payload: {
+        program: program || null,
+        programs: programs || {},
+        workouts: workouts || {}
+      }
     });
   };
+
+  console.log('state in ProgramProvider', state);
 
   const saveProgram = async () => {
     const programId = Object.keys(state.programs)[0];
