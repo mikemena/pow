@@ -19,8 +19,7 @@ const combineReducers = reducers => {
 };
 
 const rootReducer = combineReducers({
-  program: programReducer,
-  workouts: workoutReducer
+  program: programReducer
 });
 
 const mainReducer = (state, action) => {

@@ -1,31 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
 import { actionTypes } from '../actions/actionTypes';
-import { initialState } from './initialState';
+
 import exerciseUtils from '../utils/exercise.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 
-function workoutReducer(state = initialState, action) {
+function workoutReducer(state, action) {
   switch (action.type) {
     // Workout Reducers
-
-    case actionTypes.SET_ACTIVE_WORKOUT: {
-      const workoutId = action.payload;
-
-      console.log('Workout ID to activate:', workoutId);
-      console.log('State before activating workout:', state.program.workouts);
-
-      return {
-        ...state,
-        activeWorkout: workoutId,
-        workouts: {
-          ...state.workouts,
-          [workoutId]: {
-            ...state.workouts[workoutId],
-            active: true
-          }
-        }
-      };
-    }
 
     case actionTypes.ADD_WORKOUT: {
       const newWorkout = standardizeWorkout(action.payload);

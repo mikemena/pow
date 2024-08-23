@@ -8,6 +8,15 @@ function programReducer(state, action) {
         activeWorkout: null
       };
 
+    case 'SET_ACTIVE_WORKOUT': {
+      const workoutId = action.payload;
+
+      return {
+        ...state,
+        activeWorkout: workoutId
+      };
+    }
+
     case 'DESELECT_PROGRAM': {
       const { programId } = action.payload;
 

@@ -11,7 +11,8 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, state, clearState } = useContext(ProgramContext);
+  const { deleteProgram, state, setActiveWorkout, clearState } =
+    useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -26,6 +27,9 @@ const ProgramDetailsPage = () => {
   }
 
   const handleExpand = workoutId => {
+    console.log('Expanding workout:', workoutId);
+    setActiveWorkout(workoutId);
+    console.log('Expanding workout:', workoutId);
     setExpandedWorkouts(prev => ({
       ...prev,
       [workoutId]: !prev[workoutId]

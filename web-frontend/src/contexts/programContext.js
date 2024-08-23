@@ -26,8 +26,6 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  console.log('state in ProgramProvider', state);
-
   const saveProgram = async () => {
     const programId = Object.keys(state.programs)[0];
     const newProgram = {

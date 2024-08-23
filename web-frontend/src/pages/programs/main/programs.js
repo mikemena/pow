@@ -53,7 +53,6 @@ const ProgramPage = () => {
         'http://localhost:9025/api/users/2/programs'
       );
       const data = await response.json();
-      console.log('data:', data);
 
       // Normalize the fetched data
       const standardizedData = standardizePrograms(data);
@@ -61,7 +60,6 @@ const ProgramPage = () => {
         programs: standardizedData.programs,
         workouts: standardizedData.workouts
       });
-      console.log('standardizedData:', standardizedData);
     } catch (error) {
       console.error('Error fetching programs:', error);
     }
@@ -139,8 +137,6 @@ const ProgramPage = () => {
 
   const handleProgramClick = useCallback(
     program => {
-      console.log('Selected program:', program);
-
       // Filter workouts for the selected program
       const programWorkouts = Object.values(programList.workouts).filter(
         workout => workout.programId === program.id
@@ -154,8 +150,6 @@ const ProgramPage = () => {
     },
     [setSelectedProgram, navigate, programList.workouts]
   );
-
-  console.log('filteredPrograms', filteredPrograms);
 
   return (
     <div>
