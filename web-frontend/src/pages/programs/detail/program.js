@@ -26,7 +26,7 @@ const ProgramDetailsPage = () => {
     return <div>Loading...</div>;
   }
 
-  const handleExpand = workoutId => {
+  const handleExpandWorkout = workoutId => {
     console.log('Expanding workout:', workoutId);
     setActiveWorkout(workoutId);
     console.log('Expanding workout:', workoutId);
@@ -108,7 +108,7 @@ const ProgramDetailsPage = () => {
                 <div className='prog-details-page__workout-expand-container'>
                   <button
                     className='prog-details-page__workout-expand-btn'
-                    onClick={() => handleExpand(workout.id)}
+                    onClick={() => handleExpandWorkout(workout.id)}
                   >
                     {expandedWorkouts[workout.id] ? (
                       <BsChevronCompactUp

@@ -31,14 +31,20 @@ const Workout = ({
     removeSet
   } = useContext(ProgramContext);
 
+  const { selectedProgram, selectedWorkouts } = state.program;
+
+  console.log('State in ProgramDetailsPage:', state);
+  console.log('Selected Program:', selectedProgram);
+  console.log('Selected Program Workouts:', selectedWorkouts);
+
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
-    const stateWorkout = state.program.workouts.find(
+    const stateWorkout = selectedWorkouts.find(
       w => w.id === initialWorkout.id || w.tempId === initialWorkout.tempId
     );
 
     return stateWorkout || initialWorkout;
-  }, [state.program.workouts, initialWorkout]);
+  }, [selectedWorkouts, initialWorkout]);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);

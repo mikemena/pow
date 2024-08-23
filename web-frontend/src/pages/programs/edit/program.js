@@ -15,13 +15,14 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.programs.program;
-  console.log('state.program', state);
-  console.log('state.program', state.program);
-  console.log('state.program.workouts', state.program.workouts);
+  const { selectedProgram, selectedWorkouts } = state.program;
 
-  if (!state || !state.program) {
-    return <div>Loading or no programs available...</div>;
+  console.log('State in ProgramDetailsPage:', state);
+  console.log('Selected Program:', selectedProgram);
+  console.log('Selected Program Workouts:', selectedWorkouts);
+
+  if (!selectedProgram || !selectedWorkouts) {
+    return <div>Loading...</div>;
   }
 
   const handleExpandWorkout = workoutId => {
@@ -61,10 +62,10 @@ const EditProgram = () => {
 
   const handleAddWorkout = event => {
     event.preventDefault();
-    if (program) {
+    if (selectedProgram) {
       dispatch({
         type: 'ADD_WORKOUT',
-        payload: { programId: program.id }
+        payload: { programId: selectedProgram.id }
       });
     }
   };
@@ -72,8 +73,8 @@ const EditProgram = () => {
   const handleUpdateProgram = async () => {
     try {
       const updatedProgram = {
-        ...program,
-        workouts: program.workouts.map(workout => {
+        ...selectedProgram,
+        workouts: selectedProgram.workouts.map(workout => {
           const updatedWorkout = state.workouts[workout.id];
           return updatedWorkout
             ? {
@@ -108,19 +109,19 @@ const EditProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={program}
+              program={selectedProgram}
               isEditing={true}
               isNewProgram={false}
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {program && program.workouts && program.workouts.length > 0 ? (
-              program.workouts.map(workout => {
+            {selectedProgram && selectedWorkouts.length > 0 ? (
+              selectedWorkouts.map(workout => {
                 if (!workout || !workout.id) {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
                 }
-                const fullWorkout = program.workouts[workout.id] || workout;
+                const fullWorkout = selectedWorkouts[workout.id] || workout;
                 return (
                   <Workout
                     key={workout.id}
