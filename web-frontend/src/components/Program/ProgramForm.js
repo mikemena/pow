@@ -58,7 +58,15 @@ const ProgramForm = ({
   };
 
   const handleBlur = () => {
+    console.log('Current program:', program); // Debugging line
+    console.log('Form Values:', formValues); // Debugging line
     const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
+
+    if (!program) {
+      console.error('Program is undefined, cannot dispatch action');
+      return;
+    }
+
     dispatch({
       type: action,
       payload: {

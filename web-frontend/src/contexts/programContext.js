@@ -1,7 +1,7 @@
-import { createContext, useReducer, useCallback } from 'react';
+import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
-import { initialState } from '../reducers/initialState';
+import { programInitialState } from '../reducers/initialState.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 import exerciseUtils from '../utils/exercise.js';
 import { v4 as uuidv4 } from 'uuid';
@@ -9,28 +9,36 @@ import { v4 as uuidv4 } from 'uuid';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(rootReducer, {
-    ...initialState,
-    program: { ...initialState.program }
-  });
+  const [state, dispatch] = useReducer(rootReducer, programInitialState);
+
+  const { program } = state; // Destructure program from state
+  const { workouts } = state.workout; // Destructure workouts from state
 
   // Program Actions
 
   const setSelectedProgram = ({ program, workouts }) => {
+    console.log('Setting selected program:', program, workouts);
+
+    // If workouts are not provided or not an array, initialize as an empty array
+    const validatedWorkouts = Array.isArray(workouts) ? workouts : [];
+
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
       payload: {
         program: program || null,
-        workouts: workouts || {}
+        workout: {
+          workouts: validatedWorkouts,
+          activeWorkout:
+            validatedWorkouts.length > 0 ? validatedWorkouts[0].id : null
+        }
       }
     });
   };
 
   const saveProgram = async () => {
-    const programId = Object.keys(state.programs)[0];
     const newProgram = {
-      ...state.programs[programId],
-      workouts: Object.values(state.workouts).map(workout => ({
+      ...state.program,
+      workouts: state.workout.workouts.map(workout => ({
         id: workout.id,
         name: workout.name,
         order: workout.order || 1,
@@ -56,8 +64,8 @@ export const ProgramProvider = ({ children }) => {
       });
 
       if (!response.ok) {
-        const errorText = await response.text(); // Get the response text
-        console.error('Error saving program:', errorText); // Log the error text
+        const errorText = await response.text();
+        console.error('Error saving program:', errorText);
         throw new Error('Network response was not ok');
       }
       const savedProgram = await response.json();
@@ -165,14 +173,15 @@ export const ProgramProvider = ({ children }) => {
   // Workout Actions
 
   const setActiveWorkout = workoutId => {
-    console.log('workoutId in setActiveWorkout in context', workoutId);
     if (!workoutId) {
       console.error('Attempted to set active workout without a valid ID');
-      return; // Optionally return to avoid dispatching undefined ID
+      return;
     }
     dispatch({
       type: actionTypes.SET_ACTIVE_WORKOUT,
-      payload: workoutId // This ID can be either tempId or id
+      payload: {
+        activeWorkout: workoutId
+      }
     });
   };
 
@@ -182,10 +191,14 @@ export const ProgramProvider = ({ children }) => {
       name: 'New Workout',
       programId: programId,
       exercises: [],
-      order: Object.keys(state.program.workouts).length + 1
+      order: state.workout.workouts.length + 1
     };
-
-    dispatch({ type: actionTypes.ADD_WORKOUT, payload: newWorkout });
+    dispatch({
+      type: actionTypes.ADD_WORKOUT,
+      payload: {
+        workout: newWorkout
+      }
+    });
   };
 
   const updateWorkout = workout => {
@@ -197,14 +210,21 @@ export const ProgramProvider = ({ children }) => {
 
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
-      payload: standardizedWorkout
+      payload: {
+        workout: standardizedWorkout
+      }
     });
   };
 
   const deleteWorkout = workoutId => {
+    if (!workoutId) {
+      console.error('Attempted to delete workout without a valid ID');
+      return;
+    }
+
     dispatch({
       type: actionTypes.DELETE_WORKOUT,
-      payload: workoutId
+      payload: { workoutId }
     });
   };
 
@@ -233,19 +253,21 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const toggleExerciseSelection = (exerciseId, exerciseData) => {
-    if (!state.activeWorkout) {
+    if (!state.workout.activeWorkout) {
       console.error('No active workout selected');
       return;
     }
 
-    const workout = state.workouts[state.activeWorkout];
+    const workout = state.workout.workouts.find(
+      w => w.id === state.workout.activeWorkout
+    );
     const exerciseExists = workout.exercises.some(ex => ex.id === exerciseId);
 
     if (exerciseExists) {
       // If the exercise exists, remove it
       dispatch({
         type: actionTypes.REMOVE_EXERCISE,
-        payload: { workoutId: state.activeWorkout, exerciseId }
+        payload: { workoutId: state.workout.activeWorkout, exerciseId }
       });
     } else {
       // If the exercise doesn't exist, add it
@@ -262,11 +284,10 @@ export const ProgramProvider = ({ children }) => {
   // Set Actions
 
   const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    const workout = state.workouts[workoutId];
+    const workout = state.workout.workouts.find(w => w.id === workoutId);
 
     if (!workout) {
       console.error('Workout not found:', workoutId);
-      console.log('Available workout IDs:', Object.keys(state.workouts));
       return;
     }
 
@@ -297,7 +318,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const removeSet = (workoutId, exerciseId, setId) => {
-    const workout = state.workouts[workoutId];
+    const workout = state.workout.workouts.find(w => w.id === workoutId);
     if (!workout) {
       console.error('Workout not found:', workoutId);
       return;
@@ -344,10 +365,10 @@ export const ProgramProvider = ({ children }) => {
   return (
     <ProgramContext.Provider
       value={{
-        state,
+        program,
+        workouts,
         dispatch,
-        activeWorkout: state.activeWorkout,
-
+        activeWorkout: state.workout.activeWorkout,
         setSelectedProgram,
         addProgram,
         updateProgram,

@@ -11,9 +11,11 @@ import './program.css';
 const CreateProgram = () => {
   const { state, saveProgram, addWorkout, setActiveWorkout, clearState } =
     useContext(ProgramContext);
+  const { selectedProgram, selectedWorkouts } = state.program;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('state in create page', state);
+  console.log('Program state in create page', selectedProgram);
+  console.log('Workout state in create page', selectedWorkouts);
 
   const navigate = useNavigate();
 
@@ -62,9 +64,10 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
+    console.log('clicked add workout');
+    console.log('selectedProgram.id in create page', selectedProgram.id);
     event.preventDefault();
-    const currentProgramId = state.program.tempId || state.program.id;
-    addWorkout(currentProgramId);
+    addWorkout(selectedProgram.id);
   };
 
   if (!state || !state.program) {
@@ -87,8 +90,8 @@ const CreateProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {state.program.workouts && state.program.workouts.length > 0 ? (
-              state.program.workouts.map(workout => (
+            {selectedWorkouts && selectedWorkouts.length > 0 ? (
+              selectedWorkouts.map(workout => (
                 <Workout
                   key={workout.id || workout.tempId}
                   workout={workout}

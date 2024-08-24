@@ -1,7 +1,6 @@
 import { programReducer } from './programReducer';
 import { workoutReducer } from './workoutReducer';
-import { activeWorkoutReducer } from './activeWorkoutReducer.js';
-import { initialState } from './initialState';
+import { programInitialState } from './initialState';
 import { actionTypes } from '../actions/actionTypes';
 
 const combineReducers = reducers => {
@@ -19,12 +18,13 @@ const combineReducers = reducers => {
 };
 
 const rootReducer = combineReducers({
-  program: programReducer
+  program: programReducer,
+  workout: workoutReducer
 });
 
 const mainReducer = (state, action) => {
   if (action.type === actionTypes.CLEAR_STATE) {
-    return initialState;
+    return programInitialState;
   }
 
   if (action.type === actionTypes.TOGGLE_EXERCISE_SELECTION) {

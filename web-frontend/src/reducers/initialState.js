@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 const initialProgramId = uuidv4();
 const initialWorkoutId = uuidv4();
 
-export const initialState = {
+export const programInitialState = {
   program: {
     user_id: 2,
     id: initialProgramId,
@@ -14,12 +14,15 @@ export const initialState = {
     days_per_week: 0,
     main_goal: 'Strength'
   },
-  workouts: {
-    [initialProgramId]: {
-      id: initialWorkoutId,
-      name: 'Workout 1',
-      exercises: []
-    }
-  },
-  activeWorkout: initialWorkoutId
+  workout: {
+    workouts: [
+      {
+        id: initialWorkoutId,
+        programId: initialProgramId,
+        name: 'Workout 1',
+        exercises: []
+      }
+    ],
+    activeWorkout: initialWorkoutId
+  }
 };

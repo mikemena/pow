@@ -11,18 +11,15 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, state, setActiveWorkout, clearState } =
+  const { deleteProgram, program, workouts, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  const { selectedProgram, selectedWorkouts } = state.program;
+  console.log('Selected Program:', program);
+  console.log('Selected Program Workouts:', workouts);
 
-  console.log('State in ProgramDetailsPage:', state);
-  console.log('Selected Program:', selectedProgram);
-  console.log('Selected Program Workouts:', selectedWorkouts);
-
-  if (!selectedProgram || !selectedWorkouts) {
+  if (!program || !workouts) {
     return <div>Loading...</div>;
   }
 
@@ -66,16 +63,14 @@ const ProgramDetailsPage = () => {
             <span className='prog-details-page__back-text'>Back</span>
           </Link>
           <div className={`prog-details-page__program ${theme}`}>
-            <h2 className='prog-details-page__program-title'>
-              {selectedProgram.name}
-            </h2>
+            <h2 className='prog-details-page__program-title'>{program.name}</h2>
             <div className='prog-details-page__program-details'>
               <div className='prog-details-page__program-details-section'>
                 <p className='prog-details-page__program-details-label'>
                   Main Goal
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {toProperCase(selectedProgram.main_goal)}
+                  {toProperCase(program.main_goal)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -83,8 +78,8 @@ const ProgramDetailsPage = () => {
                   Duration
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {selectedProgram.program_duration}{' '}
-                  {toProperCase(selectedProgram.duration_unit)}
+                  {program.program_duration}{' '}
+                  {toProperCase(program.duration_unit)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -92,14 +87,14 @@ const ProgramDetailsPage = () => {
                   Days Per Week
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {selectedProgram.days_per_week}
+                  {program.days_per_week}
                 </p>
               </div>
             </div>
           </div>
         </div>
         <div>
-          {selectedWorkouts.map(workout => (
+          {workouts.map(workout => (
             <div
               key={workout.id}
               className={`prog-details-page__workout-container ${theme}`}
@@ -187,16 +182,13 @@ const ProgramDetailsPage = () => {
         </div>
         <div className='prog-details-page__button-container'>
           <Link
-            key={selectedProgram.id}
-            to={`/programs/${selectedProgram.id}/edit`}
+            key={program.id}
+            to={`/programs/${program.id}/edit`}
             style={{ textDecoration: 'none' }}
           >
             <Button type='button'>Edit</Button>
           </Link>
-          <Button
-            type='submit'
-            onClick={() => handleDeleteProgram(selectedProgram.id)}
-          >
+          <Button type='submit' onClick={() => handleDeleteProgram(program.id)}>
             Delete
           </Button>
         </div>
