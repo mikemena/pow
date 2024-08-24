@@ -1,42 +1,30 @@
-import { actionTypes } from '../actions/actionTypes';
-import { programInitialState } from '../reducers/initialState';
+import { initialContextState } from '../contexts/programContext';
 
-function programReducer(state, action) {
+function programReducer(state = initialContextState.program, action) {
   switch (action.type) {
-    case actionTypes.SET_SELECTED_PROGRAM:
-      console.log('Setting selected program:', action.payload);
+    case 'SET_SELECTED_PROGRAM':
+      console.log('Reducer: Setting selected program:', action.payload.program);
+      console.log(
+        'Reducer: Setting selected workouts:',
+        action.payload.workouts
+      );
       return {
         ...state,
-        program: action.payload.program,
-        workout: {
-          ...state.workout,
-          workouts: action.payload.workout.workouts,
-          activeWorkout: action.payload.workout.activeWorkout
-        }
+        selectedProgram: action.payload.program,
+        selectedWorkouts: action.payload.workouts
       };
 
-    case actionTypes.ADD_PROGRAM:
-      return {
-        ...state,
-        program: action.payload
-      };
-
-    case actionTypes.UPDATE_PROGRAM:
-      return {
-        ...state,
-        program: {
-          ...state.program,
-          ...action.payload
-        }
-      };
-    case actionTypes.UPDATE_PROGRAM_SUCCESS:
+    case 'ADD_PROGRAM':
+    case 'UPDATE_PROGRAM':
+    case 'UPDATE_PROGRAM_SUCCESS':
+      console.log('Updating program in reducer:', action.payload);
       return {
         ...state,
         ...action.payload
       };
 
-    case actionTypes.DELETE_PROGRAM:
-      return programInitialState.program;
+    case 'DELETE_PROGRAM':
+      return initialContextState.program;
 
     default:
       return state;

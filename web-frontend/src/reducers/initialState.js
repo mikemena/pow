@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 const initialProgramId = uuidv4();
 const initialWorkoutId = uuidv4();
 
-export const programInitialState = {
+export const newProgramInitialState = {
   program: {
     user_id: 2,
     id: initialProgramId,

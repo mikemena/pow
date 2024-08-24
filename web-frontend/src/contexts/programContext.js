@@ -1,38 +1,33 @@
 import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
-import { programInitialState } from '../reducers/initialState.js';
+import { newProgramInitialState } from '../reducers/initialState.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 import exerciseUtils from '../utils/exercise.js';
 import { v4 as uuidv4 } from 'uuid';
 
+export const initialContextState = {
+  ...newProgramInitialState,
+  selectedProgram: null,
+  selectedWorkouts: []
+};
+
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(rootReducer, programInitialState);
-
-  const { program } = state; // Destructure program from state
-  const { workouts } = state.workout; // Destructure workouts from state
+  const [state, dispatch] = useReducer(rootReducer, initialContextState);
 
   // Program Actions
 
-  const setSelectedProgram = ({ program, workouts }) => {
-    console.log('Setting selected program:', program, workouts);
-
-    // If workouts are not provided or not an array, initialize as an empty array
-    const validatedWorkouts = Array.isArray(workouts) ? workouts : [];
+  const setSelectedProgram = (program, workouts) => {
+    console.log('Setting selected program in context:', program);
+    console.log('Setting selected workouts in context:', workouts);
 
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
-      payload: {
-        program: program || null,
-        workout: {
-          workouts: validatedWorkouts,
-          activeWorkout:
-            validatedWorkouts.length > 0 ? validatedWorkouts[0].id : null
-        }
-      }
+      payload: { program, workouts }
     });
+    console.log('State after setting program:', state);
   };
 
   const saveProgram = async () => {
@@ -365,8 +360,7 @@ export const ProgramProvider = ({ children }) => {
   return (
     <ProgramContext.Provider
       value={{
-        program,
-        workouts,
+        state,
         dispatch,
         activeWorkout: state.workout.activeWorkout,
         setSelectedProgram,

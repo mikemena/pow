@@ -11,13 +11,15 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, program, workouts, setActiveWorkout, clearState } =
+  const { deleteProgram, state, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  console.log('Selected Program:', program);
-  console.log('Selected Program Workouts:', workouts);
+  const program = state.program.selectedProgram;
+  const workouts = state.program.selectedWorkouts;
+  console.log('ProgramDetailsPage: Selected program:', program);
+  console.log('ProgramDetailsPage: Selected workouts:', workouts);
 
   if (!program || !workouts) {
     return <div>Loading...</div>;

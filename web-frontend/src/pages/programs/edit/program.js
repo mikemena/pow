@@ -17,11 +17,12 @@ const EditProgram = () => {
   console.log('State in Edit Page:', state);
 
   const program = state.program;
-  const workouts = state.workouts;
+  const { workouts, activeWorkout } = state.workout;
 
   console.log('State in ProgramDetailsPage:', state);
   console.log('Selected Program:', program);
   console.log('Selected Program Workouts:', workouts);
+  console.log('Active Workout:', activeWorkout);
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
