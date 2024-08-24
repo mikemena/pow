@@ -18,17 +18,14 @@ const ProgramDetailsPage = () => {
 
   const program = state.program.selectedProgram;
   const workouts = state.program.selectedWorkouts;
-  console.log('ProgramDetailsPage: Selected program:', program);
-  console.log('ProgramDetailsPage: Selected workouts:', workouts);
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
   }
 
   const handleExpandWorkout = workoutId => {
-    console.log('Expanding workout:', workoutId);
     setActiveWorkout(workoutId);
-    console.log('Expanding workout:', workoutId);
+
     setExpandedWorkouts(prev => ({
       ...prev,
       [workoutId]: !prev[workoutId]

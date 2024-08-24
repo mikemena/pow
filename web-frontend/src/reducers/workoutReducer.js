@@ -12,16 +12,11 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
       };
 
     case actionTypes.ADD_WORKOUT: {
-      console.log('ADD_WORKOUT action received in reducer');
-      console.log('Current state:', state);
-      console.log('Payload:', action.payload);
-
       const newWorkout = standardizeWorkout(action.payload);
       if (!newWorkout) {
         console.error('Failed to standardize workout:', action.payload);
         return state;
       }
-      console.log('Standardized workout:', newWorkout);
 
       return {
         ...state,

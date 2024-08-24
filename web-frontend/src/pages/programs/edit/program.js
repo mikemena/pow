@@ -14,24 +14,16 @@ const EditProgram = () => {
     useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
-  console.log('State in Edit Page:', state);
 
-  const program = state.program;
-  const { workouts, activeWorkout } = state.workout;
-
-  console.log('State in ProgramDetailsPage:', state);
-  console.log('Selected Program:', program);
-  console.log('Selected Program Workouts:', workouts);
-  console.log('Active Workout:', activeWorkout);
+  const program = state.program.selectedProgram;
+  const workouts = state.program.selectedWorkouts;
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
   }
 
   const handleExpandWorkout = workoutId => {
-    console.log('workoutId in create page', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
-    console.log('isCurrentlyExpanded in create page', isCurrentlyExpanded);
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
@@ -124,13 +116,12 @@ const EditProgram = () => {
                   console.error('Invalid workout object:', workout); // Log invalid workout object
                   return null;
                 }
-                const fullWorkout = workouts[workout.id] || workout;
                 return (
                   <Workout
                     key={workout.id}
                     isEditing={true}
                     isNewProgram={false}
-                    workout={fullWorkout}
+                    workout={workout}
                     isExpanded={expandedWorkouts[workout.id] || false}
                     onToggleExpand={() => handleExpandWorkout(workout.id)}
                   />

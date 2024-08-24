@@ -20,14 +20,10 @@ export const ProgramProvider = ({ children }) => {
   // Program Actions
 
   const setSelectedProgram = (program, workouts) => {
-    console.log('Setting selected program in context:', program);
-    console.log('Setting selected workouts in context:', workouts);
-
     dispatch({
       type: 'SET_SELECTED_PROGRAM',
       payload: { program, workouts }
     });
-    console.log('State after setting program:', state);
   };
 
   const saveProgram = async () => {
@@ -196,17 +192,16 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const updateWorkout = workout => {
-    const standardizedWorkout = standardizeWorkout(workout);
-    if (!standardizedWorkout) {
-      console.error('Invalid workout object:', workout);
+  const updateWorkout = updatedWorkout => {
+    if (!updatedWorkout) {
+      console.error('Invalid workout object:', updatedWorkout);
       return;
     }
 
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: {
-        workout: standardizedWorkout
+        workout: updatedWorkout
       }
     });
   };

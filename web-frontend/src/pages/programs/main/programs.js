@@ -137,12 +137,11 @@ const ProgramPage = () => {
 
   const handleProgramClick = useCallback(
     program => {
-      console.log('Program clicked:', program);
       // Filter workouts for the selected program
       const workouts = Object.values(programList.workouts).filter(
         workout => workout.programId === program.id
       );
-      console.log('Filtered workouts:', workouts);
+
       setSelectedProgram(program, workouts);
       navigate(`/programs/${program.id}`);
     },

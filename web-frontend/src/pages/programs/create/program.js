@@ -15,10 +15,6 @@ const CreateProgram = () => {
   const { workouts, activeWorkout } = state.workout;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('Program state in create page', program);
-  console.log('Workout state in create page', workouts);
-  console.log('Active workout in create page', activeWorkout);
-
   const navigate = useNavigate();
 
   const handleSaveProgram = async () => {
@@ -31,9 +27,7 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
-    console.log('workoutId in create page', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
-    console.log('isCurrentlyExpanded in create page', isCurrentlyExpanded);
 
     setExpandedWorkouts(prevState => ({
       ...Object.keys(prevState).reduce((acc, key) => {
@@ -66,8 +60,6 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    console.log('clicked add workout');
-    console.log('selectedProgram.id in create page', program.id);
     event.preventDefault();
     addWorkout(program.id);
   };

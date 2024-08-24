@@ -30,12 +30,7 @@ const Workout = ({
     removeSet
   } = useContext(ProgramContext);
 
-  const program = state.program;
   const { workouts, activeWorkout } = state.workout;
-
-  console.log('State in ProgramDetailsPage:', state);
-  console.log('Selected Program:', program);
-  console.log('Selected Program Workouts:', workouts);
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {

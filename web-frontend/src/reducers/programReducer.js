@@ -3,11 +3,6 @@ import { initialContextState } from '../contexts/programContext';
 function programReducer(state = initialContextState.program, action) {
   switch (action.type) {
     case 'SET_SELECTED_PROGRAM':
-      console.log('Reducer: Setting selected program:', action.payload.program);
-      console.log(
-        'Reducer: Setting selected workouts:',
-        action.payload.workouts
-      );
       return {
         ...state,
         selectedProgram: action.payload.program,
@@ -17,7 +12,6 @@ function programReducer(state = initialContextState.program, action) {
     case 'ADD_PROGRAM':
     case 'UPDATE_PROGRAM':
     case 'UPDATE_PROGRAM_SUCCESS':
-      console.log('Updating program in reducer:', action.payload);
       return {
         ...state,
         ...action.payload
