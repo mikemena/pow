@@ -1,12 +1,21 @@
-import { initialContextState } from '../contexts/programContext';
-
-function programReducer(state = initialContextState.program, action) {
+function programReducer(state, action) {
   switch (action.type) {
-    case 'SET_SELECTED_PROGRAM':
+    case 'INITIALIZE_EDIT_PROGRAM_STATE':
       return {
-        ...state,
-        selectedProgram: action.payload.program,
-        selectedWorkouts: action.payload.workouts
+        program: action.payload.program,
+        workout: {
+          workouts: action.payload.workouts,
+          activeWorkout: action.payload.activeWorkout
+        }
+      };
+
+    case 'INITIALIZE_NEW_PROGRAM_STATE':
+      return {
+        program: action.payload.program,
+        workout: {
+          workouts: action.payload.workouts,
+          activeWorkout: action.payload.activeWorkout
+        }
       };
     case 'UPDATE_NEW_PROGRAM':
       return {
@@ -30,8 +39,11 @@ function programReducer(state = initialContextState.program, action) {
         ...action.payload
       };
 
-    case 'DELETE_PROGRAM':
-      return initialContextState.program;
+    case 'CLEAR_PROGRAM':
+      return {
+        ...state,
+        ...action.payload
+      };
 
     default:
       return state;

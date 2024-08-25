@@ -1,28 +1,15 @@
-import { v4 as uuidv4 } from 'uuid';
-
-// Static IDs for initial state
-const initialProgramId = uuidv4();
-const initialWorkoutId = uuidv4();
-
-export const newProgramInitialState = {
+export const currentProgram = {
   program: {
-    user_id: 2,
-    id: initialProgramId,
-    name: 'Program 1',
+    user_id: null,
+    id: null,
+    name: '',
     program_duration: 0,
-    duration_unit: 'Days',
+    duration_unit: '',
     days_per_week: 0,
-    main_goal: 'Strength'
+    main_goal: ''
   },
   workout: {
-    workouts: [
-      {
-        id: initialWorkoutId,
-        programId: initialProgramId,
-        name: 'Workout 1',
-        exercises: []
-      }
-    ],
-    activeWorkout: initialWorkoutId
+    workouts: [],
+    activeWorkout: null
   }
 };

@@ -1,6 +1,6 @@
 import { programReducer } from './programReducer';
 import { workoutReducer } from './workoutReducer';
-import { newProgramInitialState } from './initialState';
+import { currentProgram } from './initialState';
 import { actionTypes } from '../actions/actionTypes';
 
 const combineReducers = reducers => {
@@ -23,8 +23,8 @@ const rootReducer = combineReducers({
 });
 
 const mainReducer = (state, action) => {
-  if (action.type === actionTypes.CLEAR_STATE) {
-    return newProgramInitialState;
+  if (action.type === actionTypes.CLEAR_PROGRAM) {
+    return currentProgram;
   }
 
   if (action.type === actionTypes.TOGGLE_EXERCISE_SELECTION) {
