@@ -8,6 +8,19 @@ function programReducer(state = initialContextState.program, action) {
         selectedProgram: action.payload.program,
         selectedWorkouts: action.payload.workouts
       };
+    case 'UPDATE_NEW_PROGRAM':
+      return {
+        ...state,
+        ...action.payload
+      };
+    case 'UPDATE_SELECTED_PROGRAM':
+      return {
+        ...state,
+        selectedProgram: {
+          ...state.selectedProgram,
+          ...action.payload
+        }
+      };
 
     case 'ADD_PROGRAM':
     case 'UPDATE_PROGRAM':

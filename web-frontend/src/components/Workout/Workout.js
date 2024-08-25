@@ -28,14 +28,14 @@ const Workout = ({
     removeSet
   } = useContext(ProgramContext);
 
-  const { workouts, activeWorkout } = state.workout;
-  console.log('Workouts:', workouts);
+  const workouts = isNewProgram
+    ? state.workout.workouts
+    : state.program.selectedWorkouts;
+  const activeWorkout = isNewProgram ? state.workout.activeWorkout : null;
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
-    const stateWorkout = workouts.find(w => w.id === initialWorkout.id);
-
-    return stateWorkout || initialWorkout;
+    return workouts.find(w => w.id === initialWorkout.id) || initialWorkout;
   }, [workouts, initialWorkout]);
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -55,16 +55,9 @@ const Workout = ({
   };
 
   const handleSaveTitle = () => {
-    console.log(
-      'Saving title for workout:',
-      workout.id,
-      'New title:',
-      workoutTitle
-    );
     if (workout) {
       const updatedWorkout = { ...workout, name: workoutTitle };
-      console.log('Updated workout:', updatedWorkout);
-      updateWorkout(updatedWorkout);
+      updateWorkout(updatedWorkout, isNewProgram);
     }
     setIsEditingTitle(false);
   };

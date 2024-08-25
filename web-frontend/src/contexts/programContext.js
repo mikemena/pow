@@ -186,18 +186,10 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  const updateWorkout = updatedWorkout => {
-    console.log('Updating workout in context:', updatedWorkout);
-    if (!updatedWorkout) {
-      console.error('Invalid workout object:', updatedWorkout);
-      return;
-    }
-
+  const updateWorkout = (updatedWorkout, isNewProgram) => {
     dispatch({
-      type: actionTypes.UPDATE_WORKOUT,
-      payload: {
-        workout: updatedWorkout
-      }
+      type: isNewProgram ? 'UPDATE_NEW_WORKOUT' : 'UPDATE_SELECTED_WORKOUT',
+      payload: updatedWorkout
     });
   };
 
@@ -268,28 +260,12 @@ export const ProgramProvider = ({ children }) => {
 
   // Set Actions
 
-  const addSet = (workoutId, exerciseId, weight = 10, reps = 10) => {
-    const workout = state.workout.workouts.find(w => w.id === workoutId);
-
-    if (!workout) {
-      console.error('Workout not found:', workoutId);
-      return;
-    }
-
-    const exercise = workout.exercises.find(ex => exercise.id === exerciseId);
-    if (!exercise) {
-      console.error(
-        'Exercise not found:',
-        exerciseId,
-        'in workout:',
-        workoutId
-      );
-      return;
-    }
-
+  const addSet = (workoutId, exerciseId, isNewProgram) => {
     dispatch({
-      type: actionTypes.ADD_SET,
-      payload: { workoutId, exerciseId, weight, reps }
+      type: isNewProgram
+        ? 'ADD_SET_TO_NEW_WORKOUT'
+        : 'ADD_SET_TO_SELECTED_WORKOUT',
+      payload: { workoutId, exerciseId }
     });
   };
 

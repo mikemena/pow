@@ -12,7 +12,10 @@ const CreateProgram = () => {
   const { state, saveProgram, addWorkout, setActiveWorkout, clearState } =
     useContext(ProgramContext);
   const program = state.program;
+  console.log('program', program);
   const { workouts, activeWorkout } = state.workout;
+  console.log('workouts', workouts);
+  console.log('activeWorkout', activeWorkout);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const navigate = useNavigate();

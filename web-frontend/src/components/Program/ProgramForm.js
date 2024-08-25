@@ -58,7 +58,9 @@ const ProgramForm = ({
   };
 
   const handleBlur = () => {
-    const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
+    const action = isNewProgram
+      ? 'UPDATE_NEW_PROGRAM'
+      : 'UPDATE_SELECTED_PROGRAM';
 
     if (!program) {
       console.error('Program is undefined, cannot dispatch action');
@@ -68,7 +70,7 @@ const ProgramForm = ({
     dispatch({
       type: action,
       payload: {
-        ...program,
+        id: program.id,
         name: formValues.programName,
         main_goal: formValues.mainGoal,
         program_duration: formValues.programDuration,

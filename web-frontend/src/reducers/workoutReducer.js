@@ -22,6 +22,20 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
         workouts: [...state.workouts, newWorkout]
       };
     }
+    case 'UPDATE_NEW_WORKOUT':
+      return {
+        ...state,
+        workouts: state.workouts.map(w =>
+          w.id === action.payload.id ? action.payload : w
+        )
+      };
+    case 'UPDATE_SELECTED_WORKOUT':
+      return {
+        ...state,
+        selectedWorkouts: state.selectedWorkouts.map(w =>
+          w.id === action.payload.id ? action.payload : w
+        )
+      };
 
     case actionTypes.UPDATE_WORKOUT: {
       const updatedWorkout = action.payload;

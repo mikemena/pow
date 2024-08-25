@@ -16,7 +16,9 @@ const EditProgram = () => {
   const navigate = useNavigate();
 
   const program = state.program.selectedProgram;
+  console.log('program', program);
   const workouts = state.program.selectedWorkouts;
+  console.log('workouts', workouts);
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
@@ -60,7 +62,7 @@ const EditProgram = () => {
     if (program) {
       dispatch({
         type: 'ADD_WORKOUT',
-        payload: { programId: program.id }
+        payload: { programId: program.id, isNewProgram: false }
       });
     }
   };
