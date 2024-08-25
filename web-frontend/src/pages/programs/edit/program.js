@@ -15,8 +15,8 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.program.selectedProgram;
-  const workouts = state.program.selectedWorkouts;
+  const program = state.program.selectedProgram || state.program;
+  const workouts = state.program.selectedWorkouts || state.workout.workouts;
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
@@ -93,6 +93,10 @@ const EditProgram = () => {
       console.error('Failed to save the program:', error);
     }
   };
+
+  console.log('Rendering EditProgram. State:', state);
+  console.log('Selected Program:', program);
+  console.log('Selected Workouts:', workouts);
 
   return (
     <div>

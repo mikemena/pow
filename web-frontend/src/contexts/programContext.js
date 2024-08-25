@@ -107,13 +107,6 @@ export const ProgramProvider = ({ children }) => {
     }
   };
 
-  const updateWorkoutAndProgram = updatedWorkout => {
-    dispatch({
-      type: actionTypes.UPDATE_WORKOUT,
-      payload: updatedWorkout
-    });
-  };
-
   const validateProgramData = programData => {
     if (!programData.workouts || !Array.isArray(programData.workouts)) {
       throw new Error('Workouts should be an array.');
@@ -193,6 +186,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const updateWorkout = updatedWorkout => {
+    console.log('Updating workout in context:', updatedWorkout);
     if (!updatedWorkout) {
       console.error('Invalid workout object:', updatedWorkout);
       return;
@@ -361,7 +355,6 @@ export const ProgramProvider = ({ children }) => {
         setSelectedProgram,
         addProgram,
         updateProgram,
-        updateWorkoutAndProgram,
         deleteProgram,
         addWorkout,
         updateWorkout,

@@ -26,12 +26,15 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
 
     case actionTypes.UPDATE_WORKOUT: {
       const updatedWorkout = action.payload;
-      return {
+      console.log('UPDATE_WORKOUT action received. Payload:', updatedWorkout);
+      const newState = {
         ...state,
         workouts: state.workouts.map(workout =>
           workout.id === updatedWorkout.id ? updatedWorkout : workout
         )
       };
+      console.log('New state after UPDATE_WORKOUT:', newState);
+      return newState;
     }
 
     case actionTypes.DELETE_WORKOUT: {

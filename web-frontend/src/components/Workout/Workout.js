@@ -25,7 +25,6 @@ const Workout = ({
     deleteWorkout,
     removeExercise,
     updateWorkout,
-    updateWorkoutAndProgram,
     addSet,
     removeSet
   } = useContext(ProgramContext);
@@ -58,9 +57,16 @@ const Workout = ({
   };
 
   const handleSaveTitle = () => {
+    console.log(
+      'Saving title for workout:',
+      workout.id,
+      'New title:',
+      workoutTitle
+    );
     if (workout) {
       const updatedWorkout = { ...workout, name: workoutTitle };
-      updateWorkoutAndProgram(updatedWorkout);
+      console.log('Updated workout:', updatedWorkout);
+      updateWorkout(updatedWorkout);
     }
     setIsEditingTitle(false);
   };
