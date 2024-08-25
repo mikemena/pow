@@ -15,8 +15,8 @@ const EditProgram = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.program.selectedProgram || state.program;
-  const workouts = state.program.selectedWorkouts || state.workout.workouts;
+  const program = state.program.selectedProgram;
+  const workouts = state.program.selectedWorkouts;
 
   if (!program || !workouts) {
     return <div>Loading...</div>;

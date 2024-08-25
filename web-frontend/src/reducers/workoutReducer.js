@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
 import { actionTypes } from '../actions/actionTypes';
-import exerciseUtils from '../utils/exercise.js';
 import { standardizeWorkout } from '../utils/standardizeWorkout';
 
 function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
@@ -58,9 +57,8 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
               exercises: [
                 ...workout.exercises,
                 ...exercises.map(ex => ({
-                  ...exerciseUtils.standardizeExercise(ex),
-                  id: ex.id || uuidv4(),
-                  tempId: ex.tempId || uuidv4()
+                  ...ex,
+                  id: ex.id || uuidv4()
                 }))
               ]
             };
@@ -80,9 +78,7 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
               ...workout,
               exercises: workout.exercises.filter(
                 ex =>
-                  ex.id !== exerciseId &&
-                  ex.tempId !== exerciseId &&
-                  ex.catalog_exercise_id !== exerciseId
+                  ex.id !== exerciseId && ex.catalog_exercise_id !== exerciseId
               )
             };
           }
@@ -100,10 +96,7 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
             return {
               ...workout,
               exercises: workout.exercises.map(exercise => {
-                if (
-                  exercise.id === exerciseId ||
-                  exercise.tempId === exerciseId
-                ) {
+                if (exercise.id === exerciseId) {
                   return {
                     ...exercise,
                     sets: [...exercise.sets, { ...newSet, id: uuidv4() }]
@@ -127,17 +120,11 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
             return {
               ...workout,
               exercises: workout.exercises.map(exercise => {
-                if (
-                  exercise.id === exerciseId ||
-                  exercise.tempId === exerciseId
-                ) {
+                if (exercise.id === exerciseId) {
                   return {
                     ...exercise,
                     sets: exercise.sets.map(set =>
-                      set.id === updatedSet.id ||
-                      set.tempId === updatedSet.tempId
-                        ? { ...set, ...updatedSet }
-                        : set
+                      set.id === updatedSet.id ? { ...set, ...updatedSet } : set
                     )
                   };
                 }
@@ -159,15 +146,10 @@ function workoutReducer(state = { workouts: [], activeWorkout: null }, action) {
             return {
               ...workout,
               exercises: workout.exercises.map(exercise => {
-                if (
-                  exercise.id === exerciseId ||
-                  exercise.tempId === exerciseId
-                ) {
+                if (exercise.id === exerciseId) {
                   return {
                     ...exercise,
-                    sets: exercise.sets.filter(
-                      set => set.id !== setId && set.tempId !== setId
-                    )
+                    sets: exercise.sets.filter(set => set.id !== setId)
                   };
                 }
                 return exercise;

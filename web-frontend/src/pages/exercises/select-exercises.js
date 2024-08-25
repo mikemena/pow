@@ -19,6 +19,13 @@ const SelectExercisesPage = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
+  const program = state.program.selectedProgram || state.program;
+  console.log('program', program);
+  const workouts = state.program.selectedWorkouts || state.workout.workouts;
+  console.log('workouts', workouts);
+  console.log('activeWorkout', activeWorkout);
+  console.log('state', state);
+
   const {
     data: exercises,
     isLoading,
@@ -68,7 +75,7 @@ const SelectExercisesPage = () => {
 
   const exerciseText = () => {
     const selectedExercises =
-      state.workouts[activeWorkout]?.exercises.filter(ex => ex.selected) || [];
+      workouts[activeWorkout]?.exercises.filter(ex => ex.selected) || [];
     const count = selectedExercises.length;
     return count === 0
       ? 'No Exercises '
@@ -94,7 +101,7 @@ const SelectExercisesPage = () => {
           <div className='select-exercise__title-container'>
             <h1 className={`select-exercise__title ${theme}`}>
               {`Adding exercises for ${
-                state.workouts[activeWorkout]?.name || 'your selected workout'
+                workouts[activeWorkout]?.name || 'your selected workout'
               }`}
             </h1>
             <div className='select-exercise__subtitle'>
@@ -120,9 +127,7 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
-            const workoutExercise = state.workouts[
-              activeWorkout
-            ]?.exercises.find(
+            const workoutExercise = workouts[activeWorkout]?.exercises.find(
               ex =>
                 ex.id === exercise.id || ex.catalog_exercise_id === exercise.id
             );

@@ -2,8 +2,7 @@ import { createContext, useReducer } from 'react';
 import { actionTypes } from '../actions/actionTypes';
 import rootReducer from '../reducers/rootReducer';
 import { newProgramInitialState } from '../reducers/initialState.js';
-import { standardizeWorkout } from '../utils/standardizeWorkout';
-import exerciseUtils from '../utils/exercise.js';
+import { standardizeWorkout } from '../utils/standardizeWorkout.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const initialContextState = {
@@ -170,18 +169,20 @@ export const ProgramProvider = ({ children }) => {
   };
 
   const addWorkout = programId => {
-    const newWorkout = {
-      id: uuidv4(),
-      name: 'New Workout',
+    const workoutData = {
       programId: programId,
-      exercises: [],
-      order: state.workout.workouts.length + 1
+      exercises: []
     };
+
+    const newWorkout = standardizeWorkout(
+      workoutData,
+      state.workout.workouts.length
+    );
+
+    console.log('Adding workout in context:', newWorkout);
     dispatch({
       type: actionTypes.ADD_WORKOUT,
-      payload: {
-        workout: newWorkout
-      }
+      payload: newWorkout
     });
   };
 
@@ -217,7 +218,7 @@ export const ProgramProvider = ({ children }) => {
   const addExercise = (workoutId, exercises) => {
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
-      tempId: ex.tempId || uuidv4(),
+      id: uuidv4(),
       catalog_exercise_id: ex.catalog_exercise_id || ex.id,
       sets: ex.sets || [],
       selected: true
@@ -275,9 +276,7 @@ export const ProgramProvider = ({ children }) => {
       return;
     }
 
-    const exercise = workout.exercises.find(
-      ex => exerciseUtils.getExerciseId(ex) === exerciseId
-    );
+    const exercise = workout.exercises.find(ex => exercise.id === exerciseId);
     if (!exercise) {
       console.error(
         'Exercise not found:',
@@ -308,9 +307,7 @@ export const ProgramProvider = ({ children }) => {
       return;
     }
 
-    const exercise = workout.exercises.find(
-      ex => exerciseUtils.getExerciseId(ex) === exerciseId
-    );
+    const exercise = workout.exercises.find(ex => exercise.id === exerciseId);
     if (!exercise) {
       console.error(
         'Exercise not found:',
@@ -328,9 +325,7 @@ export const ProgramProvider = ({ children }) => {
     }
 
     const updatedExercises = workout.exercises.map(ex =>
-      exerciseUtils.getExerciseId(ex) === exerciseId
-        ? { ...ex, sets: updatedSets }
-        : ex
+      exercise.id === exerciseId ? { ...ex, sets: updatedSets } : ex
     );
 
     dispatch({

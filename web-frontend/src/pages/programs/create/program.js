@@ -60,6 +60,7 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
+    console.log('Adding workout');
     event.preventDefault();
     addWorkout(program.id);
   };
@@ -87,15 +88,11 @@ const CreateProgram = () => {
             {workouts && workouts.length > 0 ? (
               workouts.map(workout => (
                 <Workout
-                  key={workout.id || workout.tempId}
+                  key={workout.id}
                   workout={workout}
                   isNewProgram={true}
-                  isExpanded={
-                    expandedWorkouts[workout.id || workout.tempId] || false
-                  }
-                  onToggleExpand={() =>
-                    handleExpandWorkout(workout.id || workout.tempId)
-                  }
+                  isExpanded={expandedWorkouts[workout.id] || false}
+                  onToggleExpand={() => handleExpandWorkout(workout.id)}
                 />
               ))
             ) : (

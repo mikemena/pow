@@ -10,7 +10,6 @@ import TextInput from '../Inputs/TextInput';
 import { ProgramContext } from '../../contexts/programContext';
 import { useTheme } from '../../contexts/themeContext';
 import { useNavigate } from 'react-router-dom';
-import exerciseUtils from '../../utils/exercise';
 import './Workout.css';
 
 const Workout = ({
@@ -30,12 +29,11 @@ const Workout = ({
   } = useContext(ProgramContext);
 
   const { workouts, activeWorkout } = state.workout;
+  console.log('Workouts:', workouts);
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
-    const stateWorkout = workouts.find(
-      w => w.id === initialWorkout.id || w.tempId === initialWorkout.tempId
-    );
+    const stateWorkout = workouts.find(w => w.id === initialWorkout.id);
 
     return stateWorkout || initialWorkout;
   }, [workouts, initialWorkout]);
@@ -84,7 +82,7 @@ const Workout = ({
   };
 
   const handleAddSet = exercise => {
-    const exerciseId = exerciseUtils.getExerciseId(exercise);
+    const exerciseId = exercise.id;
 
     if (!workout || !workout.id) {
       console.error('No active workout found.');
@@ -124,7 +122,7 @@ const Workout = ({
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
-          exerciseUtils.getExerciseId(ex) === exerciseId
+          ex.id === exerciseId
             ? {
                 ...ex,
                 sets: ex.sets.filter(s => s.id !== setId)
@@ -235,10 +233,7 @@ const Workout = ({
           </div>
           {workoutExercises.length > 0 ? (
             workoutExercises.map(exercise => (
-              <div
-                key={exerciseUtils.getExerciseId(exercise)}
-                className='workout__each-exercise'
-              >
+              <div key={exercise.id} className='workout__each-exercise'>
                 <div className='workout__exercise-column'>
                   <div className='workout__exercise-info'>
                     <div className={`workout__drag-order-container ${theme}`}>
@@ -320,11 +315,7 @@ const Workout = ({
                       {setIndex > 0 ? (
                         <button
                           onClick={() =>
-                            handleRemoveSet(
-                              workout.id,
-                              exerciseUtils.getExerciseId(exercise),
-                              set.id
-                            )
+                            handleRemoveSet(workout.id, exercise.id, set.id)
                           }
                           className='workout__delete-set-btn'
                         >
@@ -347,10 +338,7 @@ const Workout = ({
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleRemoveExercise(
-                        workout.id,
-                        exerciseUtils.getExerciseId(exercise)
-                      )
+                      handleRemoveExercise(workout.id, exercise.id)
                     }
                   >
                     <TbHttpDelete size={30} />
