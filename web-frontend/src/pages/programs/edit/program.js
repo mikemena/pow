@@ -10,7 +10,7 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const { state, updateProgram, dispatch, setActiveWorkout, clearProgram } =
+  const { state, updateProgram, addWorkout, setActiveWorkout, clearProgram } =
     useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
@@ -56,13 +56,9 @@ const EditProgram = () => {
   };
 
   const handleAddWorkout = event => {
+    console.log('Adding workout');
     event.preventDefault();
-    if (program) {
-      dispatch({
-        type: 'ADD_WORKOUT',
-        payload: { programId: program.id, isNewProgram: false }
-      });
-    }
+    addWorkout(program.id);
   };
 
   const handleUpdateProgram = async () => {
@@ -115,22 +111,16 @@ const EditProgram = () => {
               onToggleExpand={handleToggleProgramForm}
             />
             {program && workouts.length > 0 ? (
-              workouts.map(workout => {
-                if (!workout || !workout.id) {
-                  console.error('Invalid workout object:', workout); // Log invalid workout object
-                  return null;
-                }
-                return (
-                  <Workout
-                    key={workout.id}
-                    isEditing={true}
-                    isNewProgram={false}
-                    workout={workout}
-                    isExpanded={expandedWorkouts[workout.id] || false}
-                    onToggleExpand={() => handleExpandWorkout(workout.id)}
-                  />
-                );
-              })
+              workouts.map(workout => (
+                <Workout
+                  key={workout.id}
+                  isEditing={true}
+                  isNewProgram={false}
+                  workout={workout}
+                  isExpanded={expandedWorkouts[workout.id] || false}
+                  onToggleExpand={() => handleExpandWorkout(workout.id)}
+                />
+              ))
             ) : (
               <div>No workouts available</div>
             )}

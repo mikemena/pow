@@ -31,6 +31,7 @@ function programReducer(state = currentProgram, action) {
       };
 
     // Workout-related actions
+
     case actionTypes.SET_ACTIVE_WORKOUT:
       return {
         ...state,
@@ -83,7 +84,8 @@ function programReducer(state = currentProgram, action) {
     }
 
     case actionTypes.DELETE_WORKOUT: {
-      const workoutId = action.payload;
+      const { workoutId } = action.payload;
+      console.log('Reducer - Deleting workout:', workoutId);
       return {
         ...state,
         workout: {

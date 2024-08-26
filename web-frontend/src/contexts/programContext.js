@@ -131,6 +131,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Update program in backend
+
   const updateProgram = async updatedProgram => {
     dispatch({ type: actionTypes.SAVE_PROGRAM_START });
 
@@ -166,6 +167,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Validate program data structure
+
   const validateProgramData = programData => {
     if (!programData.workouts || !Array.isArray(programData.workouts)) {
       throw new Error('Workouts should be an array.');
@@ -185,6 +187,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Add new program details
+
   const addProgram = details => {
     dispatch({
       type: actionTypes.ADD_PROGRAM,
@@ -193,6 +196,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Delete a program
+
   const deleteProgram = async programId => {
     try {
       const response = await fetch(
@@ -220,6 +224,7 @@ export const ProgramProvider = ({ children }) => {
   // Workout Actions
 
   // Set active workout by ID
+
   const setActiveWorkout = workoutId => {
     if (!workoutId) {
       console.error('Attempted to set active workout without a valid ID');
@@ -233,6 +238,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Add a new workout to the program
+
   const addWorkout = programId => {
     const newWorkout = {
       id: uuidv4(),
@@ -249,6 +255,7 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Update existing workout
+
   const updateWorkout = updatedWorkout => {
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
@@ -257,12 +264,9 @@ export const ProgramProvider = ({ children }) => {
   };
 
   // Delete a workout by ID
-  const deleteWorkout = workoutId => {
-    if (!workoutId) {
-      console.error('Attempted to delete workout without a valid ID');
-      return;
-    }
 
+  const deleteWorkout = workoutId => {
+    console.log('Context - Deleting workout:', workoutId);
     dispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: { workoutId }

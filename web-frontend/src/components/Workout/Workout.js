@@ -61,6 +61,7 @@ const Workout = ({
   };
 
   const handleDeleteWorkout = workoutId => {
+    console.log('Workout Component - Deleting workout:', workoutId);
     deleteWorkout(workoutId);
   };
 
