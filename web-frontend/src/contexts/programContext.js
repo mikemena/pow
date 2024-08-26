@@ -49,6 +49,7 @@ export const ProgramProvider = ({ children }) => {
     });
 
     // Dispatch to initialize the new program state
+
     dispatch({
       type: actionTypes.INITIALIZE_NEW_PROGRAM_STATE,
       payload: {
@@ -60,6 +61,7 @@ export const ProgramProvider = ({ children }) => {
   }, [dispatch]);
 
   // Memoized function to initialize state for editing a program
+
   const initializeEditProgramState = useCallback(
     (program, workouts) => {
       console.log('Dispatching INITIALIZE_EDIT_PROGRAM_STATE with:', {
@@ -80,7 +82,17 @@ export const ProgramProvider = ({ children }) => {
     [dispatch]
   );
 
-  // Save program to backend
+  // Function to update a single field in the program
+
+  const updateProgramField = (field, value) => {
+    dispatch({
+      type: actionTypes.UPDATE_PROGRAM_FIELD,
+      payload: { [field]: value } // Field and value as key-value pair
+    });
+  };
+
+  // Save new program to backend
+
   const saveProgram = async () => {
     const newProgram = {
       ...state.program,
@@ -154,8 +166,8 @@ export const ProgramProvider = ({ children }) => {
 
       const savedProgram = await response.json();
       dispatch({
-        type: actionTypes.UPDATE_PROGRAM_SUCCESS,
-        payload: savedProgram
+        type: actionTypes.UPDATE_PROGRAM_DATABASE, // Use the action for database updates
+        payload: savedProgram // Entire updated program object from response
       });
     } catch (error) {
       console.error('Failed to update program:', error);
@@ -266,7 +278,6 @@ export const ProgramProvider = ({ children }) => {
   // Delete a workout by ID
 
   const deleteWorkout = workoutId => {
-    console.log('Context - Deleting workout:', workoutId);
     dispatch({
       type: actionTypes.DELETE_WORKOUT,
       payload: { workoutId }
@@ -360,7 +371,7 @@ export const ProgramProvider = ({ children }) => {
       value={{
         state,
         dispatch,
-
+        updateProgramField,
         initializeNewProgramState,
         initializeEditProgramState,
         addProgram,

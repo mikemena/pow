@@ -15,16 +15,27 @@ function programReducer(state = currentProgram, action) {
         }
       };
 
-    case actionTypes.UPDATE_PROGRAM:
-    case actionTypes.UPDATE_PROGRAM_SUCCESS:
+    case actionTypes.UPDATE_PROGRAM_FIELD:
       return {
         ...state,
         program: {
           ...state.program,
-          ...action.payload.program
+          ...action.payload
         }
       };
 
+    case actionTypes.UPDATE_PROGRAM_DATABASE: // For full database updates
+      return {
+        ...state,
+        program: {
+          ...state.program,
+          ...action.payload.program // Merge full program updates from database response
+        },
+        workout: {
+          workouts: action.payload.workouts, // Update workouts from database response
+          activeWorkout: action.payload.activeWorkout
+        }
+      };
     case actionTypes.CLEAR_PROGRAM:
       return {
         ...currentProgram
@@ -85,7 +96,6 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.DELETE_WORKOUT: {
       const { workoutId } = action.payload;
-      console.log('Reducer - Deleting workout:', workoutId);
       return {
         ...state,
         workout: {

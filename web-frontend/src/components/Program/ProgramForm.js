@@ -14,14 +14,14 @@ const ProgramForm = ({
   onToggleExpand
 }) => {
   const { theme } = useTheme();
-  const { dispatch } = useContext(ProgramContext);
+  const { updateProgramField } = useContext(ProgramContext);
 
   const [formValues, setFormValues] = useState({
-    programName: program?.name || '',
-    mainGoal: program?.main_goal || '',
-    programDuration: program?.program_duration || '',
-    durationUnit: program?.duration_unit || '',
-    daysPerWeek: program?.days_per_week || '',
+    name: program?.name || '',
+    main_goal: program?.main_goal || '',
+    program_duration: program?.program_duration || '',
+    duration_unit: program?.duration_unit || '',
+    days_per_week: program?.days_per_week || '',
     workouts: program?.workouts || [],
     programDurationDisplay: `${program?.program_duration || ''} ${
       toUpperCase(program?.duration_unit) || ''
@@ -31,11 +31,11 @@ const ProgramForm = ({
   useEffect(() => {
     if (program) {
       setFormValues({
-        programName: program.name || '',
-        mainGoal: program.main_goal || '',
-        programDuration: program.program_duration || '',
-        durationUnit: program.duration_unit || '',
-        daysPerWeek: program.days_per_week || '',
+        name: program.name || '',
+        main_goal: program.main_goal || '',
+        program_duration: program.program_duration || '',
+        duration_unit: program.duration_unit || '',
+        days_per_week: program.days_per_week || '',
         workouts: program.workouts || [],
         programDurationDisplay: `${program.program_duration || ''} ${
           toUpperCase(program.duration_unit) || ''
@@ -46,62 +46,39 @@ const ProgramForm = ({
 
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormValues(prev => {
-      const newValues = { ...prev, [name]: value };
-      if (name === 'programDuration' || name === 'durationUnit') {
-        newValues.programDurationDisplay = `${
-          newValues.programDuration
-        } ${toUpperCase(newValues.durationUnit)}`;
-      }
-      return newValues;
-    });
+    setFormValues(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleBlur = () => {
-    const action = isNewProgram
-      ? 'UPDATE_NEW_PROGRAM'
-      : 'UPDATE_SELECTED_PROGRAM';
-
-    if (!program) {
-      console.error('Program is undefined, cannot dispatch action');
-      return;
-    }
-
-    dispatch({
-      type: action,
-      payload: {
-        id: program.id,
-        name: formValues.programName,
-        main_goal: formValues.mainGoal,
-        program_duration: formValues.programDuration,
-        duration_unit: formValues.durationUnit,
-        days_per_week: formValues.daysPerWeek
-      }
-    });
+  const handleBlur = e => {
+    const { name, value } = e.target;
+    updateProgramField(name, value);
   };
 
-  const handleSubmit = e => {
-    const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
-    e.preventDefault();
-    dispatch({
-      type: action,
-      payload: {
-        ...program,
-        name: formValues.programName,
-        main_goal: formValues.mainGoal,
-        program_duration: formValues.programDuration,
-        duration_unit: formValues.durationUnit,
-        days_per_week: formValues.daysPerWeek
-      }
-    });
-  };
+  // const handleSubmit = e => {
+  //   const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
+  //   e.preventDefault();
+  //   dispatch({
+  //     type: action,
+  //     payload: {
+  //       ...program,
+  //       name: formValues.programName,
+  //       main_goal: formValues.mainGoal,
+  //       program_duration: formValues.programDuration,
+  //       duration_unit: formValues.durationUnit,
+  //       days_per_week: formValues.daysPerWeek
+  //     }
+  //   });
+  // };
 
   const handleProgramExpand = () => {
     onToggleExpand(program);
   };
 
   return (
-    <form onSubmit={handleSubmit} className={`program ${theme}`}>
+    <form className={`program ${theme}`}>
       <div className='program__header'>
         <button
           type='button'
@@ -120,22 +97,19 @@ const ProgramForm = ({
             />
           )}
         </button>
-        <h2 className={`program__title ${theme}`}>{formValues.programName}</h2>
+        <h2 className={`program__title ${theme}`}>{formValues.name}</h2>
       </div>
       {isExpanded && (
         <div className='program__form'>
           <div className='program__section'>
-            <label
-              htmlFor='programName'
-              className={`program__section-title ${theme}`}
-            >
+            <label htmlFor='name' className={`program__section-title ${theme}`}>
               Program Name
             </label>
             <textarea
               type='text'
               className={`program-name-input ${theme}`}
-              name='programName'
-              value={formValues.programName}
+              name='name'
+              value={formValues.name}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={!isEditing}
@@ -144,15 +118,15 @@ const ProgramForm = ({
           </div>
           <div className='program__section'>
             <label
-              htmlFor='mainGoal'
+              htmlFor='main_goal'
               className={`program__section-title ${theme}`}
             >
               Main Goal
             </label>
             <select
               className={`mainGoal ${theme}`}
-              name='mainGoal'
-              value={formValues.mainGoal}
+              name='main_goal'
+              value={formValues.main_goal}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={!isEditing}
@@ -166,7 +140,7 @@ const ProgramForm = ({
           </div>
           <div className='program__section' id='program-duration-section'>
             <label
-              htmlFor='programDuration'
+              htmlFor='program_duration'
               className={`program__section-title ${theme}`}
             >
               Duration
@@ -175,16 +149,16 @@ const ProgramForm = ({
               <input
                 type='number'
                 className={`programDuration ${theme}`}
-                name='programDuration'
-                value={formValues.programDuration}
+                name='program_duration'
+                value={formValues.program_duration}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 min={1}
               />
               <select
                 className={`durationUnit ${theme}`}
-                name='durationUnit'
-                value={formValues.durationUnit}
+                name='duration_unit'
+                value={formValues.duration_unit}
                 onChange={handleChange}
                 onBlur={handleBlur}
               >
@@ -198,7 +172,7 @@ const ProgramForm = ({
           </div>
           <div className='program__section'>
             <label
-              htmlFor='daysPerWeek'
+              htmlFor='days_per_week'
               className={`program__section-title ${theme}`}
             >
               Days Per Week
@@ -206,8 +180,8 @@ const ProgramForm = ({
             <input
               type='number'
               className={`daysPerWeek  ${theme}`}
-              name='daysPerWeek'
-              value={formValues.daysPerWeek}
+              name='days_per_week'
+              value={formValues.days_per_week}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={!isEditing}
