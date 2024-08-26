@@ -6,7 +6,7 @@ import { useTheme } from '../../contexts/themeContext';
 import './Nav.css';
 
 const Navbar = () => {
-  const { clearState } = useContext(ProgramContext);
+  const { clearProgram } = useContext(ProgramContext);
   const navigate = useNavigate();
   const [menuClicked, setMenuClicked] = useState(false);
   const { theme } = useTheme();
@@ -16,7 +16,7 @@ const Navbar = () => {
   };
 
   const handleNavClick = path => {
-    clearState();
+    clearProgram();
     navigate(path);
   };
 

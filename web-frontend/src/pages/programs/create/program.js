@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Workout from '../../../components/Workout/Workout';
@@ -9,13 +9,23 @@ import Button from '../../../components/Inputs/Button';
 import './program.css';
 
 const CreateProgram = () => {
-  const { state, saveProgram, addWorkout, setActiveWorkout, clearState } =
-    useContext(ProgramContext);
+  const {
+    state,
+    saveProgram,
+    addWorkout,
+    setActiveWorkout,
+    clearProgram,
+    initializeNewProgramState
+  } = useContext(ProgramContext);
+
+  // Call initializeNewProgramState only once when the component mounts
+  useEffect(() => {
+    initializeNewProgramState();
+  }, [initializeNewProgramState]);
+
+  console.log('Current state:', state);
   const program = state.program;
-  console.log('program', program);
-  const { workouts, activeWorkout } = state.workout;
-  console.log('workouts', workouts);
-  console.log('activeWorkout', activeWorkout);
+  const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const navigate = useNavigate();
@@ -58,7 +68,7 @@ const CreateProgram = () => {
   };
 
   const handleCancel = () => {
-    clearState();
+    clearProgram();
     navigate('/');
   };
 
@@ -82,7 +92,7 @@ const CreateProgram = () => {
         <div className='create-prog-page__container'>
           <div className='create-prog-page__left-container'>
             <ProgramForm
-              program={state.program}
+              program={program}
               isEditing={true}
               isNewProgram={true}
               isExpanded={expandedWorkouts['program']}

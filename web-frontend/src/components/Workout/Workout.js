@@ -28,10 +28,8 @@ const Workout = ({
     removeSet
   } = useContext(ProgramContext);
 
-  const workouts = isNewProgram
-    ? state.workout.workouts
-    : state.program.selectedWorkouts;
-  const activeWorkout = isNewProgram ? state.workout.activeWorkout : null;
+  const workouts = state.workout.workouts;
+  const activeWorkout = state.workout.activeWorkout;
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {

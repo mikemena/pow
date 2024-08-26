@@ -1,14 +1,13 @@
-import { createContext, useReducer } from 'react';
+import { createContext, useReducer, useCallback } from 'react';
 import { actionTypes } from '../actions/actionTypes';
-import rootReducer from '../reducers/rootReducer';
+import { programReducer } from '../reducers/programReducer.js';
 import { currentProgram } from '../reducers/initialState.js';
-import { standardizeWorkout } from '../utils/standardizeWorkout.js';
 import { v4 as uuidv4 } from 'uuid';
 
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(rootReducer, currentProgram);
+  const [state, dispatch] = useReducer(programReducer, currentProgram);
 
   // Program Actions
 
@@ -20,39 +19,66 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  // Initialize state for creating a new program
-  const initializeNewProgramState = () => {
+  // Memoized function to initialize state for creating a new program and avoid re-rendering
+  const initializeNewProgramState = useCallback(() => {
+    const newProgramId = uuidv4();
+    const newWorkoutId = uuidv4();
+
     const newProgram = {
       ...currentProgram.program,
-      id: uuidv4(), // Generate a new unique ID for the new program
-      name: '', // Reset other fields as needed
+      user_id: 2,
+      id: newProgramId,
+      name: 'Program 1',
       program_duration: 0,
-      duration_unit: '',
+      duration_unit: 'Days',
       days_per_week: 0,
-      main_goal: ''
+      main_goal: 'Strength'
     };
 
+    const newWorkout = {
+      id: newWorkoutId,
+      programId: newProgramId,
+      name: 'Workout 1',
+      exercises: []
+    };
+
+    console.log('Dispatching INITIALIZE_NEW_PROGRAM_STATE with:', {
+      program: newProgram,
+      workouts: [newWorkout],
+      activeWorkout: newWorkoutId
+    });
+
+    // Dispatch to initialize the new program state
     dispatch({
       type: actionTypes.INITIALIZE_NEW_PROGRAM_STATE,
       payload: {
         program: newProgram,
-        workouts: [],
-        activeWorkout: null
+        workouts: [newWorkout],
+        activeWorkout: newWorkoutId
       }
     });
-  };
+  }, [dispatch]);
 
-  // Initialize state for editing an existing program
-  const initializeEditProgramState = (program, workouts) => {
-    dispatch({
-      type: actionTypes.INITIALIZE_EDIT_PROGRAM_STATE,
-      payload: {
+  // Memoized function to initialize state for editing a program
+  const initializeEditProgramState = useCallback(
+    (program, workouts) => {
+      console.log('Dispatching INITIALIZE_EDIT_PROGRAM_STATE with:', {
         program,
         workouts,
         activeWorkout: workouts.length > 0 ? workouts[0].id : null
-      }
-    });
-  };
+      });
+
+      dispatch({
+        type: actionTypes.INITIALIZE_EDIT_PROGRAM_STATE,
+        payload: {
+          program,
+          workouts,
+          activeWorkout: workouts.length > 0 ? workouts[0].id : null
+        }
+      });
+    },
+    [dispatch]
+  );
 
   // Save program to backend
   const saveProgram = async () => {
@@ -208,15 +234,12 @@ export const ProgramProvider = ({ children }) => {
 
   // Add a new workout to the program
   const addWorkout = programId => {
-    const workoutData = {
+    const newWorkout = {
+      id: uuidv4(),
       programId: programId,
+      name: 'Workout',
       exercises: []
     };
-
-    const newWorkout = standardizeWorkout(
-      workoutData,
-      state.workout.workouts.length
-    );
 
     console.log('Adding workout in context:', newWorkout);
     dispatch({
@@ -333,7 +356,7 @@ export const ProgramProvider = ({ children }) => {
       value={{
         state,
         dispatch,
-        activeWorkout: state.workout.activeWorkout,
+
         initializeNewProgramState,
         initializeEditProgramState,
         addProgram,

@@ -10,15 +10,13 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const { state, updateProgram, dispatch, setActiveWorkout, clearState } =
+  const { state, updateProgram, dispatch, setActiveWorkout, clearProgram } =
     useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
-  const program = state.program.selectedProgram;
-  console.log('program', program);
-  const workouts = state.program.selectedWorkouts;
-  console.log('workouts', workouts);
+  const program = state.program;
+  const workouts = state.workout.workouts;
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
@@ -53,7 +51,7 @@ const EditProgram = () => {
   };
 
   const handleCancel = () => {
-    clearState();
+    clearProgram();
     navigate('/');
   };
 

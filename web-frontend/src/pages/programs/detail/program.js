@@ -11,13 +11,13 @@ import './program.css';
 
 const ProgramDetailsPage = () => {
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const { deleteProgram, state, setActiveWorkout, clearState } =
+  const { deleteProgram, state, setActiveWorkout, clearProgram } =
     useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
-  const program = state.program.selectedProgram;
-  const workouts = state.program.selectedWorkouts;
+  const program = state.program;
+  const workouts = state.workout.workouts;
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
@@ -44,7 +44,7 @@ const ProgramDetailsPage = () => {
   };
 
   const handleBackClick = event => {
-    clearState();
+    clearProgram();
     event.preventDefault();
     navigate('/programs');
   };

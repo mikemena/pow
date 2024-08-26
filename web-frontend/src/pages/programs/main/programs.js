@@ -33,7 +33,8 @@ const ProgramPage = () => {
 
   const [programList, setProgramList] = useState(initialProgramList);
 
-  const { deleteProgram, setSelectedProgram } = useContext(ProgramContext);
+  const { deleteProgram, initializeEditProgramState } =
+    useContext(ProgramContext);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -142,10 +143,10 @@ const ProgramPage = () => {
         workout => workout.programId === program.id
       );
 
-      setSelectedProgram(program, workouts);
+      initializeEditProgramState(program, workouts);
       navigate(`/programs/${program.id}`);
     },
-    [setSelectedProgram, navigate, programList.workouts]
+    [initializeEditProgramState, navigate, programList.workouts]
   );
 
   return (
