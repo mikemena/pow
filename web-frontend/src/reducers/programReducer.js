@@ -68,15 +68,12 @@ function programReducer(state = currentProgram, action) {
       };
     }
 
-    case 'UPDATE_NEW_WORKOUT':
-    case 'UPDATE_SELECTED_WORKOUT':
+    case actionTypes.UPDATE_WORKOUT_FIELD:
       return {
         ...state,
         workout: {
           ...state.workout,
-          workouts: state.workout.workouts.map(w =>
-            w.id === action.payload.id ? action.payload : w
-          )
+          ...action.payload
         }
       };
 

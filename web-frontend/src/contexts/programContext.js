@@ -266,6 +266,15 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
+  // Function to update a single field in the program
+
+  const updateWorkoutField = (field, value) => {
+    dispatch({
+      type: actionTypes.UPDATE_WORKOUT_FIELD,
+      payload: { [field]: value } // Field and value as key-value pair
+    });
+  };
+
   // Update existing workout
 
   const updateWorkout = updatedWorkout => {
@@ -378,6 +387,7 @@ export const ProgramProvider = ({ children }) => {
         updateProgram,
         deleteProgram,
         addWorkout,
+        updateWorkoutField,
         updateWorkout,
         deleteWorkout,
         setActiveWorkout,

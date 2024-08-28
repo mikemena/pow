@@ -23,7 +23,6 @@ const CreateProgram = () => {
     initializeNewProgramState();
   }, [initializeNewProgramState]);
 
-  console.log('Current state:', state);
   const program = state.program;
   const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
@@ -73,7 +72,6 @@ const CreateProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    console.log('Adding workout');
     event.preventDefault();
     addWorkout(program.id);
   };

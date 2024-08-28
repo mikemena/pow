@@ -21,6 +21,7 @@ const Workout = ({
 }) => {
   const {
     state,
+    updateWorkoutField,
     deleteWorkout,
     removeExercise,
     updateWorkout,
@@ -61,7 +62,6 @@ const Workout = ({
   };
 
   const handleDeleteWorkout = workoutId => {
-    console.log('Workout Component - Deleting workout:', workoutId);
     deleteWorkout(workoutId);
   };
 
@@ -107,6 +107,11 @@ const Workout = ({
     };
 
     updateWorkout(updatedWorkout);
+  };
+
+  const handleBlur = e => {
+    const { name, value } = e.target;
+    updateWorkoutField(name, value);
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
@@ -172,6 +177,7 @@ const Workout = ({
                 className={`workout__title-input ${theme}`}
                 type='text'
                 value={workoutTitle}
+                onBlur={handleBlur}
                 onChange={handleEditTitleChange}
                 placeholder='Enter Workout Title'
               />
