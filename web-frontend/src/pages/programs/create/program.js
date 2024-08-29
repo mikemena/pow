@@ -27,6 +27,8 @@ const CreateProgram = () => {
   const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
+  console.log('CreateProgram state:', state);
+
   const navigate = useNavigate();
 
   const handleSaveProgram = async () => {
@@ -39,6 +41,7 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
+    console.log('handleExpandWorkout in create page:', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({
@@ -50,8 +53,10 @@ const CreateProgram = () => {
     }));
 
     if (!isCurrentlyExpanded) {
+      console.log('Setting active workout:', workoutId);
       setActiveWorkout(workoutId);
     } else {
+      console.log('Clearing active workout');
       setActiveWorkout(null);
     }
   };

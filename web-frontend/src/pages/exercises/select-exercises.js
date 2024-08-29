@@ -10,8 +10,7 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { state, toggleExerciseSelection, activeWorkout } =
-    useContext(ProgramContext);
+  const { state, toggleExerciseSelection } = useContext(ProgramContext);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
@@ -19,12 +18,12 @@ const SelectExercisesPage = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
 
-  const program = state.program.selectedProgram || state.program;
+  const program = state.program;
   console.log('program', program);
-  const workouts = state.program.selectedWorkouts || state.workout.workouts;
-  console.log('workouts', workouts);
+  const activeWorkout = state.workout.activeWorkout;
   console.log('activeWorkout', activeWorkout);
-  console.log('state', state);
+  const workouts = state.workout.workouts;
+  console.log('workouts', workouts);
 
   const {
     data: exercises,

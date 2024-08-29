@@ -44,11 +44,12 @@ function programReducer(state = currentProgram, action) {
     // Workout-related actions
 
     case actionTypes.SET_ACTIVE_WORKOUT:
+      console.log('Setting active workout:', action.payload.activeWorkout);
       return {
         ...state,
         workout: {
           ...state.workout,
-          activeWorkout: action.payload
+          activeWorkout: action.payload.activeWorkout
         }
       };
 
@@ -110,10 +111,21 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
+      console.log('Adding exercises:', exercises);
+      console.log('To workout:', workoutId);
+      console.log('Current state:', state);
+
+      // Ensure the active workout ID is available
+      if (state.workout.activeWorkout !== workoutId) {
+        console.error('Workout ID does not match the active workout.');
+        return state;
+      }
+
       return {
         ...state,
         workout: {
           ...state.workout,
+          // Update the workouts array with the new exercise
           workouts: state.workout.workouts.map(workout => {
             if (workout.id === workoutId) {
               return {
@@ -135,10 +147,18 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;
+
+      // Ensure the active workout ID is available
+      if (state.workout.activeWorkout !== workoutId) {
+        console.error('Workout ID does not match the active workout.');
+        return state;
+      }
+
       return {
         ...state,
         workout: {
           ...state.workout,
+          // Update the workouts array to remove the exercise
           workouts: state.workout.workouts.map(workout => {
             if (workout.id === workoutId) {
               return {

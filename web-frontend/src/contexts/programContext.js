@@ -28,7 +28,7 @@ export const ProgramProvider = ({ children }) => {
       ...currentProgram.program,
       user_id: 2,
       id: newProgramId,
-      name: 'Program 1',
+      name: 'Program 1X',
       program_duration: 0,
       duration_unit: 'Days',
       days_per_week: 0,
@@ -45,7 +45,7 @@ export const ProgramProvider = ({ children }) => {
     console.log('Dispatching INITIALIZE_NEW_PROGRAM_STATE with:', {
       program: newProgram,
       workouts: [newWorkout],
-      activeWorkout: newWorkoutId
+      activeWorkout: null
     });
 
     // Dispatch to initialize the new program state
@@ -55,7 +55,7 @@ export const ProgramProvider = ({ children }) => {
       payload: {
         program: newProgram,
         workouts: [newWorkout],
-        activeWorkout: newWorkoutId
+        activeWorkout: null
       }
     });
   }, [dispatch]);
@@ -87,7 +87,7 @@ export const ProgramProvider = ({ children }) => {
   const updateProgramField = (field, value) => {
     dispatch({
       type: actionTypes.UPDATE_PROGRAM_FIELD,
-      payload: { [field]: value } // Field and value as key-value pair
+      payload: { [field]: value }
     });
   };
 
@@ -238,15 +238,22 @@ export const ProgramProvider = ({ children }) => {
   // Set active workout by ID
 
   const setActiveWorkout = workoutId => {
-    if (!workoutId) {
-      console.error('Attempted to set active workout without a valid ID');
-      return;
+    if (state.workout.activeWorkout === workoutId) {
+      console.log('state.workout.activeWorkout', state.workout.activeWorkout);
+      console.log('Clearing active workout', workoutId);
+      // If the workout is already active, we clear it
+      dispatch({
+        type: actionTypes.SET_ACTIVE_WORKOUT,
+        payload: { activeWorkout: null }
+      });
+    } else {
+      // Otherwise, we set it as active
+      console.log('Setting active workout:', workoutId);
+      dispatch({
+        type: actionTypes.SET_ACTIVE_WORKOUT,
+        payload: { activeWorkout: workoutId }
+      });
     }
-
-    dispatch({
-      type: actionTypes.SET_ACTIVE_WORKOUT,
-      payload: { activeWorkout: workoutId }
-    });
   };
 
   // Add a new workout to the program
@@ -321,29 +328,42 @@ export const ProgramProvider = ({ children }) => {
 
   // Toggle exercise selection within a workout
   const toggleExerciseSelection = (exerciseId, exerciseData) => {
-    if (!state.workout.activeWorkout) {
+    console.log('state', state);
+
+    // Directly access the activeWorkout ID
+    const activeWorkoutId = state.workout.activeWorkout;
+
+    if (!activeWorkoutId) {
       console.error('No active workout selected');
       return;
     }
 
+    // Find the active workout using the ID
     const workout = state.workout.workouts.find(
-      w => w.id === state.workout.activeWorkout
+      workout => workout.id === activeWorkoutId
     );
+
+    if (!workout) {
+      console.error('Active workout not found');
+      return;
+    }
+
+    // Check if the exercise already exists in the workout's exercises array
     const exerciseExists = workout.exercises.some(ex => ex.id === exerciseId);
 
     if (exerciseExists) {
       // If the exercise exists, remove it
       dispatch({
         type: actionTypes.REMOVE_EXERCISE,
-        payload: { workoutId: state.workout.activeWorkout, exerciseId }
+        payload: { workoutId: activeWorkoutId, exerciseId }
       });
     } else {
       // If the exercise doesn't exist, add it
       dispatch({
-        type: actionTypes.TOGGLE_EXERCISE_SELECTION,
+        type: actionTypes.ADD_EXERCISE,
         payload: {
-          exerciseIdForToggle: exerciseId,
-          exerciseData: exerciseData
+          workoutId: activeWorkoutId,
+          exercise: exerciseData
         }
       });
     }

@@ -21,6 +21,7 @@ const Workout = ({
 }) => {
   const {
     state,
+
     updateWorkoutField,
     deleteWorkout,
     removeExercise,
@@ -70,6 +71,7 @@ const Workout = ({
   };
 
   const handleWorkoutExpand = () => {
+    console.log('handleWorkoutExpand - workout component:', workout.id);
     onToggleExpand(workout.id);
   };
 
