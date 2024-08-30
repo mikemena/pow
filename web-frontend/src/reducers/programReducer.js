@@ -44,10 +44,6 @@ function programReducer(state = currentProgram, action) {
     // Workout-related actions
 
     case actionTypes.SET_ACTIVE_WORKOUT: {
-      console.log(
-        'SET_ACTIVE_WORKOUT in reducer -Setting active workout:',
-        action.payload
-      );
       const { activeWorkout } = action.payload;
       return {
         ...state,
@@ -85,7 +81,7 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.UPDATE_WORKOUT: {
       const updatedWorkout = action.payload;
-      console.log('UPDATE_WORKOUT action received. Payload:', updatedWorkout);
+
       return {
         ...state,
         workout: {
@@ -116,18 +112,6 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
-      console.log(
-        'actionTypes.ADD_EXERCISE in reducer - Adding exercises:',
-        exercises
-      );
-      console.log(
-        'actionTypes.ADD_EXERCISE in reducer - To workout:',
-        workoutId
-      );
-      console.log(
-        'actionTypes.ADD_EXERCISE in reducer - Current state:',
-        state
-      );
 
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
@@ -135,43 +119,43 @@ function programReducer(state = currentProgram, action) {
         return state;
       }
 
-      // Add a check for exercises
+      // Check if exercises is defined and an array
       if (!Array.isArray(exercises)) {
-        console.error('Exercises is not an array:', exercises);
+        console.error('Exercises payload is not an array or is undefined.');
         return state;
       }
 
-      return {
+      const updatedWorkouts = state.workout.workouts.map(workout => {
+        if (workout.id === workoutId) {
+          return {
+            ...workout,
+            exercises: [
+              ...(workout.exercises && Array.isArray(workout.exercises)
+                ? workout.exercises
+                : []),
+              ...exercises.map(ex => ({
+                ...ex,
+                id: ex.id || uuidv4()
+              }))
+            ]
+          };
+        }
+        return workout;
+      });
+
+      const newState = {
         ...state,
         workout: {
           ...state.workout,
-          // Update the workouts array with the new exercise
-          workouts: state.workout.workouts.map(workout => {
-            if (workout.id === workoutId) {
-              return {
-                ...workout,
-                exercises: [
-                  ...(workout.exercises && Array.isArray(workout.exercises)
-                    ? workout.exercises
-                    : []),
-                  ...exercises.map(ex => ({
-                    ...ex,
-                    id: ex.id || uuidv4()
-                  }))
-                ]
-              };
-            }
-            return workout;
-          })
+          workouts: updatedWorkouts
         }
       };
+
+      return newState;
     }
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;
-      console.log('Removing exercise:', exerciseId);
-      console.log('From workout:', workoutId);
-      console.log('Current state:', state);
 
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {

@@ -27,7 +27,7 @@ const CreateProgram = () => {
   const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('CreateProgram state:', state);
+  console.log('CreateProgram component rendered with state:', state);
 
   const navigate = useNavigate();
 
@@ -41,7 +41,6 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
-    console.log('handleExpandWorkout in create page:', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({

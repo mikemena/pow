@@ -18,11 +18,10 @@ const SelectExercisesPage = () => {
 
   // Get the active workout ID from context state
   const activeWorkoutId = state.workout.activeWorkout;
-  console.log('Active workout ID:', activeWorkoutId);
+
   const activeWorkout = state.workout.workouts.find(
     workout => workout.id === activeWorkoutId
   );
-  console.log('Active workout:', activeWorkout);
 
   // Local state to manage exercises
   const [localExercises, setLocalExercises] = useState(
@@ -77,8 +76,6 @@ const SelectExercisesPage = () => {
       // Add the exercise to local state if it doesn't exist
       setLocalExercises([...localExercises, exercise]);
     }
-
-    console.log('Current localExercises:', localExercises); // Debugging log
   };
 
   const handleSaveExercises = () => {
@@ -86,12 +83,6 @@ const SelectExercisesPage = () => {
       alert('No active workout selected.');
       return;
     }
-
-    // Ensure exercises are committed correctly
-    console.log('Dispatching ADD_EXERCISE:', {
-      workoutId: activeWorkoutId,
-      exercises: localExercises // Ensure this is the current local state array
-    });
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,

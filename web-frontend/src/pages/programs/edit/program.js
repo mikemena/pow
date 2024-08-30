@@ -56,7 +56,6 @@ const EditProgram = () => {
   };
 
   const handleAddWorkout = event => {
-    console.log('Adding workout');
     event.preventDefault();
     addWorkout(program.id);
   };
@@ -89,10 +88,6 @@ const EditProgram = () => {
       console.error('Failed to save the program:', error);
     }
   };
-
-  console.log('Rendering EditProgram. State:', state);
-  console.log('Selected Program:', program);
-  console.log('Selected Workouts:', workouts);
 
   return (
     <div>

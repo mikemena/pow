@@ -42,12 +42,6 @@ export const ProgramProvider = ({ children }) => {
       exercises: []
     };
 
-    console.log('Dispatching INITIALIZE_NEW_PROGRAM_STATE with:', {
-      program: newProgram,
-      workouts: [newWorkout],
-      activeWorkout: null
-    });
-
     // Dispatch to initialize the new program state
 
     dispatch({
@@ -64,12 +58,6 @@ export const ProgramProvider = ({ children }) => {
 
   const initializeEditProgramState = useCallback(
     (program, workouts) => {
-      console.log('Dispatching INITIALIZE_EDIT_PROGRAM_STATE with:', {
-        program,
-        workouts,
-        activeWorkout: workouts.length > 0 ? workouts[0].id : null
-      });
-
       dispatch({
         type: actionTypes.INITIALIZE_EDIT_PROGRAM_STATE,
         payload: {
@@ -239,8 +227,6 @@ export const ProgramProvider = ({ children }) => {
 
   const setActiveWorkout = workoutId => {
     if (state.workout.activeWorkout === workoutId) {
-      console.log('state.workout.activeWorkout', state.workout.activeWorkout);
-      console.log('Clearing active workout', workoutId);
       // If the workout is already active, we clear it
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
@@ -248,7 +234,7 @@ export const ProgramProvider = ({ children }) => {
       });
     } else {
       // Otherwise, we set it as active
-      console.log('Setting active workout:', workoutId);
+
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
         payload: { activeWorkout: workoutId } // Set new active workout
@@ -266,7 +252,6 @@ export const ProgramProvider = ({ children }) => {
       exercises: []
     };
 
-    console.log('Adding workout in context:', newWorkout);
     dispatch({
       type: actionTypes.ADD_WORKOUT,
       payload: newWorkout
@@ -328,10 +313,8 @@ export const ProgramProvider = ({ children }) => {
 
   // Toggle exercise selection within a workout
   const toggleExerciseSelection = (exerciseId, exerciseData) => {
-    console.log('331 toggleExerciseSelection in context - state ', state);
-
     // Directly access the activeWorkout ID
-    console.log('Active workout ID:', state.workout.activeWorkout);
+
     const activeWorkoutId = state.workout.activeWorkout;
 
     if (!activeWorkoutId) {

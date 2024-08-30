@@ -38,6 +38,9 @@ const Workout = ({
     return workouts.find(w => w.id === initialWorkout.id) || initialWorkout;
   }, [workouts, initialWorkout]);
 
+  console.log('Workout component rendered with workout:', workout);
+  console.log('Workout component exercises:', workout.exercises);
+
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
@@ -71,7 +74,6 @@ const Workout = ({
   };
 
   const handleWorkoutExpand = () => {
-    console.log('handleWorkoutExpand - workout component:', workout.id);
     onToggleExpand(workout.id);
   };
 
