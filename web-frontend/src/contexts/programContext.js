@@ -244,14 +244,14 @@ export const ProgramProvider = ({ children }) => {
       // If the workout is already active, we clear it
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
-        payload: { activeWorkout: null }
+        payload: { activeWorkout: null } // Clear active workout
       });
     } else {
       // Otherwise, we set it as active
       console.log('Setting active workout:', workoutId);
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
-        payload: { activeWorkout: workoutId }
+        payload: { activeWorkout: workoutId } // Set new active workout
       });
     }
   };
@@ -328,9 +328,10 @@ export const ProgramProvider = ({ children }) => {
 
   // Toggle exercise selection within a workout
   const toggleExerciseSelection = (exerciseId, exerciseData) => {
-    console.log('state', state);
+    console.log('331 toggleExerciseSelection in context - state ', state);
 
     // Directly access the activeWorkout ID
+    console.log('Active workout ID:', state.workout.activeWorkout);
     const activeWorkoutId = state.workout.activeWorkout;
 
     if (!activeWorkoutId) {
@@ -363,7 +364,7 @@ export const ProgramProvider = ({ children }) => {
         type: actionTypes.ADD_EXERCISE,
         payload: {
           workoutId: activeWorkoutId,
-          exercise: exerciseData
+          exercise: [exerciseData]
         }
       });
     }

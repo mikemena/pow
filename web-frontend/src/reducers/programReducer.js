@@ -43,15 +43,20 @@ function programReducer(state = currentProgram, action) {
 
     // Workout-related actions
 
-    case actionTypes.SET_ACTIVE_WORKOUT:
-      console.log('Setting active workout:', action.payload.activeWorkout);
+    case actionTypes.SET_ACTIVE_WORKOUT: {
+      console.log(
+        'SET_ACTIVE_WORKOUT in reducer -Setting active workout:',
+        action.payload
+      );
+      const { activeWorkout } = action.payload;
       return {
         ...state,
         workout: {
           ...state.workout,
-          activeWorkout: action.payload.activeWorkout
+          activeWorkout: activeWorkout
         }
       };
+    }
 
     case actionTypes.ADD_WORKOUT: {
       const newWorkout = action.payload;
@@ -111,13 +116,28 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
-      console.log('Adding exercises:', exercises);
-      console.log('To workout:', workoutId);
-      console.log('Current state:', state);
+      console.log(
+        'actionTypes.ADD_EXERCISE in reducer - Adding exercises:',
+        exercises
+      );
+      console.log(
+        'actionTypes.ADD_EXERCISE in reducer - To workout:',
+        workoutId
+      );
+      console.log(
+        'actionTypes.ADD_EXERCISE in reducer - Current state:',
+        state
+      );
 
-      // Ensure the active workout ID is available
+      // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
         console.error('Workout ID does not match the active workout.');
+        return state;
+      }
+
+      // Add a check for exercises
+      if (!Array.isArray(exercises)) {
+        console.error('Exercises is not an array:', exercises);
         return state;
       }
 
@@ -131,7 +151,9 @@ function programReducer(state = currentProgram, action) {
               return {
                 ...workout,
                 exercises: [
-                  ...workout.exercises,
+                  ...(workout.exercises && Array.isArray(workout.exercises)
+                    ? workout.exercises
+                    : []),
                   ...exercises.map(ex => ({
                     ...ex,
                     id: ex.id || uuidv4()
@@ -147,8 +169,11 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;
+      console.log('Removing exercise:', exerciseId);
+      console.log('From workout:', workoutId);
+      console.log('Current state:', state);
 
-      // Ensure the active workout ID is available
+      // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
         console.error('Workout ID does not match the active workout.');
         return state;
@@ -163,11 +188,13 @@ function programReducer(state = currentProgram, action) {
             if (workout.id === workoutId) {
               return {
                 ...workout,
-                exercises: workout.exercises.filter(
-                  ex =>
-                    ex.id !== exerciseId &&
-                    ex.catalog_exercise_id !== exerciseId
-                )
+                exercises: workout.exercises
+                  ? workout.exercises.filter(
+                      ex =>
+                        ex.id !== exerciseId &&
+                        ex.catalog_exercise_id !== exerciseId
+                    )
+                  : []
               };
             }
             return workout;

@@ -53,10 +53,8 @@ const CreateProgram = () => {
     }));
 
     if (!isCurrentlyExpanded) {
-      console.log('Setting active workout:', workoutId);
       setActiveWorkout(workoutId);
     } else {
-      console.log('Clearing active workout');
       setActiveWorkout(null);
     }
   };

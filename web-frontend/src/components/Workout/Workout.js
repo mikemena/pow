@@ -21,7 +21,7 @@ const Workout = ({
 }) => {
   const {
     state,
-
+    setActiveWorkout,
     updateWorkoutField,
     deleteWorkout,
     removeExercise,
@@ -87,6 +87,7 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
+    setActiveWorkout(workoutId);
     const selectedExercises = workout.exercises || [];
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isNewProgram }

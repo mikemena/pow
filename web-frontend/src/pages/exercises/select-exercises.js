@@ -1,5 +1,6 @@
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
+import { actionTypes } from '../../actions/actionTypes';
 import NavBar from '../../components/Nav/Nav';
 import { useNavigate } from 'react-router-dom';
 import { BsChevronCompactLeft } from 'react-icons/bs';
@@ -10,26 +11,40 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { state, toggleExerciseSelection } = useContext(ProgramContext);
+  const { state, dispatch } = useContext(ProgramContext);
+  const navigate = useNavigate();
+  const { theme } = useTheme();
+  // const location = useLocation();
+
+  // Get the active workout ID from context state
+  const activeWorkoutId = state.workout.activeWorkout;
+  console.log('Active workout ID:', activeWorkoutId);
+  const activeWorkout = state.workout.workouts.find(
+    workout => workout.id === activeWorkoutId
+  );
+  console.log('Active workout:', activeWorkout);
+
+  // Local state to manage exercises
+  const [localExercises, setLocalExercises] = useState(
+    activeWorkout ? [...activeWorkout.exercises] : []
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMuscle, setSelectedMuscle] = useState('');
   const [selectedEquipment, setSelectedEquipment] = useState('');
-  const navigate = useNavigate();
-  const { theme } = useTheme();
-
-  const program = state.program;
-  console.log('program', program);
-  const activeWorkout = state.workout.activeWorkout;
-  console.log('activeWorkout', activeWorkout);
-  const workouts = state.workout.workouts;
-  console.log('workouts', workouts);
 
   const {
     data: exercises,
     isLoading,
     error
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
+
+  useEffect(() => {
+    if (activeWorkout) {
+      // Initialize local state when the component mounts
+      setLocalExercises([...activeWorkout.exercises]);
+    }
+  }, [activeWorkout]);
 
   const filteredExercises = useMemo(() => {
     return exercises.filter(exercise => {
@@ -53,29 +68,49 @@ const SelectExercisesPage = () => {
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const handleToggleExercise = exercise => {
-    toggleExerciseSelection(exercise.id, {
-      name: exercise.name,
-      muscle: exercise.muscle,
-      equipment: exercise.equipment
-    });
+    const exerciseExists = localExercises.some(ex => ex.id === exercise.id);
+
+    if (exerciseExists) {
+      // Remove the exercise from local state if it exists
+      setLocalExercises(localExercises.filter(ex => ex.id !== exercise.id));
+    } else {
+      // Add the exercise to local state if it doesn't exist
+      setLocalExercises([...localExercises, exercise]);
+    }
+
+    console.log('Current localExercises:', localExercises); // Debugging log
   };
 
   const handleSaveExercises = () => {
-    if (!activeWorkout) {
+    if (!activeWorkoutId) {
       alert('No active workout selected.');
       return;
     }
-    navigate('/create-program');
+
+    // Ensure exercises are committed correctly
+    console.log('Dispatching ADD_EXERCISE:', {
+      workoutId: activeWorkoutId,
+      exercises: localExercises // Ensure this is the current local state array
+    });
+
+    dispatch({
+      type: actionTypes.ADD_EXERCISE,
+      payload: {
+        workoutId: activeWorkoutId,
+        exercises: localExercises
+      }
+    });
+
+    navigate('/create-program'); // Navigate back after saving
   };
 
-  const goBack = () => {
+  const handleBack = () => {
+    // Simply navigate back without saving changes
     navigate('/create-program');
   };
 
   const exerciseText = () => {
-    const selectedExercises =
-      workouts[activeWorkout]?.exercises.filter(ex => ex.selected) || [];
-    const count = selectedExercises.length;
+    const count = localExercises.length;
     return count === 0
       ? 'No Exercises '
       : count === 1
@@ -91,7 +126,7 @@ const SelectExercisesPage = () => {
       <NavBar isEditing='true' />
       <div className='select-exercise'>
         <div className={`select-exercise__header ${theme}`}>
-          <button className='select-exercise__back-btn' onClick={goBack}>
+          <button className='select-exercise__back-btn' onClick={handleBack}>
             <BsChevronCompactLeft
               className={`select-exercise__icon ${theme}`}
               size={30}
@@ -100,7 +135,7 @@ const SelectExercisesPage = () => {
           <div className='select-exercise__title-container'>
             <h1 className={`select-exercise__title ${theme}`}>
               {`Adding exercises for ${
-                workouts[activeWorkout]?.name || 'your selected workout'
+                activeWorkout?.name || 'your selected workout'
               }`}
             </h1>
             <div className='select-exercise__subtitle'>
@@ -126,11 +161,7 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
-            const workoutExercise = workouts[activeWorkout]?.exercises.find(
-              ex =>
-                ex.id === exercise.id || ex.catalog_exercise_id === exercise.id
-            );
-            const isSelected = workoutExercise?.selected || false;
+            const isSelected = localExercises.some(ex => ex.id === exercise.id);
             return (
               <Exercise
                 key={exercise.id}
