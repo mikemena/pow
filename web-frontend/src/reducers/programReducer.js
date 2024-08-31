@@ -127,15 +127,26 @@ function programReducer(state = currentProgram, action) {
 
       const updatedWorkouts = state.workout.workouts.map(workout => {
         if (workout.id === workoutId) {
+          // Create a Set of existing catalog_exercise_ids to prevent duplicates
+          const existingExerciseIds = new Set(
+            workout.exercises.map(ex => ex.catalog_exercise_id)
+          );
+
+          // Filter out exercises that already exist in the workout
+          const newExercises = exercises.filter(
+            ex => !existingExerciseIds.has(ex.catalog_exercise_id)
+          );
+
+          // Combine the existing exercises with the new ones
+
           return {
             ...workout,
             exercises: [
-              ...(workout.exercises && Array.isArray(workout.exercises)
-                ? workout.exercises
-                : []),
-              ...exercises.map(ex => ({
+              ...workout.exercises,
+              ...newExercises.map(ex => ({
                 ...ex,
-                id: ex.id || uuidv4()
+                catalog_exercise_id: ex.catalog_exercise_id,
+                id: ex.id || uuidv4() // Generate a new UUID if needed
               }))
             ]
           };
@@ -143,16 +154,14 @@ function programReducer(state = currentProgram, action) {
         return workout;
       });
 
-      const newState = {
+      return {
         ...state,
         workout: {
           ...state.workout,
           workouts: updatedWorkouts
         }
       };
-
-      return newState;
-    }
+    } // <- This is the missing closing bracket
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;

@@ -27,11 +27,24 @@ const CreateProgram = () => {
 
   const program = state.program;
   const workouts = state.workout.workouts;
+  const activeWorkoutId = state.workout.activeWorkout;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('Create Program component rendered with state:', state);
-
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log('Active Workout ID on mount or update:', activeWorkoutId);
+    // Automatically expand the active workout when the component mounts or when activeWorkoutId changes
+    if (activeWorkoutId) {
+      setExpandedWorkouts(prevState => ({
+        ...Object.keys(prevState).reduce((acc, key) => {
+          acc[key] = false; // collapse all
+          return acc;
+        }, {}),
+        [activeWorkoutId]: true // expand the active workout
+      }));
+    }
+  }, [activeWorkoutId]);
 
   const handleSaveProgram = async () => {
     try {
@@ -43,6 +56,7 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
+    console.log('Expanding/collapsing workout:', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({
@@ -83,6 +97,8 @@ const CreateProgram = () => {
   if (!state || !state.program) {
     return <div>Loading or no programs available...</div>;
   }
+
+  console.log('Current State in CreateProgram:', state);
 
   return (
     <div>

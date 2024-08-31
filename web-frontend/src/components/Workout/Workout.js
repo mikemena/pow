@@ -89,7 +89,9 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
+    console.log('Adding exercises to workout:', workoutId);
     setActiveWorkout(workoutId);
+    console.log('Active workout:', activeWorkout);
     const selectedExercises = workout.exercises.map(exercise => ({
       ...exercise,
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id

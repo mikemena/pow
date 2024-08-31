@@ -14,16 +14,14 @@ const SelectExercisesPage = () => {
   const { state, dispatch } = useContext(ProgramContext);
   const navigate = useNavigate();
   const { theme } = useTheme();
-  // const location = useLocation();
 
-  // Get the active workout ID from context state
   const activeWorkoutId = state.workout.activeWorkout;
-
   const activeWorkout = state.workout.workouts.find(
     workout => workout.id === activeWorkoutId
   );
 
-  // Local state to manage exercises
+  console.log('Active Workout ID in SelectExercisesPage:', activeWorkoutId);
+
   const [localExercises, setLocalExercises] = useState(
     activeWorkout ? [...activeWorkout.exercises] : []
   );
@@ -39,8 +37,19 @@ const SelectExercisesPage = () => {
   } = useFetchData('http://localhost:9025/api/exercise-catalog');
 
   useEffect(() => {
+    if (!activeWorkoutId && state.workout.workouts.length > 0) {
+      const workoutIdToSet = state.workout.workouts[0].id;
+      console.log('Resetting active workout to:', workoutIdToSet);
+
+      dispatch({
+        type: actionTypes.SET_ACTIVE_WORKOUT,
+        payload: { activeWorkout: workoutIdToSet }
+      });
+    }
+  }, [activeWorkoutId, state.workout.workouts, dispatch]);
+
+  useEffect(() => {
     if (activeWorkout) {
-      // Initialize local state when the component mounts
       setLocalExercises([...activeWorkout.exercises]);
     }
   }, [activeWorkout]);
@@ -67,17 +76,18 @@ const SelectExercisesPage = () => {
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const handleToggleExercise = exercise => {
+    console.log('Toggling exercise:', exercise);
     const exerciseExists = localExercises.some(
       ex => ex.catalog_exercise_id === exercise.id
     );
 
     if (exerciseExists) {
-      // Remove the exercise from local state if it exists
+      console.log('Removing exercise from local state:', exercise.id);
       setLocalExercises(
         localExercises.filter(ex => ex.catalog_exercise_id !== exercise.id)
       );
     } else {
-      // Add the exercise to local state if it doesn't exist
+      console.log('Adding exercise to local state:', exercise);
       setLocalExercises([
         ...localExercises,
         { ...exercise, catalog_exercise_id: exercise.id }
@@ -88,8 +98,10 @@ const SelectExercisesPage = () => {
   const handleSaveExercises = () => {
     if (!activeWorkoutId) {
       alert('No active workout selected.');
+      console.log('No active workout selected when trying to save exercises.');
       return;
     }
+    console.log('Dispatching ADD_EXERCISE with exercises:', localExercises);
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,
@@ -103,7 +115,8 @@ const SelectExercisesPage = () => {
   };
 
   const handleBack = () => {
-    // Simply navigate back without saving changes
+    console.log('Navigating back without saving changes.');
+
     navigate('/create-program');
   };
 
@@ -118,6 +131,9 @@ const SelectExercisesPage = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading exercises: {error.message}</div>;
+
+  console.log('Active Workout ID in SelectExercisesPage:', activeWorkoutId);
+  console.log('Local Exercises in SelectExercisesPage:', localExercises);
 
   return (
     <div className='select-exercise-page'>

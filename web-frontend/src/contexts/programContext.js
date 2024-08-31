@@ -227,6 +227,8 @@ export const ProgramProvider = ({ children }) => {
 
   const setActiveWorkout = workoutId => {
     if (state.workout.activeWorkout === workoutId) {
+      console.log('Setting active workout ID to null:', workoutId);
+
       // If the workout is already active, we clear it
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
@@ -234,6 +236,7 @@ export const ProgramProvider = ({ children }) => {
       });
     } else {
       // Otherwise, we set it as active
+      console.log('Setting active workout ID:', workoutId);
 
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
