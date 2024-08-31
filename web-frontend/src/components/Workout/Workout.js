@@ -90,7 +90,10 @@ const Workout = ({
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
-    const selectedExercises = workout.exercises || [];
+    const selectedExercises = workout.exercises.map(exercise => ({
+      ...exercise,
+      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
+    }));
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isNewProgram }
     });
@@ -102,7 +105,7 @@ const Workout = ({
     const updatedWorkout = {
       ...workout,
       exercises: workout.exercises.map(ex =>
-        ex.id === exercise.id
+        ex.catalog_exercise_id === exercise.catalog_exercise_id
           ? {
               ...ex,
               sets: ex.sets.map(s => (s.id === set.id ? updatedSet : s))
@@ -124,7 +127,7 @@ const Workout = ({
       const updatedWorkout = {
         ...workout,
         exercises: workout.exercises.map(ex =>
-          ex.id === exerciseId
+          ex.catalog_exercise_id === exerciseId
             ? {
                 ...ex,
                 sets: ex.sets.filter(s => s.id !== setId)
@@ -236,7 +239,10 @@ const Workout = ({
           </div>
           {workoutExercises.length > 0 ? (
             workoutExercises.map(exercise => (
-              <div key={exercise.id} className='workout__each-exercise'>
+              <div
+                key={exercise.catalog_exercise_id}
+                className='workout__each-exercise'
+              >
                 <div className='workout__exercise-column'>
                   <div className='workout__exercise-info'>
                     <div className={`workout__drag-order-container ${theme}`}>
@@ -318,7 +324,11 @@ const Workout = ({
                       {setIndex > 0 ? (
                         <button
                           onClick={() =>
-                            handleRemoveSet(workout.id, exercise.id, set.id)
+                            handleRemoveSet(
+                              workout.id,
+                              exercise.catalog_exercise_id,
+                              set.id
+                            )
                           }
                           className='workout__delete-set-btn'
                         >
@@ -341,7 +351,10 @@ const Workout = ({
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleRemoveExercise(workout.id, exercise.id)
+                      handleRemoveExercise(
+                        workout.id,
+                        exercise.catalog_exercise_id
+                      )
                     }
                   >
                     <TbHttpDelete size={30} />

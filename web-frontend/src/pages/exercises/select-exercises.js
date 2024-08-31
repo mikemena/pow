@@ -67,14 +67,21 @@ const SelectExercisesPage = () => {
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const handleToggleExercise = exercise => {
-    const exerciseExists = localExercises.some(ex => ex.id === exercise.id);
+    const exerciseExists = localExercises.some(
+      ex => ex.catalog_exercise_id === exercise.id
+    );
 
     if (exerciseExists) {
       // Remove the exercise from local state if it exists
-      setLocalExercises(localExercises.filter(ex => ex.id !== exercise.id));
+      setLocalExercises(
+        localExercises.filter(ex => ex.catalog_exercise_id !== exercise.id)
+      );
     } else {
       // Add the exercise to local state if it doesn't exist
-      setLocalExercises([...localExercises, exercise]);
+      setLocalExercises([
+        ...localExercises,
+        { ...exercise, catalog_exercise_id: exercise.id }
+      ]);
     }
   };
 
@@ -152,7 +159,9 @@ const SelectExercisesPage = () => {
         </div>
         <div className='select-exercise__exercises'>
           {filteredExercises.map(exercise => {
-            const isSelected = localExercises.some(ex => ex.id === exercise.id);
+            const isSelected = localExercises.some(
+              ex => ex.catalog_exercise_id === exercise.id
+            );
             return (
               <Exercise
                 key={exercise.id}

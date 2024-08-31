@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ProgramContext } from '../../../contexts/programContext';
 import Button from '../../../components/Inputs/Button';
@@ -10,13 +10,28 @@ import Toggle from '../../../components/Inputs/Toggle';
 import './program.css';
 
 const EditProgram = () => {
-  const { state, updateProgram, addWorkout, setActiveWorkout, clearProgram } =
-    useContext(ProgramContext);
+  const {
+    state,
+    updateProgram,
+    addWorkout,
+    setActiveWorkout,
+    clearProgram,
+    initializeEditProgramState
+  } = useContext(ProgramContext);
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
   const navigate = useNavigate();
 
+  // Call initializeNewProgramState only once when the component mounts
+  useEffect(() => {
+    if (!state.program || !state.workout.workouts.length) {
+      initializeEditProgramState();
+    }
+  }, []);
+
   const program = state.program;
   const workouts = state.workout.workouts;
+
+  console.log('Edit Program component rendered with state:', state);
 
   if (!program || !workouts) {
     return <div>Loading...</div>;
@@ -105,7 +120,7 @@ const EditProgram = () => {
               isExpanded={expandedWorkouts['program']}
               onToggleExpand={handleToggleProgramForm}
             />
-            {program && workouts.length > 0 ? (
+            {workouts && workouts.length > 0 ? (
               workouts.map(workout => (
                 <Workout
                   key={workout.id}

@@ -20,14 +20,16 @@ const CreateProgram = () => {
 
   // Call initializeNewProgramState only once when the component mounts
   useEffect(() => {
-    initializeNewProgramState();
-  }, [initializeNewProgramState]);
+    if (!state.program || !state.workout.workouts.length) {
+      initializeNewProgramState();
+    }
+  }, []);
 
   const program = state.program;
   const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
-  console.log('CreateProgram component rendered with state:', state);
+  console.log('Create Program component rendered with state:', state);
 
   const navigate = useNavigate();
 

@@ -293,8 +293,10 @@ export const ProgramProvider = ({ children }) => {
       ...ex,
       id: uuidv4(),
       catalog_exercise_id: ex.catalog_exercise_id || ex.id,
-      sets: ex.sets || [],
-      selected: true
+      muscle: ex.muscle,
+      equipment: ex.equipment,
+      order: ex.order || null,
+      sets: ex.sets || []
     }));
 
     dispatch({
