@@ -226,20 +226,29 @@ export const ProgramProvider = ({ children }) => {
   // Set active workout by ID
 
   const setActiveWorkout = workoutId => {
-    if (state.workout.activeWorkout === workoutId) {
-      // If the workout is already active, we clear it
-      dispatch({
-        type: actionTypes.SET_ACTIVE_WORKOUT,
-        payload: { activeWorkout: null } // Clear active workout
-      });
-    } else {
-      // If the workout is not active, we set it
-      dispatch({
-        type: actionTypes.SET_ACTIVE_WORKOUT,
-        payload: { activeWorkout: workoutId } // Set new active workout
-      });
-    }
+    // Always set the workoutId passed as the active one
+    console.log('Setting active workout ID:', workoutId);
+    dispatch({
+      type: actionTypes.SET_ACTIVE_WORKOUT,
+      payload: { activeWorkout: workoutId }
+    });
   };
+
+  // const setActiveWorkout = workoutId => {
+  //   if (state.workout.activeWorkout === workoutId) {
+  //     // If the workout is already active, we clear it
+  //     dispatch({
+  //       type: actionTypes.SET_ACTIVE_WORKOUT,
+  //       payload: { activeWorkout: null } // Clear active workout
+  //     });
+  //   } else {
+  //     // If the workout is not active, we set it
+  //     dispatch({
+  //       type: actionTypes.SET_ACTIVE_WORKOUT,
+  //       payload: { activeWorkout: workoutId } // Set new active workout
+  //     });
+  //   }
+  // };
 
   // Add a new workout to the program
 

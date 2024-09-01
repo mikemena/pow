@@ -86,6 +86,7 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
+    console.log('Setting active workout to:', workoutId);
     setActiveWorkout(workoutId);
 
     const selectedExercises = workout.exercises.map(exercise => ({
@@ -121,9 +122,6 @@ const Workout = ({
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
-    console.log('removing set', setId);
-    console.log('workoutId', workoutId);
-    console.log('exerciseId', exerciseId);
     if (isEditing) {
       const updatedWorkout = {
         ...workout,

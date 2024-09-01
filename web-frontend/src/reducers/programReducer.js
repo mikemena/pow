@@ -44,6 +44,11 @@ function programReducer(state = currentProgram, action) {
     // Workout-related actions
 
     case actionTypes.SET_ACTIVE_WORKOUT: {
+      console.log(
+        'SET_ACTIVE_WORKOUT in reducer - Setting active workout:',
+        action.payload
+      );
+
       const { activeWorkout } = action.payload;
       return {
         ...state,
@@ -259,27 +264,34 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.REMOVE_SET: {
       const { workoutId, exerciseId, setId } = action.payload;
+
+      const updatedWorkouts = state.workout.workouts.map(workout => {
+        if (workout.id === workoutId) {
+          return {
+            ...workout,
+            exercises: workout.exercises.map(exercise => {
+              if (exercise.catalog_exercise_id === exerciseId) {
+                const updatedSets = exercise.sets.filter(
+                  set => set.id !== setId
+                );
+
+                return {
+                  ...exercise,
+                  sets: updatedSets
+                };
+              }
+              return exercise;
+            })
+          };
+        }
+        return workout;
+      });
+
       return {
         ...state,
         workout: {
           ...state.workout,
-          workouts: state.workout.workouts.map(workout => {
-            if (workout.id === workoutId) {
-              return {
-                ...workout,
-                exercises: workout.exercises.map(exercise => {
-                  if (exercise.id === exerciseId) {
-                    return {
-                      ...exercise,
-                      sets: exercise.sets.filter(set => set.id !== setId)
-                    };
-                  }
-                  return exercise;
-                })
-              };
-            }
-            return workout;
-          })
+          workouts: updatedWorkouts
         }
       };
     }

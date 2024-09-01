@@ -61,7 +61,6 @@ const ExerciseList = ({
   };
 
   const handleAddExercise = exercise => {
-    console.log('adding exercise', exercise);
     if (activeWorkout) {
       addExercise(activeWorkout, exercise);
     }
