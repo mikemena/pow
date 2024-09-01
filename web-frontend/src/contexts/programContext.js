@@ -227,7 +227,6 @@ export const ProgramProvider = ({ children }) => {
 
   const setActiveWorkout = workoutId => {
     // Always set the workoutId passed as the active one
-    console.log('Setting active workout ID:', workoutId);
     dispatch({
       type: actionTypes.SET_ACTIVE_WORKOUT,
       payload: { activeWorkout: workoutId }
@@ -297,7 +296,6 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
-    console.log('addExercise called with:', workoutId, exercises);
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       id: uuidv4(),
@@ -307,11 +305,6 @@ export const ProgramProvider = ({ children }) => {
       order: ex.order || null,
       sets: ex.sets || []
     }));
-
-    console.log(
-      'Standardized exercises before dispatch:',
-      standardizedExercises
-    );
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,
@@ -381,6 +374,7 @@ export const ProgramProvider = ({ children }) => {
 
   // Update an existing set within an exercise
   const updateSet = (workoutId, exerciseId, updatedSet) => {
+    console.log('Context - updateSet', workoutId, exerciseId, updatedSet);
     dispatch({
       type: actionTypes.UPDATE_SET,
       payload: { workoutId, exerciseId, updatedSet }

@@ -27,6 +27,7 @@ const Workout = ({
     removeExercise,
     updateWorkout,
     addSet,
+    updateSet,
     removeSet
   } = useContext(ProgramContext);
 
@@ -40,12 +41,14 @@ const Workout = ({
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
+  const [localExercises, setLocalExercises] = useState([]);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
     if (workout) {
       setWorkoutTitle(workout.name);
+      setLocalExercises(workout.exercises);
     }
   }, [workout]);
 
@@ -98,25 +101,26 @@ const Workout = ({
     });
   };
 
-  const handleChange = (updatedValue, exercise, set) => {
-    const updatedSet = { ...set, ...updatedValue };
-
-    const updatedWorkout = {
-      ...workout,
-      exercises: workout.exercises.map(ex =>
-        ex.catalog_exercise_id === exercise.catalog_exercise_id
+  const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
+    setLocalExercises(prevExercises =>
+      prevExercises.map(exercise =>
+        exercise.id === exerciseId
           ? {
-              ...ex,
-              sets: ex.sets.filter(s => (s.id === set.id ? updatedSet : s))
+              ...exercise,
+              sets: exercise.sets.map(set =>
+                set.id === setId ? { ...set, ...updatedValue } : set
+              )
             }
-          : ex
+          : exercise
       )
-    };
-
-    updateWorkout(updatedWorkout);
+    );
   };
 
-  const handleBlur = e => {
+  const handleUpdateSetOnBlur = (exerciseId, set) => {
+    updateSet(workout.id, exerciseId, set);
+  };
+
+  const handleUpdateWorkoutTitleOnBlur = e => {
     const { name, value } = e.target;
     updateWorkoutField(name, value);
   };
@@ -140,14 +144,7 @@ const Workout = ({
     }
   };
 
-  const workoutExercises = useMemo(() => {
-    if (isEditing && workout.exercises) {
-      return workout.exercises;
-    } else if (state.workouts && state.workouts[workout.id]) {
-      return state.workouts[workout.id].exercises;
-    }
-    return workout.exercises || [];
-  }, [isEditing, workout, state.workouts]);
+  const workoutExercises = localExercises;
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -184,7 +181,7 @@ const Workout = ({
                 className={`workout__title-input ${theme}`}
                 type='text'
                 value={workoutTitle}
-                onBlur={handleBlur}
+                onBlur={handleUpdateWorkoutTitleOnBlur}
                 onChange={handleEditTitleChange}
                 placeholder='Enter Workout Title'
               />
@@ -287,9 +284,15 @@ const Workout = ({
                             className={`workout__set-weight ${theme}`}
                             id='set-weight'
                             onChange={e =>
-                              handleChange(
+                              handleUpdateSetLocally(
                                 { weight: e.target.value },
                                 exercise,
+                                set
+                              )
+                            }
+                            onBlur={() =>
+                              handleUpdateSetOnBlur(
+                                exercise.catalog_exercise_id,
                                 set
                               )
                             }
@@ -308,7 +311,17 @@ const Workout = ({
                       <TextInput
                         className={`workout__set-reps ${theme}`}
                         onChange={e =>
-                          handleChange({ reps: e.target.value }, exercise, set)
+                          handleUpdateSetLocally(
+                            { reps: e.target.value },
+                            exercise,
+                            set
+                          )
+                        }
+                        onBlur={() =>
+                          handleUpdateSetOnBlur(
+                            exercise.catalog_exercise_id,
+                            set
+                          )
                         }
                         value={set.reps}
                         type='number'

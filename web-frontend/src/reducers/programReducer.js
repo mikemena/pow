@@ -44,11 +44,6 @@ function programReducer(state = currentProgram, action) {
     // Workout-related actions
 
     case actionTypes.SET_ACTIVE_WORKOUT: {
-      console.log(
-        'SET_ACTIVE_WORKOUT in reducer - Setting active workout:',
-        action.payload
-      );
-
       const { activeWorkout } = action.payload;
       return {
         ...state,
@@ -117,7 +112,6 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
-      console.log('Reducer - ADD_EXERCISE payload:', action.payload);
 
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
@@ -232,6 +226,7 @@ function programReducer(state = currentProgram, action) {
     }
 
     case actionTypes.UPDATE_SET: {
+      console.log('Reducer - UPDATE_SET', action.payload);
       const { workoutId, exerciseId, updatedSet } = action.payload;
       return {
         ...state,

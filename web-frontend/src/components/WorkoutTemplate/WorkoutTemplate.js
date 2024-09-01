@@ -41,12 +41,7 @@ const WorkoutTemplate = ({
           </p>
         </div>
         <div className='workout-template-actions-container'>
-          <button
-            className='button-class'
-            onClick={() => console.log('Start Workout')}
-          >
-            Start
-          </button>
+          <button className='button-class'>Start</button>
           <button
             className='button-class'
             onClick={() => {
