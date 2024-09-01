@@ -271,7 +271,7 @@ export const ProgramProvider = ({ children }) => {
   const updateWorkout = updatedWorkout => {
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
-      payload: { updatedWorkout }
+      payload: updatedWorkout
     });
   };
 

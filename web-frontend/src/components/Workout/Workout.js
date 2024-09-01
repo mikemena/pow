@@ -106,7 +106,7 @@ const Workout = ({
         ex.catalog_exercise_id === exercise.catalog_exercise_id
           ? {
               ...ex,
-              sets: ex.sets.map(s => (s.id === set.id ? updatedSet : s))
+              sets: ex.sets.filter(s => (s.id === set.id ? updatedSet : s))
             }
           : ex
       )
@@ -121,6 +121,9 @@ const Workout = ({
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
+    console.log('removing set', setId);
+    console.log('workoutId', workoutId);
+    console.log('exerciseId', exerciseId);
     if (isEditing) {
       const updatedWorkout = {
         ...workout,
