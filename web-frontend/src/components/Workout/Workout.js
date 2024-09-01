@@ -38,9 +38,6 @@ const Workout = ({
     return workouts.find(w => w.id === initialWorkout.id) || initialWorkout;
   }, [workouts, initialWorkout]);
 
-  console.log('Workout component rendered with workout:', workout);
-  console.log('Workout component exercises:', workout.exercises);
-
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const { theme } = useTheme();
@@ -89,9 +86,8 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
-    console.log('Adding exercises to workout:', workoutId);
     setActiveWorkout(workoutId);
-    console.log('Active workout:', activeWorkout);
+
     const selectedExercises = workout.exercises.map(exercise => ({
       ...exercise,
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id

@@ -11,7 +11,7 @@ import useFetchData from '../../hooks/useFetchData';
 import './select-exercises.css';
 
 const SelectExercisesPage = () => {
-  const { state, dispatch } = useContext(ProgramContext);
+  const { addExercise, state, dispatch } = useContext(ProgramContext);
   const navigate = useNavigate();
   const { theme } = useTheme();
 
@@ -19,8 +19,6 @@ const SelectExercisesPage = () => {
   const activeWorkout = state.workout.workouts.find(
     workout => workout.id === activeWorkoutId
   );
-
-  console.log('Active Workout ID in SelectExercisesPage:', activeWorkoutId);
 
   const [localExercises, setLocalExercises] = useState(
     activeWorkout ? [...activeWorkout.exercises] : []
@@ -39,7 +37,6 @@ const SelectExercisesPage = () => {
   useEffect(() => {
     if (!activeWorkoutId && state.workout.workouts.length > 0) {
       const workoutIdToSet = state.workout.workouts[0].id;
-      console.log('Resetting active workout to:', workoutIdToSet);
 
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
@@ -76,18 +73,15 @@ const SelectExercisesPage = () => {
   const handleEquipmentChange = value => setSelectedEquipment(value);
 
   const handleToggleExercise = exercise => {
-    console.log('Toggling exercise:', exercise);
     const exerciseExists = localExercises.some(
       ex => ex.catalog_exercise_id === exercise.id
     );
 
     if (exerciseExists) {
-      console.log('Removing exercise from local state:', exercise.id);
       setLocalExercises(
         localExercises.filter(ex => ex.catalog_exercise_id !== exercise.id)
       );
     } else {
-      console.log('Adding exercise to local state:', exercise);
       setLocalExercises([
         ...localExercises,
         { ...exercise, catalog_exercise_id: exercise.id }
@@ -98,25 +92,16 @@ const SelectExercisesPage = () => {
   const handleSaveExercises = () => {
     if (!activeWorkoutId) {
       alert('No active workout selected.');
-      console.log('No active workout selected when trying to save exercises.');
+
       return;
     }
-    console.log('Dispatching ADD_EXERCISE with exercises:', localExercises);
 
-    dispatch({
-      type: actionTypes.ADD_EXERCISE,
-      payload: {
-        workoutId: activeWorkoutId,
-        exercises: localExercises
-      }
-    });
+    addExercise(activeWorkoutId, localExercises);
 
     navigate('/create-program'); // Navigate back after saving
   };
 
   const handleBack = () => {
-    console.log('Navigating back without saving changes.');
-
     navigate('/create-program');
   };
 
@@ -131,9 +116,6 @@ const SelectExercisesPage = () => {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error loading exercises: {error.message}</div>;
-
-  console.log('Active Workout ID in SelectExercisesPage:', activeWorkoutId);
-  console.log('Local Exercises in SelectExercisesPage:', localExercises);
 
   return (
     <div className='select-exercise-page'>

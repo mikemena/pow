@@ -33,7 +33,6 @@ const CreateProgram = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log('Active Workout ID on mount or update:', activeWorkoutId);
     // Automatically expand the active workout when the component mounts or when activeWorkoutId changes
     if (activeWorkoutId) {
       setExpandedWorkouts(prevState => ({
@@ -56,7 +55,6 @@ const CreateProgram = () => {
   };
 
   const handleExpandWorkout = workoutId => {
-    console.log('Expanding/collapsing workout:', workoutId);
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
 
     setExpandedWorkouts(prevState => ({
@@ -97,8 +95,6 @@ const CreateProgram = () => {
   if (!state || !state.program) {
     return <div>Loading or no programs available...</div>;
   }
-
-  console.log('Current State in CreateProgram:', state);
 
   return (
     <div>

@@ -227,17 +227,13 @@ export const ProgramProvider = ({ children }) => {
 
   const setActiveWorkout = workoutId => {
     if (state.workout.activeWorkout === workoutId) {
-      console.log('Setting active workout ID to null:', workoutId);
-
       // If the workout is already active, we clear it
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
         payload: { activeWorkout: null } // Clear active workout
       });
     } else {
-      // Otherwise, we set it as active
-      console.log('Setting active workout ID:', workoutId);
-
+      // If the workout is not active, we set it
       dispatch({
         type: actionTypes.SET_ACTIVE_WORKOUT,
         payload: { activeWorkout: workoutId } // Set new active workout
@@ -292,6 +288,7 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
+    console.log('addExercise called with:', workoutId, exercises);
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       id: uuidv4(),
@@ -301,6 +298,11 @@ export const ProgramProvider = ({ children }) => {
       order: ex.order || null,
       sets: ex.sets || []
     }));
+
+    console.log(
+      'Standardized exercises before dispatch:',
+      standardizedExercises
+    );
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,

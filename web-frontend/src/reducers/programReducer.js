@@ -112,6 +112,7 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
+      console.log('Reducer - ADD_EXERCISE payload:', action.payload);
 
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
@@ -146,7 +147,9 @@ function programReducer(state = currentProgram, action) {
               ...newExercises.map(ex => ({
                 ...ex,
                 catalog_exercise_id: ex.catalog_exercise_id,
-                id: ex.id || uuidv4() // Generate a new UUID if needed
+                id: ex.id || uuidv4(),
+                order: workout.exercises.length + 1,
+                sets: []
               }))
             ]
           };
@@ -161,7 +164,7 @@ function programReducer(state = currentProgram, action) {
           workouts: updatedWorkouts
         }
       };
-    } // <- This is the missing closing bracket
+    }
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;

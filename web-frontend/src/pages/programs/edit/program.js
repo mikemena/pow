@@ -31,8 +31,6 @@ const EditProgram = () => {
   const program = state.program;
   const workouts = state.workout.workouts;
 
-  console.log('Edit Program component rendered with state:', state);
-
   if (!program || !workouts) {
     return <div>Loading...</div>;
   }

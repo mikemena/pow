@@ -60,10 +60,10 @@ const ExerciseList = ({
     setSelectedEquipment(value);
   };
 
-  // Handler to add an exercise to the active workout
   const handleAddExercise = exercise => {
+    console.log('adding exercise', exercise);
     if (activeWorkout) {
-      addExercise(activeWorkout, exercise); // Use activeWorkout as the workoutId
+      addExercise(activeWorkout, exercise);
     }
   };
 
