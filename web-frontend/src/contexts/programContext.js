@@ -302,9 +302,17 @@ export const ProgramProvider = ({ children }) => {
       catalog_exercise_id: ex.catalog_exercise_id || ex.id,
       muscle: ex.muscle,
       equipment: ex.equipment,
-      order: ex.order || null,
-      sets: ex.sets || []
+      order: ex.order || 1,
+      sets:
+        ex.sets?.length > 0
+          ? ex.sets
+          : [{ id: uuidv4(), weight: '', reps: '', order: 1 }]
     }));
+
+    console.log(
+      'Context - addExercise - standardizedExercises',
+      standardizedExercises
+    );
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,

@@ -148,7 +148,9 @@ function programReducer(state = currentProgram, action) {
                 catalog_exercise_id: ex.catalog_exercise_id,
                 id: ex.id || uuidv4(),
                 order: workout.exercises.length + 1,
-                sets: []
+                sets: ex.sets || [
+                  { id: uuidv4(), weight: '', reps: '', order: 1 }
+                ]
               }))
             ]
           };

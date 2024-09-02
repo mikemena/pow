@@ -41,7 +41,7 @@ const Workout = ({
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
-  const [localExercises, setLocalExercises] = useState([]);
+  const [localExercises, setLocalExercises] = useState(workout.exercises);
   const { theme } = useTheme();
   const navigate = useNavigate();
 
@@ -89,13 +89,13 @@ const Workout = ({
   };
 
   const handleAddExercises = workoutId => {
-    console.log('Setting active workout to:', workoutId);
     setActiveWorkout(workoutId);
 
     const selectedExercises = workout.exercises.map(exercise => ({
       ...exercise,
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
     }));
+
     navigate('/select-exercises', {
       state: { workoutId, selectedExercises, isNewProgram }
     });
@@ -104,7 +104,7 @@ const Workout = ({
   const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
     setLocalExercises(prevExercises =>
       prevExercises.map(exercise =>
-        exercise.id === exerciseId
+        exercise.catalog_exercise_id === exerciseId
           ? {
               ...exercise,
               sets: exercise.sets.map(set =>
@@ -118,6 +118,8 @@ const Workout = ({
 
   const handleUpdateSetOnBlur = (exerciseId, set) => {
     updateSet(workout.id, exerciseId, set);
+    // Update context with the latest local exercise data
+    updateWorkout({ ...workout, exercises: localExercises });
   };
 
   const handleUpdateWorkoutTitleOnBlur = e => {
@@ -127,9 +129,8 @@ const Workout = ({
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
     if (isEditing) {
-      const updatedWorkout = {
-        ...workout,
-        exercises: workout.exercises.map(ex =>
+      setLocalExercises(prevExercises =>
+        prevExercises.map(ex =>
           ex.catalog_exercise_id === exerciseId
             ? {
                 ...ex,
@@ -137,14 +138,14 @@ const Workout = ({
               }
             : ex
         )
-      };
-      updateWorkout(updatedWorkout);
+      );
     } else {
       removeSet(workoutId, exerciseId, setId);
     }
   };
 
   const workoutExercises = localExercises;
+  console.log('Workout exercises in render:', workoutExercises);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -286,8 +287,8 @@ const Workout = ({
                             onChange={e =>
                               handleUpdateSetLocally(
                                 { weight: e.target.value },
-                                exercise,
-                                set
+                                exercise.catalog_exercise_id,
+                                set.id
                               )
                             }
                             onBlur={() =>
@@ -313,8 +314,8 @@ const Workout = ({
                         onChange={e =>
                           handleUpdateSetLocally(
                             { reps: e.target.value },
-                            exercise,
-                            set
+                            exercise.catalog_exercise_id,
+                            set.id
                           )
                         }
                         onBlur={() =>
