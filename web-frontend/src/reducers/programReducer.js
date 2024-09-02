@@ -36,6 +36,7 @@ function programReducer(state = currentProgram, action) {
           activeWorkout: action.payload.activeWorkout
         }
       };
+
     case actionTypes.CLEAR_PROGRAM:
       return {
         ...currentProgram
@@ -228,7 +229,6 @@ function programReducer(state = currentProgram, action) {
     }
 
     case actionTypes.UPDATE_SET: {
-      console.log('Reducer - UPDATE_SET', action.payload);
       const { workoutId, exerciseId, updatedSet } = action.payload;
       return {
         ...state,

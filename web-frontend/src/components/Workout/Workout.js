@@ -145,7 +145,6 @@ const Workout = ({
   };
 
   const workoutExercises = localExercises;
-  console.log('Workout exercises in render:', workoutExercises);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';

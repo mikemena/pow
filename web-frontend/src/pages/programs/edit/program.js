@@ -74,6 +74,7 @@ const EditProgram = () => {
   };
 
   const handleUpdateProgram = async () => {
+    console.log('Start handleUpdateProgram');
     try {
       const updatedProgram = {
         ...program,
@@ -95,7 +96,10 @@ const EditProgram = () => {
         })
       };
 
+      console.log('About to save program...');
       await updateProgram(updatedProgram);
+
+      console.log('Program saved successfully. Navigating...');
       navigate('/programs');
     } catch (error) {
       console.error('Failed to save the program:', error);

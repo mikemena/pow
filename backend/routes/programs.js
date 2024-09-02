@@ -198,9 +198,7 @@ router.post('/programs', async (req, res) => {
 
     await client.query('COMMIT');
 
-    res.status(201).json({
-      message: 'Program with workouts, exercises, and sets created successfully'
-    });
+    res.status(200).json({ message: 'Program updated successfully' });
   } catch (err) {
     await client.query('ROLLBACK');
     console.error('Error during transaction:', err);
@@ -223,6 +221,9 @@ router.put('/programs/:program_id', async (req, res) => {
     workouts
   } = req.body;
 
+  console.log('Received PUT request to update program:', program_id);
+  console.log('Request body:', req.body);
+
   try {
     // Begin transaction
     await pool.query('BEGIN');
@@ -241,6 +242,7 @@ router.put('/programs/:program_id', async (req, res) => {
         program_id
       ]
     );
+    console.log('Updated program details for program_id:', program_id);
 
     // Loop through each workout to update or insert
     for (const workout of workouts) {
@@ -253,6 +255,7 @@ router.put('/programs/:program_id', async (req, res) => {
           [workout.name, workout.order, workout.id, program_id]
         );
         workoutId = workout.id;
+        console.log('Processed update workout:', workoutId);
       } else {
         // Insert new workout
         const workoutResult = await pool.query(
@@ -260,6 +263,7 @@ router.put('/programs/:program_id', async (req, res) => {
           [workout.name, program_id, workout.order]
         );
         workoutId = workoutResult.rows[0].id;
+        console.log('Processed added workout:', workoutId);
       }
 
       // Loop through each exercise to update or insert
@@ -278,6 +282,7 @@ router.put('/programs/:program_id', async (req, res) => {
             ]
           );
           exerciseId = exercise.id;
+          console.log('Processed update exercise:', exerciseId);
         } else {
           // Insert new exercise
           const exerciseResult = await pool.query(
@@ -285,6 +290,7 @@ router.put('/programs/:program_id', async (req, res) => {
             [exercise.catalog_exercise_id, workoutId, exercise.order]
           );
           exerciseId = exerciseResult.rows[0].id;
+          console.log('Processed new exercise:', exerciseId);
         }
 
         // Loop through each set to update or insert
@@ -295,22 +301,26 @@ router.put('/programs/:program_id', async (req, res) => {
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
               [set.weight, set.reps, set.order, set.id, exerciseId]
             );
+            console.log('Processed set for update exercise_id:', exerciseId);
           } else {
             // Insert new set (ignore the UUID)
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
               [set.weight, set.reps, set.order, exerciseId]
             );
+            console.log('Processed set for new exercise_id:', exerciseId);
           }
         }
       }
     }
 
+    console.log('Committing transaction');
+
     // If everything is fine, commit the transaction
     await pool.query('COMMIT');
 
-    // Fetch and return the updated program data
-    // ... (rest of your code to fetch and return the updated program)
+    console.log('Program updated successfully. Sending response...');
+    res.status(200).json({ message: 'Program updated successfully' });
   } catch (err) {
     // If there is any error, rollback the transaction
     await pool.query('ROLLBACK');
