@@ -222,7 +222,7 @@ router.put('/programs/:program_id', async (req, res) => {
   } = req.body;
 
   console.log('Received PUT request to update program:', program_id);
-  console.log('Request body:', req.body);
+  console.log('Request body:', JSON.stringify(req.body, null, 2));
 
   try {
     // Begin transaction
@@ -352,6 +352,9 @@ router.put('/programs/:program_id', async (req, res) => {
           .map(set => set.id)
           .filter(id => typeof id === 'number');
 
+        console.log('Existing sets:', existingSetIds);
+        console.log('Incoming sets:', incomingSetIds);
+
         // Delete sets that are not in the incoming data
         for (const existingSetId of existingSetIds) {
           if (!incomingSetIds.includes(existingSetId)) {
@@ -368,12 +371,14 @@ router.put('/programs/:program_id', async (req, res) => {
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
               [set.weight, set.reps, set.order, set.id, exerciseId]
             );
+            console.log('Updated set:', set.id);
           } else {
             // Insert new set
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
               [set.weight, set.reps, set.order, exerciseId]
             );
+            console.log('Inserted new set for exercise_id:', exerciseId);
           }
         }
       }

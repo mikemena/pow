@@ -97,6 +97,8 @@ const EditProgram = () => {
       };
 
       console.log('About to save program...');
+      console.log('Program data being sent to backend:', updatedProgram);
+
       await updateProgram(updatedProgram);
 
       console.log('Program saved successfully. Navigating...');

@@ -139,6 +139,23 @@ const Workout = ({
             : ex
         )
       );
+
+      // Update the context state after local state change
+      const updatedExercises = localExercises.map(ex =>
+        ex.catalog_exercise_id === exerciseId
+          ? {
+              ...ex,
+              sets: ex.sets.filter(s => s.id !== setId)
+            }
+          : ex
+      );
+
+      const updatedWorkout = {
+        ...workout,
+        exercises: updatedExercises
+      };
+
+      updateWorkout(updatedWorkout);
     } else {
       removeSet(workoutId, exerciseId, setId);
     }
