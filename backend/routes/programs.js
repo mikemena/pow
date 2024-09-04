@@ -244,6 +244,27 @@ router.put('/programs/:program_id', async (req, res) => {
     );
     console.log('Updated program details for program_id:', program_id);
 
+    // Fetch existing workouts to handle deletions
+    const { rows: existingWorkouts } = await pool.query(
+      'SELECT id FROM workouts WHERE program_id = $1',
+      [program_id]
+    );
+
+    const existingWorkoutIds = existingWorkouts.map(row => row.id);
+    const incomingWorkoutIds = workouts
+      .map(workout => workout.id)
+      .filter(Boolean);
+
+    // Delete workouts that are not in the incoming data
+    for (const existingWorkoutId of existingWorkoutIds) {
+      if (!incomingWorkoutIds.includes(existingWorkoutId)) {
+        await pool.query('DELETE FROM workouts WHERE id = $1', [
+          existingWorkoutId
+        ]);
+        console.log('Deleted workout:', existingWorkoutId);
+      }
+    }
+
     // Loop through each workout to update or insert
     for (const workout of workouts) {
       let workoutId;
@@ -255,7 +276,6 @@ router.put('/programs/:program_id', async (req, res) => {
           [workout.name, workout.order, workout.id, program_id]
         );
         workoutId = workout.id;
-        console.log('Processed update workout:', workoutId);
       } else {
         // Insert new workout
         const workoutResult = await pool.query(
@@ -263,7 +283,37 @@ router.put('/programs/:program_id', async (req, res) => {
           [workout.name, program_id, workout.order]
         );
         workoutId = workoutResult.rows[0].id;
-        console.log('Processed added workout:', workoutId);
+      }
+
+      // Fetch existing exercises to handle deletions
+      const { rows: existingExercises } = await pool.query(
+        'SELECT id FROM exercises WHERE workout_id = $1',
+        [workoutId]
+      );
+
+      const existingExerciseIds = existingExercises.map(row => row.id);
+      const incomingExerciseIds = workout.exercises
+        .map(ex => ex.id)
+        .filter(Boolean);
+
+      // Delete exercises that are not in the incoming data
+      for (const existingExerciseId of existingExerciseIds) {
+        if (!incomingExerciseIds.includes(existingExerciseId)) {
+          // First, delete all sets associated with this exercise
+          await pool.query('DELETE FROM sets WHERE exercise_id = $1', [
+            existingExerciseId
+          ]);
+          console.log(
+            'Deleted sets associated with exercise:',
+            existingExerciseId
+          );
+
+          // Then, delete the exercise itself
+          await pool.query('DELETE FROM exercises WHERE id = $1', [
+            existingExerciseId
+          ]);
+          console.log('Deleted exercise:', existingExerciseId);
+        }
       }
 
       // Loop through each exercise to update or insert
@@ -282,7 +332,6 @@ router.put('/programs/:program_id', async (req, res) => {
             ]
           );
           exerciseId = exercise.id;
-          console.log('Processed update exercise:', exerciseId);
         } else {
           // Insert new exercise
           const exerciseResult = await pool.query(
@@ -290,7 +339,25 @@ router.put('/programs/:program_id', async (req, res) => {
             [exercise.catalog_exercise_id, workoutId, exercise.order]
           );
           exerciseId = exerciseResult.rows[0].id;
-          console.log('Processed new exercise:', exerciseId);
+        }
+
+        // Fetch existing sets to handle deletions
+        const { rows: existingSets } = await pool.query(
+          'SELECT id FROM sets WHERE exercise_id = $1',
+          [exerciseId]
+        );
+
+        const existingSetIds = existingSets.map(row => row.id);
+        const incomingSetIds = exercise.sets
+          .map(set => set.id)
+          .filter(id => typeof id === 'number');
+
+        // Delete sets that are not in the incoming data
+        for (const existingSetId of existingSetIds) {
+          if (!incomingSetIds.includes(existingSetId)) {
+            await pool.query('DELETE FROM sets WHERE id = $1', [existingSetId]);
+            console.log('Deleted set:', existingSetId);
+          }
         }
 
         // Loop through each set to update or insert
@@ -301,14 +368,12 @@ router.put('/programs/:program_id', async (req, res) => {
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
               [set.weight, set.reps, set.order, set.id, exerciseId]
             );
-            console.log('Processed set for update exercise_id:', exerciseId);
           } else {
-            // Insert new set (ignore the UUID)
+            // Insert new set
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
               [set.weight, set.reps, set.order, exerciseId]
             );
-            console.log('Processed set for new exercise_id:', exerciseId);
           }
         }
       }
@@ -316,7 +381,7 @@ router.put('/programs/:program_id', async (req, res) => {
 
     console.log('Committing transaction');
 
-    // If everything is fine, commit the transaction
+    // Commit the transaction
     await pool.query('COMMIT');
 
     console.log('Program updated successfully. Sending response...');

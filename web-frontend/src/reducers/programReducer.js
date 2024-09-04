@@ -213,9 +213,14 @@ function programReducer(state = currentProgram, action) {
                 ...workout,
                 exercises: workout.exercises.map(exercise => {
                   if (exercise.id === exerciseId) {
+                    // Calculate the new order based on the current number of sets
+                    const newOrder = exercise.sets.length + 1;
                     return {
                       ...exercise,
-                      sets: [...exercise.sets, { ...newSet, id: uuidv4() }]
+                      sets: [
+                        ...exercise.sets,
+                        { ...newSet, id: uuidv4(), order: newOrder }
+                      ]
                     };
                   }
                   return exercise;
