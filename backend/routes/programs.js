@@ -210,6 +210,11 @@ router.post('/programs', async (req, res) => {
 
 // Endpoint to update a program with its workouts, exercises, and sets for a given user
 
+// Helper function to determine if a value is an integer
+const isInteger = value => {
+  return Number.isInteger(value) || /^\d+$/.test(value);
+};
+
 router.put('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
   const {
@@ -269,7 +274,7 @@ router.put('/programs/:program_id', async (req, res) => {
     for (const workout of workouts) {
       let workoutId;
 
-      if (workout.id) {
+      if (isInteger(workout.id)) {
         // Update existing workout
         await pool.query(
           `UPDATE workouts SET name = $1, "order" = $2 WHERE id = $3 AND program_id = $4`,
@@ -320,7 +325,7 @@ router.put('/programs/:program_id', async (req, res) => {
       for (const exercise of workout.exercises) {
         let exerciseId;
 
-        if (exercise.id) {
+        if (isInteger(exercise.id)) {
           // Update existing exercise
           await pool.query(
             `UPDATE exercises SET catalog_exercise_id = $1, "order" = $2 WHERE id = $3 AND workout_id = $4`,

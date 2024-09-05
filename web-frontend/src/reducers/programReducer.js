@@ -61,14 +61,20 @@ function programReducer(state = currentProgram, action) {
         console.error('Failed to standardize workout:', action.payload);
         return state;
       }
+      console.log('Adding new workout:', newWorkout);
+      console.log('Current state before adding workout:', state);
 
-      return {
+      const updatedState = {
         ...state,
         workout: {
           ...state.workout,
           workouts: [...state.workout.workouts, newWorkout]
         }
       };
+
+      console.log('Updated state after adding workout:', updatedState);
+
+      return updatedState;
     }
 
     case actionTypes.UPDATE_WORKOUT_FIELD:
