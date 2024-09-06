@@ -22,13 +22,24 @@ const EditProgram = () => {
   const navigate = useNavigate();
 
   // Call initializeNewProgramState only once when the component mounts
+  // useEffect(() => {
+  //   if (!state.program || !state.workout.workouts.length) {
+  //     initializeEditProgramState();
+  //   }
+  // }, []);
+
+  const program = state.program;
+
   useEffect(() => {
     if (!state.program || !state.workout.workouts.length) {
-      initializeEditProgramState();
+      // Fetch the program from API or use existing state
+      const programToEdit = program.id;
+      initializeEditProgramState(programToEdit, programToEdit.workouts);
     }
   }, []);
 
-  const program = state.program;
+  console.log('Program:', program);
+  console.log('program.id:', program.id);
   const workouts = state.workout.workouts;
 
   if (!program || !workouts) {
@@ -88,7 +99,8 @@ const EditProgram = () => {
                   sets: exercise.sets.map(set => ({
                     ...set,
                     weight: parseInt(set.weight, 10) || 0,
-                    reps: parseInt(set.reps, 10) || 0
+                    reps: parseInt(set.reps, 10) || 0,
+                    order: parseInt(set.order, 10) || 0
                   }))
                 }))
               }

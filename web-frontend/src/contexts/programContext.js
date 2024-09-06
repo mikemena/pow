@@ -131,8 +131,16 @@ export const ProgramProvider = ({ children }) => {
   // Update program in backend
 
   const updateProgram = async updatedProgram => {
+    console.log('Updating program:', updatedProgram);
     try {
-      validateProgramData(updatedProgram);
+      // validateProgramData(updatedProgram);
+
+      const workoutsToInsert = updatedProgram.workouts.filter(
+        workout => !Number.isInteger(workout.id)
+      );
+      const workoutsToUpdate = updatedProgram.workouts.filter(workout =>
+        Number.isInteger(workout.id)
+      );
 
       console.log('Making PUT request with program data:', updatedProgram);
 
@@ -141,10 +149,13 @@ export const ProgramProvider = ({ children }) => {
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updatedProgram)
+          body: JSON.stringify({
+            ...updatedProgram,
+            workoutsToInsert, // Send separately to handle inserts
+            workoutsToUpdate // Send to handle updates
+          })
         }
       );
-
       console.log('Response status:', response.status);
 
       if (!response.ok) {
@@ -158,7 +169,7 @@ export const ProgramProvider = ({ children }) => {
 
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_DATABASE,
-        payload: savedProgram
+        payload: updatedProgram
       });
       console.log('Dispatch successful, program updated in state.');
     } catch (error) {
@@ -243,22 +254,6 @@ export const ProgramProvider = ({ children }) => {
       payload: { activeWorkout: workoutId }
     });
   };
-
-  // const setActiveWorkout = workoutId => {
-  //   if (state.workout.activeWorkout === workoutId) {
-  //     // If the workout is already active, we clear it
-  //     dispatch({
-  //       type: actionTypes.SET_ACTIVE_WORKOUT,
-  //       payload: { activeWorkout: null } // Clear active workout
-  //     });
-  //   } else {
-  //     // If the workout is not active, we set it
-  //     dispatch({
-  //       type: actionTypes.SET_ACTIVE_WORKOUT,
-  //       payload: { activeWorkout: workoutId } // Set new active workout
-  //     });
-  //   }
-  // };
 
   // Add a new workout to the program
 

@@ -123,6 +123,7 @@ router.get('/programs/:program_id', async (req, res) => {
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
+  console.log('Received POST request to create a new program');
   const {
     user_id,
     name,
@@ -130,7 +131,7 @@ router.post('/programs', async (req, res) => {
     days_per_week,
     duration_unit,
     main_goal,
-    workouts = [] // Default to empty array if workouts is undefined
+    workouts = []
   } = req.body;
 
   // Begin database transaction
@@ -216,6 +217,7 @@ const isInteger = value => {
 };
 
 router.put('/programs/:program_id', async (req, res) => {
+  console.log('Received PUT request to update program:');
   const { program_id } = req.params;
   const {
     name,
@@ -234,6 +236,7 @@ router.put('/programs/:program_id', async (req, res) => {
     await pool.query('BEGIN');
 
     // Update the program details
+    console.log('Updating program details...');
     await pool.query(
       `UPDATE programs
        SET name = $1, program_duration = $2, duration_unit = $3, days_per_week = $4, main_goal = $5
@@ -261,6 +264,7 @@ router.put('/programs/:program_id', async (req, res) => {
       .filter(Boolean);
 
     // Delete workouts that are not in the incoming data
+
     for (const existingWorkoutId of existingWorkoutIds) {
       if (!incomingWorkoutIds.includes(existingWorkoutId)) {
         await pool.query('DELETE FROM workouts WHERE id = $1', [
@@ -273,20 +277,23 @@ router.put('/programs/:program_id', async (req, res) => {
     // Loop through each workout to update or insert
     for (const workout of workouts) {
       let workoutId;
+      console.log('Number.isInteger(workout.id', Number.isInteger(workout.id));
 
-      if (isInteger(workout.id)) {
+      if (Number.isInteger(workout.id)) {
         // Update existing workout
         await pool.query(
           `UPDATE workouts SET name = $1, "order" = $2 WHERE id = $3 AND program_id = $4`,
           [workout.name, workout.order, workout.id, program_id]
         );
         workoutId = workout.id;
+        console.log('Updated workout:', workoutId);
       } else {
         // Insert new workout
         const workoutResult = await pool.query(
           `INSERT INTO workouts (name, program_id, "order") VALUES ($1, $2, $3) RETURNING id`,
           [workout.name, program_id, workout.order]
         );
+        console.log('Inserted new workout:', workoutResult.rows[0]);
         workoutId = workoutResult.rows[0].id;
       }
 
@@ -346,16 +353,14 @@ router.put('/programs/:program_id', async (req, res) => {
           exerciseId = exerciseResult.rows[0].id;
         }
 
-        // Fetch existing sets to handle deletions
-        const { rows: existingSets } = await pool.query(
+        // Now handling sets
+        const existingSets = await pool.query(
           'SELECT id FROM sets WHERE exercise_id = $1',
           [exerciseId]
         );
 
-        const existingSetIds = existingSets.map(row => row.id);
-        const incomingSetIds = exercise.sets
-          .map(set => set.id)
-          .filter(id => typeof id === 'number');
+        const existingSetIds = existingSets.rows.map(row => row.id);
+        const incomingSetIds = exercise.sets.map(set => set.id).filter(Boolean);
 
         console.log('Existing sets:', existingSetIds);
         console.log('Incoming sets:', incomingSetIds);
@@ -369,19 +374,23 @@ router.put('/programs/:program_id', async (req, res) => {
         }
 
         // Loop through each set to update or insert
+
         for (const set of exercise.sets) {
+          const safeWeight = parseInt(set.weight, 10) || 0;
+          const safeReps = parseInt(set.reps, 10) || 0;
+
           if (set.id && typeof set.id === 'number') {
             // Update existing set
             await pool.query(
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
-              [set.weight, set.reps, set.order, set.id, exerciseId]
+              [safeWeight, safeReps, set.order, set.id, exerciseId]
             );
             console.log('Updated set:', set.id);
           } else {
             // Insert new set
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
-              [set.weight, set.reps, set.order, exerciseId]
+              [safeWeight, safeReps, set.order, exerciseId]
             );
             console.log('Inserted new set for exercise_id:', exerciseId);
           }
