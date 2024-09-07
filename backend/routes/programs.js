@@ -265,8 +265,32 @@ router.put('/programs/:program_id', async (req, res) => {
 
     // Delete workouts that are not in the incoming data
 
+    // Delete workouts that are not in the incoming data
     for (const existingWorkoutId of existingWorkoutIds) {
       if (!incomingWorkoutIds.includes(existingWorkoutId)) {
+        // First, delete all sets associated with exercises in this workout
+        const { rows: workoutExercises } = await pool.query(
+          'SELECT id FROM exercises WHERE workout_id = $1',
+          [existingWorkoutId]
+        );
+
+        for (const exercise of workoutExercises) {
+          await pool.query('DELETE FROM sets WHERE exercise_id = $1', [
+            exercise.id
+          ]);
+          console.log('Deleted sets associated with exercise:', exercise.id);
+        }
+
+        // Then, delete all exercises associated with this workout
+        await pool.query('DELETE FROM exercises WHERE workout_id = $1', [
+          existingWorkoutId
+        ]);
+        console.log(
+          'Deleted exercises associated with workout:',
+          existingWorkoutId
+        );
+
+        // Finally, delete the workout itself
         await pool.query('DELETE FROM workouts WHERE id = $1', [
           existingWorkoutId
         ]);
