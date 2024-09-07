@@ -153,16 +153,19 @@ function programReducer(state = currentProgram, action) {
           );
 
           // Combine the existing exercises with the new ones
+          console.log('workout.exercises length:', workout.exercises.length);
+
+          const currentExerciseCount = workout.exercises.length;
 
           return {
             ...workout,
             exercises: [
               ...workout.exercises,
-              ...newExercises.map(ex => ({
+              ...newExercises.map((ex, index) => ({
                 ...ex,
                 catalog_exercise_id: ex.catalog_exercise_id,
                 id: ex.id || uuidv4(),
-                order: workout.exercises.length + 1,
+                order: currentExerciseCount + index + 1,
                 sets: ex.sets || [
                   { id: uuidv4(), weight: '', reps: '', order: 1 }
                 ]

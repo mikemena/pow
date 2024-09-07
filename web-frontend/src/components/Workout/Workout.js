@@ -70,7 +70,7 @@ const Workout = ({
     deleteWorkout(workoutId);
   };
 
-  const handleRemoveExercise = (workoutId, exerciseId) => {
+  const handleDeleteExercise = (workoutId, exerciseId) => {
     removeExercise(workoutId, exerciseId);
   };
 
@@ -388,7 +388,7 @@ const Workout = ({
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleRemoveExercise(
+                      handleDeleteExercise(
                         workout.id,
                         exercise.catalog_exercise_id
                       )
