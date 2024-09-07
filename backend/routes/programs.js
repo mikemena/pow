@@ -187,7 +187,7 @@ router.post('/programs', async (req, res) => {
             await client.query(setQuery, [
               exercise_id,
               set.reps,
-              set.weight,
+              set.weight || 0,
               set.order
             ]);
           }
