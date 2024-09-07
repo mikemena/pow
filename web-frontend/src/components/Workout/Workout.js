@@ -97,8 +97,6 @@ const Workout = ({
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
     }));
 
-    console.log('workout:', workout);
-
     navigate('/select-exercises', {
       state: {
         workoutId,

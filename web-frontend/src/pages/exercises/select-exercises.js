@@ -17,8 +17,6 @@ const SelectExercisesPage = () => {
   const { theme } = useTheme();
 
   const { isNewProgram, programId } = location.state;
-  console.log('isNewProgram:', isNewProgram);
-  console.log('programId:', programId);
 
   const activeWorkoutId = state.workout.activeWorkout;
   const activeWorkout = state.workout.workouts.find(

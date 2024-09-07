@@ -131,7 +131,6 @@ export const ProgramProvider = ({ children }) => {
   // Update program in backend
 
   const updateProgram = async updatedProgram => {
-    console.log('Updating program:', updatedProgram);
     try {
       // validateProgramData(updatedProgram);
 
@@ -141,8 +140,6 @@ export const ProgramProvider = ({ children }) => {
       const workoutsToUpdate = updatedProgram.workouts.filter(workout =>
         Number.isInteger(workout.id)
       );
-
-      console.log('Making PUT request with program data:', updatedProgram);
 
       const response = await fetch(
         `http://localhost:9025/api/programs/${updatedProgram.id}`,
@@ -156,7 +153,6 @@ export const ProgramProvider = ({ children }) => {
           })
         }
       );
-      console.log('Response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -164,14 +160,10 @@ export const ProgramProvider = ({ children }) => {
         throw new Error('Network response was not ok');
       }
 
-      const savedProgram = await response.json();
-      console.log('Program updated successfully on server:', savedProgram);
-
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_DATABASE,
         payload: updatedProgram
       });
-      console.log('Dispatch successful, program updated in state.');
     } catch (error) {
       console.error('Failed to update program:', error);
       dispatch({
@@ -184,8 +176,6 @@ export const ProgramProvider = ({ children }) => {
   // Validate program data structure
 
   const validateProgramData = programData => {
-    console.log('Validating program data:', programData);
-
     if (!programData.workouts || !Array.isArray(programData.workouts)) {
       console.error('Validation failed: Workouts should be an array.');
       throw new Error('Workouts should be an array.');
@@ -205,7 +195,6 @@ export const ProgramProvider = ({ children }) => {
         }
       });
     });
-    console.log('Program data validated successfully.');
   };
 
   // Add new program details
@@ -258,14 +247,12 @@ export const ProgramProvider = ({ children }) => {
   // Add a new workout to the program
 
   const addWorkout = programId => {
-    console.log('addWorkout in context:', programId);
     const newWorkout = {
       id: uuidv4(),
       programId: programId,
       name: 'Workout',
       exercises: []
     };
-    console.log('New workout addWorkout in context:', newWorkout);
 
     dispatch({
       type: actionTypes.ADD_WORKOUT,
@@ -285,7 +272,6 @@ export const ProgramProvider = ({ children }) => {
   // Update existing workout
 
   const updateWorkout = updatedWorkout => {
-    console.log('updateWorkout in context:', updatedWorkout);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: updatedWorkout
@@ -305,7 +291,6 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
-    console.log('addExercise in context:', workoutId, exercises);
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       id: uuidv4(),
@@ -318,10 +303,7 @@ export const ProgramProvider = ({ children }) => {
           ? ex.sets
           : [{ id: uuidv4(), weight: '', reps: '', order: 1 }]
     }));
-    console.log(
-      'addExercise in context Standardized exercises :',
-      standardizedExercises
-    );
+
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises: standardizedExercises }

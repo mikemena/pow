@@ -57,15 +57,11 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_WORKOUT: {
       const newWorkout = action.payload;
-      console.log(
-        'Reducer - actionTypes.ADD_WORKOUT - Adding new workout:',
-        newWorkout
-      );
+
       if (!newWorkout) {
         console.error('Failed to standardize workout:', action.payload);
         return state;
       }
-      console.log('Current state before adding workout:', state);
 
       const updatedState = {
         ...state,
@@ -74,8 +70,6 @@ function programReducer(state = currentProgram, action) {
           workouts: [...state.workout.workouts, newWorkout]
         }
       };
-
-      console.log('Updated state after adding workout:', updatedState);
 
       return updatedState;
     }
@@ -123,11 +117,6 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
 
-      console.log(
-        'Reducer - actionTypes.ADD_EXERCISE - Adding exercises to workout:',
-        exercises
-      );
-
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
         console.error('Workout ID does not match the active workout.');
@@ -153,7 +142,6 @@ function programReducer(state = currentProgram, action) {
           );
 
           // Combine the existing exercises with the new ones
-          console.log('workout.exercises length:', workout.exercises.length);
 
           const currentExerciseCount = workout.exercises.length;
 
@@ -176,11 +164,6 @@ function programReducer(state = currentProgram, action) {
         return workout;
       });
 
-      console.log(
-        'Reducer - actionTypes.ADD_EXERCISE - Updated workouts:',
-        updatedWorkouts
-      );
-
       return {
         ...state,
         workout: {
@@ -198,27 +181,32 @@ function programReducer(state = currentProgram, action) {
         console.error('Workout ID does not match the active workout.');
         return state;
       }
+      const updatedWorkouts = state.workout.workouts.map(workout => {
+        if (workout.id === workoutId) {
+          // Filter out the exercise to be deleted
+          const updatedExercises = workout.exercises.filter(
+            exercise => exercise.id !== exerciseId
+          );
+
+          // Reorder the remaining exercises
+          const reorderedExercises = updatedExercises.map(
+            (exercise, index) => ({
+              ...exercise,
+              order: index + 1 // Adjust the order
+            })
+          );
+
+          return { ...workout, exercises: reorderedExercises };
+        }
+
+        return workout;
+      });
 
       return {
         ...state,
         workout: {
           ...state.workout,
-          // Update the workouts array to remove the exercise
-          workouts: state.workout.workouts.map(workout => {
-            if (workout.id === workoutId) {
-              return {
-                ...workout,
-                exercises: workout.exercises
-                  ? workout.exercises.filter(
-                      ex =>
-                        ex.id !== exerciseId &&
-                        ex.catalog_exercise_id !== exerciseId
-                    )
-                  : []
-              };
-            }
-            return workout;
-          })
+          workouts: updatedWorkouts
         }
       };
     }

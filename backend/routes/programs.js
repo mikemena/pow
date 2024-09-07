@@ -123,7 +123,6 @@ router.get('/programs/:program_id', async (req, res) => {
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
-  console.log('Received POST request to create a new program');
   const {
     user_id,
     name,
@@ -217,7 +216,6 @@ const isInteger = value => {
 };
 
 router.put('/programs/:program_id', async (req, res) => {
-  console.log('Received PUT request to update program:');
   const { program_id } = req.params;
   const {
     name,
@@ -228,15 +226,11 @@ router.put('/programs/:program_id', async (req, res) => {
     workouts
   } = req.body;
 
-  console.log('Received PUT request to update program:', program_id);
-  console.log('Request body:', JSON.stringify(req.body, null, 2));
-
   try {
     // Begin transaction
     await pool.query('BEGIN');
 
     // Update the program details
-    console.log('Updating program details...');
     await pool.query(
       `UPDATE programs
        SET name = $1, program_duration = $2, duration_unit = $3, days_per_week = $4, main_goal = $5
@@ -250,7 +244,6 @@ router.put('/programs/:program_id', async (req, res) => {
         program_id
       ]
     );
-    console.log('Updated program details for program_id:', program_id);
 
     // Fetch existing workouts to handle deletions
     const { rows: existingWorkouts } = await pool.query(
@@ -278,30 +271,23 @@ router.put('/programs/:program_id', async (req, res) => {
           await pool.query('DELETE FROM sets WHERE exercise_id = $1', [
             exercise.id
           ]);
-          console.log('Deleted sets associated with exercise:', exercise.id);
         }
 
         // Then, delete all exercises associated with this workout
         await pool.query('DELETE FROM exercises WHERE workout_id = $1', [
           existingWorkoutId
         ]);
-        console.log(
-          'Deleted exercises associated with workout:',
-          existingWorkoutId
-        );
 
         // Finally, delete the workout itself
         await pool.query('DELETE FROM workouts WHERE id = $1', [
           existingWorkoutId
         ]);
-        console.log('Deleted workout:', existingWorkoutId);
       }
     }
 
     // Loop through each workout to update or insert
     for (const workout of workouts) {
       let workoutId;
-      console.log('Number.isInteger(workout.id', Number.isInteger(workout.id));
 
       if (Number.isInteger(workout.id)) {
         // Update existing workout
@@ -310,14 +296,13 @@ router.put('/programs/:program_id', async (req, res) => {
           [workout.name, workout.order, workout.id, program_id]
         );
         workoutId = workout.id;
-        console.log('Updated workout:', workoutId);
       } else {
         // Insert new workout
         const workoutResult = await pool.query(
           `INSERT INTO workouts (name, program_id, "order") VALUES ($1, $2, $3) RETURNING id`,
           [workout.name, program_id, workout.order]
         );
-        console.log('Inserted new workout:', workoutResult.rows[0]);
+
         workoutId = workoutResult.rows[0].id;
       }
 
@@ -339,16 +324,11 @@ router.put('/programs/:program_id', async (req, res) => {
           await pool.query('DELETE FROM sets WHERE exercise_id = $1', [
             existingExerciseId
           ]);
-          console.log(
-            'Deleted sets associated with exercise:',
-            existingExerciseId
-          );
 
           // Then, delete the exercise itself
           await pool.query('DELETE FROM exercises WHERE id = $1', [
             existingExerciseId
           ]);
-          console.log('Deleted exercise:', existingExerciseId);
         }
       }
 
@@ -386,14 +366,10 @@ router.put('/programs/:program_id', async (req, res) => {
         const existingSetIds = existingSets.rows.map(row => row.id);
         const incomingSetIds = exercise.sets.map(set => set.id).filter(Boolean);
 
-        console.log('Existing sets:', existingSetIds);
-        console.log('Incoming sets:', incomingSetIds);
-
         // Delete sets that are not in the incoming data
         for (const existingSetId of existingSetIds) {
           if (!incomingSetIds.includes(existingSetId)) {
             await pool.query('DELETE FROM sets WHERE id = $1', [existingSetId]);
-            console.log('Deleted set:', existingSetId);
           }
         }
 
@@ -409,25 +385,20 @@ router.put('/programs/:program_id', async (req, res) => {
               `UPDATE sets SET weight = $1, reps = $2, "order" = $3 WHERE id = $4 AND exercise_id = $5`,
               [safeWeight, safeReps, set.order, set.id, exerciseId]
             );
-            console.log('Updated set:', set.id);
           } else {
             // Insert new set
             await pool.query(
               `INSERT INTO sets (weight, reps, "order", exercise_id) VALUES ($1, $2, $3, $4)`,
               [safeWeight, safeReps, set.order, exerciseId]
             );
-            console.log('Inserted new set for exercise_id:', exerciseId);
           }
         }
       }
     }
 
-    console.log('Committing transaction');
-
     // Commit the transaction
     await pool.query('COMMIT');
 
-    console.log('Program updated successfully. Sending response...');
     res.status(200).json({ message: 'Program updated successfully' });
   } catch (err) {
     // If there is any error, rollback the transaction
