@@ -57,11 +57,14 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.ADD_WORKOUT: {
       const newWorkout = action.payload;
+      console.log(
+        'Reducer - actionTypes.ADD_WORKOUT - Adding new workout:',
+        newWorkout
+      );
       if (!newWorkout) {
         console.error('Failed to standardize workout:', action.payload);
         return state;
       }
-      console.log('Adding new workout:', newWorkout);
       console.log('Current state before adding workout:', state);
 
       const updatedState = {
@@ -120,6 +123,11 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
 
+      console.log(
+        'Reducer - actionTypes.ADD_EXERCISE - Adding exercises to workout:',
+        exercises
+      );
+
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
         console.error('Workout ID does not match the active workout.');
@@ -164,6 +172,11 @@ function programReducer(state = currentProgram, action) {
         }
         return workout;
       });
+
+      console.log(
+        'Reducer - actionTypes.ADD_EXERCISE - Updated workouts:',
+        updatedWorkouts
+      );
 
       return {
         ...state,

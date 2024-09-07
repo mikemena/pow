@@ -2,7 +2,7 @@ import React, { useState, useMemo, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../contexts/programContext';
 import { actionTypes } from '../../actions/actionTypes';
 import NavBar from '../../components/Nav/Nav';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { BsChevronCompactLeft } from 'react-icons/bs';
 import { useTheme } from '../../contexts/themeContext';
 import ExerciseSearch from '../../components/Exercise/Search';
@@ -13,7 +13,12 @@ import './select-exercises.css';
 const SelectExercisesPage = () => {
   const { addExercise, state, dispatch } = useContext(ProgramContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useTheme();
+
+  const { isNewProgram, programId } = location.state;
+  console.log('isNewProgram:', isNewProgram);
+  console.log('programId:', programId);
 
   const activeWorkoutId = state.workout.activeWorkout;
   const activeWorkout = state.workout.workouts.find(
@@ -98,11 +103,17 @@ const SelectExercisesPage = () => {
 
     addExercise(activeWorkoutId, localExercises);
 
-    navigate('/create-program'); // Navigate back after saving
+    if (isNewProgram) {
+      navigate('/create-program');
+    } else {
+      navigate(`/programs/${programId}/edit`);
+    }
   };
 
   const handleBack = () => {
-    navigate('/create-program');
+    if (isNewProgram) {
+      navigate('/create-program');
+    } else navigate(`/programs/${programId}/edit`);
   };
 
   const exerciseText = () => {

@@ -258,12 +258,14 @@ export const ProgramProvider = ({ children }) => {
   // Add a new workout to the program
 
   const addWorkout = programId => {
+    console.log('addWorkout in context:', programId);
     const newWorkout = {
       id: uuidv4(),
       programId: programId,
       name: 'Workout',
       exercises: []
     };
+    console.log('New workout addWorkout in context:', newWorkout);
 
     dispatch({
       type: actionTypes.ADD_WORKOUT,
@@ -283,6 +285,7 @@ export const ProgramProvider = ({ children }) => {
   // Update existing workout
 
   const updateWorkout = updatedWorkout => {
+    console.log('updateWorkout in context:', updatedWorkout);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT,
       payload: updatedWorkout
@@ -302,6 +305,7 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
+    console.log('addExercise in context:', workoutId, exercises);
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       id: uuidv4(),
@@ -314,11 +318,16 @@ export const ProgramProvider = ({ children }) => {
           ? ex.sets
           : [{ id: uuidv4(), weight: '', reps: '', order: 1 }]
     }));
-
+    console.log(
+      'addExercise in context Standardized exercises :',
+      standardizedExercises
+    );
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises: standardizedExercises }
     });
+    // update the program in the backend
+    updateProgram(state.program);
   };
 
   // Remove an exercise from a workout

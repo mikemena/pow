@@ -16,6 +16,7 @@ const Workout = ({
   workout: initialWorkout,
   isEditing,
   isNewProgram,
+  programId,
   isExpanded,
   onToggleExpand
 }) => {
@@ -96,8 +97,15 @@ const Workout = ({
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
     }));
 
+    console.log('workout:', workout);
+
     navigate('/select-exercises', {
-      state: { workoutId, selectedExercises, isNewProgram }
+      state: {
+        workoutId,
+        selectedExercises,
+        isNewProgram,
+        programId: programId
+      }
     });
   };
 

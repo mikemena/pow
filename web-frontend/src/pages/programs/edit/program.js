@@ -120,6 +120,42 @@ const EditProgram = () => {
     }
   };
 
+  // const handleUpdateProgram = async () => {
+  //   console.log('Start handleUpdateProgram');
+  //   try {
+  //     const updatedProgram = {
+  //       ...program,
+  //       workouts: workouts.map(workout => {
+  //         const updatedWorkout = workouts[workout.id];
+  //         return updatedWorkout
+  //           ? {
+  //               ...updatedWorkout,
+  //               exercises: updatedWorkout.exercises.map(exercise => ({
+  //                 ...exercise,
+  //                 sets: exercise.sets.map(set => ({
+  //                   ...set,
+  //                   weight: parseInt(set.weight, 10) || 0,
+  //                   reps: parseInt(set.reps, 10) || 0,
+  //                   order: parseInt(set.order, 10) || 0
+  //                 }))
+  //               }))
+  //             }
+  //           : workout;
+  //       })
+  //     };
+
+  //     console.log('About to save program...');
+  //     console.log('Program data being sent to backend:', updatedProgram);
+
+  //     await updateProgram(updatedProgram);
+
+  //     console.log('Program saved successfully. Navigating...');
+  //     navigate('/programs');
+  //   } catch (error) {
+  //     console.error('Failed to save the program:', error);
+  //   }
+  // };
+
   return (
     <div>
       <NavBar isEditing='true' />
@@ -143,6 +179,7 @@ const EditProgram = () => {
                   isEditing={true}
                   isNewProgram={false}
                   workout={workout}
+                  programId={program.id}
                   isExpanded={expandedWorkouts[workout.id] || false}
                   onToggleExpand={() => handleExpandWorkout(workout.id)}
                 />
