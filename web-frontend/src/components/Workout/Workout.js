@@ -386,10 +386,7 @@ const Workout = ({
                   <button
                     className='workout__remove-exercise-btn'
                     onClick={() =>
-                      handleDeleteExercise(
-                        workout.id,
-                        exercise.catalog_exercise_id
-                      )
+                      handleDeleteExercise(workout.id, exercise.id)
                     }
                   >
                     <TbHttpDelete size={30} />
