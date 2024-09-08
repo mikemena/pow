@@ -3,6 +3,7 @@ import { TbPencil } from 'react-icons/tb';
 import { BsChevronCompactUp, BsChevronCompactDown } from 'react-icons/bs';
 import { IoCloseCircleSharp, IoCheckmarkCircleSharp } from 'react-icons/io5';
 import { MdDragHandle, MdAddBox } from 'react-icons/md';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { RiDeleteBack2Fill } from 'react-icons/ri';
 import { GrClose } from 'react-icons/gr';
 import { TbHttpDelete } from 'react-icons/tb';
@@ -168,6 +169,7 @@ const Workout = ({
   };
 
   const workoutExercises = localExercises;
+  console.log('workoutExercises', workoutExercises);
 
   const exerciseText = count => {
     if (count === 0) return 'No Exercises';
@@ -176,6 +178,28 @@ const Workout = ({
   };
 
   const exerciseCount = workoutExercises.length;
+
+  // Handle drag end
+  const handleDragEnd = result => {
+    if (!result.destination) return;
+
+    const reorderedExercises = Array.from(localExercises);
+    const [removed] = reorderedExercises.splice(result.source.index, 1);
+    reorderedExercises.splice(result.destination.index, 0, removed);
+
+    // Update the local state with reordered exercises
+    setLocalExercises(reorderedExercises);
+
+    // Update the workout in the context (if necessary)
+    const updatedWorkout = {
+      ...workout,
+      exercises: reorderedExercises.map((exercise, index) => ({
+        ...exercise,
+        order: index + 1 // Reassign order based on new position
+      }))
+    };
+    updateWorkout(updatedWorkout);
+  };
 
   return (
     <div
@@ -249,155 +273,190 @@ const Workout = ({
         </button>
       </div>
       {isExpanded && (
-        <div className='workout__exercises'>
-          <div className='workout__exercises-header-container'>
-            <h4 className={`workout__exercises_header ${theme}`}>Exercise</h4>
-            <h4 className={`workout__exercises_header ${theme}`}>Set</h4>
-            <h4 className={`workout__exercises_header ${theme}`}>Weight</h4>
-            <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
-          </div>
-          {workoutExercises.length > 0 ? (
-            workoutExercises.map(exercise => (
+        <DragDropContext onDragEnd={handleDragEnd}>
+          <Droppable droppableId={`workout-${workout.id}`}>
+            {provided => (
               <div
-                key={exercise.catalog_exercise_id}
-                className='workout__each-exercise'
+                className='workout__exercises'
+                {...provided.droppableProps}
+                ref={provided.innerRef}
               >
-                <div className='workout__exercise-column'>
-                  <div className='workout__exercise-info'>
-                    <div className={`workout__drag-order-container ${theme}`}>
-                      <span
-                        className={`workout__exercise-order-number ${theme}`}
-                      >
-                        {exercise.order}
-                      </span>
-                    </div>
-                    <div className='workout__exercise-details'>
-                      <h4 className={`workout__exercises_name ${theme}`}>
-                        {exercise.name}
-                      </h4>
-                      <h5 className={`workout__exercise-muscle ${theme}`}>
-                        {exercise.muscle}
-                      </h5>
-                    </div>
-                  </div>
+                <div className='workout__exercises-header-container'>
+                  <h4 className={`workout__exercises_header ${theme}`}>
+                    Exercise
+                  </h4>
+                  <h4 className={`workout__exercises_header ${theme}`}>Set</h4>
+                  <h4 className={`workout__exercises_header ${theme}`}>
+                    Weight
+                  </h4>
+                  <h4 className={`workout__exercises_header ${theme}`}>Reps</h4>
                 </div>
-                <div className='workout__sets-column'>
-                  {exercise.sets &&
-                    exercise.sets.length > 0 &&
-                    exercise.sets.map(set => (
-                      <div key={set.id} className='workout__set'>
-                        <p className={`workout__set-order-number ${theme}`}>
-                          {set.order}
-                        </p>
-                      </div>
-                    ))}
-                  <button
-                    onClick={() => handleAddSet(exercise)}
-                    className='workout__add-set-btn'
-                  >
-                    <MdAddBox size={25} />
-                  </button>
-                </div>
-
-                <div className='workout__weights-column'>
-                  {exercise.sets && exercise.sets.length > 0
-                    ? exercise.sets.map(set => (
-                        <div key={set.id} className='workout__set'>
-                          <TextInput
-                            className={`workout__set-weight ${theme}`}
-                            id='set-weight'
-                            onChange={e =>
-                              handleUpdateSetLocally(
-                                { weight: e.target.value },
-                                exercise.catalog_exercise_id,
-                                set.id
-                              )
-                            }
-                            onBlur={() =>
-                              handleUpdateSetOnBlur(
-                                exercise.catalog_exercise_id,
-                                set
-                              )
-                            }
-                            value={set.weight}
-                            type='number'
-                          />
-                        </div>
-                      ))
-                    : null}
-                  <div className='workout__blank'></div>
-                </div>
-
-                <div className='workout__reps-column'>
-                  {exercise?.sets?.map(set => (
-                    <div key={set.id} className='workout__set'>
-                      <TextInput
-                        className={`workout__set-reps ${theme}`}
-                        onChange={e =>
-                          handleUpdateSetLocally(
-                            { reps: e.target.value },
-                            exercise.catalog_exercise_id,
-                            set.id
-                          )
-                        }
-                        onBlur={() =>
-                          handleUpdateSetOnBlur(
-                            exercise.catalog_exercise_id,
-                            set
-                          )
-                        }
-                        value={set.reps}
-                        type='number'
-                      />
-                    </div>
-                  ))}
-                  <div className='workout__blank'></div>
-                </div>
-                <div className='workout__delete-set-column'>
-                  {exercise?.sets?.map((set, setIndex) => (
-                    <div key={set.id} className='workout__set'>
-                      {setIndex > 0 ? (
-                        <button
-                          onClick={() =>
-                            handleRemoveSet(
-                              workout.id,
-                              exercise.catalog_exercise_id,
-                              set.id
-                            )
-                          }
-                          className='workout__delete-set-btn'
+                {workoutExercises.length > 0 ? (
+                  workoutExercises.map((exercise, index) => (
+                    <Draggable
+                      key={exercise.id || index}
+                      draggableId={`exercise-${exercise.id || index}`}
+                      index={index}
+                    >
+                      {provided => (
+                        <div
+                          className='workout__each-exercise'
+                          ref={provided.innerRef}
+                          {...provided.draggableProps}
+                          {...provided.dragHandleProps}
                         >
-                          <RiDeleteBack2Fill size={25} />
-                        </button>
-                      ) : (
-                        <div className='workout__set'>
-                          <div className='workout__no-delete-set-btn' />
+                          <div className='workout__exercise-column'>
+                            <div className='workout__exercise-info'>
+                              <div
+                                className={`workout__drag-order-container ${theme}`}
+                              >
+                                <span
+                                  className={`workout__exercise-order-number ${theme}`}
+                                >
+                                  {exercise.order}
+                                </span>
+                              </div>
+                              <div className='workout__exercise-details'>
+                                <h4
+                                  className={`workout__exercises_name ${theme}`}
+                                >
+                                  {exercise.name}
+                                </h4>
+                                <h5
+                                  className={`workout__exercise-muscle ${theme}`}
+                                >
+                                  {exercise.muscle}
+                                </h5>
+                              </div>
+                            </div>
+                          </div>
+                          <div className='workout__sets-column'>
+                            {exercise.sets &&
+                              exercise.sets.length > 0 &&
+                              exercise.sets.map(set => (
+                                <div key={set.id} className='workout__set'>
+                                  <p
+                                    className={`workout__set-order-number ${theme}`}
+                                  >
+                                    {set.order}
+                                  </p>
+                                </div>
+                              ))}
+                            <button
+                              onClick={() => handleAddSet(exercise)}
+                              className='workout__add-set-btn'
+                            >
+                              <MdAddBox size={25} />
+                            </button>
+                          </div>
+
+                          <div className='workout__weights-column'>
+                            {exercise.sets && exercise.sets.length > 0
+                              ? exercise.sets.map(set => (
+                                  <div key={set.id} className='workout__set'>
+                                    <TextInput
+                                      className={`workout__set-weight ${theme}`}
+                                      id='set-weight'
+                                      onChange={e =>
+                                        handleUpdateSetLocally(
+                                          { weight: e.target.value },
+                                          exercise.catalog_exercise_id,
+                                          set.id
+                                        )
+                                      }
+                                      onBlur={() =>
+                                        handleUpdateSetOnBlur(
+                                          exercise.catalog_exercise_id,
+                                          set
+                                        )
+                                      }
+                                      value={set.weight}
+                                      type='number'
+                                    />
+                                  </div>
+                                ))
+                              : null}
+                            <div className='workout__blank'></div>
+                          </div>
+
+                          <div className='workout__reps-column'>
+                            {exercise?.sets?.map(set => (
+                              <div key={set.id} className='workout__set'>
+                                <TextInput
+                                  className={`workout__set-reps ${theme}`}
+                                  onChange={e =>
+                                    handleUpdateSetLocally(
+                                      { reps: e.target.value },
+                                      exercise.catalog_exercise_id,
+                                      set.id
+                                    )
+                                  }
+                                  onBlur={() =>
+                                    handleUpdateSetOnBlur(
+                                      exercise.catalog_exercise_id,
+                                      set
+                                    )
+                                  }
+                                  value={set.reps}
+                                  type='number'
+                                />
+                              </div>
+                            ))}
+                            <div className='workout__blank'></div>
+                          </div>
+                          <div className='workout__delete-set-column'>
+                            {exercise?.sets?.map((set, setIndex) => (
+                              <div key={set.id} className='workout__set'>
+                                {setIndex > 0 ? (
+                                  <button
+                                    onClick={() =>
+                                      handleRemoveSet(
+                                        workout.id,
+                                        exercise.catalog_exercise_id,
+                                        set.id
+                                      )
+                                    }
+                                    className='workout__delete-set-btn'
+                                  >
+                                    <RiDeleteBack2Fill size={25} />
+                                  </button>
+                                ) : (
+                                  <div className='workout__set'>
+                                    <div className='workout__no-delete-set-btn' />
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                            <div className='workout__blank'></div>
+                          </div>
+
+                          <div className='workout__exercise-controls'>
+                            <div className={`workout__drag-handle ${theme}`}>
+                              <MdDragHandle size={25} />
+                            </div>
+                            <button
+                              className='workout__remove-exercise-btn'
+                              onClick={() =>
+                                handleDeleteExercise(workout.id, exercise.id)
+                              }
+                            >
+                              <TbHttpDelete size={30} />
+                            </button>
+                          </div>
                         </div>
                       )}
-                    </div>
-                  ))}
-                  <div className='workout__blank'></div>
-                </div>
-
-                <div className='workout__exercise-controls'>
-                  <div className={`workout__drag-handle ${theme}`}>
-                    <MdDragHandle size={25} />
-                  </div>
-                  <button
-                    className='workout__remove-exercise-btn'
-                    onClick={() =>
-                      handleDeleteExercise(workout.id, exercise.id)
-                    }
-                  >
-                    <TbHttpDelete size={30} />
-                  </button>
-                </div>
+                    </Draggable>
+                  ))
+                ) : (
+                  <p className='workout__no-exercise-message'>
+                    No exercises added
+                  </p>
+                )}
+                {provided.placeholder}
               </div>
-            ))
-          ) : (
-            <p className='workout__no-exercise-message'>No exercises added</p>
-          )}
-        </div>
+            )}
+          </Droppable>
+        </DragDropContext>
       )}
     </div>
   );
