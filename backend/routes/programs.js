@@ -36,7 +36,7 @@ router.get('/users/:user_id/programs', async (req, res) => {
             'JOIN muscle_groups mg ON ec.muscle_group_id = mg.id ' +
             'JOIN equipment_catalog eq ON ec.equipment_id = eq.id ' +
             'WHERE e.workout_id = $1',
-          [workout.id] // Use the correct column name for workout ID
+          [workout.id]
         );
 
         workout.exercises = [];

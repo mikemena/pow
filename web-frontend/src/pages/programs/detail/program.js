@@ -93,91 +93,98 @@ const ProgramDetailsPage = () => {
           </div>
         </div>
         <div>
-          {workouts.map(workout => (
-            <div
-              key={workout.id}
-              className={`prog-details-page__workout-container ${theme}`}
-            >
-              <div className='prog-details-page__workout-header'>
-                <div className='prog-details-page__workout-expand-container'>
-                  <button
-                    className='prog-details-page__workout-expand-btn'
-                    onClick={() => handleExpandWorkout(workout.id)}
-                  >
-                    {expandedWorkouts[workout.id] ? (
-                      <BsChevronCompactUp
-                        className={`workout__icon ${theme}`}
-                        size={30}
-                      />
-                    ) : (
-                      <BsChevronCompactDown
-                        className={`workout__icon ${theme}`}
-                        size={30}
-                      />
-                    )}
-                  </button>
-                </div>
-                <div className={`prog-details-page__workout-summary ${theme}`}>
-                  <h1 className={`prog-details-page__workout-name ${theme}`}>
-                    {workout.name}
-                  </h1>
-                  <span
-                    className={`prog-details-page__exercise-count ${theme}`}
-                  >
-                    {exerciseText(
-                      workout.exercises ? workout.exercises.length : 0
-                    )}
-                  </span>
-                </div>
-              </div>
-              {expandedWorkouts[workout.id] && (
-                <div className='prog-details-page__exercise-container'>
-                  {workout.exercises.map(exercise => (
-                    <div
-                      key={exercise.id}
-                      className='prog-details-page__exercise-wrapper'
+          {workouts.map(workout => {
+            // Sort exercises by the 'order' field before rendering
+            const sortedExercises = [...workout.exercises].sort(
+              (a, b) => a.order - b.order
+            );
+
+            return (
+              <div
+                key={workout.id}
+                className={`prog-details-page__workout-container ${theme}`}
+              >
+                <div className='prog-details-page__workout-header'>
+                  <div className='prog-details-page__workout-expand-container'>
+                    <button
+                      className='prog-details-page__workout-expand-btn'
+                      onClick={() => handleExpandWorkout(workout.id)}
                     >
-                      <div className='prog-details-page__exercise-header'>
-                        <span className='prog-details-page__exercise-order'>
-                          {exercise.order}
-                        </span>
-                        <div className='prog-details-page__exercise-info'>
-                          <h3 className='prog-details-page__exercise-name'>
-                            {exercise.name}
-                          </h3>
-                          <div className='prog-details-page__exercise-details'>
-                            <span className='prog-details-page__exercise-muscle'>
-                              Muscle: {exercise.muscle}
-                            </span>
-                            <span className='prog-details-page__exercise-equipment'>
-                              Equipment: {exercise.equipment}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className='prog-details-page__exercise-sets'>
-                        <div className='prog-details-page__set-header'>
-                          <span>Set</span>
-                          <span>Weight</span>
-                          <span>Reps</span>
-                        </div>
-                        {exercise.sets.map(set => (
-                          <div
-                            key={set.id}
-                            className='prog-details-page__set-row'
-                          >
-                            <span>{set.order}</span>
-                            <span>{set.weight}</span>
-                            <span>{set.reps}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
+                      {expandedWorkouts[workout.id] ? (
+                        <BsChevronCompactUp
+                          className={`workout__icon ${theme}`}
+                          size={30}
+                        />
+                      ) : (
+                        <BsChevronCompactDown
+                          className={`workout__icon ${theme}`}
+                          size={30}
+                        />
+                      )}
+                    </button>
+                  </div>
+                  <div
+                    className={`prog-details-page__workout-summary ${theme}`}
+                  >
+                    <h1 className={`prog-details-page__workout-name ${theme}`}>
+                      {workout.name}
+                    </h1>
+                    <span
+                      className={`prog-details-page__exercise-count ${theme}`}
+                    >
+                      {exerciseText(sortedExercises.length)}
+                    </span>
+                  </div>
                 </div>
-              )}
-            </div>
-          ))}
+                {expandedWorkouts[workout.id] && (
+                  <div className='prog-details-page__exercise-container'>
+                    {sortedExercises.map(exercise => (
+                      <div
+                        key={exercise.id}
+                        className='prog-details-page__exercise-wrapper'
+                      >
+                        <div className='prog-details-page__exercise-header'>
+                          <span className='prog-details-page__exercise-order'>
+                            {exercise.order}
+                          </span>
+                          <div className='prog-details-page__exercise-info'>
+                            <h3 className='prog-details-page__exercise-name'>
+                              {exercise.name}
+                            </h3>
+                            <div className='prog-details-page__exercise-details'>
+                              <span className='prog-details-page__exercise-muscle'>
+                                Muscle: {exercise.muscle}
+                              </span>
+                              <span className='prog-details-page__exercise-equipment'>
+                                Equipment: {exercise.equipment}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className='prog-details-page__exercise-sets'>
+                          <div className='prog-details-page__set-header'>
+                            <span>Set</span>
+                            <span>Weight</span>
+                            <span>Reps</span>
+                          </div>
+                          {exercise.sets.map(set => (
+                            <div
+                              key={set.id}
+                              className='prog-details-page__set-row'
+                            >
+                              <span>{set.order}</span>
+                              <span>{set.weight}</span>
+                              <span>{set.reps}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
         <div className='prog-details-page__button-container'>
           <Link

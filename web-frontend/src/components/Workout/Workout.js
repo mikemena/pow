@@ -51,7 +51,11 @@ const Workout = ({
   useEffect(() => {
     if (workout) {
       setWorkoutTitle(workout.name);
-      setLocalExercises(workout.exercises);
+      const sortedExercises = [...workout.exercises].sort(
+        (a, b) => a.order - b.order
+      );
+
+      setLocalExercises(sortedExercises);
     }
   }, [workout]);
 
