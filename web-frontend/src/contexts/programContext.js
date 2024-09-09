@@ -312,6 +312,16 @@ export const ProgramProvider = ({ children }) => {
     updateProgram(state.program);
   };
 
+  // Update an exercise
+  const updateExercise = (workoutId, updatedExercises) => {
+    console.log('Updating exercises:', updatedExercises);
+    console.log('Workout ID:', workoutId);
+    dispatch({
+      type: actionTypes.UPDATE_EXERCISE,
+      payload: { workoutId, updatedExercises }
+    });
+  };
+
   // Remove an exercise from a workout
   const removeExercise = (workoutId, exerciseId) => {
     dispatch({
@@ -405,6 +415,7 @@ export const ProgramProvider = ({ children }) => {
         deleteWorkout,
         setActiveWorkout,
         addExercise,
+        updateExercise,
         toggleExerciseSelection,
         removeExercise,
         addSet,

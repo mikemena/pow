@@ -26,6 +26,7 @@ const Workout = ({
     setActiveWorkout,
     updateWorkoutField,
     deleteWorkout,
+    updateExercise,
     removeExercise,
     updateWorkout,
     addSet,
@@ -179,26 +180,29 @@ const Workout = ({
 
   const exerciseCount = workoutExercises.length;
 
-  // Handle drag end
   const handleDragEnd = result => {
     if (!result.destination) return;
 
-    const reorderedExercises = Array.from(localExercises);
-    const [removed] = reorderedExercises.splice(result.source.index, 1);
-    reorderedExercises.splice(result.destination.index, 0, removed);
+    const { source, destination } = result;
 
-    // Update the local state with reordered exercises
-    setLocalExercises(reorderedExercises);
+    // Copy of the localExercises
+    const updatedExercises = Array.from(localExercises);
 
-    // Update the workout in the context (if necessary)
-    const updatedWorkout = {
-      ...workout,
-      exercises: reorderedExercises.map((exercise, index) => ({
-        ...exercise,
-        order: index + 1 // Reassign order based on new position
-      }))
-    };
-    updateWorkout(updatedWorkout);
+    // Remove the moved item from source index and add it to the destination index
+    const [movedExercise] = updatedExercises.splice(source.index, 1);
+    updatedExercises.splice(destination.index, 0, movedExercise);
+
+    // Update the order property for each exercise based on their new position
+    const orderedExercises = updatedExercises.map((exercise, index) => ({
+      ...exercise,
+      order: index + 1 // Update the order property based on the new position
+    }));
+
+    // Update the local state to reflect changes
+    setLocalExercises(orderedExercises);
+
+    // Dispatch the update to the context
+    updateExercise(workout.id, orderedExercises);
   };
 
   return (

@@ -173,6 +173,24 @@ function programReducer(state = currentProgram, action) {
       };
     }
 
+    case actionTypes.UPDATE_EXERCISE:
+      console.log('Updating exercise:', action.payload);
+      return {
+        ...state,
+        workout: {
+          ...state.workout,
+          workouts: state.workout.workouts.map(workout => {
+            if (workout.id === action.payload.workoutId) {
+              return {
+                ...workout,
+                exercises: action.payload.updatedExercises
+              };
+            }
+            return workout;
+          })
+        }
+      };
+
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;
       console.log('Attempting to remove exercise with id:', exerciseId);
