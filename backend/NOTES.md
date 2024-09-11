@@ -17,3 +17,7 @@ Verify the Installation: To check if PostgreSQL is running and ready to accept c
 Access the PostgreSQL Prompt: You can access the PostgreSQL command-line interface using psql. To connect to the default postgres database, run:
 
     psql postgres
+
+# 4 - Exercise Images Storage
+
+The exercise catalog images are stored in an R2 Cloudflare Bucket
