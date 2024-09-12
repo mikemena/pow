@@ -5,7 +5,8 @@ const db = require('../config/db');
 // GET all muscles
 router.get('/muscles', async (req, res) => {
   try {
-    const { rows } = await db.query(`SELECT m.id, m.name, i.file_path
+    const { rows } =
+      await db.query(`SELECT m.id, m.muscle_group, m.subcategory, m.muscle, i.file_path
     FROM muscle_groups m
     LEFT JOIN image_metadata i ON m.image_id = i.id;`);
     res.json(rows);
@@ -21,7 +22,7 @@ router.get('/muscles/:id', async (req, res) => {
   try {
     // Query to fetch the muscle with the specified ID
     const { rows } = await db.query(
-      `SELECT m.id, m.name, i.file_path
+      `SELECT m.id, m.muscle_group, m.subcategory, m.muscle, i.file_path
       FROM muscle_groups m
       LEFT JOIN image_metadata i ON m.image_id = i.id
       WHERE m.id = $1`,
@@ -45,10 +46,10 @@ router.get('/muscles/:id', async (req, res) => {
 // POST a muscle
 router.post('/muscles', async (req, res) => {
   try {
-    const { muscle_group, image_id } = req.body;
+    const { muscle_group, subcategory, muscle, image_id } = req.body;
     const { rows } = await db.query(
-      'INSERT INTO muscle_groups (name, image_id) VALUES ($1, $2) RETURNING *',
-      [muscle_group, image_id]
+      'INSERT INTO muscle_groups (muscle_group, subcategory, muscle, image_id) VALUES ($1, $2, $3, $4) RETURNING *',
+      [muscle_group, subcategory, muscle, image_id]
     );
     res.status(201).json(rows[0]);
   } catch (error) {
@@ -60,16 +61,26 @@ router.post('/muscles', async (req, res) => {
 router.put('/muscles/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, image_id } = req.body;
+    const { muscle_group, subcategory, muscle, image_id } = req.body;
 
     // Construct the update part of the query based on provided fields
     const updateParts = [];
     const queryValues = [];
     let queryIndex = 1;
 
-    if (name !== undefined) {
+    if (muscle_group !== undefined) {
       updateParts.push(`name = $${queryIndex++}`);
-      queryValues.push(name);
+      queryValues.push(muscle_group);
+    }
+
+    if (subcategory !== undefined) {
+      updateParts.push(`name = $${queryIndex++}`);
+      queryValues.push(subcategory);
+    }
+
+    if (muscle !== undefined) {
+      updateParts.push(`name = $${queryIndex++}`);
+      queryValues.push(muscle);
     }
 
     if (image_id !== undefined) {

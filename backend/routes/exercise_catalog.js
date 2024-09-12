@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
 
+const R2_BASE_URL =
+  'https://39dd81ac8e96c60dc845b6b4fd1f3bf9.r2.cloudflarestorage.com';
+
 // Endpoint to get an exercise by name containing a string
 
 router.get('/exercise-catalog/search', async (req, res) => {
@@ -37,7 +40,14 @@ router.get('/exercise-catalog', async (req, res) => {
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
     JOIN image_metadata im ON ec.image_id = im.id;
   `);
-    res.json(rows);
+
+    // Append the R2 base URL to the file_path
+    const resultsWithR2Url = rows.map(row => ({
+      ...row,
+      file_url: `${R2_BASE_URL}/${row.file_path}` // Creating the full URL for each file
+    }));
+
+    res.json(resultsWithR2Url);
   } catch (error) {
     res.status(500).send(error.message);
   }
