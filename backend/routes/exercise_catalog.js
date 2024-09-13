@@ -45,6 +45,10 @@ router.get('/exercise-catalog', async (req, res) => {
       };
     });
     console.log('resultsWithSignedUrl:', resultsWithSignedUrl);
+    res.set({
+      'Cache-Control':
+        'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
+    });
 
     res.json(resultsWithSignedUrl);
   } catch (error) {
