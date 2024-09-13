@@ -33,7 +33,10 @@ router.get('/exercise-catalog', async (req, res) => {
       const params = {
         Bucket: process.env.R2_BUCKET_NAME,
         Key: row.file_path,
-        Expires: 60 * 60
+        Expires: 60 * 60,
+        ResponseContentType: 'image/gif',
+        ResponseCacheControl:
+          'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
       };
 
       // Generate the signed URL for the image
@@ -49,6 +52,15 @@ router.get('/exercise-catalog', async (req, res) => {
       'Cache-Control':
         'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
     });
+
+    // Set CORS headers
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization'
+    );
+    res.setHeader('Access-Control-Expose-Headers', 'ETag, Content-Length');
 
     res.json(resultsWithSignedUrl);
   } catch (error) {

@@ -21,6 +21,7 @@ const Exercise = ({ name, muscle, equipment, image, onClick, isSelected }) => {
       <div className='exercise__image-container'>
         <img
           src={image}
+          crossorigin='anonymous'
           alt={`${name} - ${muscle} muscle, ${equipment}`}
           className='exercise__image'
         />

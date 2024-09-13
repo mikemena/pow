@@ -83,7 +83,7 @@ const Navbar = () => {
             </Link>
           </li>
           <li className='navbar_item'>
-            <Link to='/profile' profile className={`navbar_link ${theme}`}>
+            <Link to='/profile' className={`navbar_link ${theme}`}>
               Profile
             </Link>
           </li>
