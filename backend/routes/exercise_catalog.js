@@ -1,55 +1,69 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const AWS = require('aws-sdk');
+require('dotenv').config();
 
-const R2_BASE_URL =
-  'https://39dd81ac8e96c60dc845b6b4fd1f3bf9.r2.cloudflarestorage.com';
+// Set up AWS S3 to interact with Cloudflare R2
 
-// Endpoint to get an exercise by name containing a string
-
-router.get('/exercise-catalog/search', async (req, res) => {
-  // Get the search query from the URL query string
-  const searchQuery = req.query.q || ''; // Use an empty string as a default if no query is provided
-
-  try {
-    const query = `
-      SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
-      FROM exercise_catalog ec
-      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-      JOIN image_metadata im ON ec.image_id = im.id
-      WHERE LOWER(ec.name) LIKE LOWER($1);
-    `;
-    // The '%' symbols are wildcards for any number of characters
-    const { rows } = await db.query(query, [`%${searchQuery}%`]);
-    res.json(rows);
-  } catch (error) {
-    console.error('Error searching exercises:', error);
-    res.status(500).send('Internal Server Error');
-  }
+const s3 = new AWS.S3({
+  accessKeyId: process.env.R2_ACCESS_KEY,
+  secretAccessKey: process.env.R2_SECRET_KEY,
+  endpoint: process.env.R2_URL,
+  region: 'auto',
+  signatureVersion: 'v4',
+  s3ForcePathStyle: true
 });
+
+const R2_BASE_URL = `${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}`;
 
 // Endpoint to get all exercises in the catalog
 
 router.get('/exercise-catalog', async (req, res) => {
   try {
+    // Query to get the metadata from PostgreSQL
     const { rows } = await db.query(`
-    SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
-    FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-    JOIN image_metadata im ON ec.image_id = im.id;
-  `);
+      SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path
+      FROM exercise_catalog ec
+      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+      JOIN image_metadata im ON ec.image_id = im.id;
+    `);
 
-    // Append the R2 base URL to the file_path
+    // Option 1: If you just want to return the Cloudflare R2 URL, you can use this:
     const resultsWithR2Url = rows.map(row => ({
       ...row,
-      file_url: `${R2_BASE_URL}/${row.file_path}` // Creating the full URL for each file
+      file_url: `${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}/${row.file_path}`
     }));
+    console.log(
+      `Complete image URL: ${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}/${rows[0].file_path}`
+    );
 
     res.json(resultsWithR2Url);
   } catch (error) {
+    console.error('Error loading exercises:', error);
     res.status(500).send(error.message);
+  }
+});
+
+// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
+router.get('/exercise-image/:filePath', async (req, res) => {
+  const { filePath } = req.params;
+
+  const params = {
+    Bucket: process.env.R2_BUCKET_NAME,
+    Key: filePath // The file path of the image in the R2 bucket
+  };
+
+  try {
+    const data = await s3.getObject(params).promise();
+
+    // Set the content-type for GIFs
+    res.setHeader('Content-Type', 'image/gif');
+    res.send(data.Body); // Send the image data as response
+  } catch (error) {
+    console.error('Error fetching image:', error);
+    res.status(500).send('Error fetching image');
   }
 });
 
@@ -60,7 +74,7 @@ router.get('/exercise-catalog/:id', async (req, res) => {
 
   try {
     // Query to fetch the exercise with the specified ID
-    const exerciseQuery = `SELECT ec.id, ec.name, mg.name as muscle, eq.name as equipment, im.file_path
+    const exerciseQuery = `SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
@@ -90,7 +104,7 @@ router.get('/exercise-catalog/muscles/:muscleId', async (req, res) => {
   try {
     const { muscleId } = req.params;
     const query = `
-    SELECT ec.id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
+    SELECT ec.id, ec.name, ec.muscle_group_id, mg.muscle, mg.muscle_group, mg.subcategory, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
@@ -111,7 +125,7 @@ router.get('/exercise-catalog/equipments/:equipmentId', async (req, res) => {
   try {
     const { equipmentId } = req.params;
     const query = `
-    SELECT ec.id, ec.name, ec.muscle_group_id, mg.name as muscle, ec.equipment_id, eq.name as equipment, im.file_path
+    SELECT ec.id, ec.name, ec.muscle_group_id, mg.muscle, mg.muscle_group, mg.subcategory, ec.equipment_id, eq.name as equipment, im.file_path
     FROM exercise_catalog ec
     JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
