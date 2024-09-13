@@ -64,7 +64,7 @@ const ExercisesListPage = () => {
                 name={exercise.name}
                 muscle={exercise.muscle}
                 equipment={exercise.equipment}
-                image={exercise.file_path}
+                image={exercise.file_url}
                 isSelected={isSelected}
               />
             );

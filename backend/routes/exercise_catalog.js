@@ -15,8 +15,6 @@ const s3 = new AWS.S3({
   s3ForcePathStyle: true
 });
 
-const R2_BASE_URL = `${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}`;
-
 // Endpoint to get all exercises in the catalog
 
 router.get('/exercise-catalog', async (req, res) => {
@@ -30,16 +28,25 @@ router.get('/exercise-catalog', async (req, res) => {
       JOIN image_metadata im ON ec.image_id = im.id;
     `);
 
-    // Option 1: If you just want to return the Cloudflare R2 URL, you can use this:
-    const resultsWithR2Url = rows.map(row => ({
-      ...row,
-      file_url: `${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}/${row.file_path}`
-    }));
-    console.log(
-      `Complete image URL: ${process.env.R2_URL}/${process.env.R2_BUCKET_NAME}/${rows[0].file_path}`
-    );
+    // Generate pre-signed URLs for each file
+    const resultsWithSignedUrl = rows.map(row => {
+      const params = {
+        Bucket: process.env.R2_BUCKET_NAME,
+        Key: row.file_path,
+        Expires: 60 * 60
+      };
 
-    res.json(resultsWithR2Url);
+      // Generate the signed URL for the image
+      const signedUrl = s3.getSignedUrl('getObject', params);
+
+      return {
+        ...row,
+        file_url: signedUrl
+      };
+    });
+    console.log('resultsWithSignedUrl:', resultsWithSignedUrl);
+
+    res.json(resultsWithSignedUrl);
   } catch (error) {
     console.error('Error loading exercises:', error);
     res.status(500).send(error.message);
