@@ -25,6 +25,7 @@ function ExerciseFilters({
     isLoading: isLoadingMuscles,
     error: errorMuscles
   } = useFetchData('http://localhost:9025/api/muscles');
+  console.log(muscles);
 
   const {
     data: equipments,
@@ -70,7 +71,7 @@ function ExerciseFilters({
         />
         <datalist id='muscles'>
           {muscles.map((option, index) => (
-            <option key={index} value={option.name} />
+            <option key={index} value={option.muscle} />
           ))}
         </datalist>
       </div>
