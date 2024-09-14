@@ -174,7 +174,6 @@ function programReducer(state = currentProgram, action) {
     }
 
     case actionTypes.UPDATE_EXERCISE:
-      console.log('Updating exercise:', action.payload);
       return {
         ...state,
         workout: {
@@ -193,7 +192,6 @@ function programReducer(state = currentProgram, action) {
 
     case actionTypes.REMOVE_EXERCISE: {
       const { workoutId, exerciseId } = action.payload;
-      console.log('Attempting to remove exercise with id:', exerciseId);
 
       // Ensure the active workout ID is available and matches the workoutId
       if (state.workout.activeWorkout !== workoutId) {
@@ -202,13 +200,10 @@ function programReducer(state = currentProgram, action) {
       }
       const updatedWorkouts = state.workout.workouts.map(workout => {
         if (workout.id === workoutId) {
-          console.log('Found matching workout. Checking exercises...');
-
           // Filter out the exercise to be deleted
           const updatedExercises = workout.exercises.filter(
             exercise => exercise.id !== exerciseId
           );
-          console.log('Remaining exercises after removal:', updatedExercises);
 
           // Reorder the remaining exercises
           const reorderedExercises = updatedExercises.map(
@@ -217,7 +212,6 @@ function programReducer(state = currentProgram, action) {
               order: index + 1 // Adjust the order
             })
           );
-          console.log('Reordered exercises:', reorderedExercises);
 
           return { ...workout, exercises: reorderedExercises };
         }

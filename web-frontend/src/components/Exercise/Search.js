@@ -25,7 +25,6 @@ function ExerciseFilters({
     isLoading: isLoadingMuscles,
     error: errorMuscles
   } = useFetchData('http://localhost:9025/api/muscles');
-  console.log(muscles);
 
   const {
     data: equipments,

@@ -314,8 +314,6 @@ export const ProgramProvider = ({ children }) => {
 
   // Update an exercise
   const updateExercise = (workoutId, updatedExercises) => {
-    console.log('Updating exercises:', updatedExercises);
-    console.log('Workout ID:', workoutId);
     dispatch({
       type: actionTypes.UPDATE_EXERCISE,
       payload: { workoutId, updatedExercises }

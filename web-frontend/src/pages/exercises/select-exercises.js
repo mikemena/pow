@@ -175,7 +175,7 @@ const SelectExercisesPage = () => {
                 name={exercise.name}
                 muscle={exercise.muscle}
                 equipment={exercise.equipment}
-                image={`http://localhost:9025/${exercise.file_path}`}
+                image={exercise.file_url}
                 isSelected={isSelected}
                 onClick={() => handleToggleExercise(exercise)}
               />
