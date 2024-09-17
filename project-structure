@@ -1,4 +1,4 @@
-/workout-tracker-app
+/pow-app
 │
 ├── /backend                     # Backend server
 │   ├── /node_modules            # Node.js modules
