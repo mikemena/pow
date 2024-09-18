@@ -17,10 +17,10 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start'
   },
   logo: {
-    color: '#FF69B4', // Pink color
-    fontSize: 24,
+    color: '#D93B56',
+    fontSize: 36,
     fontWeight: 'bold',
-    fontFamily: 'monospace' // This gives a pixelated look, similar to the image
+    fontFamily: 'Tiny5'
   }
 });
 

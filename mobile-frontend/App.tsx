@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet } from 'react-native';
+import * as Font from 'expo-font';
 import Header from './components/Header';
 import Navigation from './components/Navigation';
 
@@ -14,6 +15,23 @@ import ProfileView from './views/ProfileView';
 const Tab = createBottomTabNavigator();
 
 const App = () => {
+  const [fontsLoaded, setFontsLoaded] = useState(false);
+
+  useEffect(() => {
+    async function loadFonts() {
+      await Font.loadAsync({
+        Tiny5: require('./assets/fonts/Tiny5-Regular.ttf')
+      });
+      setFontsLoaded(true);
+    }
+
+    loadFonts();
+  }, []);
+
+  if (!fontsLoaded) {
+    return null;
+  }
+
   return (
     <View style={styles.container}>
       <Header />

@@ -8,10 +8,12 @@ import {
 } from '@react-navigation/native';
 import { BottomTabDescriptorMap } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import { EdgeInsets } from 'react-native-safe-area-context';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 type NavigationItemProps = {
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   isActive: boolean;
   onPress: () => void;
 };
@@ -23,9 +25,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   onPress
 }) => (
   <TouchableOpacity style={styles.navItem} onPress={onPress}>
-    <Text style={[styles.navIcon, isActive && styles.activeNavIcon]}>
-      {icon}
-    </Text>
+    {icon}
     <Text style={[styles.navText, isActive && styles.activeNavText]}>
       {name}
     </Text>
@@ -35,7 +35,7 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
 type NavigationProps = {
   state: TabNavigationState<ParamListBase>;
   descriptors: BottomTabDescriptorMap;
-  navigation: any; // Using 'any' here to avoid conflicts
+  navigation: any;
   insets: EdgeInsets;
 };
 
@@ -44,6 +44,22 @@ const Navigation: React.FC<NavigationProps> = ({
   descriptors,
   navigation
 }) => {
+  const getIcon = (routeName: string, isFocused: boolean) => {
+    const iconStyle = [styles.navIcon, isFocused && styles.activeNavIcon];
+    switch (routeName) {
+      case 'Programs':
+        return <MaterialCommunityIcons name='notebook' style={iconStyle} />;
+      case 'Workout':
+        return <MaterialCommunityIcons name='dumbbell' style={iconStyle} />;
+      case 'Progress':
+        return <Ionicons name='analytics' style={iconStyle} />;
+      case 'Profile':
+        return <MaterialCommunityIcons name='account' style={iconStyle} />;
+      default:
+        return <Text style={iconStyle}>❓</Text>;
+    }
+  };
+
   return (
     <View style={styles.navigation}>
       {state.routes.map((route, index) => {
@@ -69,27 +85,11 @@ const Navigation: React.FC<NavigationProps> = ({
           }
         };
 
-        // You can customize icons based on route name
-        const getIcon = (routeName: string) => {
-          switch (routeName) {
-            case 'Programs':
-              return '📋';
-            case 'Workout':
-              return '💪';
-            case 'Progress':
-              return '📊';
-            case 'Profile':
-              return '👤';
-            default:
-              return '❓';
-          }
-        };
-
         return (
           <NavigationItem
             key={route.key}
             name={label.toString()}
-            icon={getIcon(route.name)}
+            icon={getIcon(route.name, isFocused)}
             isActive={isFocused}
             onPress={onPress}
           />
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
-    backgroundColor: '#1E1E1E',
+    backgroundColor: '#2A2A2A',
     paddingVertical: 10
   },
   navItem: {
@@ -113,17 +113,17 @@ const styles = StyleSheet.create({
   navIcon: {
     fontSize: 24,
     marginBottom: 2,
-    color: '#808080'
+    color: '#DBD7D5'
   },
   navText: {
     fontSize: 12,
-    color: '#808080'
+    color: '#DBD7D5'
   },
   activeNavIcon: {
-    color: 'white'
+    color: '#D93B56'
   },
   activeNavText: {
-    color: 'white'
+    color: '#D93B56'
   }
 });
 
