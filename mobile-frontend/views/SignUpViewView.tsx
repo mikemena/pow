@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { registerUser } from '../../common/firebase/auth'; // Assuming your register function is here
+import { registerUser } from '../firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
 const SignUpView = () => {
