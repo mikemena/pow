@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { auth } from '../../common/firebase/auth';
+import { registerUser } from '../../common/firebase/auth';
 
 const RegistrationForm = () => {
   const [email, setEmail] = useState('');
@@ -9,14 +9,14 @@ const RegistrationForm = () => {
 
   const handleSubmit = async () => {
     try {
-      const userCredential = await auth().createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      await userCredential.user.sendEmailVerification();
+      await registerUser(email, password);
       console.log('User registered and verification email sent.');
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
