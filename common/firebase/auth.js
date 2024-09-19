@@ -1,14 +1,10 @@
-import exp from 'constants';
 import {
-  getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
   sendEmailVerification
 } from 'firebase/auth';
-
-// Initialize Firebase Authentication
-const auth = getAuth();
+import { auth } from './firebase'; // Import the initialized `auth` from `firebase.js`
 
 // Register a new user
 export const registerUser = async (email, password) => {
