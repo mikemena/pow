@@ -1,22 +1,20 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text, StyleSheet } from 'react-native';
-import { registerUser } from '../../common/firebase/auth';
+import { loginUser } from '../../common/firebase/auth'; // Assuming your login function is here
+import { useNavigation } from '@react-navigation/native';
 
-const RegistrationForm = () => {
+const SignInView = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigation = useNavigation();
 
-  const handleSubmit = async () => {
+  const handleSignIn = async () => {
     try {
-      await registerUser(email, password);
-      console.log('User registered and verification email sent.');
+      await loginUser(email, password);
+      console.log('User signed in successfully.');
     } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError('An unknown error occurred');
-      }
+      setError(err.message);
     }
   };
 
@@ -37,7 +35,7 @@ const RegistrationForm = () => {
         placeholder='Password'
         secureTextEntry
       />
-      <Button title='Register' onPress={handleSubmit} />
+      <Button title='Sign In' onPress={handleSignIn} />
       {error ? <Text style={styles.errorText}>{error}</Text> : null}
     </View>
   );
@@ -60,4 +58,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default RegistrationForm;
+export default SignInView;
