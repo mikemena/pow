@@ -74,76 +74,91 @@ const ProfileView: React.FC<ProfileProps> = ({
     >
       <Header pageName='Profile' />
 
-      <TouchableOpacity
-        style={styles.section}
-        onPress={() => setIsProfileExpanded(!isProfileExpanded)}
-      >
-        <View
-          style={[
-            globalStyles.sectionHeader,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-        >
-          <MaterialCommunityIcons
-            name='account-outline'
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
-          />
+      {/* profile details section */}
 
-          <Text
+      <View
+        style={[
+          globalStyles.section,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <TouchableOpacity
+          onPress={() => setIsProfileExpanded(!isProfileExpanded)}
+        >
+          <View
             style={[
-              globalStyles.sectionTitle,
-              { color: themedStyles.textColor }
+              globalStyles.sectionHeader,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            Profile Details
-          </Text>
-          <Icon
-            name={
-              isProfileExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
-            }
-            size={24}
-            color={themedStyles.textColor}
-          />
-        </View>
-      </TouchableOpacity>
+            <MaterialCommunityIcons
+              name='account-outline'
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            />
 
-      {isProfileExpanded && (
-        <View
-          style={[
-            globalStyles.sectionContent,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-        >
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            User Name
-          </Text>
-          <TextInput
+            <Text
+              style={[
+                globalStyles.sectionTitle,
+                { color: themedStyles.textColor }
+              ]}
+            >
+              Profile Details
+            </Text>
+            <Icon
+              name={
+                isProfileExpanded
+                  ? 'chevron-up-outline'
+                  : 'chevron-down-outline'
+              }
+              size={24}
+              color={themedStyles.textColor}
+            />
+          </View>
+        </TouchableOpacity>
+
+        {isProfileExpanded && (
+          <View
             style={[
-              globalStyles.input,
-              { backgroundColor: themedStyles.primaryBackgroundColor }
+              globalStyles.sectionContent,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
-            value={userName}
-            onChangeText={setUserName}
-            editable={isEditing}
-          />
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            Email
-          </Text>
-          <TextInput
-            style={[
-              globalStyles.input,
-              { backgroundColor: themedStyles.primaryBackgroundColor }
-            ]}
-            value={email}
-            onChangeText={setEmail}
-            editable={isEditing}
-            keyboardType='email-address'
-          />
-        </View>
-      )}
+          >
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              User Name
+            </Text>
+            <TextInput
+              style={[
+                globalStyles.input,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
+              ]}
+              value={userName}
+              onChangeText={setUserName}
+              editable={isEditing}
+            />
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              Email
+            </Text>
+            <TextInput
+              style={[
+                globalStyles.input,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
+              ]}
+              value={email}
+              onChangeText={setEmail}
+              editable={isEditing}
+              keyboardType='email-address'
+            />
+          </View>
+        )}
+      </View>
+
+      {/* settings section */}
 
       <TouchableOpacity
-        style={styles.section}
         onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
       >
         <View
@@ -221,10 +236,8 @@ const ProfileView: React.FC<ProfileProps> = ({
                 {color === accentColor && (
                   <Icon
                     name='checkmark-outline'
-                    style={[
-                      globalStyles.icon,
-                      { color: themedStyles.textColor }
-                    ]}
+                    size={20}
+                    color={color === '#FFFFFF' ? '#000000' : '#FFFFFF'}
                   />
                 )}
               </TouchableOpacity>
@@ -293,17 +306,6 @@ const ProfileView: React.FC<ProfileProps> = ({
 };
 
 const styles = StyleSheet.create({
-  section: {
-    marginBottom: 20
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#333',
-    padding: 10,
-    borderRadius: 5
-  },
-
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',

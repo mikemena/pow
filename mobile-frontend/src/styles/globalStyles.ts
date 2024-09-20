@@ -50,17 +50,21 @@ export const globalStyles = StyleSheet.create({
     fontSize: typography.fontSizes.large,
     marginBottom: spacing.large
   },
+  section: {
+    marginBottom: 20,
+    borderRadius: 5,
+    overflow: 'hidden'
+  },
   sectionContent: {
     padding: 15,
-    marginBottom: 20,
+    // marginBottom: 20,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10
   },
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: spacing.medium,
-    borderRadius: 10
+    padding: 10
   },
   sectionTitle: {
     fontSize: typography.fontSizes.medium,
