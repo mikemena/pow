@@ -3,8 +3,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
-import Header from './components/Header';
 import Navigation from './components/Navigation';
+import { ThemeProvider } from './src/context/themeContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramView';
@@ -20,7 +20,8 @@ const App = () => {
   useEffect(() => {
     async function loadFonts() {
       await Font.loadAsync({
-        Tiny5: require('./assets/fonts/Tiny5-Regular.ttf')
+        Tiny5: require('./assets/fonts/Tiny5-Regular.ttf'),
+        Teko: require('./assets/fonts/Teko-Light.ttf')
       });
       setFontsLoaded(true);
     }
@@ -33,33 +34,34 @@ const App = () => {
   }
 
   return (
-    <View style={styles.container}>
-      <Header />
-      <NavigationContainer>
-        <Tab.Navigator tabBar={props => <Navigation {...props} />}>
-          <Tab.Screen
-            name='Programs'
-            component={ProgramsView}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name='Workout'
-            component={WorkoutView}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name='Progress'
-            component={ProgressView}
-            options={{ headerShown: false }}
-          />
-          <Tab.Screen
-            name='Profile'
-            component={ProfileView}
-            options={{ headerShown: false }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
-    </View>
+    <ThemeProvider>
+      <View style={styles.container}>
+        <NavigationContainer>
+          <Tab.Navigator tabBar={props => <Navigation {...props} />}>
+            <Tab.Screen
+              name='Programs'
+              component={ProgramsView}
+              options={{ headerShown: false }}
+            />
+            <Tab.Screen
+              name='Workout'
+              component={WorkoutView}
+              options={{ headerShown: false }}
+            />
+            <Tab.Screen
+              name='Progress'
+              component={ProgressView}
+              options={{ headerShown: false }}
+            />
+            <Tab.Screen
+              name='Profile'
+              component={ProfileView}
+              options={{ headerShown: false }}
+            />
+          </Tab.Navigator>
+        </NavigationContainer>
+      </View>
+    </ThemeProvider>
   );
 };
 

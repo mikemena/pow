@@ -1,26 +1,45 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
+import { colors } from '../src/styles/globalStyles';
 
-const Header: React.FC = () => {
+const Header = ({ pageName }) => {
+  const { state } = useTheme();
+  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+
   return (
-    <View style={styles.header}>
-      <Text style={styles.logo}>POW</Text>
+    <View
+      style={[
+        styles.header,
+        { backgroundColor: themedStyles.primaryBackgroundColor }
+      ]}
+    >
+      <Text style={[styles.logo, { color: themedStyles.accentColor }]}>
+        WRKT
+      </Text>
+      <Text style={[styles.pageName]}>{pageName.toUpperCase()}</Text>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: 'black',
     padding: 10,
-    paddingTop: 40, // Adjust this value based on the device's status bar height
-    alignItems: 'flex-start'
+    paddingTop: 45,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   logo: {
-    color: '#D93B56',
     fontSize: 36,
     fontWeight: 'bold',
     fontFamily: 'Tiny5'
+  },
+  pageName: {
+    fontFamily: 'Teko',
+    fontSize: 24,
+    color: colors.gray
   }
 });
 
