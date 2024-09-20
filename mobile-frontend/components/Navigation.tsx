@@ -73,7 +73,12 @@ const Navigation: React.FC<NavigationProps> = ({
   };
 
   return (
-    <View style={styles.navigation}>
+    <View
+      style={[
+        styles.navigation,
+        { backgroundColor: themedStyles.primaryBackgroundColor }
+      ]}
+    >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
@@ -126,11 +131,12 @@ const styles = StyleSheet.create({
   navIcon: {
     fontSize: 22,
     marginBottom: 2,
-    color: colors.gray
+    color: colors.flatBlack
   },
   navText: {
     fontSize: 12,
-    color: colors.gray
+    color: colors.offWhite,
+    marginBottom: 10
   }
 });
 

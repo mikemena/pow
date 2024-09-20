@@ -63,7 +63,6 @@ const ProfileView: React.FC<ProfileProps> = ({
 
   const handleAccentColorChange = (newColor: string) => {
     dispatch({ type: 'SET_ACCENT_COLOR', payload: newColor });
-    console.log('Accent color changed to:', newColor);
   };
 
   return (
