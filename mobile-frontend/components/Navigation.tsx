@@ -28,16 +28,31 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   isActive,
   onPress,
   accentColor
-}) => (
-  <TouchableOpacity style={styles.navItem} onPress={onPress}>
-    {React.cloneElement(icon as React.ReactElement, {
-      style: [styles.navIcon, isActive && { color: colors.gray }]
-    })}
-    <Text style={[styles.navText, isActive && { color: accentColor }]}>
-      {name}
-    </Text>
-  </TouchableOpacity>
-);
+}) => {
+  const { state } = useTheme();
+  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+
+  return (
+    <TouchableOpacity style={styles.navItem} onPress={onPress}>
+      {React.cloneElement(icon as React.ReactElement, {
+        style: [
+          styles.navIcon,
+          { color: themedStyles.textColor },
+          isActive && { color: accentColor }
+        ]
+      })}
+      <Text
+        style={[
+          styles.navText,
+          { color: themedStyles.textColor },
+          isActive && { color: accentColor }
+        ]}
+      >
+        {name}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 type NavigationProps = {
   state: TabNavigationState<ParamListBase>;
@@ -130,12 +145,10 @@ const styles = StyleSheet.create({
   },
   navIcon: {
     fontSize: 22,
-    marginBottom: 2,
-    color: colors.flatBlack
+    marginBottom: 2
   },
   navText: {
     fontSize: 12,
-    color: colors.offWhite,
     marginBottom: 10
   }
 });

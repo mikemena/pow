@@ -6,7 +6,7 @@ export const getThemedStyles = (theme: Theme, accentColor: AccentColor) => ({
   secondaryBackgroundColor:
     theme === 'light' ? colors.eggShell : colors.flatBlack,
   textColor: theme === 'light' ? colors.flatBlack : colors.offWhite,
-  altTextColor: theme === 'light' ? colors.offWhite : colors.black,
+  altTextColor: theme === 'light' ? colors.flatBlack : colors.eggShell,
 
   accentColor: accentColor
 });

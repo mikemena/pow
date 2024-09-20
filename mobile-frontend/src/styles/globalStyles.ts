@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 export const colors = {
   orange: '#F99C57',
   voltGreen: '#A6E221',
+  green: '#159651',
   red: '#D93B56',
   blue: '#3F75DF',
   pink: '#FC63D2',
@@ -43,7 +44,7 @@ export const spacing = {
 export const globalStyles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: spacing.large
+    padding: spacing.small
   },
   header: {
     fontSize: typography.fontSizes.large,

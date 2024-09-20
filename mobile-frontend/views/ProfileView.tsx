@@ -195,8 +195,8 @@ const ProfileView: React.FC<ProfileProps> = ({
             <Switch
               value={darkMode}
               onValueChange={handleDarkModeToggle}
-              trackColor={{ false: '#767577', true: accentColor }}
-              thumbColor={darkMode ? '#f4f3f4' : '#f4f3f4'}
+              trackColor={{ false: colors.pink, true: colors.green }}
+              thumbColor={darkMode ? colors.black : '#f4f3f4'}
             />
           </View>
           <View style={styles.settingRow}>
@@ -219,7 +219,13 @@ const ProfileView: React.FC<ProfileProps> = ({
                 onPress={() => handleAccentColorChange(color)}
               >
                 {color === accentColor && (
-                  <Icon name='checkmark-outline' size={20} color='#fff' />
+                  <Icon
+                    name='checkmark-outline'
+                    style={[
+                      globalStyles.icon,
+                      { color: themedStyles.textColor }
+                    ]}
+                  />
                 )}
               </TouchableOpacity>
             ))}
