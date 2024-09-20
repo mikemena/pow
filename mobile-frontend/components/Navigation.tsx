@@ -10,23 +10,30 @@ import { BottomTabDescriptorMap } from '@react-navigation/bottom-tabs/lib/typesc
 import { EdgeInsets } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
+import { colors } from '../src/styles/globalStyles';
 
 type NavigationItemProps = {
   name: string;
   icon: React.ReactNode;
   isActive: boolean;
   onPress: () => void;
+  accentColor: string;
 };
 
 const NavigationItem: React.FC<NavigationItemProps> = ({
   name,
   icon,
   isActive,
-  onPress
+  onPress,
+  accentColor
 }) => (
   <TouchableOpacity style={styles.navItem} onPress={onPress}>
-    {icon}
-    <Text style={[styles.navText, isActive && styles.activeNavText]}>
+    {React.cloneElement(icon as React.ReactElement, {
+      style: [styles.navIcon, isActive && { color: colors.gray }]
+    })}
+    <Text style={[styles.navText, isActive && { color: accentColor }]}>
       {name}
     </Text>
   </TouchableOpacity>
@@ -44,19 +51,24 @@ const Navigation: React.FC<NavigationProps> = ({
   descriptors,
   navigation
 }) => {
-  const getIcon = (routeName: string, isFocused: boolean) => {
-    const iconStyle = [styles.navIcon, isFocused && styles.activeNavIcon];
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const getIcon = (routeName: string) => {
     switch (routeName) {
       case 'Programs':
-        return <MaterialCommunityIcons name='notebook' style={iconStyle} />;
+        return <MaterialCommunityIcons name='notebook' />;
       case 'Workout':
-        return <MaterialCommunityIcons name='dumbbell' style={iconStyle} />;
+        return <MaterialCommunityIcons name='dumbbell' />;
       case 'Progress':
-        return <Ionicons name='analytics' style={iconStyle} />;
+        return <Ionicons name='analytics' />;
       case 'Profile':
-        return <MaterialCommunityIcons name='account' style={iconStyle} />;
+        return <MaterialCommunityIcons name='account' />;
       default:
-        return <Text style={iconStyle}>❓</Text>;
+        return <Text>❓</Text>;
     }
   };
 
@@ -89,9 +101,10 @@ const Navigation: React.FC<NavigationProps> = ({
           <NavigationItem
             key={route.key}
             name={label.toString()}
-            icon={getIcon(route.name, isFocused)}
+            icon={getIcon(route.name)}
             isActive={isFocused}
             onPress={onPress}
+            accentColor={themedStyles.accentColor}
           />
         );
       })}
@@ -111,19 +124,13 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   navIcon: {
-    fontSize: 24,
+    fontSize: 22,
     marginBottom: 2,
-    color: '#DBD7D5'
+    color: colors.gray
   },
   navText: {
     fontSize: 12,
-    color: '#DBD7D5'
-  },
-  activeNavIcon: {
-    color: '#D93B56'
-  },
-  activeNavText: {
-    color: '#D93B56'
+    color: colors.gray
   }
 });
 

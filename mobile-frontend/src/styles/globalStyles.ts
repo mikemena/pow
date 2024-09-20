@@ -75,7 +75,7 @@ export const globalStyles = StyleSheet.create({
   },
   button: {
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 30,
     alignItems: 'center',
     marginTop: 20
   },
