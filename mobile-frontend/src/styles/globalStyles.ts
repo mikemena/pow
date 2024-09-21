@@ -52,7 +52,7 @@ export const globalStyles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 10,
     overflow: 'hidden'
   },
   sectionContent: {
@@ -67,6 +67,7 @@ export const globalStyles = StyleSheet.create({
     padding: 10
   },
   sectionTitle: {
+    fontFamily: 'Lexend',
     fontSize: typography.fontSizes.medium,
     marginLeft: spacing.medium,
     flex: 1
@@ -85,9 +86,11 @@ export const globalStyles = StyleSheet.create({
     marginTop: 20
   },
   buttonText: {
+    fontFamily: 'Lexend',
     fontWeight: '500'
   },
   label: {
+    fontFamily: 'Lexend',
     marginBottom: 5
   },
   icon: {

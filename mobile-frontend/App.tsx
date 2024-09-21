@@ -7,7 +7,7 @@ import Navigation from './components/Navigation';
 import { ThemeProvider } from './src/context/themeContext';
 
 // Import your view components
-import ProgramsView from './views/ProgramView';
+import ProgramsView from './views/ProgramsView';
 import WorkoutView from './views/WorkoutView';
 import ProgressView from './views/ProgressView';
 import ProfileView from './views/ProfileView';
@@ -21,7 +21,8 @@ const App = () => {
     async function loadFonts() {
       await Font.loadAsync({
         Tiny5: require('./assets/fonts/Tiny5-Regular.ttf'),
-        Teko: require('./assets/fonts/Teko-Light.ttf')
+        Teko: require('./assets/fonts/Teko-Light.ttf'),
+        Lexend: require('./assets/fonts/Lexend-VariableFont_wght.ttf')
       });
       setFontsLoaded(true);
     }

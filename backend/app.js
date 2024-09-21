@@ -9,7 +9,7 @@ app.use(express.json());
 // Serve static files from the images directory
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
-app.use(cors({ origin: 'http://localhost:3000' })); // Only allow requests only from frontend
+app.use(cors());
 
 // Import routes
 const imageRoutes = require('./routes/images');

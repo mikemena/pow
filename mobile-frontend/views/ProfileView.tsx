@@ -13,9 +13,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Entypo from '@expo/vector-icons/Entypo';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors, spacing } from '../src/styles/globalStyles';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 
 interface ProfileProps {
   initialUserName: string;
@@ -28,14 +29,14 @@ interface ProfileProps {
 const ProfileView: React.FC<ProfileProps> = ({
   initialUserName,
   initialEmail,
-  initialDarkMode,
+  initialDarkMode = true,
   initialAccentColor,
   onSave
 }) => {
   const [userName, setUserName] = useState(initialUserName);
   const [email, setEmail] = useState(initialEmail);
   const [isEditing, setIsEditing] = useState(false);
-  const [isProfileExpanded, setIsProfileExpanded] = useState(true);
+  const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [accentColor, setAccentColor] = useState(initialAccentColor);
@@ -58,11 +59,20 @@ const ProfileView: React.FC<ProfileProps> = ({
   const handleDarkModeToggle = (value: boolean) => {
     setDarkMode(value);
     dispatch({ type: 'SET_THEME', payload: value ? 'dark' : 'light' });
-    console.log('Dark mode changed to:', value);
   };
 
   const handleAccentColorChange = (newColor: string) => {
     dispatch({ type: 'SET_ACCENT_COLOR', payload: newColor });
+  };
+
+  const handleSectionToggle = (section: 'profile' | 'settings') => {
+    if (section === 'profile') {
+      setIsProfileExpanded(!isProfileExpanded);
+      setIsSettingsExpanded(false);
+    } else {
+      setIsSettingsExpanded(!isSettingsExpanded);
+      setIsProfileExpanded(false);
+    }
   };
 
   return (
@@ -83,7 +93,8 @@ const ProfileView: React.FC<ProfileProps> = ({
         ]}
       >
         <TouchableOpacity
-          onPress={() => setIsProfileExpanded(!isProfileExpanded)}
+          // onPress={() => setIsProfileExpanded(!isProfileExpanded)}
+          onPress={() => handleSectionToggle('profile')}
         >
           <View
             style={[
@@ -104,13 +115,9 @@ const ProfileView: React.FC<ProfileProps> = ({
             >
               Profile Details
             </Text>
-            <Icon
-              name={
-                isProfileExpanded
-                  ? 'chevron-up-outline'
-                  : 'chevron-down-outline'
-              }
-              size={24}
+            <Entypo
+              name={isProfileExpanded ? 'chevron-thin-up' : 'chevron-thin-down'}
+              size={20}
               color={themedStyles.textColor}
             />
           </View>
@@ -157,94 +164,104 @@ const ProfileView: React.FC<ProfileProps> = ({
       </View>
 
       {/* settings section */}
-
-      <TouchableOpacity
-        onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
+      <View
+        style={[
+          globalStyles.section,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
       >
-        <View
-          style={[
-            globalStyles.sectionHeader,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
+        <TouchableOpacity
+          // onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
+          onPress={() => handleSectionToggle('settings')}
         >
-          <EvilIcons
-            name='gear'
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
-          />
-          <Text
+          <View
             style={[
-              globalStyles.sectionTitle,
-              { color: themedStyles.textColor }
+              globalStyles.sectionHeader,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            Settings
-          </Text>
-          <Icon
-            name={
-              isSettingsExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
-            }
-            size={24}
-            color={themedStyles.textColor}
-          />
-        </View>
-      </TouchableOpacity>
-
-      {isSettingsExpanded && (
-        <View
-          style={[
-            globalStyles.sectionContent,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-        >
-          <View style={styles.settingRow}>
-            <FontAwesome
-              name='moon-o'
+            <EvilIcons
+              name='gear'
               style={[globalStyles.icon, { color: themedStyles.textColor }]}
             />
-
             <Text
-              style={[styles.settingLabel, { color: themedStyles.textColor }]}
+              style={[
+                globalStyles.sectionTitle,
+                { color: themedStyles.textColor }
+              ]}
             >
-              Dark Mode
+              Settings
             </Text>
-            <Switch
-              value={darkMode}
-              onValueChange={handleDarkModeToggle}
-              trackColor={{ false: colors.pink, true: colors.green }}
-              thumbColor={darkMode ? colors.black : '#f4f3f4'}
+            <Entypo
+              name={
+                isSettingsExpanded ? 'chevron-thin-up' : 'chevron-thin-down'
+              }
+              size={20}
+              color={themedStyles.textColor}
             />
           </View>
-          <View style={styles.settingRow}>
-            <Ionicons
-              name='color-filter-outline'
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
+        </TouchableOpacity>
 
-            <Text
-              style={[styles.settingLabel, { color: themedStyles.textColor }]}
-            >
-              Accent Color
-            </Text>
-          </View>
-          <View style={styles.colorPicker}>
-            {accentColors.map(color => (
-              <TouchableOpacity
-                key={color}
-                style={[styles.colorOption, { backgroundColor: color }]}
-                onPress={() => handleAccentColorChange(color)}
+        {isSettingsExpanded && (
+          <View
+            style={[
+              globalStyles.sectionContent,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+          >
+            <View style={styles.settingRow}>
+              <FontAwesome
+                name='moon-o'
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              />
+
+              <Text
+                style={[styles.settingLabel, { color: themedStyles.textColor }]}
               >
-                {color === accentColor && (
-                  <Icon
-                    name='checkmark-outline'
-                    size={20}
-                    color={color === '#FFFFFF' ? '#000000' : '#FFFFFF'}
-                  />
-                )}
-              </TouchableOpacity>
-            ))}
+                Dark Mode
+              </Text>
+              <Switch
+                value={darkMode}
+                onValueChange={handleDarkModeToggle}
+                trackColor={{ false: colors.offWhite, true: colors.green }}
+                thumbColor={darkMode ? colors.black : '#f4f3f4'}
+              />
+            </View>
+            <View style={styles.settingRow}>
+              <Ionicons
+                name='color-filter-outline'
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              />
+
+              <Text
+                style={[styles.settingLabel, { color: themedStyles.textColor }]}
+              >
+                Accent Color
+              </Text>
+            </View>
+
+            <View style={styles.colorPicker}>
+              {accentColors.map(color => (
+                <TouchableOpacity
+                  key={color}
+                  style={[styles.colorOption, { backgroundColor: color }]}
+                  onPress={() => handleAccentColorChange(color)}
+                >
+                  {color === state.accentColor && (
+                    <View>
+                      <Ionicons
+                        name='checkmark-sharp'
+                        size={20}
+                        color={colors.black}
+                      />
+                    </View>
+                  )}
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
-      )}
+        )}
+      </View>
 
       {!isEditing ? (
         <TouchableOpacity
@@ -312,6 +329,7 @@ const styles = StyleSheet.create({
     marginBottom: 15
   },
   settingLabel: {
+    fontFamily: 'Lexend',
     flex: 1,
     marginLeft: 10
   },
@@ -323,6 +341,7 @@ const styles = StyleSheet.create({
   colorOption: {
     width: 30,
     height: 30,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center'
   },

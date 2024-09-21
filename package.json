@@ -1,6 +1,8 @@
 {
   "scripts": {
-    "start": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix ./web-frontend\"",
+    "start:web": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix ./web-frontend\"",
+    "start:mobile": "concurrently \"npm run server --prefix backend\" \"npm run start --prefix ./mobile-frontend\"",
+    "start:all": "concurrently \"npm run server --prefix backend\" \"npm run client --prefix ./web-frontend\" \"npm run start --prefix ./mobile-frontend\"",
     "generate-token": "node backend/utils/generateToken.js"
   },
   "devDependencies": {
