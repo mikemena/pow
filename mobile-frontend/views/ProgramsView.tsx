@@ -12,9 +12,10 @@ import { standardizePrograms } from '../src/utils/standardizePrograms';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
+import PillButton from '../components/PillButton';
+import { Ionicons } from '@expo/vector-icons';
 
 const ProgramsView = () => {
-  console.log('ProgramsView component is rendering');
   const [programList, setProgramList] = useState({
     programs: [],
     workouts: []
@@ -24,15 +25,10 @@ const ProgramsView = () => {
 
   const fetchPrograms = useCallback(async () => {
     try {
-      console.log('Fetching programs...');
-      console.log(
-        'Fetching from URL:',
-        `${API_URL_MOBILE}/api/users/2/programs`
-      );
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
-      console.log('Response status:', response.status);
+
       const data = await response.json();
-      console.log('Fetched data:', data);
+
       const standardizedData = standardizePrograms(data);
       setProgramList({
         programs: Object.values(standardizedData.programs),
@@ -44,7 +40,6 @@ const ProgramsView = () => {
   }, []);
 
   useEffect(() => {
-    console.log('useEffect is running');
     fetchPrograms();
   }, [fetchPrograms]);
 
@@ -84,8 +79,6 @@ const ProgramsView = () => {
     </View>
   );
 
-  console.log('Rendering ProgramsView with data:', programList);
-
   return (
     <View
       style={[
@@ -94,6 +87,27 @@ const ProgramsView = () => {
       ]}
     >
       <Header pageName='Programs' />
+      <PillButton
+        label='Filters'
+        icon={
+          <Ionicons
+            name='funnel'
+            size={16}
+            style={[
+              styles.iconContainer,
+              {
+                color:
+                  state.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }
+            ]}
+          />
+        }
+        onPress={() => {
+          /* Filter logic */
+        }}
+      />
       {programList.programs.length > 0 ? (
         <FlatList
           data={programList.programs}
