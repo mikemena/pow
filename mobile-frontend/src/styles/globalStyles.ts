@@ -73,8 +73,8 @@ export const globalStyles = StyleSheet.create({
     flex: 1
   },
   input: {
-    backgroundColor: colors.secondary,
-    color: colors.text.primary,
+    backgroundColor: colors.eggShell,
+    color: colors.flatBlack,
     padding: spacing.medium,
     borderRadius: 10,
     marginBottom: spacing.medium

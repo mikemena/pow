@@ -1,18 +1,11 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import {
-  NavigationState,
-  ParamListBase,
-  TabNavigationState,
-  Route
-} from '@react-navigation/native';
+import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import { BottomTabDescriptorMap } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
 import { EdgeInsets } from 'react-native-safe-area-context';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { colors } from '../src/styles/globalStyles';
 
 type NavigationItemProps = {
   name: string;
@@ -75,13 +68,13 @@ const Navigation: React.FC<NavigationProps> = ({
   const getIcon = (routeName: string) => {
     switch (routeName) {
       case 'Programs':
-        return <MaterialCommunityIcons name='notebook' />;
+        return <Ionicons name='clipboard-outline' />;
       case 'Workout':
-        return <MaterialCommunityIcons name='dumbbell' />;
+        return <Ionicons name='barbell-outline' />;
       case 'Progress':
-        return <Ionicons name='analytics' />;
+        return <Ionicons name='analytics-outline' />;
       case 'Profile':
-        return <MaterialCommunityIcons name='account' />;
+        return <Ionicons name='person-outline' />;
       default:
         return <Text>❓</Text>;
     }
