@@ -8,12 +8,7 @@ import {
   Switch,
   StyleSheet
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import EvilIcons from '@expo/vector-icons/EvilIcons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import Entypo from '@expo/vector-icons/Entypo';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -102,8 +97,8 @@ const ProfileView: React.FC<ProfileProps> = ({
               { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            <MaterialCommunityIcons
-              name='account-outline'
+            <Ionicons
+              name='person-outline'
               style={[globalStyles.icon, { color: themedStyles.textColor }]}
             />
 
@@ -115,10 +110,13 @@ const ProfileView: React.FC<ProfileProps> = ({
             >
               Profile Details
             </Text>
-            <Entypo
-              name={isProfileExpanded ? 'chevron-thin-up' : 'chevron-thin-down'}
-              size={20}
-              color={themedStyles.textColor}
+            <Ionicons
+              name={
+                isProfileExpanded
+                  ? 'chevron-up-outline'
+                  : 'chevron-down-outline'
+              }
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
             />
           </View>
         </TouchableOpacity>
@@ -180,10 +178,11 @@ const ProfileView: React.FC<ProfileProps> = ({
               { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            <EvilIcons
-              name='gear'
+            <Ionicons
+              name='settings-outline'
               style={[globalStyles.icon, { color: themedStyles.textColor }]}
             />
+
             <Text
               style={[
                 globalStyles.sectionTitle,
@@ -192,12 +191,13 @@ const ProfileView: React.FC<ProfileProps> = ({
             >
               Settings
             </Text>
-            <Entypo
+            <Ionicons
               name={
-                isSettingsExpanded ? 'chevron-thin-up' : 'chevron-thin-down'
+                isSettingsExpanded
+                  ? 'chevron-up-outline'
+                  : 'chevron-down-outline'
               }
-              size={20}
-              color={themedStyles.textColor}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
             />
           </View>
         </TouchableOpacity>
@@ -210,8 +210,8 @@ const ProfileView: React.FC<ProfileProps> = ({
             ]}
           >
             <View style={styles.settingRow}>
-              <FontAwesome
-                name='moon-o'
+              <Ionicons
+                name='moon-outline'
                 style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
 
@@ -229,7 +229,7 @@ const ProfileView: React.FC<ProfileProps> = ({
             </View>
             <View style={styles.settingRow}>
               <Ionicons
-                name='color-filter-outline'
+                name='color-wand-outline'
                 style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
 

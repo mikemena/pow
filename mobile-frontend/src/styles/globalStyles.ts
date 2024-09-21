@@ -94,6 +94,6 @@ export const globalStyles = StyleSheet.create({
     marginBottom: 5
   },
   icon: {
-    fontSize: 20
+    fontSize: 18
   }
 });
