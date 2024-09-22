@@ -264,22 +264,24 @@ const ProfileView: React.FC<ProfileProps> = ({
       </View>
 
       {!isEditing ? (
-        <TouchableOpacity
-          style={[
-            globalStyles.button,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-          onPress={() => setIsEditing(true)}
-        >
-          <Text
+        <View style={globalStyles.centeredButtonContainer}>
+          <TouchableOpacity
             style={[
-              globalStyles.buttonText,
-              { color: themedStyles.accentColor }
+              globalStyles.button,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
+            onPress={() => setIsEditing(true)}
           >
-            EDIT
-          </Text>
-        </TouchableOpacity>
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              EDIT
+            </Text>
+          </TouchableOpacity>
+        </View>
       ) : (
         <View style={styles.buttonRow}>
           <TouchableOpacity

@@ -79,15 +79,22 @@ export const globalStyles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: spacing.medium
   },
+  centeredButtonContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+    paddingVertical: 10
+  },
   button: {
+    width: '75%',
     padding: 15,
     borderRadius: 30,
-    alignItems: 'center',
-    marginTop: 20
+    alignItems: 'center'
   },
   buttonText: {
     fontFamily: 'Lexend',
-    fontWeight: '500'
+    fontSize: 16,
+    textAlign: 'center'
   },
   label: {
     fontFamily: 'Lexend',

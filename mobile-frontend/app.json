@@ -1,20 +1,18 @@
 {
   "expo": {
-    "name": "POW",
-    "slug": "pow",
+    "name": "WRKT",
+    "slug": "wrkt",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "pow",
+    "scheme": "wrkt",
     "userInterfaceStyle": "automatic",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true
     },
@@ -29,9 +27,6 @@
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-    "plugins": [
-      "expo-font",
-      "expo-router"
-    ]
+    "plugins": ["expo-font", "expo-router"]
   }
 }

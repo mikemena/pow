@@ -4,7 +4,8 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet
+  StyleSheet,
+  SafeAreaView
 } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -26,13 +27,14 @@ const ProgramsView = () => {
   const fetchPrograms = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
+      console.log('api url:', `${API_URL_MOBILE}/api/users/2/programs`);
 
       const data = await response.json();
+      console.log('data:', data);
 
-      const standardizedData = standardizePrograms(data);
       setProgramList({
-        programs: Object.values(standardizedData.programs),
-        workouts: Object.values(standardizedData.workouts)
+        programs: data,
+        workouts: []
       });
     } catch (error) {
       console.error('Error fetching programs:', error);
@@ -42,6 +44,13 @@ const ProgramsView = () => {
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
+
+  const formatDuration = (duration, unit) => {
+    const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
+    const formattedUnit =
+      duration === 1 ? capitalizedUnit.slice(0, -1) : capitalizedUnit;
+    return `${duration} ${formattedUnit}`;
+  };
 
   const renderProgramItem = ({ item }) => (
     <View
@@ -54,26 +63,57 @@ const ProgramsView = () => {
         {item.name}
       </Text>
       <View style={styles.programDetails}>
-        <Text style={[styles.detailText, { color: themedStyles.textColor }]}>
-          Main Goal: {item.mainGoal}
-        </Text>
-        <Text style={[styles.detailText, { color: themedStyles.textColor }]}>
-          Duration: {item.duration} Days
-        </Text>
-        <Text style={[styles.detailText, { color: themedStyles.textColor }]}>
-          Days Per Week: {item.daysPerWeek}
-        </Text>
+        <View style={styles.detailRow}>
+          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
+            Main Goal
+          </Text>
+          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
+            {item.main_goal.charAt(0).toUpperCase() + item.main_goal.slice(1)}
+          </Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
+            Duration
+          </Text>
+          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
+            {formatDuration(item.program_duration, item.duration_unit)}
+          </Text>
+        </View>
+        <View style={styles.detailRow}>
+          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
+            Days Per Week
+          </Text>
+          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
+            {item.days_per_week}
+          </Text>
+        </View>
       </View>
       <View style={styles.iconContainer}>
-        <TouchableOpacity>
-          <Text style={[styles.icon, { color: themedStyles.textColor }]}>
-            ✏️
-          </Text>
+        <TouchableOpacity style={styles.iconLeft}>
+          <View
+            style={[
+              styles.iconCircle,
+              { backgroundColor: themedStyles.primaryBackgroundColor }
+            ]}
+          >
+            <Ionicons
+              name='pencil-outline'
+              style={[styles.icon, { color: themedStyles.textColor }]}
+            />
+          </View>
         </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={[styles.icon, { color: themedStyles.textColor }]}>
-            🗑️
-          </Text>
+        <TouchableOpacity style={styles.iconRight}>
+          <View
+            style={[
+              styles.iconCircle,
+              { backgroundColor: themedStyles.primaryBackgroundColor }
+            ]}
+          >
+            <Ionicons
+              name='trash-outline'
+              style={[styles.icon, { color: themedStyles.textColor }]}
+            />
+          </View>
         </TouchableOpacity>
       </View>
     </View>
@@ -88,10 +128,10 @@ const ProgramsView = () => {
     >
       <Header pageName='Programs' />
       <PillButton
-        label='Filters'
+        label='Filter'
         icon={
           <Ionicons
-            name='funnel'
+            name='options-outline'
             size={16}
             style={[
               styles.iconContainer,
@@ -122,58 +162,77 @@ const ProgramsView = () => {
           >
             You don't have any programs yet. Let's create one!
           </Text>
-          <TouchableOpacity
-            style={[
-              styles.createButton,
-              { backgroundColor: themedStyles.accentColor }
-            ]}
-            onPress={() => {
-              /* Handle create program */
-            }}
-          >
-            <Text
-              style={[
-                styles.createButtonText,
-                { color: themedStyles.primaryBackgroundColor }
-              ]}
-            >
-              CREATE PROGRAM
-            </Text>
-          </TouchableOpacity>
         </View>
       )}
+      <View style={globalStyles.centeredButtonContainer}>
+        <TouchableOpacity
+          style={[
+            globalStyles.button,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+          onPress={() => {}}
+        >
+          <Text
+            style={[
+              globalStyles.buttonText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            CREATE PROGRAM
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   listContainer: {
-    padding: 16
+    paddingTop: 20
   },
   programItem: {
     padding: 16,
-    borderRadius: 8,
-    marginBottom: 16
+    borderRadius: 10,
+    marginBottom: 10
   },
   programTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8
+    fontFamily: 'Lexend-Bold',
+    fontWeight: '700',
+    fontSize: 16,
+    marginBottom: 10
   },
   programDetails: {
+    marginBottom: 5
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
     marginBottom: 8
   },
-  detailText: {
+  detailLabel: {
+    fontFamily: 'Lexend',
     fontSize: 14,
-    marginBottom: 4
+    width: 120,
+    marginRight: 10
+  },
+  detailValue: {
+    fontFamily: 'Lexend-Bold',
+    fontWeight: '600',
+    fontSize: 14,
+    flex: 1
   },
   iconContainer: {
     flexDirection: 'row',
-    justifyContent: 'flex-end'
+    justifyContent: 'space-between'
+  },
+  iconLeft: {
+    alignSelf: 'flex-start'
+  },
+  iconRight: {
+    alignSelf: 'flex-end'
   },
   icon: {
-    fontSize: 20,
-    marginLeft: 16
+    fontSize: 18
   },
   noPrograms: {
     flex: 1,
@@ -186,13 +245,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 24
   },
-  createButton: {
-    padding: 16,
-    borderRadius: 8
-  },
-  createButtonText: {
-    fontSize: 16,
-    fontWeight: 'bold'
+  iconCircle: {
+    width: 35,
+    height: 35,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)'
   }
 });
 

@@ -9,7 +9,7 @@ module.exports = function (api) {
           moduleName: '@env',
           path: '.env',
           blacklist: null,
-          whitelist: null,
+          whitelist: ['API_URL_MOBILE'],
           safe: false,
           allowUndefined: true
         }
