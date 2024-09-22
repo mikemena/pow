@@ -1,37 +1,77 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView
+  SafeAreaView,
+  Modal,
+  ListRenderItem
 } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { standardizePrograms } from '../src/utils/standardizePrograms';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
+import FilterView from '../components/FilterView';
 
-const ProgramsView = () => {
-  const [programList, setProgramList] = useState({
+// Define types
+interface Program {
+  id: number;
+  name: string;
+  main_goal: string;
+  program_duration: number;
+  duration_unit: string;
+  days_per_week: number;
+}
+
+interface ProgramList {
+  programs: Program[];
+  workouts: any[]; // Define a proper type for workouts if available
+}
+
+interface Filters {
+  programName: string;
+  selectedGoal: string;
+  duration: string;
+  durationUnit: string;
+  daysPerWeek: string;
+}
+
+interface ThemedStyles {
+  primaryBackgroundColor: string;
+  secondaryBackgroundColor: string;
+  textColor: string;
+  accentColor: string;
+}
+
+const ProgramsView: React.FC = () => {
+  const [programList, setProgramList] = useState<ProgramList>({
     programs: [],
     workouts: []
   });
+  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
+  const [filters, setFilters] = useState<Filters>({
+    programName: '',
+    selectedGoal: '',
+    duration: '',
+    durationUnit: '',
+    daysPerWeek: ''
+  });
+
   const { state } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const themedStyles: ThemedStyles = getThemedStyles(
+    state.theme,
+    state.accentColor
+  );
 
   const fetchPrograms = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
-      console.log('api url:', `${API_URL_MOBILE}/api/users/2/programs`);
-
       const data = await response.json();
-      console.log('data:', data);
-
       setProgramList({
         programs: data,
         workouts: []
@@ -45,14 +85,46 @@ const ProgramsView = () => {
     fetchPrograms();
   }, [fetchPrograms]);
 
-  const formatDuration = (duration, unit) => {
+  const filteredPrograms = useMemo(() => {
+    return programList.programs.filter(program => {
+      const matchesName =
+        !filters.programName ||
+        program.name.toLowerCase().includes(filters.programName.toLowerCase());
+      const matchesGoal =
+        !filters.selectedGoal || program.main_goal === filters.selectedGoal;
+      const matchesDuration =
+        !filters.duration ||
+        program.program_duration === parseInt(filters.duration);
+      const matchesDurationUnit =
+        !filters.durationUnit ||
+        program.duration_unit.toLowerCase() ===
+          filters.durationUnit.toLowerCase();
+      const matchesDaysPerWeek =
+        !filters.daysPerWeek ||
+        program.days_per_week === parseInt(filters.daysPerWeek);
+
+      return (
+        matchesName &&
+        matchesGoal &&
+        matchesDuration &&
+        matchesDurationUnit &&
+        matchesDaysPerWeek
+      );
+    });
+  }, [programList.programs, filters]);
+
+  const handleFilterChange = (newFilters: Filters) => {
+    setFilters(newFilters);
+  };
+
+  const formatDuration = (duration: number, unit: string): string => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
     const formattedUnit =
       duration === 1 ? capitalizedUnit.slice(0, -1) : capitalizedUnit;
     return `${duration} ${formattedUnit}`;
   };
 
-  const renderProgramItem = ({ item }) => (
+  const renderProgramItem: ListRenderItem<Program> = ({ item }) => (
     <View
       style={[
         styles.programItem,
@@ -120,7 +192,7 @@ const ProgramsView = () => {
   );
 
   return (
-    <View
+    <SafeAreaView
       style={[
         globalStyles.container,
         { backgroundColor: themedStyles.primaryBackgroundColor }
@@ -133,24 +205,40 @@ const ProgramsView = () => {
           <Ionicons
             name='options-outline'
             size={16}
-            style={[
-              styles.iconContainer,
-              {
-                color:
-                  state.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
-              }
-            ]}
+            style={{
+              color:
+                state.theme === 'dark'
+                  ? themedStyles.accentColor
+                  : colors.eggShell
+            }}
           />
         }
-        onPress={() => {
-          /* Filter logic */
-        }}
+        onPress={() => setIsFilterVisible(!isFilterVisible)}
       />
-      {programList.programs.length > 0 ? (
+      <Modal
+        visible={isFilterVisible}
+        animationType='slide'
+        transparent={true}
+        onRequestClose={() => setIsFilterVisible(false)}
+      >
+        <View
+          style={[
+            styles.modalView,
+            { backgroundColor: themedStyles.primaryBackgroundColor }
+          ]}
+        >
+          <FilterView
+            onFilterChange={handleFilterChange}
+            themedStyles={themedStyles}
+          />
+          <TouchableOpacity onPress={() => setIsFilterVisible(false)}>
+            <Text style={{ color: themedStyles.accentColor }}>Close</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+      {filteredPrograms.length > 0 ? (
         <FlatList
-          data={programList.programs}
+          data={filteredPrograms}
           renderItem={renderProgramItem}
           keyExtractor={item => item.id.toString()}
           contentContainerStyle={styles.listContainer}
@@ -160,7 +248,7 @@ const ProgramsView = () => {
           <Text
             style={[styles.noProgramsText, { color: themedStyles.accentColor }]}
           >
-            You don't have any programs yet. Let's create one!
+            No programs match your filters. Try adjusting your search criteria.
           </Text>
         </View>
       )}
@@ -182,7 +270,7 @@ const ProgramsView = () => {
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -253,6 +341,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.1)'
+  },
+  modalView: {
+    margin: 20,
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 });
 
