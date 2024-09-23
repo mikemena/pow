@@ -1,168 +1,176 @@
 import React, { useState } from 'react';
-import { View, TextInput, StyleSheet } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { GOAL_TYPES, DURATION_TYPES } from '../src/utils/constants';
+import { View, TextInput, StyleSheet, SafeAreaView } from 'react-native';
+import CustomPicker from './CustomPicker';
+import PillButton from '../components/PillButton';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
+import { colors } from '../src/styles/globalStyles';
 
-// Define types for your constants if not already defined
-type GoalType = {
-  value: string;
-  label: string;
-};
+// Define the Filters interface
 
-type DurationType = {
-  value: string;
-  label: string;
-};
-
-// Define the shape of the filter object
 interface Filters {
   programName: string;
   selectedGoal: string;
-  duration: string;
-  durationUnit: string;
+  durationType: string;
   daysPerWeek: string;
 }
 
-// Define props for the FilterView component
 interface FilterViewProps {
-  onFilterChange: (filters: Filters) => void;
-  themedStyles: {
-    textColor: string;
-    secondaryBackgroundColor: string;
-  };
+  isVisible: boolean;
+  onClose: () => void;
+  onApplyFilters: (filters: Filters) => void;
 }
 
 const FilterView: React.FC<FilterViewProps> = ({
-  onFilterChange,
-  themedStyles
+  isVisible,
+  onClose,
+  onApplyFilters
 }) => {
   const [programName, setProgramName] = useState<string>('');
   const [selectedGoal, setSelectedGoal] = useState<string>('');
-  const [duration, setDuration] = useState<string>('');
-  const [durationUnit, setDurationUnit] = useState<string>('');
+  const [durationType, setDurationType] = useState<string>('');
   const [daysPerWeek, setDaysPerWeek] = useState<string>('');
 
-  const applyFilters = () => {
-    onFilterChange({
-      programName,
-      selectedGoal,
-      duration,
-      durationUnit,
-      daysPerWeek
-    });
+  const { state } = useTheme();
+  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+
+  const clearFilters = () => {
+    setProgramName('');
+    setSelectedGoal('');
+    setDurationType('');
+    setDaysPerWeek('');
   };
 
+  const handleApply = () => {
+    onApplyFilters({
+      programName,
+      selectedGoal,
+      durationType,
+      daysPerWeek
+    });
+    onClose();
+  };
+
+  if (!isVisible) {
+    return null;
+  }
+
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: themedStyles.textColor,
-            backgroundColor: themedStyles.secondaryBackgroundColor
-          }
-        ]}
-        placeholder='Program Name'
-        placeholderTextColor={themedStyles.textColor}
-        value={programName}
-        onChangeText={(text: string) => {
-          setProgramName(text);
-          applyFilters();
-        }}
-      />
-      <Picker
-        selectedValue={selectedGoal}
-        style={[
-          styles.picker,
-          {
-            color: themedStyles.textColor,
-            backgroundColor: themedStyles.secondaryBackgroundColor
-          }
-        ]}
-        onValueChange={(itemValue: string) => {
-          setSelectedGoal(itemValue);
-          applyFilters();
-        }}
-      >
-        <Picker.Item label='Select Goal' value='' />
-        {GOAL_TYPES.map((goal: GoalType) => (
-          <Picker.Item key={goal.value} label={goal.label} value={goal.value} />
-        ))}
-      </Picker>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: themedStyles.textColor,
-            backgroundColor: themedStyles.secondaryBackgroundColor
-          }
-        ]}
-        placeholder='Duration'
-        placeholderTextColor={themedStyles.textColor}
-        value={duration}
-        onChangeText={(text: string) => {
-          setDuration(text);
-          applyFilters();
-        }}
-        keyboardType='numeric'
-      />
-      <Picker
-        selectedValue={durationUnit}
-        style={[
-          styles.picker,
-          {
-            color: themedStyles.textColor,
-            backgroundColor: themedStyles.secondaryBackgroundColor
-          }
-        ]}
-        onValueChange={(itemValue: string) => {
-          setDurationUnit(itemValue);
-          applyFilters();
-        }}
-      >
-        <Picker.Item label='Select Duration Unit' value='' />
-        {DURATION_TYPES.map((type: DurationType) => (
-          <Picker.Item key={type.value} label={type.label} value={type.label} />
-        ))}
-      </Picker>
-      <TextInput
-        style={[
-          styles.input,
-          {
-            color: themedStyles.textColor,
-            backgroundColor: themedStyles.secondaryBackgroundColor
-          }
-        ]}
-        placeholder='Days Per Week'
-        placeholderTextColor={themedStyles.textColor}
-        value={daysPerWeek}
-        onChangeText={(text: string) => {
-          setDaysPerWeek(text);
-          applyFilters();
-        }}
-        keyboardType='numeric'
-      />
-    </View>
+    <SafeAreaView
+      style={[
+        styles.safeArea,
+        { backgroundColor: themedStyles.primaryBackgroundColor }
+      ]}
+    >
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <PillButton
+            label='Close'
+            icon={
+              <Ionicons
+                name='close-outline'
+                size={16}
+                color={colors.eggShell}
+              />
+            }
+            onPress={onClose}
+          />
+          <PillButton
+            label='Clear'
+            icon={
+              <Ionicons
+                name='refresh-outline'
+                size={16}
+                color={colors.eggShell}
+              />
+            }
+            onPress={clearFilters}
+          />
+        </View>
+
+        <TextInput
+          style={[
+            styles.input,
+            {
+              backgroundColor: themedStyles.secondaryBackgroundColor,
+              color: themedStyles.textColor
+            }
+          ]}
+          value={programName}
+          onChangeText={setProgramName}
+          placeholder='Program Name'
+          placeholderTextColor={themedStyles.textColor}
+        />
+
+        <View style={styles.pickerRow}>
+          <CustomPicker
+            options={[
+              { label: 'Goal', value: '' },
+              { label: 'Endurance', value: 'Endurance' },
+              { label: 'Strength', value: 'Strength' },
+              { label: 'Hypertrophy', value: 'Hypertrophy' }
+            ]}
+            selectedValue={selectedGoal}
+            onValueChange={setSelectedGoal}
+            label='Goal'
+          />
+          <CustomPicker
+            options={[
+              { label: 'Duration', value: '' },
+              { label: 'Days', value: 'days' },
+              { label: 'Weeks', value: 'weeks' },
+              { label: 'Months', value: 'months' }
+            ]}
+            selectedValue={durationType}
+            onValueChange={setDurationType}
+            label='Duration'
+          />
+          <CustomPicker
+            options={[
+              { label: 'Days/Week', value: '' },
+              { label: '1', value: '1' },
+              { label: '2', value: '2' },
+              { label: '3', value: '3' },
+              { label: '4', value: '4' },
+              { label: '5', value: '5' },
+              { label: '6', value: '6' },
+              { label: '7', value: '7' }
+            ]}
+            selectedValue={daysPerWeek}
+            onValueChange={setDaysPerWeek}
+            label='Days/Week'
+          />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    overflow: 'hidden'
+  },
+
   container: {
-    padding: 20,
-    width: '100%'
+    padding: 20
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16
   },
   input: {
-    height: 50,
-    marginVertical: 10,
-    borderWidth: 1,
-    padding: 15,
+    height: 40,
     borderRadius: 8,
-    width: '100%'
+    paddingHorizontal: 8,
+    marginBottom: 16
   },
-  picker: {
-    height: 50,
-    marginVertical: 10,
-    width: '100%'
+  pickerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   }
 });
 

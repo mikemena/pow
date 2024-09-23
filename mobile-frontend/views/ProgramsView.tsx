@@ -30,14 +30,13 @@ interface Program {
 
 interface ProgramList {
   programs: Program[];
-  workouts: any[]; // Define a proper type for workouts if available
+  workouts: any[];
 }
 
 interface Filters {
   programName: string;
   selectedGoal: string;
-  duration: string;
-  durationUnit: string;
+  durationType: string;
   daysPerWeek: string;
 }
 
@@ -53,12 +52,11 @@ const ProgramsView: React.FC = () => {
     programs: [],
     workouts: []
   });
-  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
+  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(true);
   const [filters, setFilters] = useState<Filters>({
     programName: '',
     selectedGoal: '',
-    duration: '',
-    durationUnit: '',
+    durationType: '',
     daysPerWeek: ''
   });
 
@@ -92,29 +90,36 @@ const ProgramsView: React.FC = () => {
         program.name.toLowerCase().includes(filters.programName.toLowerCase());
       const matchesGoal =
         !filters.selectedGoal || program.main_goal === filters.selectedGoal;
-      const matchesDuration =
-        !filters.duration ||
-        program.program_duration === parseInt(filters.duration);
       const matchesDurationUnit =
-        !filters.durationUnit ||
+        !filters.durationType ||
         program.duration_unit.toLowerCase() ===
-          filters.durationUnit.toLowerCase();
+          filters.durationType.toLowerCase();
       const matchesDaysPerWeek =
         !filters.daysPerWeek ||
         program.days_per_week === parseInt(filters.daysPerWeek);
 
       return (
-        matchesName &&
-        matchesGoal &&
-        matchesDuration &&
-        matchesDurationUnit &&
-        matchesDaysPerWeek
+        matchesName && matchesGoal && matchesDurationUnit && matchesDaysPerWeek
       );
     });
   }, [programList.programs, filters]);
 
-  const handleFilterChange = (newFilters: Filters) => {
+  const handleFilterChange = (key: keyof Filters, value: string) => {
+    setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      programName: '',
+      selectedGoal: '',
+      durationType: '',
+      daysPerWeek: ''
+    });
+  };
+
+  const handleApplyFilters = (newFilters: Filters) => {
     setFilters(newFilters);
+    setIsFilterVisible(false);
   };
 
   const formatDuration = (duration: number, unit: string): string => {
@@ -199,76 +204,88 @@ const ProgramsView: React.FC = () => {
       ]}
     >
       <Header pageName='Programs' />
-      <PillButton
-        label='Filter'
-        icon={
-          <Ionicons
-            name='options-outline'
-            size={16}
-            style={{
-              color:
-                state.theme === 'dark'
-                  ? themedStyles.accentColor
-                  : colors.eggShell
+      <View style={globalStyles.container}>
+        {programList.programs.length > 0 && (
+          <PillButton
+            label='Filter'
+            icon={
+              <Ionicons
+                name='options-outline'
+                size={16}
+                style={{
+                  color:
+                    state.theme === 'dark'
+                      ? themedStyles.accentColor
+                      : colors.eggShell
+                }}
+              />
+            }
+            onPress={() => {
+              setIsFilterVisible(!isFilterVisible);
             }}
           />
-        }
-        onPress={() => setIsFilterVisible(!isFilterVisible)}
-      />
-      <Modal
-        visible={isFilterVisible}
-        animationType='slide'
-        transparent={true}
-        onRequestClose={() => setIsFilterVisible(false)}
-      >
-        <View
-          style={[
-            styles.modalView,
-            { backgroundColor: themedStyles.primaryBackgroundColor }
-          ]}
+        )}
+        <Modal
+          visible={isFilterVisible}
+          animationType='slide'
+          transparent={true}
+          onRequestClose={() => {
+            setIsFilterVisible(false);
+          }}
         >
-          <FilterView
-            onFilterChange={handleFilterChange}
-            themedStyles={themedStyles}
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <FilterView
+                isVisible={isFilterVisible}
+                onClose={() => {
+                  setIsFilterVisible(false);
+                }}
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onClearFilters={clearFilters}
+              />
+            </View>
+          </View>
+        </Modal>
+
+        {filteredPrograms.length > 0 ? (
+          <FlatList
+            data={filteredPrograms}
+            renderItem={renderProgramItem}
+            keyExtractor={item => item.id.toString()}
+            contentContainerStyle={styles.listContainer}
           />
-          <TouchableOpacity onPress={() => setIsFilterVisible(false)}>
-            <Text style={{ color: themedStyles.accentColor }}>Close</Text>
+        ) : (
+          <View style={styles.noPrograms}>
+            <Text
+              style={[
+                styles.noProgramsText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              No programs match your filters. Try adjusting your search
+              criteria.
+            </Text>
+          </View>
+        )}
+        <View style={globalStyles.centeredButtonContainer}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            onPress={() => {}}
+          >
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              CREATE PROGRAM
+            </Text>
           </TouchableOpacity>
         </View>
-      </Modal>
-      {filteredPrograms.length > 0 ? (
-        <FlatList
-          data={filteredPrograms}
-          renderItem={renderProgramItem}
-          keyExtractor={item => item.id.toString()}
-          contentContainerStyle={styles.listContainer}
-        />
-      ) : (
-        <View style={styles.noPrograms}>
-          <Text
-            style={[styles.noProgramsText, { color: themedStyles.accentColor }]}
-          >
-            No programs match your filters. Try adjusting your search criteria.
-          </Text>
-        </View>
-      )}
-      <View style={globalStyles.centeredButtonContainer}>
-        <TouchableOpacity
-          style={[
-            globalStyles.button,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-          onPress={() => {}}
-        >
-          <Text
-            style={[
-              globalStyles.buttonText,
-              { color: themedStyles.accentColor }
-            ]}
-          >
-            CREATE PROGRAM
-          </Text>
-        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -278,6 +295,15 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingTop: 20
   },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+  },
+  modalContent: {
+    backgroundColor: 'transparent'
+  },
+
   programItem: {
     padding: 16,
     borderRadius: 10,
