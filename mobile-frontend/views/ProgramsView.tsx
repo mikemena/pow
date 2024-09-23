@@ -83,6 +83,36 @@ const ProgramsView: React.FC = () => {
     fetchPrograms();
   }, [fetchPrograms]);
 
+  const getTotalMatches = useCallback(
+    (currentFilters: Filters): number => {
+      return programList.programs.filter(program => {
+        const matchesName =
+          !currentFilters.programName ||
+          program.name
+            .toLowerCase()
+            .includes(currentFilters.programName.toLowerCase());
+        const matchesGoal =
+          !currentFilters.selectedGoal ||
+          program.main_goal === currentFilters.selectedGoal;
+        const matchesDurationUnit =
+          !currentFilters.durationType ||
+          program.duration_unit.toLowerCase() ===
+            currentFilters.durationType.toLowerCase();
+        const matchesDaysPerWeek =
+          !currentFilters.daysPerWeek ||
+          program.days_per_week === parseInt(currentFilters.daysPerWeek);
+
+        return (
+          matchesName &&
+          matchesGoal &&
+          matchesDurationUnit &&
+          matchesDaysPerWeek
+        );
+      }).length;
+    },
+    [programList.programs]
+  );
+
   const filteredPrograms = useMemo(() => {
     return programList.programs.filter(program => {
       const matchesName =
@@ -115,11 +145,6 @@ const ProgramsView: React.FC = () => {
       durationType: '',
       daysPerWeek: ''
     });
-  };
-
-  const handleApplyFilters = (newFilters: Filters) => {
-    setFilters(newFilters);
-    setIsFilterVisible(false);
   };
 
   const formatDuration = (duration: number, unit: string): string => {
@@ -243,6 +268,7 @@ const ProgramsView: React.FC = () => {
                 filters={filters}
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
+                getTotalMatches={getTotalMatches}
               />
             </View>
           </View>
@@ -263,8 +289,7 @@ const ProgramsView: React.FC = () => {
                 { color: themedStyles.accentColor }
               ]}
             >
-              No programs match your filters. Try adjusting your search
-              criteria.
+              You don't have any programs yet. Let's create one!
             </Text>
           </View>
         )}
@@ -297,8 +322,8 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-start',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    justifyContent: 'flex-start'
+    // backgroundColor: 'rgba(0, 0, 0, 0.5)'
   },
   modalContent: {
     backgroundColor: 'transparent'

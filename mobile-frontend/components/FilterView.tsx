@@ -1,13 +1,11 @@
-import React, { useState } from 'react';
-import { View, TextInput, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, TextInput, StyleSheet, SafeAreaView, Text } from 'react-native';
 import CustomPicker from './CustomPicker';
 import PillButton from '../components/PillButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { colors } from '../src/styles/globalStyles';
-
-// Define the Filters interface
 
 interface Filters {
   programName: string;
@@ -19,37 +17,29 @@ interface Filters {
 interface FilterViewProps {
   isVisible: boolean;
   onClose: () => void;
-  onApplyFilters: (filters: Filters) => void;
+  filters: Filters;
+  onFilterChange: (key: keyof Filters, value: string) => void;
+  onClearFilters: () => void;
+  getTotalMatches: (filters: Filters) => number;
 }
 
 const FilterView: React.FC<FilterViewProps> = ({
   isVisible,
   onClose,
-  onApplyFilters
+  filters,
+  onFilterChange,
+  onClearFilters,
+  getTotalMatches
 }) => {
-  const [programName, setProgramName] = useState<string>('');
-  const [selectedGoal, setSelectedGoal] = useState<string>('');
-  const [durationType, setDurationType] = useState<string>('');
-  const [daysPerWeek, setDaysPerWeek] = useState<string>('');
-
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
-  const clearFilters = () => {
-    setProgramName('');
-    setSelectedGoal('');
-    setDurationType('');
-    setDaysPerWeek('');
-  };
+  const totalMatches = getTotalMatches(filters);
 
-  const handleApply = () => {
-    onApplyFilters({
-      programName,
-      selectedGoal,
-      durationType,
-      daysPerWeek
-    });
-    onClose();
+  const getMatchesText = () => {
+    if (totalMatches === 0) return 'No Matches';
+    if (totalMatches === 1) return '1 Match';
+    return `${totalMatches} Matches`;
   };
 
   if (!isVisible) {
@@ -76,6 +66,11 @@ const FilterView: React.FC<FilterViewProps> = ({
             }
             onPress={onClose}
           />
+          <View>
+            <Text style={{ color: themedStyles.accentColor }}>
+              {getMatchesText()}
+            </Text>
+          </View>
           <PillButton
             label='Clear'
             icon={
@@ -85,7 +80,7 @@ const FilterView: React.FC<FilterViewProps> = ({
                 color={colors.eggShell}
               />
             }
-            onPress={clearFilters}
+            onPress={onClearFilters}
           />
         </View>
 
@@ -97,8 +92,9 @@ const FilterView: React.FC<FilterViewProps> = ({
               color: themedStyles.textColor
             }
           ]}
-          value={programName}
-          onChangeText={setProgramName}
+          value={filters.programName}
+          onChangeText={value => onFilterChange('programName', value)}
+          onEndEditing={() => {}}
           placeholder='Program Name'
           placeholderTextColor={themedStyles.textColor}
         />
@@ -107,12 +103,12 @@ const FilterView: React.FC<FilterViewProps> = ({
           <CustomPicker
             options={[
               { label: 'Goal', value: '' },
-              { label: 'Endurance', value: 'Endurance' },
-              { label: 'Strength', value: 'Strength' },
-              { label: 'Hypertrophy', value: 'Hypertrophy' }
+              { label: 'Endurance', value: 'endurance' },
+              { label: 'Strength', value: 'strength' },
+              { label: 'Hypertrophy', value: 'hypertrophy' }
             ]}
-            selectedValue={selectedGoal}
-            onValueChange={setSelectedGoal}
+            selectedValue={filters.selectedGoal}
+            onValueChange={value => onFilterChange('selectedGoal', value)}
             label='Goal'
           />
           <CustomPicker
@@ -122,8 +118,8 @@ const FilterView: React.FC<FilterViewProps> = ({
               { label: 'Weeks', value: 'weeks' },
               { label: 'Months', value: 'months' }
             ]}
-            selectedValue={durationType}
-            onValueChange={setDurationType}
+            selectedValue={filters.durationType}
+            onValueChange={value => onFilterChange('durationType', value)}
             label='Duration'
           />
           <CustomPicker
@@ -137,8 +133,8 @@ const FilterView: React.FC<FilterViewProps> = ({
               { label: '6', value: '6' },
               { label: '7', value: '7' }
             ]}
-            selectedValue={daysPerWeek}
-            onValueChange={setDaysPerWeek}
+            selectedValue={filters.daysPerWeek}
+            onValueChange={value => onFilterChange('daysPerWeek', value)}
             label='Days/Week'
           />
         </View>
@@ -146,6 +142,8 @@ const FilterView: React.FC<FilterViewProps> = ({
     </SafeAreaView>
   );
 };
+
+// Define the styles
 
 const styles = StyleSheet.create({
   safeArea: {

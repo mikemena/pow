@@ -19,8 +19,7 @@ interface CustomPickerProps {
 const CustomPicker: React.FC<CustomPickerProps> = ({
   options,
   selectedValue,
-  onValueChange,
-  label
+  onValueChange
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const { state } = useTheme();
@@ -35,7 +34,9 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
         ]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={[styles.pickerButtonText, { color: colors.eggShell }]}>
+        <Text
+          style={[styles.pickerButtonText, { color: themedStyles.textColor }]}
+        >
           {options.find(option => option.value === selectedValue)?.label}
         </Text>
       </TouchableOpacity>
