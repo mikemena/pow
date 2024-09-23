@@ -322,8 +322,8 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    justifyContent: 'flex-start'
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)'
+    justifyContent: 'flex-start',
+    paddingTop: 100
   },
   modalContent: {
     backgroundColor: 'transparent'
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'flex-start',
-    marginBottom: 8
+    marginBottom: 5
   },
   detailLabel: {
     fontFamily: 'Lexend',
@@ -385,27 +385,13 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   iconCircle: {
-    width: 35,
-    height: 35,
-    borderRadius: 20,
+    width: 30,
+    height: 30,
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: 'rgba(255, 255, 255, 0.1)'
-  },
-  modalView: {
-    margin: 20,
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5
   }
 });
 

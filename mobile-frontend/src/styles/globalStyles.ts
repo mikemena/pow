@@ -93,7 +93,7 @@ export const globalStyles = StyleSheet.create({
   },
   buttonText: {
     fontFamily: 'Lexend',
-    fontSize: 16,
+    fontSize: 14,
     textAlign: 'center'
   },
   label: {

@@ -4,7 +4,11 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { colors } from '../src/styles/globalStyles';
 
-const Header = ({ pageName }) => {
+interface HeaderProps {
+  pageName: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ pageName }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
@@ -26,7 +30,7 @@ const Header = ({ pageName }) => {
 const styles = StyleSheet.create({
   header: {
     padding: 10,
-    paddingTop: 45,
+    paddingTop: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
