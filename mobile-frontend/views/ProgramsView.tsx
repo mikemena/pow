@@ -217,34 +217,7 @@ const ProgramsView: React.FC = () => {
             </Text>
           </View>
         </View>
-        <View style={globalStyles.iconContainer}>
-          <TouchableOpacity style={globalStyles.iconLeft}>
-            <View
-              style={[
-                globalStyles.iconCircle,
-                { backgroundColor: themedStyles.primaryBackgroundColor }
-              ]}
-            >
-              <Ionicons
-                name='pencil-outline'
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              />
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={globalStyles.iconRight}>
-            <View
-              style={[
-                globalStyles.iconCircle,
-                { backgroundColor: themedStyles.primaryBackgroundColor }
-              ]}
-            >
-              <Ionicons
-                name='trash-outline'
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              />
-            </View>
-          </TouchableOpacity>
-        </View>
+        <View style={globalStyles.iconContainer}></View>
       </View>
     </TouchableOpacity>
   );
@@ -363,8 +336,7 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   programTitle: {
-    fontFamily: 'Lexend-Bold',
-    fontWeight: '600',
+    fontFamily: 'Lexend',
     fontSize: 16,
     marginBottom: 5
   },
