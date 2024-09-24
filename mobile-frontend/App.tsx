@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import Navigation from './components/Navigation';
@@ -8,11 +9,20 @@ import { ThemeProvider } from './src/context/themeContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramsView';
+import ProgramDetails from './views/ProgramDetails';
 import WorkoutView from './views/WorkoutView';
 import ProgressView from './views/ProgressView';
 import ProfileView from './views/ProfileView';
 
 const Tab = createBottomTabNavigator();
+const ProgramsStack = createStackNavigator();
+
+const ProgramsStackScreen = () => (
+  <ProgramsStack.Navigator screenOptions={{ headerShown: false }}>
+    <ProgramsStack.Screen name='ProgramsList' component={ProgramsView} />
+    <ProgramsStack.Screen name='ProgramDetails' component={ProgramDetails} />
+  </ProgramsStack.Navigator>
+);
 
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
@@ -41,7 +51,7 @@ const App = () => {
           <Tab.Navigator tabBar={props => <Navigation {...props} />}>
             <Tab.Screen
               name='Programs'
-              component={ProgramsView}
+              component={ProgramsStackScreen}
               options={{ headerShown: false }}
             />
             <Tab.Screen

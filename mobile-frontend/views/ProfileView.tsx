@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { RouteProp } from '@react-navigation/native';
 import Header from '../components/Header';
 import {
   View,
   Text,
+  SafeAreaView,
   TextInput,
   TouchableOpacity,
   Switch,
@@ -13,21 +15,31 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-interface ProfileProps {
-  initialUserName: string;
-  initialEmail: string;
-  initialDarkMode: boolean;
-  initialAccentColor: string;
-  onSave: (userData: { userName: string; email: string }) => void;
+type RootStackParamList = {
+  Profile: {
+    initialUserName?: string;
+    initialEmail?: string;
+    initialDarkMode?: boolean;
+    initialAccentColor?: string;
+    onSave?: (data: any) => void;
+  };
+};
+
+type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
+
+interface ProfileViewProps {
+  route?: ProfileScreenRouteProp;
 }
 
-const ProfileView: React.FC<ProfileProps> = ({
-  initialUserName,
-  initialEmail,
-  initialDarkMode = true,
-  initialAccentColor,
-  onSave
-}) => {
+const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
+  const {
+    initialUserName = '',
+    initialEmail = '',
+    initialDarkMode = false,
+    initialAccentColor = '',
+    onSave = (data: any) => console.log('Saving profile data:', data)
+  } = route?.params || {};
+
   const [userName, setUserName] = useState(initialUserName);
   const [email, setEmail] = useState(initialEmail);
   const [isEditing, setIsEditing] = useState(false);
@@ -71,264 +83,280 @@ const ProfileView: React.FC<ProfileProps> = ({
   };
 
   return (
-    <View
+    <SafeAreaView
       style={[
-        globalStyles.container,
+        styles.container,
+        // globalStyles.container,
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
       <Header pageName='Profile' />
 
       {/* profile details section */}
-
-      <View
-        style={[
-          globalStyles.section,
-          { backgroundColor: themedStyles.secondaryBackgroundColor }
-        ]}
-      >
-        <TouchableOpacity
-          // onPress={() => setIsProfileExpanded(!isProfileExpanded)}
-          onPress={() => handleSectionToggle('profile')}
+      <View style={globalStyles.container}>
+        <View
+          style={[
+            globalStyles.section,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
         >
-          <View
-            style={[
-              globalStyles.sectionHeader,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
+          <TouchableOpacity
+            // onPress={() => setIsProfileExpanded(!isProfileExpanded)}
+            onPress={() => handleSectionToggle('profile')}
           >
-            <Ionicons
-              name='person-outline'
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
-
-            <Text
+            <View
               style={[
-                globalStyles.sectionTitle,
-                { color: themedStyles.textColor }
+                globalStyles.sectionHeader,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
             >
-              Profile Details
-            </Text>
-            <Ionicons
-              name={
-                isProfileExpanded
-                  ? 'chevron-up-outline'
-                  : 'chevron-down-outline'
-              }
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
-          </View>
-        </TouchableOpacity>
-
-        {isProfileExpanded && (
-          <View
-            style={[
-              globalStyles.sectionContent,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
-            <Text
-              style={[globalStyles.label, { color: themedStyles.textColor }]}
-            >
-              User Name
-            </Text>
-            <TextInput
-              style={[
-                globalStyles.input,
-                { backgroundColor: themedStyles.primaryBackgroundColor }
-              ]}
-              value={userName}
-              onChangeText={setUserName}
-              editable={isEditing}
-            />
-            <Text
-              style={[globalStyles.label, { color: themedStyles.textColor }]}
-            >
-              Email
-            </Text>
-            <TextInput
-              style={[
-                globalStyles.input,
-                { backgroundColor: themedStyles.primaryBackgroundColor }
-              ]}
-              value={email}
-              onChangeText={setEmail}
-              editable={isEditing}
-              keyboardType='email-address'
-            />
-          </View>
-        )}
-      </View>
-
-      {/* settings section */}
-      <View
-        style={[
-          globalStyles.section,
-          { backgroundColor: themedStyles.secondaryBackgroundColor }
-        ]}
-      >
-        <TouchableOpacity
-          // onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
-          onPress={() => handleSectionToggle('settings')}
-        >
-          <View
-            style={[
-              globalStyles.sectionHeader,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
-            <Ionicons
-              name='settings-outline'
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
-
-            <Text
-              style={[
-                globalStyles.sectionTitle,
-                { color: themedStyles.textColor }
-              ]}
-            >
-              Settings
-            </Text>
-            <Ionicons
-              name={
-                isSettingsExpanded
-                  ? 'chevron-up-outline'
-                  : 'chevron-down-outline'
-              }
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
-          </View>
-        </TouchableOpacity>
-
-        {isSettingsExpanded && (
-          <View
-            style={[
-              globalStyles.sectionContent,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
-            <View style={styles.settingRow}>
               <Ionicons
-                name='moon-outline'
+                name='person-outline'
                 style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
 
               <Text
-                style={[styles.settingLabel, { color: themedStyles.textColor }]}
+                style={[
+                  globalStyles.sectionTitle,
+                  { color: themedStyles.textColor }
+                ]}
               >
-                Dark Mode
+                Profile Details
               </Text>
-              <Switch
-                value={darkMode}
-                onValueChange={handleDarkModeToggle}
-                trackColor={{ false: colors.offWhite, true: colors.green }}
-                thumbColor={darkMode ? colors.black : '#f4f3f4'}
+              <Ionicons
+                name={
+                  isProfileExpanded
+                    ? 'chevron-up-outline'
+                    : 'chevron-down-outline'
+                }
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
             </View>
-            <View style={styles.settingRow}>
+          </TouchableOpacity>
+
+          {isProfileExpanded && (
+            <View
+              style={[
+                globalStyles.sectionContent,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+            >
+              <Text
+                style={[globalStyles.label, { color: themedStyles.textColor }]}
+              >
+                User Name
+              </Text>
+              <TextInput
+                style={[
+                  globalStyles.input,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                ]}
+                value={userName}
+                onChangeText={setUserName}
+                editable={isEditing}
+              />
+              <Text
+                style={[globalStyles.label, { color: themedStyles.textColor }]}
+              >
+                Email
+              </Text>
+              <TextInput
+                style={[
+                  globalStyles.input,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                ]}
+                value={email}
+                onChangeText={setEmail}
+                editable={isEditing}
+                keyboardType='email-address'
+              />
+            </View>
+          )}
+        </View>
+
+        {/* settings section */}
+        <View
+          style={[
+            globalStyles.section,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
+          <TouchableOpacity
+            // onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
+            onPress={() => handleSectionToggle('settings')}
+          >
+            <View
+              style={[
+                globalStyles.sectionHeader,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+            >
               <Ionicons
-                name='color-wand-outline'
+                name='settings-outline'
                 style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
 
               <Text
-                style={[styles.settingLabel, { color: themedStyles.textColor }]}
+                style={[
+                  globalStyles.sectionTitle,
+                  { color: themedStyles.textColor }
+                ]}
               >
-                Accent Color
+                Settings
               </Text>
+              <Ionicons
+                name={
+                  isSettingsExpanded
+                    ? 'chevron-up-outline'
+                    : 'chevron-down-outline'
+                }
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              />
             </View>
+          </TouchableOpacity>
 
-            <View style={styles.colorPicker}>
-              {accentColors.map(color => (
-                <TouchableOpacity
-                  key={color}
-                  style={[styles.colorOption, { backgroundColor: color }]}
-                  onPress={() => handleAccentColorChange(color)}
+          {isSettingsExpanded && (
+            <View
+              style={[
+                globalStyles.sectionContent,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+            >
+              <View style={styles.settingRow}>
+                <Ionicons
+                  name='moon-outline'
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                />
+
+                <Text
+                  style={[
+                    styles.settingLabel,
+                    { color: themedStyles.textColor }
+                  ]}
                 >
-                  {color === state.accentColor && (
-                    <View>
-                      <Ionicons
-                        name='checkmark-sharp'
-                        size={20}
-                        color={colors.black}
-                      />
-                    </View>
-                  )}
-                </TouchableOpacity>
-              ))}
+                  Dark Mode
+                </Text>
+                <Switch
+                  value={darkMode}
+                  onValueChange={handleDarkModeToggle}
+                  trackColor={{ false: colors.offWhite, true: colors.green }}
+                  thumbColor={darkMode ? colors.black : '#f4f3f4'}
+                />
+              </View>
+              <View style={styles.settingRow}>
+                <Ionicons
+                  name='color-wand-outline'
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                />
+
+                <Text
+                  style={[
+                    styles.settingLabel,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  Accent Color
+                </Text>
+              </View>
+
+              <View style={styles.colorPicker}>
+                {accentColors.map(color => (
+                  <TouchableOpacity
+                    key={color}
+                    style={[styles.colorOption, { backgroundColor: color }]}
+                    onPress={() => handleAccentColorChange(color)}
+                  >
+                    {color === state.accentColor && (
+                      <View>
+                        <Ionicons
+                          name='checkmark-sharp'
+                          size={20}
+                          color={colors.black}
+                        />
+                      </View>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
+          )}
+        </View>
+
+        {!isEditing ? (
+          <View style={globalStyles.centeredButtonContainer}>
+            <TouchableOpacity
+              style={[
+                globalStyles.button,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+              onPress={() => setIsEditing(true)}
+            >
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                EDIT
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
+              style={[
+                globalStyles.button,
+                styles.saveButton,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+              onPress={handleSave}
+            >
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                SAVE
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                globalStyles.button,
+                styles.cancelButton,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+              onPress={handleCancel}
+            >
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                CANCEL
+              </Text>
+            </TouchableOpacity>
           </View>
         )}
       </View>
-
-      {!isEditing ? (
-        <View style={globalStyles.centeredButtonContainer}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={() => setIsEditing(true)}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              EDIT
-            </Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.saveButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleSave}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              SAVE
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.cancelButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleCancel}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              CANCEL
-            </Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 5,
+    borderStyle: 'solid',
+    borderColor: colors.red
+  },
   settingRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15
+    marginBottom: 15,
+    borderStyle: 'solid',
+    borderColor: colors.red
   },
   settingLabel: {
     fontFamily: 'Lexend',
@@ -343,7 +371,7 @@ const styles = StyleSheet.create({
   colorOption: {
     width: 30,
     height: 30,
-    borderRadius: 10,
+    borderRadius: 15,
     justifyContent: 'center',
     alignItems: 'center'
   },

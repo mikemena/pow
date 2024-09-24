@@ -47,8 +47,7 @@ export const globalStyles = StyleSheet.create({
     padding: spacing.small
   },
   header: {
-    fontSize: typography.fontSizes.large,
-    marginBottom: spacing.large
+    fontSize: typography.fontSizes.large
   },
   section: {
     marginBottom: 20,
@@ -56,8 +55,8 @@ export const globalStyles = StyleSheet.create({
     overflow: 'hidden'
   },
   sectionContent: {
-    padding: 15,
-    // marginBottom: 20,
+    padding: 10,
+    marginBottom: 20,
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10
   },

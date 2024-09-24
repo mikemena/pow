@@ -9,6 +9,7 @@ import {
   Modal,
   ListRenderItem
 } from 'react-native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
@@ -19,6 +20,14 @@ import { Ionicons } from '@expo/vector-icons';
 import FilterView from '../components/FilterView';
 
 // Define types
+
+// Define your navigation param list
+type RootStackParamList = {
+  Programs: undefined;
+  ProgramDetails: { program: Program };
+  // Add other screens here
+};
+
 interface Program {
   id: number;
   name: string;
@@ -48,11 +57,12 @@ interface ThemedStyles {
 }
 
 const ProgramsView: React.FC = () => {
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [programList, setProgramList] = useState<ProgramList>({
     programs: [],
     workouts: []
   });
-  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(true);
+  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
   const [filters, setFilters] = useState<Filters>({
     programName: '',
     selectedGoal: '',
@@ -155,70 +165,88 @@ const ProgramsView: React.FC = () => {
   };
 
   const renderProgramItem: ListRenderItem<Program> = ({ item }) => (
-    <View
-      style={[
-        styles.programItem,
-        { backgroundColor: themedStyles.secondaryBackgroundColor }
-      ]}
+    <TouchableOpacity
+      onPress={() => navigation.navigate('ProgramDetails', { program: item })}
     >
-      <Text style={[styles.programTitle, { color: themedStyles.accentColor }]}>
-        {item.name}
-      </Text>
-      <View style={styles.programDetails}>
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
-            Main Goal
-          </Text>
-          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
-            {item.main_goal.charAt(0).toUpperCase() + item.main_goal.slice(1)}
-          </Text>
+      <View
+        style={[
+          styles.programItem,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <Text
+          style={[styles.programTitle, { color: themedStyles.accentColor }]}
+        >
+          {item.name}
+        </Text>
+        <View style={styles.programDetails}>
+          <View style={styles.detailRow}>
+            <Text
+              style={[styles.detailLabel, { color: themedStyles.textColor }]}
+            >
+              Main Goal
+            </Text>
+            <Text
+              style={[styles.detailValue, { color: themedStyles.textColor }]}
+            >
+              {item.main_goal.charAt(0).toUpperCase() + item.main_goal.slice(1)}
+            </Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text
+              style={[styles.detailLabel, { color: themedStyles.textColor }]}
+            >
+              Duration
+            </Text>
+            <Text
+              style={[styles.detailValue, { color: themedStyles.textColor }]}
+            >
+              {formatDuration(item.program_duration, item.duration_unit)}
+            </Text>
+          </View>
+          <View style={styles.detailRow}>
+            <Text
+              style={[styles.detailLabel, { color: themedStyles.textColor }]}
+            >
+              Days Per Week
+            </Text>
+            <Text
+              style={[styles.detailValue, { color: themedStyles.textColor }]}
+            >
+              {item.days_per_week}
+            </Text>
+          </View>
         </View>
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
-            Duration
-          </Text>
-          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
-            {formatDuration(item.program_duration, item.duration_unit)}
-          </Text>
-        </View>
-        <View style={styles.detailRow}>
-          <Text style={[styles.detailLabel, { color: themedStyles.textColor }]}>
-            Days Per Week
-          </Text>
-          <Text style={[styles.detailValue, { color: themedStyles.textColor }]}>
-            {item.days_per_week}
-          </Text>
+        <View style={styles.iconContainer}>
+          <TouchableOpacity style={styles.iconLeft}>
+            <View
+              style={[
+                styles.iconCircle,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
+              ]}
+            >
+              <Ionicons
+                name='pencil-outline'
+                style={[styles.icon, { color: themedStyles.textColor }]}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.iconRight}>
+            <View
+              style={[
+                styles.iconCircle,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
+              ]}
+            >
+              <Ionicons
+                name='trash-outline'
+                style={[styles.icon, { color: themedStyles.textColor }]}
+              />
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
-      <View style={styles.iconContainer}>
-        <TouchableOpacity style={styles.iconLeft}>
-          <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: themedStyles.primaryBackgroundColor }
-            ]}
-          >
-            <Ionicons
-              name='pencil-outline'
-              style={[styles.icon, { color: themedStyles.textColor }]}
-            />
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconRight}>
-          <View
-            style={[
-              styles.iconCircle,
-              { backgroundColor: themedStyles.primaryBackgroundColor }
-            ]}
-          >
-            <Ionicons
-              name='trash-outline'
-              style={[styles.icon, { color: themedStyles.textColor }]}
-            />
-          </View>
-        </TouchableOpacity>
-      </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -336,9 +364,9 @@ const styles = StyleSheet.create({
   },
   programTitle: {
     fontFamily: 'Lexend-Bold',
-    fontWeight: '700',
+    fontWeight: '600',
     fontSize: 16,
-    marginBottom: 10
+    marginBottom: 5
   },
   programDetails: {
     marginBottom: 5
