@@ -99,6 +99,25 @@ export const globalStyles = StyleSheet.create({
     fontFamily: 'Lexend',
     marginBottom: 5
   },
+  iconContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  iconCircle: {
+    width: 30,
+    height: 30,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 0.5,
+    borderColor: 'rgba(255, 255, 255, 0.1)'
+  },
+  iconLeft: {
+    alignSelf: 'flex-start'
+  },
+  iconRight: {
+    alignSelf: 'flex-end'
+  },
   icon: {
     fontSize: 18
   }

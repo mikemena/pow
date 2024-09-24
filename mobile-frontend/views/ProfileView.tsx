@@ -123,14 +123,21 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
               >
                 Profile Details
               </Text>
-              <Ionicons
-                name={
-                  isProfileExpanded
-                    ? 'chevron-up-outline'
-                    : 'chevron-down-outline'
-                }
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              />
+              <View
+                style={[
+                  globalStyles.iconCircle,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                ]}
+              >
+                <Ionicons
+                  name={
+                    isProfileExpanded
+                      ? 'chevron-up-outline'
+                      : 'chevron-down-outline'
+                  }
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                />
+              </View>
             </View>
           </TouchableOpacity>
 
@@ -204,14 +211,21 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
               >
                 Settings
               </Text>
-              <Ionicons
-                name={
-                  isSettingsExpanded
-                    ? 'chevron-up-outline'
-                    : 'chevron-down-outline'
-                }
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              />
+              <View
+                style={[
+                  globalStyles.iconCircle,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                ]}
+              >
+                <Ionicons
+                  name={
+                    isSettingsExpanded
+                      ? 'chevron-up-outline'
+                      : 'chevron-down-outline'
+                  }
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                />
+              </View>
             </View>
           </TouchableOpacity>
 

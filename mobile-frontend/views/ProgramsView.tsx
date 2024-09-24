@@ -217,30 +217,30 @@ const ProgramsView: React.FC = () => {
             </Text>
           </View>
         </View>
-        <View style={styles.iconContainer}>
-          <TouchableOpacity style={styles.iconLeft}>
+        <View style={globalStyles.iconContainer}>
+          <TouchableOpacity style={globalStyles.iconLeft}>
             <View
               style={[
-                styles.iconCircle,
+                globalStyles.iconCircle,
                 { backgroundColor: themedStyles.primaryBackgroundColor }
               ]}
             >
               <Ionicons
                 name='pencil-outline'
-                style={[styles.icon, { color: themedStyles.textColor }]}
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
             </View>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.iconRight}>
+          <TouchableOpacity style={globalStyles.iconRight}>
             <View
               style={[
-                styles.iconCircle,
+                globalStyles.iconCircle,
                 { backgroundColor: themedStyles.primaryBackgroundColor }
               ]}
             >
               <Ionicons
                 name='trash-outline'
-                style={[styles.icon, { color: themedStyles.textColor }]}
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
               />
             </View>
           </TouchableOpacity>
@@ -388,19 +388,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1
   },
-  iconContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  iconLeft: {
-    alignSelf: 'flex-start'
-  },
-  iconRight: {
-    alignSelf: 'flex-end'
-  },
-  icon: {
-    fontSize: 18
-  },
+
   noPrograms: {
     flex: 1,
     justifyContent: 'center',
@@ -411,15 +399,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 24
-  },
-  iconCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)'
   }
 });
 

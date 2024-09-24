@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,6 +14,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import PillButton from '../components/PillButton';
+import WorkoutHeader from '../components/WorkoutHeader';
 
 interface Set {
   id: number;
@@ -66,12 +67,12 @@ const ProgramDetails: React.FC = () => {
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const [expandedWorkout, setExpandedWorkout] = useState<number | null>(null);
 
-  useEffect(() => {
-    console.log(
-      'Program received in ProgramDetails:',
-      JSON.stringify(program, null, 2)
-    );
-  }, [program]);
+  //   useEffect(() => {
+  //     console.log(
+  //       'Program received in ProgramDetails:',
+  //       JSON.stringify(program, null, 2)
+  //     );
+  //   }, [program]);
 
   const formatDuration = (duration: number, unit: string): string => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
@@ -97,50 +98,12 @@ const ProgramDetails: React.FC = () => {
 
   const renderWorkout = (workout: Workout) => (
     <View key={workout.id} style={styles.workoutContainer}>
-      <TouchableOpacity onPress={() => toggleWorkout(workout.id)}>
-        <View
-          style={[
-            styles.workoutHeader,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-        >
-          <Text
-            style={[styles.workoutTitle, { color: themedStyles.accentColor }]}
-          >
-            {workout.name}
-          </Text>
-          <View style={styles.exerciseCount}>
-            <Text
-              style={[
-                styles.exerciseCountText,
-                { color: themedStyles.textColor }
-              ]}
-            >
-              {workout.exercises.length} EXERCISES
-            </Text>
-            <Text style={[styles.addText, { color: themedStyles.accentColor }]}>
-              ADD
-            </Text>
-          </View>
-          <Ionicons
-            name={
-              expandedWorkout === workout.id ? 'chevron-up' : 'chevron-down'
-            }
-            size={24}
-            color={themedStyles.textColor}
-          />
-        </View>
-      </TouchableOpacity>
-      {expandedWorkout === workout.id && (
-        <View
-          style={[
-            styles.workoutContent,
-            { backgroundColor: themedStyles.primaryBackgroundColor }
-          ]}
-        >
-          {workout.exercises.map(renderExercise)}
-        </View>
-      )}
+      <WorkoutHeader
+        workout={workout}
+        expandedWorkout={expandedWorkout}
+        toggleWorkout={toggleWorkout}
+        themedStyles={themedStyles}
+      />
     </View>
   );
 
@@ -152,118 +115,138 @@ const ProgramDetails: React.FC = () => {
       ]}
     >
       <Header pageName='Programs' />
-      <ScrollView
-        style={[{ backgroundColor: themedStyles.primaryBackgroundColor }]}
-      >
-        <View style={styles.header}>
-          <PillButton
-            label='Back'
-            icon={
-              <Ionicons
-                name='arrow-back-outline'
-                size={16}
-                style={{
-                  color:
-                    state.theme === 'dark'
-                      ? themedStyles.accentColor
-                      : colors.eggShell
-                }}
-              />
-            }
-            onPress={() => navigation.goBack()}
-          />
-        </View>
-
-        <View
-          style={[
-            styles.programItem,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
+      <View style={globalStyles.container}>
+        <ScrollView
+          style={[{ backgroundColor: themedStyles.primaryBackgroundColor }]}
         >
-          <Text
-            style={[styles.programTitle, { color: themedStyles.accentColor }]}
+          <View style={styles.header}>
+            <PillButton
+              label='Back'
+              icon={
+                <Ionicons
+                  name='arrow-back-outline'
+                  size={16}
+                  style={{
+                    color:
+                      state.theme === 'dark'
+                        ? themedStyles.accentColor
+                        : colors.eggShell
+                  }}
+                />
+              }
+              onPress={() => navigation.goBack()}
+            />
+          </View>
+
+          <View
+            style={[
+              styles.programItem,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
           >
-            {program.name}
-          </Text>
-          <View style={styles.programDetails}>
-            <View style={styles.detailRow}>
-              <Text
-                style={[styles.detailLabel, { color: themedStyles.textColor }]}
-              >
-                Main Goal
-              </Text>
-              <Text
-                style={[styles.detailValue, { color: themedStyles.textColor }]}
-              >
-                {program.main_goal.charAt(0).toUpperCase() +
-                  program.main_goal.slice(1)}
-              </Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text
-                style={[styles.detailLabel, { color: themedStyles.textColor }]}
-              >
-                Duration
-              </Text>
-              <Text
-                style={[styles.detailValue, { color: themedStyles.textColor }]}
-              >
-                {formatDuration(
-                  program.program_duration,
-                  program.duration_unit
-                )}
-              </Text>
-            </View>
-            <View style={styles.detailRow}>
-              <Text
-                style={[styles.detailLabel, { color: themedStyles.textColor }]}
-              >
-                Days Per Week
-              </Text>
-              <Text
-                style={[styles.detailValue, { color: themedStyles.textColor }]}
-              >
-                {program.days_per_week}
-              </Text>
+            <Text
+              style={[styles.programTitle, { color: themedStyles.accentColor }]}
+            >
+              {program.name}
+            </Text>
+            <View>
+              <View style={styles.detailRow}>
+                <Text
+                  style={[
+                    styles.detailLabel,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  Main Goal
+                </Text>
+                <Text
+                  style={[
+                    styles.detailValue,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {program.main_goal.charAt(0).toUpperCase() +
+                    program.main_goal.slice(1)}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text
+                  style={[
+                    styles.detailLabel,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  Duration
+                </Text>
+                <Text
+                  style={[
+                    styles.detailValue,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {formatDuration(
+                    program.program_duration,
+                    program.duration_unit
+                  )}
+                </Text>
+              </View>
+              <View style={styles.detailRow}>
+                <Text
+                  style={[
+                    styles.detailLabel,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  Days Per Week
+                </Text>
+                <Text
+                  style={[
+                    styles.detailValue,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {program.days_per_week}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {program.workouts.map(renderWorkout)}
+          {program.workouts.map(renderWorkout)}
 
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
-            <Text
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
               style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
+                styles.button,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
             >
-              EDIT
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
-            <Text
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                EDIT
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
+                styles.button,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
             >
-              DELETE
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                DELETE
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
@@ -272,20 +255,16 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 15
   },
   programItem: {
-    padding: 16,
+    padding: 12,
     borderRadius: 10,
     marginBottom: 10
   },
   programTitle: {
-    fontFamily: 'Lexend-Bold',
-    fontWeight: '600',
+    fontFamily: 'Lexend',
     fontSize: 16,
-    marginBottom: 5
-  },
-  programDetails: {
     marginBottom: 5
   },
   detailRow: {
@@ -313,7 +292,7 @@ const styles = StyleSheet.create({
   button: {
     flex: 1,
     padding: 15,
-    borderRadius: 10,
+    borderRadius: 30,
     alignItems: 'center',
     marginHorizontal: 5
   },
@@ -324,8 +303,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    padding: 10,
     borderRadius: 10
+  },
+  headerContent: {
+    flex: 1,
+    alignItems: 'center'
   },
   workoutTitle: {
     fontFamily: 'Lexend-Bold',
@@ -339,7 +322,8 @@ const styles = StyleSheet.create({
   exerciseCountText: {
     fontFamily: 'Lexend',
     fontSize: 12,
-    marginRight: 10
+    marginRight: 10,
+    marginTop: 5
   },
   addText: {
     fontFamily: 'Lexend-Bold',
