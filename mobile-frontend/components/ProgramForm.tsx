@@ -13,6 +13,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import PillButton from '../components/PillButton';
 
 interface ProgramFormProps {
   initialProgram?: Program;
@@ -129,20 +130,56 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           </TouchableOpacity>
         </View>
       ))}
-
-      <TouchableOpacity onPress={addWorkout} style={styles.addButton}>
-        <Text style={styles.addButtonText}>+ Add Workout</Text>
-      </TouchableOpacity>
-
-      <View style={styles.buttonContainer}>
+      <PillButton
+        label='Add Workout'
+        icon={
+          <Ionicons
+            name='add-outline'
+            size={16}
+            style={{
+              color:
+                state.theme === 'dark'
+                  ? themedStyles.accentColor
+                  : colors.eggShell
+            }}
+          />
+        }
+        onPress={addWorkout}
+      />
+      <View style={styles.buttonRow}>
         <TouchableOpacity
+          style={[
+            globalStyles.button,
+            styles.saveButton,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
           onPress={() => onSave(program)}
-          style={styles.saveButton}
         >
-          <Text style={styles.buttonText}>SAVE</Text>
+          <Text
+            style={[
+              globalStyles.buttonText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            SAVE
+          </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={onCancel} style={styles.cancelButton}>
-          <Text style={styles.buttonText}>CANCEL</Text>
+        <TouchableOpacity
+          style={[
+            globalStyles.button,
+            styles.cancelButton,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+          onPress={onCancel}
+        >
+          <Text
+            style={[
+              globalStyles.buttonText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            CANCEL
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -182,6 +219,11 @@ const styles = StyleSheet.create({
   removeButton: {
     padding: 8
   },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 20
+  },
   addButton: {
     backgroundColor: '#4CAF50',
     padding: 12,
@@ -193,29 +235,13 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold'
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
   saveButton: {
-    backgroundColor: '#2196F3',
-    padding: 12,
-    borderRadius: 4,
     flex: 1,
-    marginRight: 8,
-    alignItems: 'center'
+    marginRight: 10
   },
   cancelButton: {
-    backgroundColor: '#f44336',
-    padding: 12,
-    borderRadius: 4,
     flex: 1,
-    marginLeft: 8,
-    alignItems: 'center'
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold'
+    marginLeft: 10
   }
 });
 
