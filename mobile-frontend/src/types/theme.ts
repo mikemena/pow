@@ -16,3 +16,10 @@ export interface ThemeContextType {
   state: ThemeState;
   dispatch: Dispatch<ThemeAction>;
 }
+
+export interface ThemedStyles {
+  primaryBackgroundColor: string;
+  secondaryBackgroundColor: string;
+  textColor: string;
+  accentColor: string;
+}

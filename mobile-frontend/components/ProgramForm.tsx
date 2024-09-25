@@ -8,28 +8,11 @@ import {
   StyleSheet
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-interface Exercise {
-  id: string;
-  name: string;
-  // Add other exercise properties as needed
-}
-
-interface Workout {
-  id: string;
-  name: string;
-  exercises: Exercise[];
-}
-
-interface Program {
-  id?: string;
-  name: string;
-  mainGoal: string;
-  duration: string;
-  durationUnit: string;
-  daysPerWeek: string;
-  workouts: Workout[];
-}
+import { Program, Workout, Exercise } from '../src/types/programTypes';
+import { globalStyles, colors } from '../src/styles/globalStyles';
+import { useTheme } from '../src/hooks/useTheme';
+import { ThemedStyles } from '../src/types/theme';
+import { getThemedStyles } from '../src/utils/themeUtils';
 
 interface ProgramFormProps {
   initialProgram?: Program;
@@ -53,6 +36,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         { id: Date.now().toString(), name: 'Workout 1', exercises: [] }
       ]
     }
+  );
+
+  const { state } = useTheme();
+  const themedStyles: ThemedStyles = getThemedStyles(
+    state.theme,
+    state.accentColor
   );
 
   const isEditMode = !!initialProgram;
@@ -88,26 +77,38 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         {isEditMode ? 'EDIT PROGRAM' : 'CREATE PROGRAM'}
       </Text>
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
         value={program.name}
         onChangeText={text => updateField('name', text)}
         placeholder='Program Name'
       />
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
         value={program.mainGoal}
         onChangeText={text => updateField('mainGoal', text)}
         placeholder='Main Goal'
       />
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
         value={program.duration}
         onChangeText={text => updateField('duration', text)}
         placeholder='Duration'
         keyboardType='numeric'
       />
       <TextInput
-        style={styles.input}
+        style={[
+          globalStyles.input,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
         value={program.daysPerWeek}
         onChangeText={text => updateField('daysPerWeek', text)}
         placeholder='Days Per Week'

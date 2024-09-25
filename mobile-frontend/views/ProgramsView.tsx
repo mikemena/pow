@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { ThemedStyles } from '../src/types/theme';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
@@ -51,13 +52,6 @@ interface Filters {
   selectedGoal: string;
   durationType: string;
   daysPerWeek: string;
-}
-
-interface ThemedStyles {
-  primaryBackgroundColor: string;
-  secondaryBackgroundColor: string;
-  textColor: string;
-  accentColor: string;
 }
 
 const ProgramsView: React.FC = () => {
