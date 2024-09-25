@@ -10,6 +10,8 @@ import { ThemeProvider } from './src/context/themeContext';
 // Import your view components
 import ProgramsView from './views/ProgramsView';
 import ProgramDetails from './views/ProgramDetails';
+import CreateProgram from './views/CreateProgram';
+import EditProgram from './views/EditProgram';
 import WorkoutView from './views/WorkoutView';
 import ProgressView from './views/ProgressView';
 import ProfileView from './views/ProfileView';
@@ -21,6 +23,8 @@ const ProgramsStackScreen = () => (
   <ProgramsStack.Navigator screenOptions={{ headerShown: false }}>
     <ProgramsStack.Screen name='ProgramsList' component={ProgramsView} />
     <ProgramsStack.Screen name='ProgramDetails' component={ProgramDetails} />
+    <ProgramsStack.Screen name='CreateProgram' component={CreateProgram} />
+    <ProgramsStack.Screen name='EditProgram' component={EditProgram} />
   </ProgramsStack.Navigator>
 );
 

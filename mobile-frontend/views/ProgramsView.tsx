@@ -10,6 +10,8 @@ import {
   ListRenderItem
 } from 'react-native';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
@@ -21,12 +23,14 @@ import FilterView from '../components/FilterView';
 
 // Define types
 
+type ProgramsNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ProgramsList'
+>;
+
 // Define your navigation param list
-type RootStackParamList = {
-  Programs: undefined;
-  ProgramDetails: { program: Program };
-  // Add other screens here
-};
+
+// Add other screens here
 
 interface Program {
   id: number;
@@ -57,7 +61,7 @@ interface ThemedStyles {
 }
 
 const ProgramsView: React.FC = () => {
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<ProgramsNavigationProp>();
   const [programList, setProgramList] = useState<ProgramList>({
     programs: [],
     workouts: []
@@ -155,6 +159,10 @@ const ProgramsView: React.FC = () => {
       durationType: '',
       daysPerWeek: ''
     });
+  };
+
+  const handleCreateProgram = () => {
+    navigation.navigate('CreateProgram');
   };
 
   const formatDuration = (duration: number, unit: string): string => {
@@ -300,7 +308,7 @@ const ProgramsView: React.FC = () => {
               globalStyles.button,
               { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
-            onPress={() => {}}
+            onPress={handleCreateProgram}
           >
             <Text
               style={[

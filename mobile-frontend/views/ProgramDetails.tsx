@@ -8,6 +8,9 @@ import {
   SafeAreaView
 } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../src/types/navigationTypes';
+import { Program, Workout, Exercise } from '../src/types/programTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -16,52 +19,14 @@ import Header from '../components/Header';
 import PillButton from '../components/PillButton';
 import WorkoutHeader from '../components/WorkoutHeader';
 
-interface Set {
-  id: number;
-  exercise_id: number;
-  reps: number;
-  weight: number;
-  order: number;
-}
-
-interface Exercise {
-  id: number;
-  workout_id: number;
-  catalog_exercise_id: number;
-  order: number;
-  name: string;
-  muscle: string;
-  muscle_group: string;
-  subcategory: string;
-  equipment: string;
-  sets: Set[];
-}
-
-interface Workout {
-  id: number;
-  name: string;
-  program_id: number;
-  order: number;
-  exercises: Exercise[];
-}
-
-interface Program {
-  id: number;
-  name: string;
-  main_goal: string;
-  program_duration: number;
-  duration_unit: string;
-  days_per_week: number;
-  workouts: Workout[];
-}
-
-type RootStackParamList = { ProgramDetails: { program: Program } };
-
-type ProgramDetailsRouteProp = RouteProp<RootStackParamList, 'ProgramDetails'>;
+type ProgramDetailsNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ProgramDetails'
+>;
 
 const ProgramDetails: React.FC = () => {
-  const route = useRoute<ProgramDetailsRouteProp>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<ProgramDetailsNavigationProp>();
+  const route = useRoute<RouteProp<RootStackParamList, 'ProgramDetails'>>();
   const { program } = route.params;
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
@@ -73,6 +38,10 @@ const ProgramDetails: React.FC = () => {
   //       JSON.stringify(program, null, 2)
   //     );
   //   }, [program]);
+
+  const handleEditProgram = () => {
+    navigation.navigate('EditProgram', { program });
+  };
 
   const formatDuration = (duration: number, unit: string): string => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
@@ -219,6 +188,7 @@ const ProgramDetails: React.FC = () => {
                 styles.button,
                 { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
+              onPress={handleEditProgram}
             >
               <Text
                 style={[
