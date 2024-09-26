@@ -72,8 +72,8 @@ export const globalStyles = StyleSheet.create({
     flex: 1
   },
   input: {
-    backgroundColor: colors.eggShell,
-    color: colors.flatBlack,
+    fontFamily: 'Lexend',
+    fontSize: typography.fontSizes.medium,
     padding: spacing.medium,
     borderRadius: 10,
     marginBottom: spacing.medium
@@ -98,7 +98,8 @@ export const globalStyles = StyleSheet.create({
   label: {
     fontFamily: 'Lexend',
     fontSize: 16,
-    marginBottom: 5
+    marginBottom: 5,
+    marginLeft: 10
   },
   iconContainer: {
     flexDirection: 'row',
