@@ -2,15 +2,33 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Exercise from './Exercise';
+import { Workout, Exercise as ExerciseType } from '../src/types/programTypes';
+import { globalStyles, colors } from '../src/styles/globalStyles';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
 
-const WorkoutHeader = ({
+interface WorkoutHeaderProps {
+  workout: Workout;
+  isExpanded: boolean;
+  onToggle: (workoutId: number) => void;
+  themedStyles: {
+    secondaryBackgroundColor: string;
+    accentColor: string;
+    textColor: string;
+  };
+  editMode: boolean;
+  onDeleteWorkout?: (id: number) => void;
+}
+
+const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   workout,
-  expandedWorkout,
-  toggleWorkout,
-  themedStyles
+  isExpanded,
+  onToggle,
+  editMode,
+  onDeleteWorkout
 }) => {
-  const isExpanded = expandedWorkout === workout.id;
-
+  const { state } = useTheme();
+  const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const headerStyle = [
     styles.workoutHeader,
     { backgroundColor: themedStyles.secondaryBackgroundColor },
@@ -26,7 +44,7 @@ const WorkoutHeader = ({
 
   return (
     <View style={styles.workoutContainer}>
-      <TouchableOpacity onPress={() => toggleWorkout(workout.id)}>
+      <TouchableOpacity onPress={() => onToggle(workout.id)}>
         <View style={headerStyle}>
           <View style={styles.headerContent}>
             <Text
@@ -43,11 +61,33 @@ const WorkoutHeader = ({
               {workout.exercises.length} EXERCISES
             </Text>
           </View>
-          <Ionicons
-            name={isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'}
-            style={[styles.icon, { color: themedStyles.textColor }]}
-            size={24}
-          />
+          {editMode && (
+            <TouchableOpacity
+              style={[
+                globalStyles.iconCircle,
+                styles.deleteIcon,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
+              ]}
+              onPress={() => onDeleteWorkout(workout.id)}
+            >
+              <Ionicons
+                name='trash-outline'
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              />
+            </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => onToggle(workout.id)}
+            style={[
+              globalStyles.iconCircle,
+              { backgroundColor: themedStyles.primaryBackgroundColor }
+            ]}
+          >
+            <Ionicons
+              name={isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            />
+          </TouchableOpacity>
         </View>
       </TouchableOpacity>
       {isExpanded && (
@@ -67,11 +107,14 @@ const WorkoutHeader = ({
 };
 
 const styles = StyleSheet.create({
+  workoutContainer: {
+    marginBottom: 10
+  },
   workoutHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10
+    padding: 16
   },
   headerContent: {
     flex: 1,
@@ -79,17 +122,17 @@ const styles = StyleSheet.create({
   },
   workoutTitle: {
     fontFamily: 'Lexend',
-    fontSize: 16,
+    fontSize: 18,
     marginBottom: 4
   },
   exerciseCountText: {
     fontFamily: 'Lexend',
     fontSize: 14
   },
-  icon: {
+
+  deleteIcon: {
     position: 'absolute',
-    top: 16,
-    right: 16
+    marginLeft: 10
   },
   expandedContent: {
     borderBottomLeftRadius: 10,

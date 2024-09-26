@@ -97,6 +97,7 @@ export const globalStyles = StyleSheet.create({
   },
   label: {
     fontFamily: 'Lexend',
+    fontSize: 16,
     marginBottom: 5
   },
   iconContainer: {
@@ -110,7 +111,7 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 0.5,
-    borderColor: 'rgba(255, 255, 255, 0.1)'
+    borderColor: 'rgba(255, 255, 255, 0)'
   },
   iconLeft: {
     alignSelf: 'flex-start'

@@ -37,7 +37,11 @@ const CreateProgram: React.FC = () => {
       ]}
     >
       <Header pageName='Create Program' />
-      <ProgramForm onSave={handleCreateProgram} onCancel={handleCancel} />
+      <ProgramForm
+        onSave={handleCreateProgram}
+        onCancel={handleCancel}
+        editMode={false}
+      />
     </SafeAreaView>
   );
 };

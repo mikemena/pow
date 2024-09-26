@@ -71,6 +71,7 @@ const EditProgram: React.FC = () => {
         initialProgram={program}
         onSave={handleUpdateProgram}
         onCancel={handleCancel}
+        editMode={true}
       />
     </SafeAreaView>
   );

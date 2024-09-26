@@ -8,23 +8,33 @@ import {
   StyleSheet
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../src/types/navigationTypes';
 import { Program, Workout, Exercise } from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import PillButton from '../components/PillButton';
+import WorkoutHeader from '../components/WorkoutHeader';
 
 interface ProgramFormProps {
   initialProgram?: Program;
   onSave: (program: Program) => void;
   onCancel: () => void;
+  editMode: boolean;
 }
+type ProgramDetailsNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'ProgramDetails'
+>;
 
 const ProgramForm: React.FC<ProgramFormProps> = ({
   initialProgram,
   onSave,
-  onCancel
+  onCancel,
+  editMode
 }) => {
   const [program, setProgram] = useState<Program>(
     initialProgram || {
@@ -38,14 +48,22 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
       ]
     }
   );
-
+  const navigation = useNavigation<ProgramDetailsNavigationProp>();
   const { state } = useTheme();
+  const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(
+    null
+  );
+  const [isFormExpanded, setIsFormExpanded] = useState(false);
   const themedStyles: ThemedStyles = getThemedStyles(
     state.theme,
     state.accentColor
   );
 
   const isEditMode = !!initialProgram;
+
+  const handleFormToggle = () => {
+    setIsFormExpanded(prev => !prev);
+  };
 
   const updateField = (field: keyof Program, value: string) => {
     setProgram(prev => ({ ...prev, [field]: value }));
@@ -65,6 +83,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     }));
   };
 
+  const toggleWorkout = (workoutId: number) => {
+    setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
+  };
+
   const removeWorkout = (index: number) => {
     setProgram(prev => ({
       ...prev,
@@ -74,62 +96,135 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>
-        {isEditMode ? 'EDIT PROGRAM' : 'CREATE PROGRAM'}
-      </Text>
-      <TextInput
-        style={[
-          globalStyles.input,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-        value={program.name}
-        onChangeText={text => updateField('name', text)}
-        placeholder='Program Name'
-      />
-      <TextInput
-        style={[
-          globalStyles.input,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-        value={program.mainGoal}
-        onChangeText={text => updateField('mainGoal', text)}
-        placeholder='Main Goal'
-      />
-      <TextInput
-        style={[
-          globalStyles.input,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-        value={program.duration}
-        onChangeText={text => updateField('duration', text)}
-        placeholder='Duration'
-        keyboardType='numeric'
-      />
-      <TextInput
-        style={[
-          globalStyles.input,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-        value={program.daysPerWeek}
-        onChangeText={text => updateField('daysPerWeek', text)}
-        placeholder='Days Per Week'
-        keyboardType='numeric'
-      />
+      <View style={styles.header}>
+        {editMode && (
+          <PillButton
+            label='Back'
+            icon={
+              <Ionicons
+                name='arrow-back-outline'
+                size={16}
+                style={{
+                  color:
+                    state.theme === 'dark'
+                      ? themedStyles.accentColor
+                      : colors.eggShell
+                }}
+              />
+            }
+            onPress={() => navigation.goBack()}
+          />
+        )}
+        <Text
+          style={[globalStyles.sectionTitle, { color: themedStyles.textColor }]}
+        >
+          {program.name || ''}
+        </Text>
+        <TouchableOpacity
+          onPress={handleFormToggle}
+          style={[
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            globalStyles.iconCircle
+          ]}
+        >
+          <Ionicons
+            name={
+              isFormExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
+            }
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
+        </TouchableOpacity>
+      </View>
 
-      {program.workouts.map((workout, index) => (
-        <View key={workout.id} style={styles.workoutContainer}>
-          <Text style={styles.workoutTitle}>{`Workout ${index + 1}`}</Text>
-          <Text
-            style={styles.exerciseCount}
-          >{`${workout.exercises.length} EXERCISES - ADD`}</Text>
-          <TouchableOpacity
-            onPress={() => removeWorkout(index)}
-            style={styles.removeButton}
-          >
-            <Ionicons name='trash-outline' size={24} color='white' />
-          </TouchableOpacity>
+      {isFormExpanded && (
+        <View
+          style={[
+            globalStyles.section,
+            { backgroundColor: themedStyles.primaryBackgroundColor }
+          ]}
+        >
+          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
+            Program Name
+          </Text>
+          <TextInput
+            style={[
+              globalStyles.input,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            value={program.name}
+            onChangeText={text => updateField('name', text)}
+            placeholder='Program Name'
+          />
+
+          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
+            Main Goal
+          </Text>
+          <TextInput
+            style={[
+              globalStyles.input,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            value={program.mainGoal}
+            onChangeText={text => updateField('mainGoal', text)}
+            placeholder='Main Goal'
+          />
+
+          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
+            Duration
+          </Text>
+          <View style={styles.durationContainer}>
+            <TextInput
+              style={[
+                globalStyles.input,
+                styles.durationInput,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+              value={program.duration}
+              onChangeText={text => updateField('duration', text)}
+              placeholder='Duration'
+              keyboardType='numeric'
+            />
+            <TextInput
+              style={[
+                globalStyles.input,
+                styles.durationUnitInput,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+              value={program.durationUnit}
+              onChangeText={text => updateField('durationUnit', text)}
+              placeholder='Unit'
+            />
+          </View>
+
+          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
+            Days Per Week
+          </Text>
+          <TextInput
+            style={[
+              globalStyles.input,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            value={program.daysPerWeek}
+            onChangeText={text => updateField('daysPerWeek', text)}
+            placeholder='Days Per Week'
+            keyboardType='numeric'
+          />
         </View>
+      )}
+
+      {/* Workouts section */}
+      {program.workouts.map((workout, index) => (
+        <WorkoutHeader
+          key={workout.id}
+          workout={workout}
+          isExpanded={expandedWorkoutId === workout.id}
+          onToggle={toggleWorkout}
+          themedStyles={themedStyles}
+          editMode={true}
+        />
       ))}
+
       <PillButton
         label='Add Workout'
         icon={
@@ -146,6 +241,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         }
         onPress={addWorkout}
       />
+
+      {/* Save and Cancel buttons */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           style={[
@@ -189,7 +286,13 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16
+    padding: 5
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginRight: 15,
+    marginBottom: 10
   },
   title: {
     fontSize: 24,
@@ -242,6 +345,17 @@ const styles = StyleSheet.create({
   cancelButton: {
     flex: 1,
     marginLeft: 10
+  },
+  durationContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  durationInput: {
+    flex: 1,
+    marginRight: 8
+  },
+  durationUnitInput: {
+    flex: 1
   }
 });
 

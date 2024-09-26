@@ -27,18 +27,17 @@ type ProgramDetailsNavigationProp = NativeStackNavigationProp<
 const ProgramDetails: React.FC = () => {
   const navigation = useNavigation<ProgramDetailsNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamList, 'ProgramDetails'>>();
+  const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(
+    null
+  );
+
   const { program } = route.params;
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
-  const [expandedWorkout, setExpandedWorkout] = useState<number | null>(null);
 
-  //   useEffect(() => {
-  //     console.log(
-  //       'Program received in ProgramDetails:',
-  //       JSON.stringify(program, null, 2)
-  //     );
-  //   }, [program]);
-
+  const toggleWorkout = (workoutId: number) => {
+    setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
+  };
   const handleEditProgram = () => {
     navigation.navigate('EditProgram', { program });
   };
@@ -48,10 +47,6 @@ const ProgramDetails: React.FC = () => {
     const formattedUnit =
       duration === 1 ? capitalizedUnit.slice(0, -1) : capitalizedUnit;
     return `${duration} ${formattedUnit}`;
-  };
-
-  const toggleWorkout = (workoutId: number) => {
-    setExpandedWorkout(expandedWorkout === workoutId ? null : workoutId);
   };
 
   const renderExercise = (exercise: Exercise) => (
@@ -69,9 +64,10 @@ const ProgramDetails: React.FC = () => {
     <View key={workout.id} style={styles.workoutContainer}>
       <WorkoutHeader
         workout={workout}
-        expandedWorkout={expandedWorkout}
-        toggleWorkout={toggleWorkout}
+        isExpanded={expandedWorkoutId === workout.id}
+        onToggle={toggleWorkout}
         themedStyles={themedStyles}
+        editMode={false}
       />
     </View>
   );
