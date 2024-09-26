@@ -121,10 +121,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     }));
   };
 
-  const removeWorkout = (index: number) => {
-    setProgram(prev => ({
-      ...prev,
-      workouts: prev.workouts.filter((_, i) => i !== index)
+  const handleDeleteWorkout = (workoutId: number) => {
+    setProgram(prevProgram => ({
+      ...prevProgram,
+      workouts: prevProgram.workouts.filter(workout => workout.id !== workoutId)
     }));
   };
 
@@ -272,6 +272,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           onUpdateWorkoutTitle={handleUpdateWorkoutTitle}
           themedStyles={themedStyles}
           editMode={true}
+          onDeleteWorkout={handleDeleteWorkout}
         />
       ))}
 

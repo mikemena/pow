@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   Animated,
-  PanResponder
+  PanResponder,
+  Dimensions
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -45,7 +46,11 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const fadeAnim = useRef(new Animated.Value(1)).current;
-  const translateX = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    console.log('Initial translateX:', translateX);
+    console.log('Initial deleteOpacity:', deleteOpacity);
+  }, []);
 
   useEffect(() => {
     Animated.sequence([
@@ -70,27 +75,53 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
       : { borderRadius: 10 }
   ];
 
+  const translateX = useRef(new Animated.Value(0)).current;
+  const deleteOpacity = useRef(new Animated.Value(0)).current;
+
+  const screenWidth = Dimensions.get('window').width;
+  const deleteThreshold = -screenWidth * 0.3;
+
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
       return Math.abs(gestureState.dx) > 5;
     },
     onPanResponderMove: (_, gestureState) => {
+      console.log('Moving:', gestureState.dx);
       if (gestureState.dx < 0) {
         translateX.setValue(gestureState.dx);
+        const opacity = Math.min(-gestureState.dx / deleteThreshold, 1);
+        console.log('Opacity:', opacity);
+        deleteOpacity.setValue(opacity);
       }
     },
     onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx < -100) {
-        Animated.timing(translateX, {
-          toValue: -1000,
-          duration: 300,
-          useNativeDriver: true
-        }).start(() => onDeleteWorkout && onDeleteWorkout(workout.id));
+      console.log('Released:', gestureState.dx);
+      if (gestureState.dx < deleteThreshold) {
+        console.log('Deleting workout:', workout.id);
+        Animated.parallel([
+          Animated.timing(translateX, {
+            toValue: -screenWidth,
+            duration: 300,
+            useNativeDriver: true
+          }),
+          Animated.timing(deleteOpacity, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true
+          })
+        ]).start(() => onDeleteWorkout && onDeleteWorkout(workout.id));
       } else {
-        Animated.spring(translateX, {
-          toValue: 0,
-          useNativeDriver: true
-        }).start();
+        Animated.parallel([
+          Animated.spring(translateX, {
+            toValue: 0,
+            useNativeDriver: true
+          }),
+          Animated.timing(deleteOpacity, {
+            toValue: 0,
+            duration: 300,
+            useNativeDriver: true
+          })
+        ]).start();
       }
     }
   });
@@ -115,74 +146,96 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   );
 
   return (
-    <Animated.View
-      style={[styles.workoutContainer, { transform: [{ translateX }] }]}
-      {...panResponder.panHandlers}
-    >
-      <TouchableOpacity onPress={() => onToggle(workout.id)}>
-        <View style={headerStyle}>
-          <View style={styles.headerContent}>
-            <Animated.View style={{ opacity: fadeAnim }}>
-              {isEditing ? (
-                <TextInput
-                  style={[
-                    styles.workoutTitle,
-                    { color: themedStyles.accentColor }
-                  ]}
-                  value={workoutTitle}
-                  onChangeText={handleTitleChange}
-                  onBlur={handleTitleSubmit}
-                  autoFocus
-                />
-              ) : (
-                <TouchableOpacity onPress={handleTitlePress}>
-                  <Text
+    <View style={styles.containerWrapper}>
+      <Animated.View
+        style={[
+          styles.deleteConfirmation,
+          {
+            opacity: deleteOpacity,
+            transform: [
+              {
+                translateX: translateX.interpolate({
+                  inputRange: [deleteThreshold, 0],
+                  outputRange: [0, screenWidth * 0.3]
+                })
+              }
+            ]
+          }
+        ]}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+      </Animated.View>
+      <Animated.View
+        style={[styles.workoutContainer, { transform: [{ translateX }] }]}
+        {...panResponder.panHandlers}
+      >
+        <TouchableOpacity onPress={() => onToggle(workout.id)}>
+          <View style={headerStyle}>
+            <View style={styles.headerContent}>
+              <Animated.View style={{ opacity: fadeAnim }}>
+                {isEditing ? (
+                  <TextInput
                     style={[
                       styles.workoutTitle,
                       { color: themedStyles.accentColor }
                     ]}
-                  >
-                    {workoutTitle}
-                  </Text>
-                </TouchableOpacity>
-              )}
-            </Animated.View>
-            <Text
+                    value={workoutTitle}
+                    onChangeText={handleTitleChange}
+                    onBlur={handleTitleSubmit}
+                    autoFocus
+                  />
+                ) : (
+                  <TouchableOpacity onPress={handleTitlePress}>
+                    <Text
+                      style={[
+                        styles.workoutTitle,
+                        { color: themedStyles.accentColor }
+                      ]}
+                    >
+                      {workoutTitle}
+                    </Text>
+                  </TouchableOpacity>
+                )}
+              </Animated.View>
+              <Text
+                style={[
+                  styles.exerciseCountText,
+                  { color: themedStyles.textColor }
+                ]}
+              >
+                {workout.exercises.length} EXERCISES - ADD
+              </Text>
+            </View>
+            <TouchableOpacity
+              onPress={() => onToggle(workout.id)}
               style={[
-                styles.exerciseCountText,
-                { color: themedStyles.textColor }
+                globalStyles.iconCircle,
+                { backgroundColor: themedStyles.primaryBackgroundColor }
               ]}
             >
-              {workout.exercises.length} EXERCISES - ADD
-            </Text>
+              <Ionicons
+                name={
+                  isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
+                }
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              />
+            </TouchableOpacity>
           </View>
-          <TouchableOpacity
-            onPress={() => onToggle(workout.id)}
-            style={[
-              globalStyles.iconCircle,
-              { backgroundColor: themedStyles.primaryBackgroundColor }
-            ]}
-          >
-            <Ionicons
-              name={isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'}
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            />
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
-      {isExpanded && (
-        <View style={styles.expandedContent}>
-          {sortedExercises.map((exercise, index) => (
-            <Exercise
-              key={exercise.id}
-              exercise={exercise}
-              index={index + 1}
-              themedStyles={themedStyles}
-            />
-          ))}
-        </View>
-      )}
-    </Animated.View>
+        </TouchableOpacity>
+        {isExpanded && (
+          <View style={styles.expandedContent}>
+            {sortedExercises.map((exercise, index) => (
+              <Exercise
+                key={exercise.id}
+                exercise={exercise}
+                index={index + 1}
+                themedStyles={themedStyles}
+              />
+            ))}
+          </View>
+        )}
+      </Animated.View>
+    </View>
   );
 };
 
@@ -230,6 +283,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     textAlign: 'center'
+  },
+  containerWrapper: {
+    position: 'relative',
+    marginBottom: 10,
+    overflow: 'hidden',
+    height: 80,
+    backgroundColor: 'rgba(0,0,0,0.1)'
+  },
+  deleteConfirmation: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'red',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '30%',
+    zIndex: 1
+  },
+  deleteText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold'
   }
 });
 
