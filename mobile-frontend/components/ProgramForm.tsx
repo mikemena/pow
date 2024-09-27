@@ -272,7 +272,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           onUpdateWorkoutTitle={handleUpdateWorkoutTitle}
           themedStyles={themedStyles}
           editMode={true}
-          onDeleteWorkout={handleDeleteWorkout}
+          onDelete={handleDeleteWorkout}
         />
       ))}
 

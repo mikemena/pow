@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -23,33 +23,34 @@ interface WorkoutHeaderProps {
   workout: Workout;
   isExpanded: boolean;
   onToggle: (workoutId: number) => void;
+  onDelete: (id: number) => void;
   themedStyles: {
     secondaryBackgroundColor: string;
     accentColor: string;
     textColor: string;
   };
   editMode: boolean;
-  onDeleteWorkout?: (id: number) => void;
   onUpdateWorkoutTitle: (id: number, newTitle: string) => void;
 }
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
-const DELETE_THRESHOLD = -SCREEN_WIDTH * 1;
-const DELETE_WIDTH = SCREEN_WIDTH * 0.3;
+const { width } = Dimensions.get('window');
+const SWIPE_THRESHOLD = -width * 0.3;
 
 const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   workout,
   isExpanded,
   onToggle,
+  onDelete,
   editMode,
-  onDeleteWorkout,
   onUpdateWorkoutTitle
 }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
-  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const [isDeleting, setIsDeleting] = useState(false);
+  const pan = useRef(new Animated.ValueXY()).current;
+  const deleteAnim = useRef(new Animated.Value(0)).current;
 
   const headerStyle = [
     styles.workoutHeader,
@@ -61,30 +62,39 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   const translateX = useRef(new Animated.Value(0)).current;
 
-  const screenWidth = Dimensions.get('window').width;
-  const deleteThreshold = -screenWidth * 0.1;
+  const fadeOutDeleteText = () => {
+    Animated.timing(deleteAnim, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: false
+    }).start();
+  };
 
   const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 5;
-    },
+    onMoveShouldSetPanResponder: () => true,
     onPanResponderMove: (_, gestureState) => {
-      translateX.setValue(Math.min(0, gestureState.dx));
+      if (gestureState.dx < 0) {
+        pan.x.setValue(gestureState.dx);
+      }
     },
     onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx < DELETE_THRESHOLD / 2) {
-        Animated.timing(translateX, {
-          toValue: DELETE_THRESHOLD,
+      if (gestureState.dx < SWIPE_THRESHOLD) {
+        Animated.timing(pan.x, {
+          toValue: -width,
           duration: 200,
-          useNativeDriver: true
+          useNativeDriver: false
         }).start(() => {
-          // Call delete function after animation
-          onDeleteWorkout && onDeleteWorkout(workout.id);
+          setIsDeleting(true);
+          if (typeof onDelete === 'function') {
+            setTimeout(() => onDelete(workout.id), 300);
+          } else {
+            console.error('onDelete is not a function');
+          }
         });
       } else {
-        Animated.spring(translateX, {
+        Animated.spring(pan.x, {
           toValue: 0,
-          useNativeDriver: true
+          useNativeDriver: false
         }).start();
       }
     }
@@ -109,43 +119,40 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
     (a, b) => a.order - b.order
   );
 
-  // Defines how the "Delete" text moves
-  const deleteTranslateX = translateX.interpolate({
-    inputRange: [DELETE_THRESHOLD, 0],
-    outputRange: [DELETE_THRESHOLD + DELETE_WIDTH / 2, DELETE_WIDTH],
+  const itemStyle = {
+    transform: [{ translateX: pan.x }]
+  };
 
+  const deleteTextOpacity = pan.x.interpolate({
+    inputRange: [-width * 0.1, 0],
+    outputRange: [1, 0],
     extrapolate: 'clamp'
   });
 
-  // Control the opacity of the "Delete" element
-  const deleteOpacity = translateX.interpolate({
-    inputRange: [-SCREEN_WIDTH * 0.5, -SCREEN_WIDTH * 0.1, 0],
-    outputRange: [1, 0, 0],
-    extrapolate: 'clamp'
-  });
+  if (isDeleting) {
+    return null;
+  }
 
   return (
     <View style={styles.containerWrapper}>
       <Animated.View
         style={[
-          { backgroundColor: colors.red },
-          styles.deleteConfirmation,
-          { opacity: deleteOpacity },
+          styles.deleteTextContainer,
           {
-            transform: [{ translateX: deleteTranslateX }]
+            opacity: deleteTextOpacity
           }
         ]}
       >
         <Text style={styles.deleteText}>Delete</Text>
       </Animated.View>
       <Animated.View
-        style={[styles.workoutContainer, { transform: [{ translateX }] }]}
         {...panResponder.panHandlers}
+        style={[styles.workoutContainer, itemStyle]}
       >
         <TouchableOpacity onPress={() => onToggle(workout.id)}>
           <View style={headerStyle}>
             <View style={styles.headerContent}>
-              <Animated.View style={{ opacity: fadeAnim }}>
+              <Animated.View>
                 {isEditing ? (
                   <TextInput
                     style={[
@@ -154,11 +161,14 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                     ]}
                     value={workoutTitle}
                     onChangeText={handleTitleChange}
-                    onBlur={handleTitleSubmit}
+                    onBlur={() => {
+                      setIsEditing(false);
+                      onUpdateWorkoutTitle(workout.id, workoutTitle);
+                    }}
                     autoFocus
                   />
                 ) : (
-                  <TouchableOpacity onPress={handleTitlePress}>
+                  <TouchableOpacity onPress={() => setIsEditing(true)}>
                     <Text
                       style={[
                         styles.workoutTitle,
@@ -266,20 +276,16 @@ const styles = StyleSheet.create({
     textAlign: 'center'
   },
 
-  deleteConfirmation: {
+  deleteTextContainer: {
     position: 'absolute',
-    top: 0,
     right: 0,
+    top: 0,
     bottom: 0,
     justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingRight: 20,
-    width: '30%',
-    borderRadius: 10,
-    marginBottom: 10
+    paddingRight: 20
   },
   deleteText: {
-    color: 'white',
+    color: colors.red,
     fontSize: 16,
     fontWeight: 'bold'
   }
