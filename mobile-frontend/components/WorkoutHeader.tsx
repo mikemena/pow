@@ -33,6 +33,10 @@ interface WorkoutHeaderProps {
   onUpdateWorkoutTitle: (id: number, newTitle: string) => void;
 }
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const DELETE_THRESHOLD = -SCREEN_WIDTH * 1;
+const DELETE_WIDTH = SCREEN_WIDTH * 0.3;
+
 const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   workout,
   isExpanded,
@@ -47,26 +51,6 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    console.log('Initial translateX:', translateX);
-    console.log('Initial deleteOpacity:', deleteOpacity);
-  }, []);
-
-  useEffect(() => {
-    Animated.sequence([
-      Animated.timing(fadeAnim, {
-        toValue: 0.5,
-        duration: 300,
-        useNativeDriver: true
-      }),
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true
-      })
-    ]).start();
-  }, []);
-
   const headerStyle = [
     styles.workoutHeader,
     { backgroundColor: themedStyles.secondaryBackgroundColor },
@@ -76,52 +60,32 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   ];
 
   const translateX = useRef(new Animated.Value(0)).current;
-  const deleteOpacity = useRef(new Animated.Value(0)).current;
 
   const screenWidth = Dimensions.get('window').width;
-  const deleteThreshold = -screenWidth * 0.3;
+  const deleteThreshold = -screenWidth * 0.1;
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: (_, gestureState) => {
       return Math.abs(gestureState.dx) > 5;
     },
     onPanResponderMove: (_, gestureState) => {
-      console.log('Moving:', gestureState.dx);
-      if (gestureState.dx < 0) {
-        translateX.setValue(gestureState.dx);
-        const opacity = Math.min(-gestureState.dx / deleteThreshold, 1);
-        console.log('Opacity:', opacity);
-        deleteOpacity.setValue(opacity);
-      }
+      translateX.setValue(Math.min(0, gestureState.dx));
     },
     onPanResponderRelease: (_, gestureState) => {
-      console.log('Released:', gestureState.dx);
-      if (gestureState.dx < deleteThreshold) {
-        console.log('Deleting workout:', workout.id);
-        Animated.parallel([
-          Animated.timing(translateX, {
-            toValue: -screenWidth,
-            duration: 300,
-            useNativeDriver: true
-          }),
-          Animated.timing(deleteOpacity, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true
-          })
-        ]).start(() => onDeleteWorkout && onDeleteWorkout(workout.id));
+      if (gestureState.dx < DELETE_THRESHOLD / 2) {
+        Animated.timing(translateX, {
+          toValue: DELETE_THRESHOLD,
+          duration: 200,
+          useNativeDriver: true
+        }).start(() => {
+          // Call delete function after animation
+          onDeleteWorkout && onDeleteWorkout(workout.id);
+        });
       } else {
-        Animated.parallel([
-          Animated.spring(translateX, {
-            toValue: 0,
-            useNativeDriver: true
-          }),
-          Animated.timing(deleteOpacity, {
-            toValue: 0,
-            duration: 300,
-            useNativeDriver: true
-          })
-        ]).start();
+        Animated.spring(translateX, {
+          toValue: 0,
+          useNativeDriver: true
+        }).start();
       }
     }
   });
@@ -145,21 +109,30 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
     (a, b) => a.order - b.order
   );
 
+  // Defines how the "Delete" text moves
+  const deleteTranslateX = translateX.interpolate({
+    inputRange: [DELETE_THRESHOLD, 0],
+    outputRange: [DELETE_THRESHOLD + DELETE_WIDTH / 2, DELETE_WIDTH],
+
+    extrapolate: 'clamp'
+  });
+
+  // Control the opacity of the "Delete" element
+  const deleteOpacity = translateX.interpolate({
+    inputRange: [-SCREEN_WIDTH * 0.5, -SCREEN_WIDTH * 0.1, 0],
+    outputRange: [1, 0, 0],
+    extrapolate: 'clamp'
+  });
+
   return (
     <View style={styles.containerWrapper}>
       <Animated.View
         style={[
+          { backgroundColor: colors.red },
           styles.deleteConfirmation,
+          { opacity: deleteOpacity },
           {
-            opacity: deleteOpacity,
-            transform: [
-              {
-                translateX: translateX.interpolate({
-                  inputRange: [deleteThreshold, 0],
-                  outputRange: [0, screenWidth * 0.3]
-                })
-              }
-            ]
+            transform: [{ translateX: deleteTranslateX }]
           }
         ]}
       >
@@ -240,8 +213,16 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 };
 
 const styles = StyleSheet.create({
+  containerWrapper: {
+    position: 'relative',
+    marginBottom: 10,
+    overflow: 'hidden'
+  },
   workoutContainer: {
-    marginBottom: 10
+    marginBottom: 10,
+    position: 'relative',
+    zIndex: 1,
+    borderRadius: 10
   },
   workoutHeader: {
     flexDirection: 'row',
@@ -284,23 +265,18 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center'
   },
-  containerWrapper: {
-    position: 'relative',
-    marginBottom: 10,
-    overflow: 'hidden',
-    height: 80,
-    backgroundColor: 'rgba(0,0,0,0.1)'
-  },
+
   deleteConfirmation: {
     position: 'absolute',
-    right: 0,
     top: 0,
+    right: 0,
     bottom: 0,
-    backgroundColor: 'red',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    paddingRight: 20,
     width: '30%',
-    zIndex: 1
+    borderRadius: 10,
+    marginBottom: 10
   },
   deleteText: {
     color: 'white',
