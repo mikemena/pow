@@ -15,9 +15,11 @@ import EditProgram from './views/EditProgram';
 import WorkoutView from './views/WorkoutView';
 import ProgressView from './views/ProgressView';
 import ProfileView from './views/ProfileView';
+import ExerciseSelectionView from './views/ExerciseSelectionView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
+const RootStack = createStackNavigator();
 
 const ProgramsStackScreen = () => (
   <ProgramsStack.Navigator screenOptions={{ headerShown: false }}>
@@ -26,6 +28,31 @@ const ProgramsStackScreen = () => (
     <ProgramsStack.Screen name='CreateProgram' component={CreateProgram} />
     <ProgramsStack.Screen name='EditProgram' component={EditProgram} />
   </ProgramsStack.Navigator>
+);
+
+const TabNavigator = () => (
+  <Tab.Navigator tabBar={props => <Navigation {...props} />}>
+    <Tab.Screen
+      name='Programs'
+      component={ProgramsStackScreen}
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name='Workout'
+      component={WorkoutView}
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name='Progress'
+      component={ProgressView}
+      options={{ headerShown: false }}
+    />
+    <Tab.Screen
+      name='Profile'
+      component={ProfileView}
+      options={{ headerShown: false }}
+    />
+  </Tab.Navigator>
 );
 
 const App = () => {
@@ -52,28 +79,13 @@ const App = () => {
     <ThemeProvider>
       <View style={styles.container}>
         <NavigationContainer>
-          <Tab.Navigator tabBar={props => <Navigation {...props} />}>
-            <Tab.Screen
-              name='Programs'
-              component={ProgramsStackScreen}
-              options={{ headerShown: false }}
+          <RootStack.Navigator screenOptions={{ headerShown: false }}>
+            <RootStack.Screen name='MainTabs' component={TabNavigator} />
+            <RootStack.Screen
+              name='ExerciseSelection'
+              component={ExerciseSelectionView}
             />
-            <Tab.Screen
-              name='Workout'
-              component={WorkoutView}
-              options={{ headerShown: false }}
-            />
-            <Tab.Screen
-              name='Progress'
-              component={ProgressView}
-              options={{ headerShown: false }}
-            />
-            <Tab.Screen
-              name='Profile'
-              component={ProfileView}
-              options={{ headerShown: false }}
-            />
-          </Tab.Navigator>
+          </RootStack.Navigator>
         </NavigationContainer>
       </View>
     </ThemeProvider>

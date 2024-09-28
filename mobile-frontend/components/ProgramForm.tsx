@@ -112,7 +112,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
   };
 
-  const handleUpdateWorkoutTitle = (id: string, newTitle: string) => {
+  const handleUpdateWorkoutTitle = (id: number, newTitle: string) => {
     setProgram(prev => ({
       ...prev,
       workouts: prev.workouts.map(workout =>

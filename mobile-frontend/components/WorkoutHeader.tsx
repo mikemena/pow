@@ -10,6 +10,7 @@ import {
   Dimensions,
   TouchableWithoutFeedback
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Exercise from './Exercise';
@@ -46,12 +47,14 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const inputRef = useRef<TextInput>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
+
+  const navigation = useNavigation();
 
   const headerStyle = [
     styles.workoutHeader,
@@ -119,7 +122,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   const handleTitlePress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsEditing(true);
+    setIsEditingTitle(true);
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
@@ -128,16 +131,16 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   }, []);
 
   const handleTitleSubmit = useCallback(() => {
-    setIsEditing(false);
+    setIsEditingTitle(false);
     onUpdateWorkoutTitle(workout.id, workoutTitle);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [workout.id, workoutTitle, onUpdateWorkoutTitle]);
 
   const handleOutsidePress = useCallback(() => {
-    if (isEditing) {
+    if (isEditingTitle) {
       handleTitleSubmit();
     }
-  }, [isEditing, handleTitleSubmit]);
+  }, [isEditingTitle, handleTitleSubmit]);
 
   const sortedExercises = [...workout.exercises].sort(
     (a, b) => a.order - b.order
@@ -178,7 +181,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
             <View style={headerStyle}>
               <View style={styles.headerContent}>
                 <Animated.View>
-                  {isEditing ? (
+                  {isEditingTitle ? (
                     <TextInput
                       ref={inputRef}
                       style={[
@@ -202,14 +205,22 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                     </TouchableOpacity>
                   )}
                 </Animated.View>
-                <Text
-                  style={[
-                    styles.exerciseCountText,
-                    { color: themedStyles.textColor }
-                  ]}
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('ExerciseSelection', {
+                      mode: 'program'
+                    })
+                  }
                 >
-                  {workout.exercises.length} EXERCISES - ADD
-                </Text>
+                  <Text
+                    style={[
+                      styles.exerciseCountText,
+                      { color: themedStyles.textColor }
+                    ]}
+                  >
+                    {workout.exercises.length} EXERCISES - ADD
+                  </Text>
+                </TouchableOpacity>
               </View>
               <TouchableOpacity
                 onPress={() => onToggle(workout.id)}
