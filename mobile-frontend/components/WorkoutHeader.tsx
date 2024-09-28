@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,8 @@ import {
   StyleSheet,
   Animated,
   PanResponder,
-  Dimensions
+  Dimensions,
+  TouchableWithoutFeedback
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -41,13 +42,13 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   isExpanded,
   onToggle,
   onDelete,
-  editMode,
   onUpdateWorkoutTitle
 }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const [isEditing, setIsEditing] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
+  const inputRef = useRef<TextInput>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
@@ -60,54 +61,83 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
       : { borderRadius: 10 }
   ];
 
-  const translateX = useRef(new Animated.Value(0)).current;
-
   const fadeOutDeleteText = () => {
     Animated.timing(deleteAnim, {
-      toValue: 0,
-      duration: 200,
+      toValue: 0, // Fade out to zero opacity
+      duration: 100, // Adjust duration for how fast you want the text to fade out
       useNativeDriver: false
     }).start();
   };
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: Animated.event([null, { dx: pan.x }], {
-      useNativeDriver: false
-    }),
+    onPanResponderMove: (_, gestureState) => {
+      Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
+        _,
+        gestureState
+      );
+
+      // Update deleteAnim based on pan position
+      if (gestureState.dx < -width * 0.3) {
+        deleteAnim.setValue(
+          Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
+        );
+      } else {
+        deleteAnim.setValue(0);
+      }
+    },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dx < SWIPE_THRESHOLD) {
-        Animated.timing(pan.x, {
-          toValue: -width,
-          duration: 200,
-          useNativeDriver: false
-        }).start(() => {
+        Animated.parallel([
+          Animated.timing(pan.x, {
+            toValue: -width,
+            duration: 200,
+            useNativeDriver: false
+          }),
+          Animated.timing(deleteAnim, {
+            toValue: 0,
+            duration: 200,
+            useNativeDriver: false
+          })
+        ]).start(() => {
           setIsDeleting(true);
-          setTimeout(() => onDelete(workout.id), 300);
+          setTimeout(() => onDelete(workout.id), 100);
         });
       } else {
         Animated.spring(pan.x, {
           toValue: 0,
           useNativeDriver: false
         }).start();
+        Animated.timing(deleteAnim, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: false
+        }).start();
       }
     }
   });
 
-  const handleTitlePress = () => {
+  const handleTitlePress = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsEditing(true);
-  };
+    setTimeout(() => inputRef.current?.focus(), 0);
+  }, []);
 
-  const handleTitleChange = (newTitle: string) => {
+  const handleTitleChange = useCallback((newTitle: string) => {
     setWorkoutTitle(newTitle);
-  };
+  }, []);
 
-  const handleTitleSubmit = () => {
+  const handleTitleSubmit = useCallback(() => {
     setIsEditing(false);
     onUpdateWorkoutTitle(workout.id, workoutTitle);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  };
+  }, [workout.id, workoutTitle, onUpdateWorkoutTitle]);
+
+  const handleOutsidePress = useCallback(() => {
+    if (isEditing) {
+      handleTitleSubmit();
+    }
+  }, [isEditing, handleTitleSubmit]);
 
   const sortedExercises = [...workout.exercises].sort(
     (a, b) => a.order - b.order
@@ -118,9 +148,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   };
 
   const deleteTextOpacity = pan.x.interpolate({
-    // inputRange: [-width * 0.1, 0],
-    inputRange: [-width * 0.3, 0],
-    outputRange: [1, 0],
+    inputRange: [-width * 0.3, 0, width * 0.3],
+    outputRange: [1, 0, 1],
     extrapolate: 'clamp'
   });
 
@@ -129,91 +158,90 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   }
 
   return (
-    <View style={styles.containerWrapper}>
-      <Animated.View
-        style={[
-          styles.deleteTextContainer,
-          {
-            opacity: deleteTextOpacity
-          }
-        ]}
-      >
-        <Text style={styles.deleteText}>Delete</Text>
-      </Animated.View>
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[styles.workoutContainer, itemStyle]}
-      >
-        <TouchableOpacity onPress={() => onToggle(workout.id)}>
-          <View style={headerStyle}>
-            <View style={styles.headerContent}>
-              <Animated.View>
-                {isEditing ? (
-                  <TextInput
-                    style={[
-                      styles.workoutTitle,
-                      { color: themedStyles.accentColor }
-                    ]}
-                    value={workoutTitle}
-                    onChangeText={handleTitleChange}
-                    onBlur={() => {
-                      setIsEditing(false);
-                      onUpdateWorkoutTitle(workout.id, workoutTitle);
-                    }}
-                    autoFocus
-                  />
-                ) : (
-                  <TouchableOpacity onPress={() => setIsEditing(true)}>
-                    <Text
+    <TouchableWithoutFeedback onPress={handleOutsidePress}>
+      <View style={styles.containerWrapper}>
+        <Animated.View
+          style={[
+            styles.deleteTextContainer,
+            {
+              opacity: deleteTextOpacity
+            }
+          ]}
+        >
+          <Text style={styles.deleteText}>Delete</Text>
+        </Animated.View>
+        <Animated.View
+          {...panResponder.panHandlers}
+          style={[styles.workoutContainer, itemStyle]}
+        >
+          <TouchableOpacity onPress={() => onToggle(workout.id)}>
+            <View style={headerStyle}>
+              <View style={styles.headerContent}>
+                <Animated.View>
+                  {isEditing ? (
+                    <TextInput
+                      ref={inputRef}
                       style={[
                         styles.workoutTitle,
                         { color: themedStyles.accentColor }
                       ]}
-                    >
-                      {workoutTitle}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              </Animated.View>
-              <Text
+                      value={workoutTitle}
+                      onChangeText={handleTitleChange}
+                      onBlur={handleTitleSubmit}
+                    />
+                  ) : (
+                    <TouchableOpacity onPress={handleTitlePress}>
+                      <Text
+                        style={[
+                          styles.workoutTitle,
+                          { color: themedStyles.accentColor }
+                        ]}
+                      >
+                        {workoutTitle}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </Animated.View>
+                <Text
+                  style={[
+                    styles.exerciseCountText,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {workout.exercises.length} EXERCISES - ADD
+                </Text>
+              </View>
+              <TouchableOpacity
+                onPress={() => onToggle(workout.id)}
                 style={[
-                  styles.exerciseCountText,
-                  { color: themedStyles.textColor }
+                  globalStyles.iconCircle,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
                 ]}
               >
-                {workout.exercises.length} EXERCISES - ADD
-              </Text>
+                <Ionicons
+                  name={
+                    isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
+                  }
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={() => onToggle(workout.id)}
-              style={[
-                globalStyles.iconCircle,
-                { backgroundColor: themedStyles.primaryBackgroundColor }
-              ]}
-            >
-              <Ionicons
-                name={
-                  isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
-                }
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              />
-            </TouchableOpacity>
-          </View>
-        </TouchableOpacity>
-        {isExpanded && (
-          <View style={styles.expandedContent}>
-            {sortedExercises.map((exercise, index) => (
-              <Exercise
-                key={exercise.id}
-                exercise={exercise}
-                index={index + 1}
-                themedStyles={themedStyles}
-              />
-            ))}
-          </View>
-        )}
-      </Animated.View>
-    </View>
+          </TouchableOpacity>
+          {isExpanded && (
+            <View style={styles.expandedContent}>
+              {sortedExercises.map((exercise, index) => (
+                <Exercise
+                  key={exercise.id}
+                  exercise={exercise}
+                  index={index + 1}
+                  themedStyles={themedStyles}
+                />
+              ))}
+            </View>
+          )}
+        </Animated.View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
