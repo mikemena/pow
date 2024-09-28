@@ -72,11 +72,9 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   const panResponder = PanResponder.create({
     onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: (_, gestureState) => {
-      if (gestureState.dx < 0) {
-        pan.x.setValue(gestureState.dx);
-      }
-    },
+    onPanResponderMove: Animated.event([null, { dx: pan.x }], {
+      useNativeDriver: false
+    }),
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dx < SWIPE_THRESHOLD) {
         Animated.timing(pan.x, {
@@ -85,11 +83,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
           useNativeDriver: false
         }).start(() => {
           setIsDeleting(true);
-          if (typeof onDelete === 'function') {
-            setTimeout(() => onDelete(workout.id), 300);
-          } else {
-            console.error('onDelete is not a function');
-          }
+          setTimeout(() => onDelete(workout.id), 300);
         });
       } else {
         Animated.spring(pan.x, {
@@ -124,7 +118,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   };
 
   const deleteTextOpacity = pan.x.interpolate({
-    inputRange: [-width * 0.1, 0],
+    // inputRange: [-width * 0.1, 0],
+    inputRange: [-width * 0.3, 0],
     outputRange: [1, 0],
     extrapolate: 'clamp'
   });
@@ -282,10 +277,15 @@ const styles = StyleSheet.create({
     top: 0,
     bottom: 0,
     justifyContent: 'center',
-    paddingRight: 20
+    paddingLeft: 20,
+    paddingRight: 20,
+    backgroundColor: colors.red,
+    borderBottomLeftRadius: 60,
+    borderTopLeftRadius: 60,
+    height: '90%'
   },
   deleteText: {
-    color: colors.red,
+    color: colors.offWhite,
     fontSize: 16,
     fontWeight: 'bold'
   }
