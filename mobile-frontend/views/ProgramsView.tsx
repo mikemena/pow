@@ -29,10 +29,6 @@ type ProgramsNavigationProp = NativeStackNavigationProp<
   'ProgramsList'
 >;
 
-// Define your navigation param list
-
-// Add other screens here
-
 interface Program {
   id: number;
   name: string;
@@ -48,10 +44,18 @@ interface ProgramList {
 }
 
 interface Filters {
-  programName: string;
-  selectedGoal: string;
-  durationType: string;
-  daysPerWeek: string;
+  [key: string]: string;
+}
+
+interface FilterOption {
+  key: string;
+  label: string;
+  type: 'text' | 'picker';
+  options?: Array<{ label: string; value: string }>;
+}
+
+interface FilterValues {
+  [key: string]: string;
 }
 
 const ProgramsView: React.FC = () => {
@@ -92,7 +96,7 @@ const ProgramsView: React.FC = () => {
   }, [fetchPrograms]);
 
   const getTotalMatches = useCallback(
-    (currentFilters: Filters): number => {
+    (currentFilters: FilterValues): number => {
       return programList.programs.filter(program => {
         const matchesName =
           !currentFilters.programName ||
@@ -142,7 +146,53 @@ const ProgramsView: React.FC = () => {
     });
   }, [programList.programs, filters]);
 
-  const handleFilterChange = (key: keyof Filters, value: string) => {
+  const filterOptions: FilterOption[] = useMemo(
+    () => [
+      { key: 'programName', label: 'Program Name', type: 'text' },
+      {
+        key: 'selectedGoal',
+        label: 'Goal',
+        type: 'picker',
+        options: [
+          { label: 'All', value: '' },
+          ...Array.from(new Set(programList.programs.map(p => p.main_goal)))
+            .sort()
+            .map(goal => ({
+              label: goal.charAt(0).toUpperCase() + goal.slice(1),
+              value: goal
+            }))
+        ]
+      },
+      {
+        key: 'durationType',
+        label: 'Duration',
+        type: 'picker',
+        options: [
+          { label: 'All', value: '' },
+          ...Array.from(new Set(programList.programs.map(p => p.duration_unit)))
+            .sort()
+            .map(unit => ({
+              label: unit.charAt(0).toUpperCase() + unit.slice(1),
+              value: unit
+            }))
+        ]
+      },
+      {
+        key: 'daysPerWeek',
+        label: 'Days Per Week',
+        type: 'picker',
+        options: [
+          { label: 'All', value: '' },
+          ...Array.from(new Set(programList.programs.map(p => p.days_per_week)))
+            .sort((a, b) => a - b)
+            .map(days => ({ label: days.toString(), value: days.toString() }))
+        ]
+      }
+    ],
+    [programList.programs]
+  );
+
+  const handleFilterChange = (key: string, value: string) => {
     setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
   };
 
@@ -268,7 +318,8 @@ const ProgramsView: React.FC = () => {
                 onClose={() => {
                   setIsFilterVisible(false);
                 }}
-                filters={filters}
+                filterOptions={filterOptions}
+                filterValues={filters}
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 getTotalMatches={getTotalMatches}
