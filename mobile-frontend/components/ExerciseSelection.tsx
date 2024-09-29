@@ -1,21 +1,44 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   FlatList,
-  TextInput,
-  Image
+  Modal,
+  Image,
+  StyleSheet
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
+import { globalStyles, colors } from '../src/styles/globalStyles';
+import PillButton from '../components/PillButton';
+import Filter from '../components/Filter';
+
+// Update this type to include all your screens
+type RootStackParamList = {
+  Home: undefined;
+  WorkoutView: { exercises: Exercise[] };
+  // Add other screens here
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Exercise {
   id: string;
   name: string;
   muscle: string;
   equipment: string;
-  image: string;
+  file_url: string;
+}
+
+interface FilterOption {
+  key: string;
+  label: string;
+  type: 'text' | 'picker';
+  options?: Array<{ label: string; value: string }>;
 }
 
 interface ExerciseSelectionProps {
@@ -30,11 +53,16 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedMuscle, setSelectedMuscle] = useState('');
-  const [selectedEquipment, setSelectedEquipment] = useState('');
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [filterValues, setFilterValues] = useState({
+    exerciseName: '',
+    muscle: '',
+    equipment: ''
+  });
 
-  const navigation = useNavigation();
+  const { state } = useTheme();
+  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     fetchExercises();
@@ -53,19 +81,66 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     }
   };
 
+  const filterOptions: FilterOption[] = useMemo(
+    () => [
+      { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
+      {
+        key: 'muscle',
+        label: 'Muscle',
+        type: 'picker',
+        options: [
+          { label: 'All', value: '' },
+          ...Array.from(new Set(exercises.map(e => e.muscle)))
+            .sort()
+            .map(muscle => ({ label: muscle, value: muscle }))
+        ]
+      },
+      {
+        key: 'equipment',
+        label: 'Equipment',
+        type: 'picker',
+        options: [
+          { label: 'All', value: '' },
+          ...Array.from(new Set(exercises.map(e => e.equipment)))
+            .sort()
+            .map(equipment => ({ label: equipment, value: equipment }))
+        ]
+      }
+    ],
+    [exercises]
+  );
+
   const filterExercises = useCallback(() => {
     const filtered = exercises.filter(
       exercise =>
-        exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (selectedMuscle === '' || exercise.muscle === selectedMuscle) &&
-        (selectedEquipment === '' || exercise.equipment === selectedEquipment)
+        exercise.name
+          .toLowerCase()
+          .includes(filterValues.exerciseName.toLowerCase()) &&
+        (filterValues.muscle === '' ||
+          exercise.muscle === filterValues.muscle) &&
+        (filterValues.equipment === '' ||
+          exercise.equipment === filterValues.equipment)
     );
     setFilteredExercises(filtered);
-  }, [exercises, searchTerm, selectedMuscle, selectedEquipment]);
+  }, [exercises, filterValues]);
 
   useEffect(() => {
     filterExercises();
   }, [filterExercises]);
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilterValues(prev => ({ ...prev, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilterValues({
+      exerciseName: '',
+      muscle: '',
+      equipment: ''
+    });
+  };
+
+  const getTotalMatches = () => filteredExercises.length;
 
   const toggleExerciseSelection = (exercise: Exercise) => {
     setSelectedExercises(prev =>
@@ -100,7 +175,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
       ]}
       onPress={() => toggleExerciseSelection(item)}
     >
-      <Image source={{ uri: item.image }} style={styles.exerciseImage} />
+      <Image source={{ uri: item.file_url }} style={styles.exerciseImage} />
       <View style={styles.exerciseDetails}>
         <Text style={styles.exerciseName}>{item.name}</Text>
         <Text
@@ -111,32 +186,91 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
   );
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleBack}>
-          <Ionicons name='arrow-back' size={24} color='white' />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>
-          {selectedExercises.length === 0
-            ? 'NO EXERCISES SELECTED'
-            : `${selectedExercises.length} EXERCISE${
-                selectedExercises.length > 1 ? 'S' : ''
-              } SELECTED`}
-        </Text>
-        <TouchableOpacity onPress={handleAdd}>
-          <Ionicons name='add' size={24} color='white' />
-        </TouchableOpacity>
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: themedStyles.secondaryBackgroundColor }
+      ]}
+    >
+      <View style={{ backgroundColor: themedStyles.primaryBackgroundColor }}>
+        <View
+          style={[
+            styles.header,
+            { backgroundColor: themedStyles.primaryBackgroundColor }
+          ]}
+        >
+          <TouchableOpacity
+            onPress={handleBack}
+            style={[
+              { backgroundColor: themedStyles.secondaryBackgroundColor },
+              globalStyles.iconCircle
+            ]}
+          >
+            <Ionicons
+              name={'arrow-back-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            />
+          </TouchableOpacity>
+          <Text
+            style={[
+              globalStyles.sectionTitle,
+              { color: themedStyles.textColor }
+            ]}
+          >
+            {selectedExercises.length === 0
+              ? 'NO EXERCISES SELECTED'
+              : `${selectedExercises.length} EXERCISE${
+                  selectedExercises.length > 1 ? 'S' : ''
+                } SELECTED`}
+          </Text>
+          <TouchableOpacity
+            onPress={handleAdd}
+            style={[
+              { backgroundColor: themedStyles.secondaryBackgroundColor },
+              globalStyles.iconCircle
+            ]}
+          >
+            <Ionicons
+              name={'add-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            />
+          </TouchableOpacity>
+        </View>
+        <View style={styles.filterRow}>
+          <PillButton
+            label='Filter'
+            icon={
+              <Ionicons
+                name='options-outline'
+                size={16}
+                color={
+                  state.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+                }
+              />
+            }
+            onPress={() => setIsFilterVisible(true)}
+          />
+        </View>
       </View>
 
-      <View style={styles.filterContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder='Exercise Name'
-          value={searchTerm}
-          onChangeText={setSearchTerm}
+      <Modal
+        visible={isFilterVisible}
+        animationType='slide'
+        transparent={true}
+        onRequestClose={() => setIsFilterVisible(false)}
+      >
+        <Filter
+          isVisible={isFilterVisible}
+          onClose={() => setIsFilterVisible(false)}
+          filterOptions={filterOptions}
+          filterValues={filterValues}
+          onFilterChange={handleFilterChange}
+          onClearFilters={clearFilters}
+          getTotalMatches={getTotalMatches}
         />
-        {/* Add dropdown or picker components for muscle and equipment filters */}
-      </View>
+      </Modal>
 
       <FlatList
         data={filteredExercises}
@@ -148,23 +282,20 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
   );
 };
 
-const styles = {
-  container: { flex: 1, backgroundColor: '#1E1E1E' },
+const styles = StyleSheet.create({
+  container: { flex: 1 },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#2C2C2C'
+    padding: 16
   },
-  headerTitle: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-  filterContainer: { padding: 16 },
-  searchInput: {
-    backgroundColor: '#3A3A3A',
-    color: 'white',
-    padding: 8,
-    borderRadius: 8
+  filterRow: {
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    alignItems: 'flex-start'
   },
+
   exerciseList: { flex: 1 },
   exerciseItem: {
     flexDirection: 'row',
@@ -177,6 +308,6 @@ const styles = {
   exerciseDetails: { flex: 1 },
   exerciseName: { color: 'white', fontSize: 16, fontWeight: 'bold' },
   exerciseInfo: { color: 'gray', fontSize: 14 }
-};
+});
 
 export default ExerciseSelection;

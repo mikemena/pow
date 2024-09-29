@@ -150,7 +150,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           />
         )}
         <Text
-          style={[globalStyles.sectionTitle, { color: themedStyles.textColor }]}
+          style={[
+            globalStyles.sectionTitle,
+            { color: themedStyles.textColor, flex: 1 }
+          ]}
         >
           {program.name || ''}
         </Text>

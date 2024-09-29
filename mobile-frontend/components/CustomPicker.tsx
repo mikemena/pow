@@ -75,15 +75,16 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
 const styles = StyleSheet.create({
   pickerContainer: {
     flex: 1,
-    marginHorizontal: 4
+    marginBottom: 20
   },
   pickerButton: {
-    padding: 10,
-    borderRadius: 8,
-    alignItems: 'center'
+    height: 50,
+    borderRadius: 30,
+    paddingHorizontal: 15,
+    justifyContent: 'center'
   },
   pickerButtonText: {
-    fontSize: 14
+    fontSize: 16
   },
   label: {
     fontSize: 16,

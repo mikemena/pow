@@ -68,8 +68,7 @@ export const globalStyles = StyleSheet.create({
   sectionTitle: {
     fontFamily: 'Lexend',
     fontSize: typography.fontSizes.medium,
-    marginLeft: spacing.medium,
-    flex: 1
+    marginLeft: spacing.medium
   },
   input: {
     fontFamily: 'Lexend',

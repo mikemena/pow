@@ -118,7 +118,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
               <Text
                 style={[
                   globalStyles.sectionTitle,
-                  { color: themedStyles.textColor }
+                  { color: themedStyles.textColor, flex: 1 }
                 ]}
               >
                 Profile Details
@@ -206,7 +206,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
               <Text
                 style={[
                   globalStyles.sectionTitle,
-                  { color: themedStyles.textColor }
+                  { color: themedStyles.textColor, flex: 1 }
                 ]}
               >
                 Settings

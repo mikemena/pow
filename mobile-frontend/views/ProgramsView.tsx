@@ -20,7 +20,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
-import FilterView from '../components/FilterView';
+import Filter from '../components/Filter';
 
 // Define types
 
@@ -263,7 +263,7 @@ const ProgramsView: React.FC = () => {
         >
           <View style={styles.modalOverlay}>
             <View style={styles.modalContent}>
-              <FilterView
+              <Filter
                 isVisible={isFilterVisible}
                 onClose={() => {
                   setIsFilterVisible(false);
