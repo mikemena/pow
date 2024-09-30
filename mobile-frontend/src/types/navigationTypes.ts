@@ -6,6 +6,7 @@ export type RootStackParamList = {
   ProgramDetails: { program: Program };
   CreateProgram: undefined;
   EditProgram: { program: Program };
+  ExerciseSelection: undefined;
 };
 
 declare global {

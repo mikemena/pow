@@ -27,6 +27,10 @@ const ProgramsStackScreen = () => (
     <ProgramsStack.Screen name='ProgramDetails' component={ProgramDetails} />
     <ProgramsStack.Screen name='CreateProgram' component={CreateProgram} />
     <ProgramsStack.Screen name='EditProgram' component={EditProgram} />
+    <ProgramsStack.Screen
+      name='ExerciseSelection'
+      component={ExerciseSelectionView}
+    />
   </ProgramsStack.Navigator>
 );
 
