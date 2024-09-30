@@ -171,15 +171,22 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     <TouchableOpacity
       style={[
         styles.exerciseItem,
-        selectedExercises.some(e => e.id === item.id) && styles.selectedExercise
+        { borderBottomColor: themedStyles.secondaryBackgroundColor },
+        selectedExercises.some(e => e.id === item.id) && {
+          backgroundColor: themedStyles.accentColor + '33'
+        }
       ]}
       onPress={() => toggleExerciseSelection(item)}
     >
       <Image source={{ uri: item.file_url }} style={styles.exerciseImage} />
       <View style={styles.exerciseDetails}>
-        <Text style={styles.exerciseName}>{item.name}</Text>
         <Text
-          style={styles.exerciseInfo}
+          style={[styles.exerciseName, { color: themedStyles.accentColor }]}
+        >
+          {item.name}
+        </Text>
+        <Text
+          style={[styles.exerciseInfo, { color: themedStyles.textColor }]}
         >{`${item.muscle} - ${item.equipment}`}</Text>
       </View>
     </TouchableOpacity>
@@ -189,7 +196,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     <View
       style={[
         styles.container,
-        { backgroundColor: themedStyles.secondaryBackgroundColor }
+        { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
       <View style={{ backgroundColor: themedStyles.primaryBackgroundColor }}>
@@ -288,26 +295,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16
+    padding: 10
   },
   filterRow: {
-    paddingHorizontal: 16,
-    paddingBottom: 16,
+    paddingHorizontal: 10,
+    paddingBottom: 10,
     alignItems: 'flex-start'
   },
 
   exerciseList: { flex: 1 },
   exerciseItem: {
     flexDirection: 'row',
-    padding: 16,
+    paddingBottom: 1,
     borderBottomWidth: 1,
-    borderBottomColor: '#3A3A3A'
+    borderRadius: 10
   },
-  selectedExercise: { backgroundColor: 'rgba(144, 238, 144, 0.2)' },
-  exerciseImage: { width: 50, height: 50, marginRight: 16 },
+  selectedExercise: {
+    borderStyle: 'solid',
+    borderWidth: 1,
+    backgroundColor: colors.voltGreen + '20'
+  },
+  exerciseImage: {
+    width: 90,
+    height: 90,
+    marginRight: 10,
+    borderEndStartRadius: 10,
+    borderTopStartRadius: 10
+  },
   exerciseDetails: { flex: 1 },
-  exerciseName: { color: 'white', fontSize: 16, fontWeight: 'bold' },
-  exerciseInfo: { color: 'gray', fontSize: 14 }
+  exerciseName: {
+    fontFamily: 'Lexend',
+    fontSize: 16,
+    marginTop: 20,
+    marginBottom: 5
+  },
+  exerciseInfo: { fontFamily: 'Lexend', fontSize: 16, marginBottom: 10 }
 });
 
 export default ExerciseSelection;
