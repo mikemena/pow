@@ -54,9 +54,7 @@ const WorkoutView: React.FC = () => {
           >
             <View style={styles.lightenOverlay} />
             <View style={styles.textOverlay}>
-              <Text
-                style={[styles.imageText, { color: themedStyles.accentColor }]}
-              >
+              <Text style={[styles.imageText, { color: colors.offWhite }]}>
                 Start a Flex{'\n'}Workout
               </Text>
             </View>

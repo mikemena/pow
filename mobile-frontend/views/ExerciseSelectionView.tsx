@@ -1,16 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, SafeAreaView } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import ExerciseSelection from '../components/ExerciseSelection';
 import Header from '../components/Header';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { ThemedStyles } from '../src/types/theme';
+import { Exercise } from '../src/types/programTypes';
 
 type RootStackParamList = {
-  ExerciseSelection: { mode: 'program' | 'flex' };
+  ExerciseSelection: {
+    onExercisesSelected: (exercises: Exercise[]) => void;
+  };
 };
 
 type ExerciseSelectionViewProps = {
@@ -22,7 +25,7 @@ const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
   route,
   navigation
 }) => {
-  const { mode } = route.params;
+  const { onExercisesSelected } = route.params;
 
   const { state } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
@@ -30,15 +33,9 @@ const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
     state.accentColor
   );
 
-  const handleExercisesSelected = selectedExercises => {
-    if (mode === 'program') {
-      // Handle adding exercises to the program
-      // You might want to pass this data back to the previous screen
-      navigation.goBack();
-    } else {
-      // Navigate to WorkoutView with selected exercises
-      navigation.navigate('Workout', { exercises: selectedExercises });
-    }
+  const handleExercisesSelected = (selectedExercises: Exercise[]) => {
+    onExercisesSelected(selectedExercises);
+    navigation.goBack();
   };
 
   return (
@@ -51,8 +48,8 @@ const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
       <Header pageName='Exercises' />
       <View style={{ flex: 1 }}>
         <ExerciseSelection
-          mode={mode}
           onExercisesSelected={handleExercisesSelected}
+          navigation={navigation}
         />
       </View>
     </SafeAreaView>

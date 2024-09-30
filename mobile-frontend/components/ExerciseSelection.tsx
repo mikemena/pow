@@ -8,7 +8,6 @@ import {
   Image,
   StyleSheet
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
@@ -18,13 +17,6 @@ import PillButton from '../components/PillButton';
 import Filter from '../components/Filter';
 
 // Update this type to include all your screens
-type RootStackParamList = {
-  Home: undefined;
-  WorkoutView: { exercises: Exercise[] };
-  // Add other screens here
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList>;
 
 interface Exercise {
   id: string;
@@ -42,13 +34,13 @@ interface FilterOption {
 }
 
 interface ExerciseSelectionProps {
-  mode: 'program' | 'flex';
   onExercisesSelected: (exercises: Exercise[]) => void;
+  navigation: StackNavigationProp<any, any>;
 }
 
 const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
-  mode,
-  onExercisesSelected
+  onExercisesSelected,
+  navigation
 }) => {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
@@ -62,7 +54,6 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
 
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
-  const navigation = useNavigation<NavigationProp>();
 
   useEffect(() => {
     fetchExercises();
@@ -151,20 +142,11 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
   };
 
   const handleBack = () => {
-    if (mode === 'program') {
-      navigation.goBack();
-    } else {
-      navigation.navigate('Home');
-    }
+    navigation.goBack();
   };
 
   const handleAdd = () => {
-    if (mode === 'program') {
-      onExercisesSelected(selectedExercises);
-      navigation.goBack();
-    } else {
-      navigation.navigate('WorkoutView', { exercises: selectedExercises });
-    }
+    onExercisesSelected(selectedExercises);
   };
 
   const renderExerciseItem = ({ item }: { item: Exercise }) => (

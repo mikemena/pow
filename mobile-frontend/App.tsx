@@ -6,6 +6,7 @@ import { View, StyleSheet } from 'react-native';
 import * as Font from 'expo-font';
 import Navigation from './components/Navigation';
 import { ThemeProvider } from './src/context/themeContext';
+import { ProgramProvider } from './src/context/programContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramsView';
@@ -80,19 +81,21 @@ const App = () => {
   }
 
   return (
-    <ThemeProvider>
-      <View style={styles.container}>
-        <NavigationContainer>
-          <RootStack.Navigator screenOptions={{ headerShown: false }}>
-            <RootStack.Screen name='MainTabs' component={TabNavigator} />
-            <RootStack.Screen
-              name='ExerciseSelection'
-              component={ExerciseSelectionView}
-            />
-          </RootStack.Navigator>
-        </NavigationContainer>
-      </View>
-    </ThemeProvider>
+    <ProgramProvider>
+      <ThemeProvider>
+        <View style={styles.container}>
+          <NavigationContainer>
+            <RootStack.Navigator screenOptions={{ headerShown: false }}>
+              <RootStack.Screen name='MainTabs' component={TabNavigator} />
+              <RootStack.Screen
+                name='ExerciseSelection'
+                component={ExerciseSelectionView}
+              />
+            </RootStack.Navigator>
+          </NavigationContainer>
+        </View>
+      </ThemeProvider>
+    </ProgramProvider>
   );
 };
 

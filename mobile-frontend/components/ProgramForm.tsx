@@ -20,11 +20,12 @@ import PillButton from '../components/PillButton';
 import WorkoutHeader from '../components/WorkoutHeader';
 
 interface ProgramFormProps {
-  initialProgram?: Program;
+  program: Program;
   onSave: (program: Program) => void;
   onCancel: () => void;
   editMode: boolean;
 }
+
 type ProgramDetailsNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
   'ProgramDetails'
@@ -34,7 +35,7 @@ let newIdCounter = -1;
 const getNewTemporaryId = () => newIdCounter--;
 
 const ProgramForm: React.FC<ProgramFormProps> = ({
-  initialProgram,
+  program: initialProgram,
   onSave,
   onCancel,
   editMode
