@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Modal,
   StyleSheet,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  ScrollView
 } from 'react-native';
 import { colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
@@ -67,28 +68,32 @@ const CustomPicker: React.FC<CustomPickerProps> = ({
                   { backgroundColor: themedStyles.secondaryBackgroundColor }
                 ]}
               >
-                {options.map((option, index) => (
-                  <TouchableOpacity
-                    key={`${option.value}-${index}`}
-                    style={[
-                      styles.optionButton,
-                      { borderBottomColor: themedStyles.primaryBackgroundColor }
-                    ]}
-                    onPress={() => {
-                      onValueChange(option.value);
-                      setModalVisible(false);
-                    }}
-                  >
-                    <Text
+                <ScrollView style={styles.scrollView}>
+                  {options.map((option, index) => (
+                    <TouchableOpacity
+                      key={`${option.value}-${index}`}
                       style={[
-                        styles.optionText,
-                        { color: themedStyles.textColor }
+                        styles.optionButton,
+                        {
+                          borderBottomColor: themedStyles.primaryBackgroundColor
+                        }
                       ]}
+                      onPress={() => {
+                        onValueChange(option.value);
+                        setModalVisible(false);
+                      }}
                     >
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+                      <Text
+                        style={[
+                          styles.optionText,
+                          { color: themedStyles.textColor }
+                        ]}
+                      >
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
               </View>
             </TouchableWithoutFeedback>
           </View>
@@ -127,7 +132,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
-    maxHeight: '80%'
+    maxHeight: '75%'
+  },
+  scrollView: {
+    maxHeight: '100%'
   },
   optionButton: {
     padding: 10,
