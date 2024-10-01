@@ -8,19 +8,18 @@ import {
   TouchableWithoutFeedback,
   ScrollView
 } from 'react-native';
-import { colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
 interface PickerOption {
   label: string;
-  value: string;
+  value: string | number;
 }
 
 interface CustomPickerProps {
   options: PickerOption[];
-  selectedValue: string;
-  onValueChange: (value: string) => void;
+  selectedValue: string | number;
+  onValueChange: (value: string | number) => void;
   label: string;
   placeholder?: string;
 }
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
   },
   pickerButton: {
     height: 50,
-    borderRadius: 30,
+    borderRadius: 10,
     paddingHorizontal: 15,
     justifyContent: 'center'
   },

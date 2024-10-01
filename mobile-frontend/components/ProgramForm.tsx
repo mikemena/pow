@@ -19,6 +19,11 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import CustomPicker from './CustomPicker';
 import PillButton from '../components/PillButton';
 import WorkoutHeader from '../components/WorkoutHeader';
+import {
+  DAYS_PER_WEEK,
+  DURATION_TYPES,
+  GOAL_TYPES
+} from '../src/utils/constants';
 
 interface ProgramFormProps {
   onSave: () => void;
@@ -180,16 +185,14 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Main Goal
           </Text>
-          <TextInput
-            style={[
-              globalStyles.input,
-              {
-                backgroundColor: themedStyles.secondaryBackgroundColor,
-                color: themedStyles.textColor
-              }
-            ]}
-            value={state.program.main_goal}
-            onChangeText={text => updateProgramField('main_goal', text)}
+
+          <CustomPicker
+            options={GOAL_TYPES}
+            selectedValue={state.program.main_goal}
+            onValueChange={value =>
+              updateProgramField('main_goal', value as text)
+            }
+            label='Main Goal'
             placeholder='Main Goal'
           />
 
@@ -214,18 +217,15 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               placeholder='Duration'
               keyboardType='numeric'
             />
-            <TextInput
-              style={[
-                globalStyles.input,
-                styles.durationUnitInput,
-                {
-                  backgroundColor: themedStyles.secondaryBackgroundColor,
-                  color: themedStyles.textColor
-                }
-              ]}
-              value={state.program.duration_unit}
-              onChangeText={text => updateProgramField('duration_unit', text)}
-              placeholder='Unit'
+
+            <CustomPicker
+              options={DURATION_TYPES}
+              selectedValue={state.program.duration_unit}
+              onValueChange={value =>
+                updateProgramField('duration_unit', value as text)
+              }
+              label='Duration Unit'
+              placeholder='Duration Unit'
             />
           </View>
 
@@ -233,20 +233,14 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Days Per Week
           </Text>
-          <TextInput
-            style={[
-              globalStyles.input,
-              {
-                backgroundColor: themedStyles.secondaryBackgroundColor,
-                color: themedStyles.textColor
-              }
-            ]}
-            value={state.program.days_per_week.toString()}
-            onChangeText={text =>
-              updateProgramField('days_per_week', parseInt(text) || 0)
+          <CustomPicker
+            options={DAYS_PER_WEEK}
+            selectedValue={state.program.days_per_week}
+            onValueChange={value =>
+              updateProgramField('days_per_week', value as number)
             }
-            placeholder='Days Per Week'
-            keyboardType='numeric'
+            label='Days Per Week'
+            placeholder='Select days per week'
           />
         </View>
       )}

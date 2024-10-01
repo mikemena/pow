@@ -75,13 +75,16 @@ export const globalStyles = StyleSheet.create({
     fontSize: typography.fontSizes.medium,
     padding: spacing.medium,
     borderRadius: 10,
-    marginBottom: spacing.medium
+    marginBottom: spacing.medium,
+    height: 50,
+    paddingHorizontal: 15,
+    justifyContent: 'center'
   },
   centeredButtonContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
-    paddingVertical: 10
+    paddingVertical: 5
   },
   button: {
     width: '75%',

@@ -329,12 +329,14 @@ const ProgramsView: React.FC = () => {
         </Modal>
 
         {filteredPrograms.length > 0 ? (
-          <FlatList
-            data={filteredPrograms}
-            renderItem={renderProgramItem}
-            keyExtractor={item => item.id.toString()}
-            contentContainerStyle={styles.listContainer}
-          />
+          <View style={globalStyles.container}>
+            <FlatList
+              data={filteredPrograms}
+              renderItem={renderProgramItem}
+              keyExtractor={item => item.id.toString()}
+              contentContainerStyle={styles.listContainer}
+            />
+          </View>
         ) : (
           <View style={styles.noPrograms}>
             <Text
