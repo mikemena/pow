@@ -20,15 +20,13 @@ export interface Exercise {
 }
 
 export interface Workout {
-  id: number;
+  id: number | string;
   name: string;
-  program_id: number;
-  order: number;
-  exercises: Exercise[];
+  exercises: Array<any>;
 }
 
 export interface Program {
-  id: number;
+  id: string | null;
   name: string;
   main_goal: string;
   program_duration: number;

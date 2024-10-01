@@ -24,7 +24,6 @@ export const ProgramProvider = ({ children }) => {
     const newWorkoutId = Crypto.randomUUID();
 
     const newProgram = {
-      ...currentProgram.program,
       user_id: 2,
       id: newProgramId,
       name: 'Program 1',
@@ -247,11 +246,11 @@ export const ProgramProvider = ({ children }) => {
 
   // Add a new workout to the program
 
-  const addWorkout = programId => {
+  const addWorkout = () => {
     const newWorkout = {
       id: Crypto.randomUUID(),
-      programId: programId,
-      name: 'Workout',
+      programId: state.program.id,
+      name: `Workout ${state.workout.workouts.length + 1}`,
       exercises: []
     };
 

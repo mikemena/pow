@@ -1,34 +1,26 @@
 import React, { useContext, useEffect } from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
+import { StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import ProgramForm from '../components/ProgramForm';
-import { Program, Exercise } from '../src/types/programTypes';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
-import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 
 const CreateProgram: React.FC = () => {
   const navigation = useNavigation();
-  const {
-    state: programState,
-    initializeNewProgramState,
-    clearProgram,
-    saveProgram
-  } = useContext(ProgramContext);
-
+  const { state, initializeNewProgramState, saveProgram, clearProgram } =
+    useContext(ProgramContext);
   const { state: themeState } = useTheme();
-  const themedStyles: ThemedStyles = getThemedStyles(
+  const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
 
   useEffect(() => {
     initializeNewProgramState();
-    return () => clearProgram(); // Clean up when component unmounts
-  }, [initializeNewProgramState, clearProgram]);
+  }, [initializeNewProgramState]);
 
   const handleCreateProgram = async () => {
     await saveProgram();
@@ -49,9 +41,10 @@ const CreateProgram: React.FC = () => {
     >
       <Header pageName='Create Program' />
       <ProgramForm
-        program={programState.program}
+        program={state.program}
         onSave={handleCreateProgram}
         onCancel={handleCancel}
+        editMode={false}
       />
     </SafeAreaView>
   );

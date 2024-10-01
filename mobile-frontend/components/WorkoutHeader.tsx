@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback } from 'react';
+import React, { useState, useRef, useCallback, useContext } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,7 @@ import { Workout, Exercise as ExerciseType } from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { ProgramContext } from '../src/context/programContext';
 
 // define the interface for the WorkoutHeaderProps
 
@@ -45,7 +46,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   onDelete,
   onUpdateWorkoutTitle
 }) => {
-  const { state } = useTheme();
+  const { state, updateWorkout, deleteWorkout } = useContext(ProgramContext);
+  const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);

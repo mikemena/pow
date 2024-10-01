@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,21 +7,21 @@ import {
   ScrollView,
   StyleSheet
 } from 'react-native';
+import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
-import { Program, Workout, Exercise } from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import CustomPicker from './CustomPicker';
 import PillButton from '../components/PillButton';
 import WorkoutHeader from '../components/WorkoutHeader';
 
 interface ProgramFormProps {
-  program: Program;
-  onSave: (program: Program) => void;
+  onSave: () => void;
   onCancel: () => void;
   editMode: boolean;
 }
@@ -31,57 +31,45 @@ type ProgramDetailsNavigationProp = NativeStackNavigationProp<
   'ProgramDetails'
 >;
 
-let newIdCounter = -1;
-const getNewTemporaryId = () => newIdCounter--;
+type Program = {
+  id: number | string;
+  name: string;
+  main_goal: string;
+  program_duration: number;
+  duration_unit: string;
+  days_per_week: number;
+  workouts: {
+    id: number | string;
+    name: string;
+    exercises: any[];
+    program_id: number | string;
+    order: number;
+  }[];
+};
 
 const ProgramForm: React.FC<ProgramFormProps> = ({
-  program: initialProgram,
   onSave,
   onCancel,
   editMode
 }) => {
-  const [program, setProgram] = useState<Program>(
-    initialProgram || {
-      id: getNewTemporaryId(),
-      name: '',
-      main_goal: '',
-      program_duration: 0,
-      duration_unit: 'Days',
-      days_per_week: 0,
-      workouts: [
-        {
-          id: getNewTemporaryId(),
-          name: 'Workout 1',
-          exercises: [],
-          program_id: 0,
-          order: 1
-        }
-      ]
-    }
-  );
-  const navigation = useNavigation<ProgramDetailsNavigationProp>();
-  const { state } = useTheme();
-  const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(
+  const {
+    state,
+    updateProgramField,
+    addWorkout,
+    updateWorkout,
+    deleteWorkout
+  } = useContext(ProgramContext);
+
+  const navigation = useNavigation();
+  const { state: themeState } = useTheme();
+  const [isFormExpanded, setIsFormExpanded] = useState(true);
+  const [expandedWorkoutId, setExpandedWorkoutId] = useState<string | null>(
     null
   );
-  const [isFormExpanded, setIsFormExpanded] = useState(true);
-  const themedStyles: ThemedStyles = getThemedStyles(
-    state.theme,
-    state.accentColor
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
   );
-
-  useEffect(() => {
-    if (initialProgram) {
-      console.log('initialProgram', initialProgram);
-      setProgram(initialProgram);
-    }
-  }, [initialProgram]);
-
-  const isEditMode = !!initialProgram;
-
-  const handleFormToggle = () => {
-    setIsFormExpanded(prev => !prev);
-  };
 
   const updateField = (field: keyof Program, value: string | number) => {
     setProgram(prev => ({
@@ -93,44 +81,32 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     }));
   };
 
-  const addWorkout = () => {
-    setProgram(prev => ({
-      ...prev,
-      workouts: [
-        ...prev.workouts,
-        {
-          id: getNewTemporaryId(),
-          name: `Workout ${prev.workouts.length + 1}`,
-          exercises: [],
-          program_id: prev.id,
-          order: prev.workouts.length + 1
-        }
-      ]
-    }));
+  const handleFormToggle = () => {
+    setIsFormExpanded(prev => !prev);
   };
 
-  const toggleWorkout = (workoutId: number) => {
+  const handleAddWorkout = () => {
+    addWorkout();
+  };
+
+  const handleUpdateWorkoutTitle = (id: string, newTitle: string) => {
+    const updatedWorkout = state.workout.workouts.find(w => w.id === id);
+    if (updatedWorkout) {
+      updateWorkout({ ...updatedWorkout, name: newTitle });
+    }
+  };
+
+  const handleDeleteWorkout = (workoutId: string) => {
+    deleteWorkout(workoutId);
+  };
+
+  const toggleWorkout = (workoutId: string) => {
     setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
-  };
-
-  const handleUpdateWorkoutTitle = (id: number, newTitle: string) => {
-    setProgram(prev => ({
-      ...prev,
-      workouts: prev.workouts.map(workout =>
-        workout.id === id ? { ...workout, name: newTitle } : workout
-      )
-    }));
-  };
-
-  const handleDeleteWorkout = (workoutId: number) => {
-    setProgram(prevProgram => ({
-      ...prevProgram,
-      workouts: prevProgram.workouts.filter(workout => workout.id !== workoutId)
-    }));
   };
 
   return (
     <ScrollView style={styles.container}>
+      {/* Form header */}
       <View style={styles.header}>
         {editMode && (
           <PillButton
@@ -141,7 +117,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 size={16}
                 style={{
                   color:
-                    state.theme === 'dark'
+                    themeState.theme === 'dark'
                       ? themedStyles.accentColor
                       : colors.eggShell
                 }}
@@ -156,7 +132,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             { color: themedStyles.textColor, flex: 1 }
           ]}
         >
-          {program.name || ''}
+          {state.program.name || ''}
         </Text>
         <TouchableOpacity
           onPress={handleFormToggle}
@@ -175,6 +151,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         </TouchableOpacity>
       </View>
 
+      {/* Program details form */}
       {isFormExpanded && (
         <View
           style={[
@@ -182,6 +159,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             { backgroundColor: themedStyles.primaryBackgroundColor }
           ]}
         >
+          {/* Program Name */}
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Program Name
           </Text>
@@ -193,11 +171,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 color: themedStyles.textColor
               }
             ]}
-            value={program.name}
-            onChangeText={text => updateField('name', text)}
+            value={state.program.name}
+            onChangeText={text => updateProgramField('name', text)}
             placeholder='Program Name'
           />
 
+          {/* Main Goal */}
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Main Goal
           </Text>
@@ -209,11 +188,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 color: themedStyles.textColor
               }
             ]}
-            value={program.main_goal}
-            onChangeText={text => updateField('main_goal', text)}
+            value={state.program.main_goal}
+            onChangeText={text => updateProgramField('main_goal', text)}
             placeholder='Main Goal'
           />
 
+          {/* Duration */}
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Duration
           </Text>
@@ -227,8 +207,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                   color: themedStyles.textColor
                 }
               ]}
-              value={program.program_duration.toString()}
-              onChangeText={text => updateField('program_duration', text)}
+              value={state.program.program_duration.toString()}
+              onChangeText={text =>
+                updateProgramField('program_duration', parseInt(text) || 0)
+              }
               placeholder='Duration'
               keyboardType='numeric'
             />
@@ -241,12 +223,13 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                   color: themedStyles.textColor
                 }
               ]}
-              value={program.duration_unit}
-              onChangeText={text => updateField('duration_unit', text)}
+              value={state.program.duration_unit}
+              onChangeText={text => updateProgramField('duration_unit', text)}
               placeholder='Unit'
             />
           </View>
 
+          {/* Days Per Week */}
           <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
             Days Per Week
           </Text>
@@ -258,8 +241,10 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 color: themedStyles.textColor
               }
             ]}
-            value={program.days_per_week.toString()}
-            onChangeText={text => updateField('days_per_week', text)}
+            value={state.program.days_per_week.toString()}
+            onChangeText={text =>
+              updateProgramField('days_per_week', parseInt(text) || 0)
+            }
             placeholder='Days Per Week'
             keyboardType='numeric'
           />
@@ -267,7 +252,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
       )}
 
       {/* Workouts section */}
-      {program.workouts.map((workout, index) => (
+      {state.workout.workouts.map(workout => (
         <WorkoutHeader
           key={workout.id}
           workout={workout}
@@ -280,6 +265,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
         />
       ))}
 
+      {/* Add Workout button */}
       <PillButton
         label='Add Workout'
         icon={
@@ -288,13 +274,13 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             size={16}
             style={{
               color:
-                state.theme === 'dark'
+                themeState.theme === 'dark'
                   ? themedStyles.accentColor
                   : colors.eggShell
             }}
           />
         }
-        onPress={addWorkout}
+        onPress={handleAddWorkout}
       />
 
       {/* Save and Cancel buttons */}
@@ -305,7 +291,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             styles.saveButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
-          onPress={() => onSave(program)}
+          onPress={onSave}
         >
           <Text
             style={[

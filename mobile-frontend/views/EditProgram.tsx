@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, SafeAreaView } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { Text, StyleSheet, SafeAreaView } from 'react-native';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { ProgramContext } from '../src/context/programContext';
 import ProgramForm from '../components/ProgramForm';
-import { Program } from '../src/types/programTypes';
 import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
 import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 
 type EditProgramRouteProp = RouteProp<RootStackParamList, 'EditProgram'>;
@@ -20,33 +20,23 @@ type EditProgramNavigationProp = NativeStackNavigationProp<
 const EditProgram: React.FC = () => {
   const navigation = useNavigation<EditProgramNavigationProp>();
   const route = useRoute<EditProgramRouteProp>();
-  const { program } = route.params;
-
-  const { state } = useTheme();
+  const { program: initialProgram } = route.params;
+  const { state, initializeEditProgramState, updateProgram } =
+    useContext(ProgramContext);
+  const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
     state.theme,
     state.accentColor
   );
 
-  //   useEffect(() => {
-  //     // TODO: Fetch the program data based on the ID passed in route params
-  //     // This is just a placeholder, replace with your actual data fetching logic
-  //     const fetchProgram = async () => {
-  //       const programId = route.params?.programId;
-  //       if (programId) {
-  //         // Fetch program data
-  //         const fetchedProgram = await fetchProgramById(programId);
-  //         setProgram(fetchedProgram);
-  //       }
-  //     };
+  useEffect(() => {
+    if (initialProgram) {
+      initializeEditProgramState(initialProgram, initialProgram.workouts);
+    }
+  }, [initialProgram, initializeEditProgramState]);
 
-  //     fetchProgram();
-  //   }, [route.params?.programId]);
-
-  const handleUpdateProgram = (updatedProgram: Program) => {
-    // TODO: Implement the logic to update the existing program
-    console.log('Updating program:', updatedProgram);
-    // After updating, navigate back or to the program list
+  const handleUpdateProgram = async () => {
+    await updateProgram(state.program);
     navigation.goBack();
   };
 
@@ -54,9 +44,18 @@ const EditProgram: React.FC = () => {
     navigation.goBack();
   };
 
-  if (!program) {
-    // You might want to show a loading indicator here
-    return null;
+  if (!state.program) {
+    return (
+      <SafeAreaView
+        style={[
+          globalStyles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='Edit Program' />
+        <Text style={{ color: themedStyles.textColor }}>Loading...</Text>
+      </SafeAreaView>
+    );
   }
 
   return (
@@ -68,7 +67,7 @@ const EditProgram: React.FC = () => {
     >
       <Header pageName='Edit Program' />
       <ProgramForm
-        initialProgram={program}
+        program={state.program}
         onSave={handleUpdateProgram}
         onCancel={handleCancel}
         editMode={true}
@@ -80,23 +79,8 @@ const EditProgram: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212' // Adjust to match your app's theme
+    backgroundColor: '#121212'
   }
 });
-
-// Placeholder function - replace with your actual data fetching logic
-// const fetchProgramById = async (id: string): Promise<Program> => {
-//   // Implement your data fetching logic here
-//   // This is just a placeholder
-//   return {
-//     id,
-//     name: 'Placeholder Program',
-//     mainGoal: 'Strength',
-//     duration: '4',
-//     durationUnit: 'Weeks',
-//     daysPerWeek: '5',
-//     workouts: []
-//   };
-// };
 
 export default EditProgram;
