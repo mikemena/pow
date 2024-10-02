@@ -129,14 +129,16 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             />
           </TouchableOpacity>
         )}
-        <Text
-          style={[
-            globalStyles.sectionTitle,
-            { color: themedStyles.textColor, flex: 1 }
-          ]}
-        >
-          {state.program.name || ''}
-        </Text>
+        {!isFormExpanded && (
+          <Text
+            style={[
+              globalStyles.sectionTitle,
+              { color: themedStyles.textColor, flex: 1 }
+            ]}
+          >
+            {state.program.name || ''}
+          </Text>
+        )}
         <TouchableOpacity
           onPress={handleFormToggle}
           style={[
