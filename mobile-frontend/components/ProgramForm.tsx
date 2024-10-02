@@ -26,6 +26,7 @@ import {
 } from '../src/utils/constants';
 
 interface ProgramFormProps {
+  program: Program;
   onSave: () => void;
   onCancel: () => void;
   editMode: boolean;

@@ -2,7 +2,7 @@ import { Program } from '../types/programTypes';
 
 export type RootStackParamList = {
   Programs: undefined;
-  ProgramsList: undefined;
+  ProgramsList: { refetchPrograms?: boolean };
   ProgramDetails: { program: Program };
   CreateProgram: undefined;
   EditProgram: { program: Program };

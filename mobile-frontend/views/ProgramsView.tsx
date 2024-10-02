@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext
+} from 'react';
 import {
   View,
   Text,
@@ -9,7 +15,8 @@ import {
   Modal,
   ListRenderItem
 } from 'react-native';
-import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { ProgramContext } from '../src/context/programContext';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
@@ -60,6 +67,8 @@ interface FilterValues {
 
 const ProgramsView: React.FC = () => {
   const navigation = useNavigation<ProgramsNavigationProp>();
+  const { state: contextState, fetchPrograms: contextFetchPrograms } =
+    useContext(ProgramContext);
   const [programList, setProgramList] = useState<ProgramList>({
     programs: [],
     workouts: []
@@ -72,10 +81,10 @@ const ProgramsView: React.FC = () => {
     daysPerWeek: ''
   });
 
-  const { state } = useTheme();
+  const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
-    state.theme,
-    state.accentColor
+    themeState.theme,
+    themeState.accentColor
   );
 
   const fetchPrograms = useCallback(async () => {
@@ -94,6 +103,12 @@ const ProgramsView: React.FC = () => {
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchPrograms();
+    }, [fetchPrograms])
+  );
 
   const getTotalMatches = useCallback(
     (currentFilters: FilterValues): number => {
@@ -292,7 +307,7 @@ const ProgramsView: React.FC = () => {
                 size={16}
                 style={{
                   color:
-                    state.theme === 'dark'
+                    themeState.theme === 'dark'
                       ? themedStyles.accentColor
                       : colors.eggShell
                 }}
