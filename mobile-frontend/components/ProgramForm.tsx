@@ -133,7 +133,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
           <Text
             style={[
               globalStyles.sectionTitle,
-              { color: themedStyles.textColor, flex: 1 }
+              { color: themedStyles.textColor, flex: 1, textAlign: 'center' }
             ]}
           >
             {state.program.name || ''}
