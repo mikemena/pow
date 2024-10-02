@@ -48,7 +48,10 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 }) => {
   const { state, updateWorkout, deleteWorkout } = useContext(ProgramContext);
   const { state: themeState } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const inputRef = useRef<TextInput>(null);
@@ -164,7 +167,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
 
   return (
     <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View style={styles.containerWrapper}>
+      <View style={[styles.containerWrapper]}>
         <Animated.View
           style={[
             styles.deleteTextContainer,
