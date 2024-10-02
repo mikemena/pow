@@ -25,8 +25,8 @@ const EditProgram: React.FC = () => {
     useContext(ProgramContext);
   const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
-    state.theme,
-    state.accentColor
+    themeState.theme,
+    themeState.accentColor
   );
 
   useEffect(() => {

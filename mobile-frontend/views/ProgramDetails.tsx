@@ -85,22 +85,19 @@ const ProgramDetails: React.FC = () => {
           style={[{ backgroundColor: themedStyles.primaryBackgroundColor }]}
         >
           <View style={styles.header}>
-            <PillButton
-              label='Back'
-              icon={
-                <Ionicons
-                  name='arrow-back-outline'
-                  size={16}
-                  style={{
-                    color:
-                      state.theme === 'dark'
-                        ? themedStyles.accentColor
-                        : colors.eggShell
-                  }}
-                />
-              }
+            <TouchableOpacity
               onPress={() => navigation.goBack()}
-            />
+              style={[
+                { backgroundColor: themedStyles.secondaryBackgroundColor },
+                globalStyles.iconCircle
+              ]}
+            >
+              <Ionicons
+                name={'arrow-back-outline'}
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                size={24}
+              />
+            </TouchableOpacity>
           </View>
 
           <View

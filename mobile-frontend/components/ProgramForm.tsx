@@ -115,22 +115,19 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
       {/* Form header */}
       <View style={styles.header}>
         {editMode && (
-          <PillButton
-            label='Back'
-            icon={
-              <Ionicons
-                name='arrow-back-outline'
-                size={16}
-                style={{
-                  color:
-                    themeState.theme === 'dark'
-                      ? themedStyles.accentColor
-                      : colors.eggShell
-                }}
-              />
-            }
+          <TouchableOpacity
             onPress={() => navigation.goBack()}
-          />
+            style={[
+              { backgroundColor: themedStyles.secondaryBackgroundColor },
+              globalStyles.iconCircle
+            ]}
+          >
+            <Ionicons
+              name={'arrow-back-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              size={24}
+            />
+          </TouchableOpacity>
         )}
         <Text
           style={[
