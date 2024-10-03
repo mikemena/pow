@@ -21,7 +21,7 @@ const EditProgram: React.FC = () => {
   const navigation = useNavigation<EditProgramNavigationProp>();
   const route = useRoute<EditProgramRouteProp>();
   const { program: initialProgram } = route.params;
-  const { state, initializeEditProgramState, updateProgram } =
+  const { state, initializeEditProgramState, setMode, updateProgram } =
     useContext(ProgramContext);
   const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
@@ -30,6 +30,7 @@ const EditProgram: React.FC = () => {
   );
 
   useEffect(() => {
+    setMode('edit');
     if (initialProgram) {
       initializeEditProgramState(initialProgram, initialProgram.workouts);
     }

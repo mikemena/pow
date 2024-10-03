@@ -8,7 +8,17 @@ import { currentProgram } from '../reducers/initialState.js';
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(programReducer, currentProgram);
+  const [state, dispatch] = useReducer(programReducer, {
+    ...currentProgram,
+    mode: 'view'
+  });
+
+  const setMode = mode => {
+    dispatch({
+      type: actionTypes.SET_MODE,
+      payload: mode
+    });
+  };
 
   // Clear program state
   const clearProgram = () => {
@@ -401,6 +411,7 @@ export const ProgramProvider = ({ children }) => {
       value={{
         state,
         dispatch,
+        setMode,
         updateProgramField,
         initializeNewProgramState,
         initializeEditProgramState,

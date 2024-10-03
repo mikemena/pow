@@ -17,8 +17,13 @@ type CreateProgramNavigationProp = NativeStackNavigationProp<
 
 const CreateProgram: React.FC = () => {
   const navigation = useNavigation<CreateProgramNavigationProp>();
-  const { state, initializeNewProgramState, saveProgram, clearProgram } =
-    useContext(ProgramContext);
+  const {
+    state,
+    initializeNewProgramState,
+    setMode,
+    saveProgram,
+    clearProgram
+  } = useContext(ProgramContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -26,6 +31,7 @@ const CreateProgram: React.FC = () => {
   );
 
   useEffect(() => {
+    setMode('create');
     initializeNewProgramState();
   }, [initializeNewProgramState]);
 

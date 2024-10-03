@@ -44,7 +44,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   isExpanded,
   onToggle,
   onDelete,
-  onUpdateWorkoutTitle
+  onUpdateWorkoutTitle,
+  editMode
 }) => {
   const { state, updateWorkout, deleteWorkout } = useContext(ProgramContext);
   const { state: themeState } = useTheme();
@@ -251,6 +252,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   exercise={exercise}
                   index={index + 1}
                   themedStyles={themedStyles}
+                  editMode={editMode}
                 />
               ))}
             </View>

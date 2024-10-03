@@ -15,6 +15,12 @@ function programReducer(state = currentProgram, action) {
         }
       };
 
+    case actionTypes.SET_MODE:
+      return {
+        ...state,
+        mode: action.payload
+      };
+
     case actionTypes.UPDATE_PROGRAM_FIELD:
       return {
         ...state,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,13 @@ import {
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
-import { Program, Workout, Exercise } from '../src/types/programTypes';
+import { ProgramContext } from '../src/context/programContext';
+import { Workout, Exercise } from '../src/types/programTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import PillButton from '../components/PillButton';
 import WorkoutHeader from '../components/WorkoutHeader';
 
 type ProgramDetailsNavigationProp = NativeStackNavigationProp<
@@ -25,6 +25,7 @@ type ProgramDetailsNavigationProp = NativeStackNavigationProp<
 >;
 
 const ProgramDetails: React.FC = () => {
+  const { setMode } = useContext(ProgramContext);
   const navigation = useNavigation<ProgramDetailsNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamList, 'ProgramDetails'>>();
   const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(
@@ -34,6 +35,10 @@ const ProgramDetails: React.FC = () => {
   const { program } = route.params;
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
+
+  useEffect(() => {
+    setMode('view');
+  }, []);
 
   const toggleWorkout = (workoutId: number) => {
     setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
