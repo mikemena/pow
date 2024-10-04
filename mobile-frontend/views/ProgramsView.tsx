@@ -88,6 +88,7 @@ const ProgramsView: React.FC = () => {
   );
 
   const fetchPrograms = useCallback(async () => {
+    console.log(`${API_URL_MOBILE}/api/users/2/programs`);
     try {
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
       const data = await response.json();
