@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   exerciseHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 16,
+    paddingHorizontal: 40,
     paddingVertical: 8
   },
   headerText: {
@@ -367,8 +367,8 @@ const styles = StyleSheet.create({
   },
   setInfo: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    // marginBottom: 5,
+    alignItems: 'center',
+
     paddingHorizontal: 20
   },
   setText: {
@@ -382,7 +382,8 @@ const styles = StyleSheet.create({
     height: 40,
     textAlign: 'center',
     marginHorizontal: 5,
-    borderRadius: 10
+    borderRadius: 10,
+    maxWidth: 80
   },
   deleteButton: {
     color: 'red',
@@ -390,7 +391,7 @@ const styles = StyleSheet.create({
     marginLeft: 10
   },
   addSetButton: {
-    marginHorizontal: 45,
+    marginHorizontal: 70,
     marginBottom: 10
   },
   addSetButtonText: {
