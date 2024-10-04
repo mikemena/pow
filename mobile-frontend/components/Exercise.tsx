@@ -6,6 +6,7 @@ import {
   TextInput,
   TouchableOpacity
 } from 'react-native';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -102,7 +103,7 @@ const Exercise: React.FC<ExerciseProps> = ({
     setId: number | string
   ) => {
     if (mode === 'edit') {
-      setLocalExercises(prevExercises =>
+      setLocalExercises((prevExercises: ExerciseType[]) =>
         prevExercises.map((exercise: ExerciseType) =>
           exercise.catalog_exercise_id === exerciseId
             ? {
@@ -206,8 +207,16 @@ const Exercise: React.FC<ExerciseProps> = ({
                   set.id
                 )
               }
+              style={[
+                { backgroundColor: themedStyles.primaryBackgroundColor },
+                globalStyles.iconCircle
+              ]}
             >
-              <Text style={styles.deleteButton}>X</Text>
+              <Ionicons
+                name={'trash-outline'}
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                size={24}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -258,10 +267,17 @@ const Exercise: React.FC<ExerciseProps> = ({
       {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
       {mode !== 'view' && (
         <TouchableOpacity
-          style={styles.addSetButton}
           onPress={() => handleAddSet(exercise)}
+          style={[
+            { backgroundColor: themedStyles.primaryBackgroundColor },
+            globalStyles.iconCircle
+          ]}
         >
-          <Text style={styles.addSetButtonText}>+</Text>
+          <Ionicons
+            name={'add-outline'}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
         </TouchableOpacity>
       )}
     </View>
