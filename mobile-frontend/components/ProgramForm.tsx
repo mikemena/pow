@@ -53,11 +53,7 @@ type Program = {
   }[];
 };
 
-const ProgramForm: React.FC<ProgramFormProps> = ({
-  onSave,
-  onCancel,
-  editMode
-}) => {
+const ProgramForm: React.FC<ProgramFormProps> = ({ onSave, onCancel }) => {
   const {
     state,
     updateProgramField,
@@ -66,6 +62,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     deleteWorkout
   } = useContext(ProgramContext);
 
+  const { mode } = state;
   const navigation = useNavigation();
   const { state: themeState } = useTheme();
   const [isFormExpanded, setIsFormExpanded] = useState(true);
@@ -114,7 +111,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     <ScrollView style={styles.container}>
       {/* Form header */}
       <View style={styles.header}>
-        {editMode && (
+        {mode == 'edit' && (
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={[
@@ -190,7 +187,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             options={GOAL_TYPES}
             selectedValue={state.program.main_goal}
             onValueChange={value =>
-              updateProgramField('main_goal', value as text)
+              updateProgramField('main_goal', value as string)
             }
             label='Main Goal'
             placeholder='Main Goal'
@@ -222,7 +219,7 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               options={DURATION_TYPES}
               selectedValue={state.program.duration_unit}
               onValueChange={value =>
-                updateProgramField('duration_unit', value as text)
+                updateProgramField('duration_unit', value as string)
               }
               label='Duration Unit'
               placeholder='Duration Unit'
