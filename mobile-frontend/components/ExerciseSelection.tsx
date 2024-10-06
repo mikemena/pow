@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  useContext
+} from 'react';
 import {
   View,
   Text,
@@ -9,6 +15,8 @@ import {
   StyleSheet
 } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { RouteProp } from '@react-navigation/native';
+import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -33,15 +41,27 @@ interface FilterOption {
   options?: Array<{ label: string; value: string }>;
 }
 
-interface ExerciseSelectionProps {
-  onExercisesSelected: (exercises: Exercise[]) => void;
-  navigation: StackNavigationProp<any, any>;
-}
+type RootStackParamList = {
+  ExerciseSelection: {
+    isNewProgram: boolean;
+    programId: string;
+  };
+  CreateProgram: undefined;
+  EditProgram: { programId: string };
+};
+
+type ExerciseSelectionProps = {
+  navigation: StackNavigationProp<RootStackParamList, 'ExerciseSelection'>;
+  route: RouteProp<RootStackParamList, 'ExerciseSelection'>;
+};
 
 const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
-  onExercisesSelected,
-  navigation
+  navigation,
+  route
 }) => {
+  const { addExercise, state, dispatch } = useContext(ProgramContext);
+  const { isNewProgram, programId } = route.params;
+
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
@@ -52,12 +72,26 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     equipment: ''
   });
 
-  const { state } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const activeWorkoutId = state.workout.activeWorkout;
+  const activeWorkout = state.workout.workouts.find(
+    workout => workout.id === activeWorkoutId
+  );
 
   useEffect(() => {
     fetchExercises();
   }, []);
+
+  useEffect(() => {
+    if (activeWorkout) {
+      setSelectedExercises(activeWorkout.exercises);
+    }
+  }, [activeWorkout]);
 
   const fetchExercises = async () => {
     try {
@@ -146,7 +180,18 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
   };
 
   const handleAdd = () => {
-    onExercisesSelected(selectedExercises);
+    if (!activeWorkoutId) {
+      console.error('No active workout selected.');
+      return;
+    }
+
+    addExercise(activeWorkoutId, selectedExercises);
+
+    if (isNewProgram) {
+      navigation.navigate('CreateProgram');
+    } else {
+      navigation.navigate('EditProgram', { programId });
+    }
   };
 
   const renderExerciseItem = ({ item }: { item: Exercise }) => (

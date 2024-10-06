@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
+import { ProgramContext } from '../src/context/programContext';
+import { actionTypes } from '../src/actions/actionTypes';
 import { View, SafeAreaView } from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,12 +10,14 @@ import { globalStyles } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { ThemedStyles } from '../src/types/theme';
-import { Exercise } from '../src/types/programTypes';
 
 type RootStackParamList = {
   ExerciseSelection: {
-    onExercisesSelected: (exercises: Exercise[]) => void;
+    isNewProgram: boolean;
+    programId: string;
   };
+  CreateProgram: undefined;
+  EditProgram: { programId: string };
 };
 
 type ExerciseSelectionViewProps = {
@@ -25,18 +29,11 @@ const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
   route,
   navigation
 }) => {
-  const { onExercisesSelected } = route.params;
-
-  const { state } = useTheme();
+  const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
-    state.theme,
-    state.accentColor
+    themeState.theme,
+    themeState.accentColor
   );
-
-  const handleExercisesSelected = (selectedExercises: Exercise[]) => {
-    onExercisesSelected(selectedExercises);
-    navigation.goBack();
-  };
 
   return (
     <SafeAreaView
@@ -47,10 +44,7 @@ const ExerciseSelectionView: React.FC<ExerciseSelectionViewProps> = ({
     >
       <Header pageName='Exercises' />
       <View style={{ flex: 1 }}>
-        <ExerciseSelection
-          onExercisesSelected={handleExercisesSelected}
-          navigation={navigation}
-        />
+        <ExerciseSelection navigation={navigation} route={route} />
       </View>
     </SafeAreaView>
   );

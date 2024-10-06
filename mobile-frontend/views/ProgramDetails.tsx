@@ -17,7 +17,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import WorkoutHeader from '../components/WorkoutHeader';
+import WorkoutHeader from '../components/Workout';
 
 type ProgramDetailsNavigationProp = NativeStackNavigationProp<
   RootStackParamList,

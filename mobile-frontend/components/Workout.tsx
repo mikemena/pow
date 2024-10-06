@@ -1,4 +1,11 @@
-import React, { useState, useRef, useCallback, useContext } from 'react';
+import React, {
+  useContext,
+  useState,
+  useEffect,
+  useMemo,
+  useRef,
+  useCallback
+} from 'react';
 import {
   View,
   Text,
@@ -40,14 +47,34 @@ const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
 const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
-  workout,
+  workout: initialWorkout,
+  isEditing,
+  isNewProgram,
+  programId,
   isExpanded,
-  onToggle,
-  onDelete,
-  onUpdateWorkoutTitle,
-  editMode
+  onToggleExpand
 }) => {
-  const { state, updateWorkout, deleteWorkout } = useContext(ProgramContext);
+  const {
+    state,
+    setActiveWorkout,
+    updateWorkoutField,
+    deleteWorkout,
+    updateExercise,
+    removeExercise,
+    updateWorkout,
+    addSet,
+    updateSet,
+    removeSet
+  } = useContext(ProgramContext);
+
+  const workouts = state.workout.workouts;
+  const activeWorkout = state.workout.activeWorkout;
+
+  // Get the most up-to-date workout data from the state
+  const workout = useMemo(() => {
+    return workouts.find(w => w.id === initialWorkout.id) || initialWorkout;
+  }, [workouts, initialWorkout]);
+
   const { mode } = state;
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -56,12 +83,24 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
   );
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
+  const [localExercises, setLocalExercises] = useState(workout.exercises);
   const inputRef = useRef<TextInput>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    if (workout) {
+      setWorkoutTitle(workout.name);
+      const sortedExercises = [...workout.exercises].sort(
+        (a, b) => a.order - b.order
+      );
+
+      setLocalExercises(sortedExercises);
+    }
+  }, [workout]);
 
   const headerStyle = [
     styles.workoutHeader,
@@ -133,21 +172,131 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
-  const handleTitleChange = useCallback((newTitle: string) => {
-    setWorkoutTitle(newTitle);
-  }, []);
+  const handleEditTitleChange = e => {
+    setIsEditingTitle(true);
+    setWorkoutTitle(e.target.value);
+  };
 
-  const handleTitleSubmit = useCallback(() => {
+  const handleTitleSubmit = () => {
+    if (workout) {
+      const updatedWorkout = { ...workout, name: workoutTitle };
+      updateWorkout(updatedWorkout, isNewProgram);
+    }
     setIsEditingTitle(false);
-    onUpdateWorkoutTitle(workout.id, workoutTitle);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  }, [workout.id, workoutTitle, onUpdateWorkoutTitle]);
+  };
 
   const handleOutsidePress = useCallback(() => {
     if (isEditingTitle) {
       handleTitleSubmit();
     }
   }, [isEditingTitle, handleTitleSubmit]);
+
+  const handleDeleteWorkout = workoutId => {
+    deleteWorkout(workoutId);
+  };
+
+  const handleDeleteExercise = (workoutId, exerciseId) => {
+    removeExercise(workoutId, exerciseId);
+  };
+
+  const handleWorkoutExpand = () => {
+    onToggleExpand(workout.id);
+  };
+
+  const handleAddSet = exercise => {
+    const exerciseId = exercise.id;
+
+    if (!workout || !workout.id) {
+      console.error('No active workout found.');
+      return;
+    }
+
+    addSet(workout.id, exerciseId);
+  };
+
+  const handleAddExercises = workoutId => {
+    setActiveWorkout(workoutId);
+
+    const selectedExercises = workout.exercises.map(exercise => ({
+      ...exercise,
+      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
+    }));
+    navigation.navigate('ExerciseSelection', {
+      isNewProgram: true, // or false
+      programId: 'your-program-id'
+    });
+  };
+
+  const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
+    setLocalExercises(prevExercises =>
+      prevExercises.map(exercise =>
+        exercise.catalog_exercise_id === exerciseId
+          ? {
+              ...exercise,
+              sets: exercise.sets.map(set =>
+                set.id === setId ? { ...set, ...updatedValue } : set
+              )
+            }
+          : exercise
+      )
+    );
+  };
+
+  const handleUpdateSetOnBlur = (exerciseId, set) => {
+    updateSet(workout.id, exerciseId, set);
+    // Update context with the latest local exercise data
+    updateWorkout({ ...workout, exercises: localExercises });
+  };
+
+  const handleUpdateWorkoutTitleOnBlur = e => {
+    const { name, value } = e.target;
+    updateWorkoutField(name, value);
+  };
+
+  const handleRemoveSet = (workoutId, exerciseId, setId) => {
+    if (isEditing) {
+      setLocalExercises(prevExercises =>
+        prevExercises.map(ex =>
+          ex.catalog_exercise_id === exerciseId
+            ? {
+                ...ex,
+                sets: ex.sets.filter(s => s.id !== setId)
+              }
+            : ex
+        )
+      );
+
+      // Update the context state after local state change
+      const updatedExercises = localExercises.map(ex =>
+        ex.catalog_exercise_id === exerciseId
+          ? {
+              ...ex,
+              sets: ex.sets.filter(s => s.id !== setId)
+            }
+          : ex
+      );
+
+      const updatedWorkout = {
+        ...workout,
+        exercises: updatedExercises
+      };
+
+      updateWorkout(updatedWorkout);
+    } else {
+      removeSet(workoutId, exerciseId, setId);
+    }
+  };
+
+  const workoutExercises = localExercises;
+
+  const exerciseText = count => {
+    if (count === 0) return 'No Exercises';
+    if (count === 1) return '1 Exercise';
+    return `${count} Exercises`;
+  };
+
+  const exerciseCount = workoutExercises.length;
 
   const sortedExercises = [...workout.exercises].sort(
     (a, b) => a.order - b.order
@@ -184,7 +333,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
           {...panResponder.panHandlers}
           style={[styles.workoutContainer, itemStyle]}
         >
-          <TouchableOpacity onPress={() => onToggle(workout.id)}>
+          <TouchableOpacity onPress={handleWorkoutExpand}>
             <View style={headerStyle}>
               <View style={styles.headerContent}>
                 <Animated.View>
@@ -196,8 +345,8 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                         { color: themedStyles.accentColor }
                       ]}
                       value={workoutTitle}
-                      onChangeText={handleTitleChange}
-                      onBlur={handleTitleSubmit}
+                      onChangeText={handleEditTitleChange}
+                      onBlur={handleUpdateWorkoutTitleOnBlur}
                     />
                   ) : (
                     <TouchableOpacity onPress={handleTitlePress}>
@@ -213,11 +362,12 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   )}
                 </Animated.View>
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('ExerciseSelection', {
-                      mode: 'program'
-                    })
-                  }
+                  onPress={() => handleAddExercises(workout.id)}
+                  // onPress={() =>
+                  //   navigation.navigate('ExerciseSelection', {
+                  //     mode: 'program'
+                  //   })
+                  // }
                 >
                   <Text
                     style={[
@@ -230,7 +380,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                 </TouchableOpacity>
               </View>
               <TouchableOpacity
-                onPress={() => onToggle(workout.id)}
+                onPress={handleWorkoutExpand}
                 style={[
                   globalStyles.iconCircle,
                   { backgroundColor: themedStyles.primaryBackgroundColor }
@@ -253,7 +403,6 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
                   exercise={exercise}
                   index={index + 1}
                   themedStyles={themedStyles}
-                  editMode={editMode}
                   workout={workout}
                 />
               ))}
