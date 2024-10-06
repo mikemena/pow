@@ -175,9 +175,9 @@ const Workout: React.FC<WorkoutProps> = ({
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
-  const handleEditTitleChange = e => {
+  const handleEditTitleChange = text => {
     setIsEditingTitle(true);
-    setWorkoutTitle(e.target.value);
+    setWorkoutTitle(text);
   };
 
   const handleTitleSubmit = () => {
@@ -252,9 +252,8 @@ const Workout: React.FC<WorkoutProps> = ({
     updateWorkout({ ...workout, exercises: localExercises });
   };
 
-  const handleUpdateWorkoutTitleOnBlur = e => {
-    const { name, value } = e.target;
-    updateWorkoutField(name, value);
+  const handleUpdateWorkoutTitleOnBlur = () => {
+    updateWorkoutField('name', workoutTitle);
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
