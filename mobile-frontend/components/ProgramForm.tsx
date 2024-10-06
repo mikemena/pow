@@ -52,7 +52,7 @@ type Program = {
 
 const ProgramForm: React.FC<ProgramFormProps> = ({
   program,
-  isExpanded = true,
+  isExpanded,
   onToggleExpand
 }) => {
   const { updateProgramField, state } = useContext(ProgramContext);

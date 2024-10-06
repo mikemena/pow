@@ -21,7 +21,10 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Exercise from './Exercise';
-import { Workout, Exercise as ExerciseType } from '../src/types/programTypes';
+import {
+  Workout as WorkoutType,
+  Exercise as ExerciseType
+} from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -29,8 +32,8 @@ import { ProgramContext } from '../src/context/programContext';
 
 // define the interface for the WorkoutHeaderProps
 
-interface WorkoutHeaderProps {
-  workout: Workout;
+interface WorkoutProps {
+  workout: WorkoutType;
   isExpanded: boolean;
   onToggle: (workoutId: number) => void;
   onDelete: (id: number) => void;
@@ -46,7 +49,7 @@ interface WorkoutHeaderProps {
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
-const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
+const Workout: React.FC<WorkoutProps> = ({
   workout: initialWorkout,
   isEditing,
   isNewProgram,
@@ -150,7 +153,7 @@ const WorkoutHeader: React.FC<WorkoutHeaderProps> = ({
           })
         ]).start(() => {
           setIsDeleting(true);
-          setTimeout(() => onDelete(workout.id), 100);
+          setTimeout(() => handleDeleteWorkout(workout.id), 100);
         });
       } else {
         Animated.spring(pan.x, {
@@ -488,4 +491,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default WorkoutHeader;
+export default Workout;

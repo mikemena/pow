@@ -62,13 +62,10 @@ const CreateProgram: React.FC = () => {
 
   useEffect(() => {
     setMode('create');
-    initializeNewProgramState();
-  }, [initializeNewProgramState]);
-
-  const handleCreateProgram = async () => {
-    await saveProgram();
-    navigation.navigate('ProgramsList', { refetchPrograms: true });
-  };
+    if (!state.program || !state.workout.workouts.length) {
+      initializeNewProgramState();
+    }
+  }, []);
 
   const handleSaveProgram = async () => {
     try {
@@ -79,8 +76,9 @@ const CreateProgram: React.FC = () => {
     }
   };
 
-  const handleAddWorkout = () => {
-    addWorkout();
+  const handleAddWorkout = event => {
+    event.preventDefault();
+    addWorkout(program.id);
   };
 
   const handleToggleProgramForm = () => {
