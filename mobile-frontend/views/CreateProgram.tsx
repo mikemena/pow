@@ -4,7 +4,8 @@ import {
   SafeAreaView,
   TouchableOpacity,
   Text,
-  View
+  View,
+  ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -122,92 +123,108 @@ const CreateProgram: React.FC = () => {
       ]}
     >
       <Header pageName='Create Program' />
-      <ProgramForm
-        program={program}
-        isExpanded={expandedWorkouts['program']}
-        onToggleExpand={handleToggleProgramForm}
-      />
-
-      {/* Workouts section */}
-      {workouts && workouts.length > 0 ? (
-        workouts.map(workout => (
-          <Workout
-            key={workout.id}
-            workout={workout}
-            isExpanded={expandedWorkouts[workout.id] || false}
-            onToggleExpand={() => handleExpandWorkout(workout.id)}
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <View style={styles.formContainer}>
+          <ProgramForm
+            program={program}
+            isExpanded={expandedWorkouts['program']}
+            onToggleExpand={handleToggleProgramForm}
           />
-        ))
-      ) : (
-        <Text style={{ color: themedStyles.textColor }}>
-          No workouts available
-        </Text>
-      )}
+        </View>
 
-      {/* Add Workout button */}
-      <PillButton
-        label='Add Workout'
-        icon={
-          <Ionicons
-            name='add-outline'
-            size={16}
-            style={{
-              color:
-                themeState.theme === 'dark'
-                  ? themedStyles.accentColor
-                  : colors.eggShell
-            }}
-          />
-        }
-        onPress={handleAddWorkout}
-      />
+        {/* Workouts section */}
+        <View style={styles.workoutsContainer}>
+          {workouts && workouts.length > 0 ? (
+            workouts.map(workout => (
+              <Workout
+                key={workout.id}
+                workout={workout}
+                isExpanded={expandedWorkouts[workout.id] || false}
+                onToggleExpand={() => handleExpandWorkout(workout.id)}
+              />
+            ))
+          ) : (
+            <Text style={{ color: themedStyles.textColor }}>
+              No workouts available
+            </Text>
+          )}
+        </View>
 
-      {/* Save and Cancel buttons */}
-      <View style={styles.buttonRow}>
-        <TouchableOpacity
-          style={[
-            globalStyles.button,
-            styles.saveButton,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-          onPress={handleSaveProgram}
-        >
-          <Text
+        {/* Add Workout button */}
+        <PillButton
+          label='Add Workout'
+          icon={
+            <Ionicons
+              name='add-outline'
+              size={16}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
+          }
+          onPress={handleAddWorkout}
+        />
+
+        {/* Save and Cancel buttons */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
             style={[
-              globalStyles.buttonText,
-              { color: themedStyles.accentColor }
+              globalStyles.button,
+              styles.saveButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
+            onPress={handleSaveProgram}
           >
-            SAVE
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[
-            globalStyles.button,
-            styles.cancelButton,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-          onPress={handleCancel}
-        >
-          <Text
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              SAVE
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
             style={[
-              globalStyles.buttonText,
-              { color: themedStyles.accentColor }
+              globalStyles.button,
+              styles.cancelButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
+            onPress={handleCancel}
           >
-            CANCEL
-          </Text>
-        </TouchableOpacity>
-      </View>
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              CANCEL
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#121212'
+    flex: 1
   },
+  scrollContent: {
+    flexGrow: 1,
+    padding: 16
+  },
+  formContainer: {
+    marginBottom: 20
+  },
+  workoutsContainer: {
+    marginBottom: 20
+  },
+
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
