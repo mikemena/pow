@@ -11,13 +11,13 @@ import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
 import { ProgramContext } from '../src/context/programContext';
-import { Workout, Exercise } from '../src/types/programTypes';
+import { Workout as WorkoutType, Exercise } from '../src/types/programTypes';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import WorkoutHeader from '../components/Workout';
+import Workout from '../components/Workout';
 
 type ProgramDetailsNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -25,12 +25,10 @@ type ProgramDetailsNavigationProp = NativeStackNavigationProp<
 >;
 
 const ProgramDetails: React.FC = () => {
-  const { setMode } = useContext(ProgramContext);
+  const { setMode, setActiveWorkout } = useContext(ProgramContext);
   const navigation = useNavigation<ProgramDetailsNavigationProp>();
   const route = useRoute<RouteProp<RootStackParamList, 'ProgramDetails'>>();
-  const [expandedWorkoutId, setExpandedWorkoutId] = useState<number | null>(
-    null
-  );
+  const [expandedWorkouts, setExpandedWorkouts] = useState({});
 
   const { program } = route.params;
   const { state } = useTheme();
@@ -40,9 +38,38 @@ const ProgramDetails: React.FC = () => {
     setMode('view');
   }, []);
 
-  const toggleWorkout = (workoutId: number) => {
-    setExpandedWorkoutId(prevId => (prevId === workoutId ? null : workoutId));
+  const handleToggleProgramForm = () => {
+    setExpandedWorkouts(prevState => ({
+      ...Object.keys(prevState).reduce((acc, key) => {
+        acc[key] = false; // collapse all workouts
+        return acc;
+      }, {}),
+      program: !prevState.program // toggle the program form
+    }));
   };
+
+  const handleExpandWorkout = workoutId => {
+    console.log('handleExpandWorkout called', { workoutId });
+    const isCurrentlyExpanded = expandedWorkouts[workoutId];
+    setExpandedWorkouts(prevState => {
+      const newState = {
+        ...Object.keys(prevState).reduce((acc, key) => {
+          acc[key] = false;
+          return acc;
+        }, {}),
+        [workoutId]: !isCurrentlyExpanded
+      };
+      console.log('New expandedWorkouts state:', newState);
+      return newState;
+    });
+
+    if (!isCurrentlyExpanded) {
+      setActiveWorkout(workoutId);
+    } else {
+      setActiveWorkout(null);
+    }
+  };
+
   const handleEditProgram = () => {
     navigation.navigate('EditProgram', { program });
   };
@@ -65,14 +92,15 @@ const ProgramDetails: React.FC = () => {
     </View>
   );
 
-  const renderWorkout = (workout: Workout) => (
+  const renderWorkout = (workout: WorkoutType) => (
     <View key={workout.id} style={styles.workoutContainer}>
-      <WorkoutHeader
+      <Workout
+        key={workout.id}
         workout={workout}
-        isExpanded={expandedWorkoutId === workout.id}
-        onToggle={toggleWorkout}
-        themedStyles={themedStyles}
-        editMode={false}
+        programId={program.id}
+        isExpanded={expandedWorkouts[workout.id] || false}
+        onToggleExpand={handleExpandWorkout}
+        isEditing={false}
       />
     </View>
   );

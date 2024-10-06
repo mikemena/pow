@@ -66,6 +66,10 @@ export const ProgramProvider = ({ children }) => {
 
   const initializeEditProgramState = useCallback(
     (program, workouts) => {
+      console.log('Initializing edit program state with:', {
+        program,
+        workouts
+      });
       dispatch({
         type: actionTypes.INITIALIZE_EDIT_PROGRAM_STATE,
         payload: {
@@ -74,6 +78,7 @@ export const ProgramProvider = ({ children }) => {
           activeWorkout: workouts.length > 0 ? workouts[0].id : null
         }
       });
+      console.log('State after dispatch:', state);
     },
     [dispatch]
   );

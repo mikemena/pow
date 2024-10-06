@@ -52,13 +52,35 @@ const EditProgram: React.FC = () => {
   );
 
   useEffect(() => {
+    console.log('EditProgram useEffect - Initial state:', state);
     setMode('edit');
-    if (!state.program || !state.workout.workouts.length) {
-      // Fetch the program from API or use existing state
-      const programToEdit = program.id;
+
+    if (
+      !state.program ||
+      !state.workout ||
+      !state.workout.workouts ||
+      state.workout.workouts.length === 0
+    ) {
+      console.log('Initializing edit program state');
+      const programToEdit = route.params.program; // Make sure this is correct
+      console.log('Program to edit:', programToEdit);
+
       initializeEditProgramState(programToEdit, programToEdit.workouts);
+
+      // Log state after initialization
+      console.log('State after initialization:', state);
+    } else {
+      console.log('Program and workouts already in state:', {
+        program: state.program,
+        workouts: state.workout.workouts
+      });
     }
   }, []);
+
+  // Add another useEffect to log state changes
+  useEffect(() => {
+    console.log('State updated:', state);
+  }, [state]);
 
   const handleUpdateProgram = async () => {
     try {
@@ -111,15 +133,19 @@ const EditProgram: React.FC = () => {
   };
 
   const handleExpandWorkout = workoutId => {
+    console.log('handleExpandWorkout called', { workoutId });
     const isCurrentlyExpanded = expandedWorkouts[workoutId];
-
-    setExpandedWorkouts(prevState => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false; // collapse all
-        return acc;
-      }, {}),
-      [workoutId]: !isCurrentlyExpanded
-    }));
+    setExpandedWorkouts(prevState => {
+      const newState = {
+        ...Object.keys(prevState).reduce((acc, key) => {
+          acc[key] = false;
+          return acc;
+        }, {}),
+        [workoutId]: !isCurrentlyExpanded
+      };
+      console.log('New expandedWorkouts state:', newState);
+      return newState;
+    });
 
     if (!isCurrentlyExpanded) {
       setActiveWorkout(workoutId);
@@ -168,7 +194,8 @@ const EditProgram: React.FC = () => {
                 workout={workout}
                 programId={program.id}
                 isExpanded={expandedWorkouts[workout.id] || false}
-                onToggleExpand={() => handleExpandWorkout(workout.id)}
+                onToggleExpand={handleExpandWorkout}
+                isEditing={true}
               />
             ))
           ) : (

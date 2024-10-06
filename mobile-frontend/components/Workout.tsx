@@ -35,7 +35,10 @@ import { ProgramContext } from '../src/context/programContext';
 interface WorkoutProps {
   workout: WorkoutType;
   isExpanded: boolean;
-  onToggle: (workoutId: number) => void;
+  onToggleExpand: (workoutId: number | string) => void;
+  isEditing?: boolean;
+  isNewProgram?: boolean;
+  programId?: number | string;
   onDelete: (id: number) => void;
   themedStyles: {
     secondaryBackgroundColor: string;
@@ -57,6 +60,11 @@ const Workout: React.FC<WorkoutProps> = ({
   isExpanded,
   onToggleExpand
 }) => {
+  console.log('Workout props:', {
+    workoutId: initialWorkout.id,
+    isExpanded,
+    onToggleExpand: typeof onToggleExpand
+  });
   const {
     state,
     setActiveWorkout,
@@ -204,7 +212,18 @@ const Workout: React.FC<WorkoutProps> = ({
   };
 
   const handleWorkoutExpand = () => {
-    onToggleExpand(workout.id);
+    console.log('handleWorkoutExpand called', {
+      workoutId: workout.id,
+      onToggleExpand: typeof onToggleExpand
+    });
+    if (typeof onToggleExpand === 'function') {
+      onToggleExpand(workout.id);
+    } else {
+      console.error('onToggleExpand is not a function', {
+        workoutId: workout.id,
+        onToggleExpand
+      });
+    }
   };
 
   const handleAddSet = exercise => {
