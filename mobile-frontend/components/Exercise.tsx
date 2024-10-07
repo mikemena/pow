@@ -368,8 +368,8 @@ const styles = StyleSheet.create({
   setInfo: {
     flexDirection: 'row',
     alignItems: 'center',
-
-    paddingHorizontal: 20
+    marginBottom: 10,
+    paddingHorizontal: 35
   },
   setText: {
     fontFamily: 'Lexend',

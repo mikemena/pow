@@ -40,6 +40,7 @@ interface WorkoutProps {
   isNewProgram?: boolean;
   programId?: number | string;
   onDelete: (id: number) => void;
+  onAddExercise: () => void;
   themedStyles: {
     secondaryBackgroundColor: string;
     accentColor: string;
@@ -81,6 +82,7 @@ const Workout: React.FC<WorkoutProps> = ({
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
+  console.log('mode: ', mode);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -295,13 +297,11 @@ const Workout: React.FC<WorkoutProps> = ({
 
   const workoutExercises = localExercises;
 
-  const exerciseText = count => {
-    if (count === 0) return 'No Exercises';
-    if (count === 1) return '1 Exercise';
-    return `${count} Exercises`;
-  };
-
-  const exerciseCount = workoutExercises.length;
+  const getExerciseCountText = useCallback((count: number) => {
+    if (count === 0) return 'NO EXERCISES';
+    if (count === 1) return '1 EXERCISE';
+    return `${count} EXERCISES`;
+  }, []);
 
   const sortedExercises = [...workout.exercises].sort(
     (a, b) => a.order - b.order
@@ -368,11 +368,6 @@ const Workout: React.FC<WorkoutProps> = ({
                 </Animated.View>
                 <TouchableOpacity
                   onPress={() => handleAddExercises(workout.id)}
-                  // onPress={() =>
-                  //   navigation.navigate('ExerciseSelection', {
-                  //     mode: 'program'
-                  //   })
-                  // }
                 >
                   <Text
                     style={[
@@ -380,7 +375,15 @@ const Workout: React.FC<WorkoutProps> = ({
                       { color: themedStyles.textColor }
                     ]}
                   >
-                    {workout.exercises.length} EXERCISES - ADD
+                    {getExerciseCountText(workout.exercises.length)}
+                    {mode !== 'view' && (
+                      <>
+                        {' - '}
+                        <Text style={{ color: themedStyles.accentColor }}>
+                          ADD
+                        </Text>
+                      </>
+                    )}
                   </Text>
                 </TouchableOpacity>
               </View>

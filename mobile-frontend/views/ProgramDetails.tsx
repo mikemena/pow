@@ -81,16 +81,16 @@ const ProgramDetails: React.FC = () => {
     return `${duration} ${formattedUnit}`;
   };
 
-  const renderExercise = (exercise: Exercise) => (
-    <View key={exercise.id} style={styles.exerciseItem}>
-      <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
-        {exercise.name}
-      </Text>
-      <Text style={[styles.exerciseDetails, { color: themedStyles.textColor }]}>
-        {exercise.sets.length} sets - {exercise.sets[0].reps} reps
-      </Text>
-    </View>
-  );
+  // const renderExercise = (exercise: Exercise) => (
+  //   <View key={exercise.id} style={styles.exerciseItem}>
+  //     <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
+  //       {exercise.name}
+  //     </Text>
+  //     <Text style={[styles.exerciseDetails, { color: themedStyles.textColor }]}>
+  //       {exercise.sets.length} sets - {exercise.sets[0].reps} reps
+  //     </Text>
+  //   </View>
+  // );
 
   const renderWorkout = (workout: WorkoutType) => (
     <View key={workout.id} style={styles.workoutContainer}>
@@ -99,7 +99,7 @@ const ProgramDetails: React.FC = () => {
         workout={workout}
         programId={program.id}
         isExpanded={expandedWorkouts[workout.id] || false}
-        onToggleExpand={handleExpandWorkout}
+        onToggleExpand={() => handleExpandWorkout(workout.id)}
         isEditing={false}
       />
     </View>
@@ -112,7 +112,7 @@ const ProgramDetails: React.FC = () => {
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
-      <Header pageName='Programs' />
+      <Header pageName='Program Details' />
       <View style={globalStyles.container}>
         <ScrollView
           style={[{ backgroundColor: themedStyles.primaryBackgroundColor }]}
@@ -293,7 +293,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5
   },
   workoutContainer: {
-    marginBottom: 10
+    paddingBottom: 5
   },
   workoutHeader: {
     flexDirection: 'row',
