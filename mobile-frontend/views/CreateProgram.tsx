@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -19,6 +19,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import { RootStackParamList } from '../src/types/navigationTypes';
+import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
 
 type CreateProgramNavigationProp = NativeStackNavigationProp<
   RootStackParamList,
@@ -39,9 +40,13 @@ const CreateProgram: React.FC = () => {
 
   const program = state.program;
   const workouts = state.workout.workouts;
-  const activeWorkoutId = state.workout.activeWorkout;
-  const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const [isProgramFormVisible, setIsProgramFormVisible] = useState(true);
+  const [isProgramFormExpanded, setIsProgramFormExpanded] = useState(true);
+  const {
+    expandedWorkouts,
+    toggleWorkout,
+    initializeExpanded,
+    collapseAllWorkouts
+  } = useExpandedWorkouts();
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -50,24 +55,15 @@ const CreateProgram: React.FC = () => {
   );
 
   useEffect(() => {
-    // Automatically expand the active workout when the component mounts or when activeWorkoutId changes
-    if (activeWorkoutId) {
-      setExpandedWorkouts(prevState => ({
-        ...Object.keys(prevState).reduce((acc, key) => {
-          acc[key] = false; // collapse all
-          return acc;
-        }, {}),
-        [activeWorkoutId]: true // expand the active workout
-      }));
-    }
-  }, [activeWorkoutId]);
-
-  useEffect(() => {
     setMode('create');
     if (!state.program || !state.workout.workouts.length) {
       initializeNewProgramState();
     }
   }, []);
+
+  useEffect(() => {
+    initializeExpanded(workouts);
+  }, [workouts]);
 
   const handleSaveProgram = async () => {
     try {
@@ -84,13 +80,12 @@ const CreateProgram: React.FC = () => {
   };
 
   const handleToggleProgramForm = () => {
-    setExpandedWorkouts(prevState => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false; // collapse all workouts
-        return acc;
-      }, {}),
-      program: !prevState.program // toggle the program form
-    }));
+    setIsProgramFormExpanded(prev => {
+      if (!prev) {
+        collapseAllWorkouts();
+      }
+      return !prev;
+    });
   };
 
   const handleCancel = () => {
@@ -98,23 +93,14 @@ const CreateProgram: React.FC = () => {
     navigation.goBack();
   };
 
-  const handleExpandWorkout = workoutId => {
-    const isCurrentlyExpanded = expandedWorkouts[workoutId];
-
-    setExpandedWorkouts(prevState => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false; // collapse all
-        return acc;
-      }, {}),
-      [workoutId]: !isCurrentlyExpanded
-    }));
-
-    if (!isCurrentlyExpanded) {
+  const handleExpandWorkout = useCallback(
+    workoutId => {
+      toggleWorkout(workoutId);
       setActiveWorkout(workoutId);
-    } else {
-      setActiveWorkout(null);
-    }
-  };
+      setIsProgramFormExpanded(false);
+    },
+    [toggleWorkout, setActiveWorkout]
+  );
 
   return (
     <SafeAreaView
@@ -128,7 +114,7 @@ const CreateProgram: React.FC = () => {
         <View style={styles.formContainer}>
           <ProgramForm
             program={program}
-            isExpanded={true}
+            isExpanded={isProgramFormExpanded}
             onToggleExpand={handleToggleProgramForm}
           />
         </View>
@@ -142,6 +128,7 @@ const CreateProgram: React.FC = () => {
                 workout={workout}
                 isExpanded={expandedWorkouts[workout.id] || false}
                 onToggleExpand={() => handleExpandWorkout(workout.id)}
+                onAddExercise={() => setActiveWorkout(workout.id)}
               />
             ))
           ) : (

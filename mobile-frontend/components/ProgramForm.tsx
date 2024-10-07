@@ -26,7 +26,7 @@ import {
 interface ProgramFormProps {
   program: Program;
   isExpanded: boolean;
-  onToggleExpand: (program: Program) => void;
+  onToggleExpand: () => void;
 }
 
 type ProgramDetailsNavigationProp = NativeStackNavigationProp<
@@ -56,7 +56,6 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
   onToggleExpand
 }) => {
   const { updateProgramField, state } = useContext(ProgramContext);
-
   const { mode } = state;
   const navigation = useNavigation<ProgramDetailsNavigationProp>();
   const { state: themeState } = useTheme();
@@ -104,12 +103,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     updateProgramField(name, value);
   };
 
-  const handleProgramExpand = () => {
-    onToggleExpand(program);
-  };
-
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       {/* Form header */}
       <View style={styles.header}>
         <TouchableOpacity
@@ -125,7 +120,6 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
             size={24}
           />
         </TouchableOpacity>
-
         {!isExpanded && (
           <Text
             style={[
@@ -133,11 +127,12 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               { color: themedStyles.textColor, flex: 1, textAlign: 'center' }
             ]}
           >
-            {formValues.name}
+            {formValues.name || ''}
           </Text>
         )}
+
         <TouchableOpacity
-          onPress={handleProgramExpand}
+          onPress={onToggleExpand}
           style={[
             { backgroundColor: themedStyles.secondaryBackgroundColor },
             globalStyles.iconCircle
@@ -153,98 +148,108 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
 
       {/* Program details form */}
       {isExpanded && (
-        <View
-          style={[
-            globalStyles.section,
-            { backgroundColor: themedStyles.primaryBackgroundColor }
-          ]}
-        >
-          {/* Program Name */}
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            Program Name
-          </Text>
-          <TextInput
+        <ScrollView>
+          <View
             style={[
-              globalStyles.input,
-              {
-                backgroundColor: themedStyles.secondaryBackgroundColor,
-                color: themedStyles.textColor
-              }
+              globalStyles.section,
+              { backgroundColor: themedStyles.primaryBackgroundColor }
             ]}
-            value={formValues.name}
-            onChangeText={text => handleChange('name', text)}
-            onBlur={() => handleBlur('name', formValues.name)}
-            placeholder='Program Name'
-          />
-
-          {/* Main Goal */}
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            Main Goal
-          </Text>
-          <CustomPicker
-            options={GOAL_TYPES}
-            selectedValue={formValues.main_goal}
-            onValueChange={value => {
-              handleChange('main_goal', value as string);
-              handleBlur('main_goal', value as string);
-            }}
-            label='Main Goal'
-            placeholder='Main Goal'
-          />
-
-          {/* Duration */}
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            Duration
-          </Text>
-          <View style={styles.durationContainer}>
+          >
+            {/* Program Name */}
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              Program Name
+            </Text>
             <TextInput
               style={[
                 globalStyles.input,
-                styles.durationInput,
                 {
                   backgroundColor: themedStyles.secondaryBackgroundColor,
                   color: themedStyles.textColor
                 }
               ]}
-              value={formValues.program_duration.toString()}
-              onChangeText={text =>
-                handleChange('program_duration', parseInt(text) || 0)
-              }
-              onBlur={() =>
-                handleBlur('program_duration', formValues.program_duration)
-              }
-              placeholder='Duration'
-              keyboardType='numeric'
+              value={formValues.name}
+              onChangeText={text => handleChange('name', text)}
+              onBlur={() => handleBlur('name', formValues.name)}
+              placeholder='Program Name'
             />
+
+            {/* Main Goal */}
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              Main Goal
+            </Text>
             <CustomPicker
-              options={DURATION_TYPES}
-              selectedValue={formValues.duration_unit}
+              options={GOAL_TYPES}
+              selectedValue={formValues.main_goal}
               onValueChange={value => {
-                handleChange('duration_unit', value as string);
-                handleBlur('duration_unit', value as string);
+                handleChange('main_goal', value as string);
+                handleBlur('main_goal', value as string);
               }}
-              label='Duration Unit'
-              placeholder='Duration Unit'
+              label='Main Goal'
+              placeholder='Main Goal'
+            />
+
+            {/* Duration */}
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              Duration
+            </Text>
+            <View style={styles.durationContainer}>
+              <TextInput
+                style={[
+                  globalStyles.input,
+                  styles.durationInput,
+                  {
+                    backgroundColor: themedStyles.secondaryBackgroundColor,
+                    color: themedStyles.textColor
+                  }
+                ]}
+                value={formValues.program_duration.toString()}
+                onChangeText={text =>
+                  handleChange('program_duration', parseInt(text) || 0)
+                }
+                onBlur={() =>
+                  handleBlur('program_duration', formValues.program_duration)
+                }
+                placeholder='Duration'
+                keyboardType='numeric'
+              />
+              <CustomPicker
+                options={DURATION_TYPES}
+                selectedValue={formValues.duration_unit}
+                onValueChange={value => {
+                  handleChange('duration_unit', value as string);
+                  handleBlur('duration_unit', value as string);
+                }}
+                label='Duration Unit'
+                placeholder='Duration Unit'
+              />
+            </View>
+
+            {/* Days Per Week */}
+            <Text
+              style={[globalStyles.label, { color: themedStyles.textColor }]}
+            >
+              Days Per Week
+            </Text>
+            <CustomPicker
+              options={DAYS_PER_WEEK}
+              selectedValue={formValues.days_per_week}
+              onValueChange={value => {
+                handleChange('days_per_week', value as number);
+                handleBlur('days_per_week', value as number);
+              }}
+              label='Days Per Week'
+              placeholder='Select days per week'
             />
           </View>
-
-          {/* Days Per Week */}
-          <Text style={[globalStyles.label, { color: themedStyles.textColor }]}>
-            Days Per Week
-          </Text>
-          <CustomPicker
-            options={DAYS_PER_WEEK}
-            selectedValue={formValues.days_per_week}
-            onValueChange={value => {
-              handleChange('days_per_week', value as number);
-              handleBlur('days_per_week', value as number);
-            }}
-            label='Days Per Week'
-            placeholder='Select days per week'
-          />
-        </View>
+        </ScrollView>
       )}
-    </ScrollView>
+    </View>
   );
 };
 
@@ -255,14 +260,10 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginRight: 10,
     marginBottom: 10
   },
-
-  removeButton: {
-    padding: 8
-  },
-
   durationContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between'

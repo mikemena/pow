@@ -56,15 +56,10 @@ const Workout: React.FC<WorkoutProps> = ({
   workout: initialWorkout,
   isEditing,
   isNewProgram,
-  programId,
+  onAddExercise,
   isExpanded,
   onToggleExpand
 }) => {
-  console.log('Workout props:', {
-    workoutId: initialWorkout.id,
-    isExpanded,
-    onToggleExpand: typeof onToggleExpand
-  });
   const {
     state,
     setActiveWorkout,
@@ -79,7 +74,6 @@ const Workout: React.FC<WorkoutProps> = ({
   } = useContext(ProgramContext);
 
   const workouts = state.workout.workouts;
-  const activeWorkout = state.workout.activeWorkout;
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
@@ -212,14 +206,8 @@ const Workout: React.FC<WorkoutProps> = ({
   };
 
   const handleWorkoutExpand = () => {
-    if (typeof onToggleExpand === 'function') {
-      onToggleExpand(workout.id);
-    } else {
-      console.error('onToggleExpand is not a function', {
-        workoutId: workout.id,
-        onToggleExpand
-      });
-    }
+    console.log('handleWorkoutExpand ', workout.id);
+    onToggleExpand(workout.id);
   };
 
   const handleAddSet = exercise => {
@@ -350,7 +338,7 @@ const Workout: React.FC<WorkoutProps> = ({
           {...panResponder.panHandlers}
           style={[styles.workoutContainer, itemStyle]}
         >
-          <TouchableOpacity onPress={handleWorkoutExpand}>
+          <TouchableOpacity onPress={onAddExercise}>
             <View style={headerStyle}>
               <View style={styles.headerContent}>
                 <Animated.View>
