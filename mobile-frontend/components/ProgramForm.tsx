@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../src/types/navigationTypes';
-import { globalStyles } from '../src/styles/globalStyles';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { toUpperCase } from '../src/utils/stringUtils';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -112,21 +112,20 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     <ScrollView style={styles.container}>
       {/* Form header */}
       <View style={styles.header}>
-        {state.mode === 'edit' && (
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={[
-              { backgroundColor: themedStyles.secondaryBackgroundColor },
-              globalStyles.iconCircle
-            ]}
-          >
-            <Ionicons
-              name={'arrow-back-outline'}
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              size={24}
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={[
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            globalStyles.iconCircle
+          ]}
+        >
+          <Ionicons
+            name={'arrow-back-outline'}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
+        </TouchableOpacity>
+
         {!isExpanded && (
           <Text
             style={[
@@ -251,26 +250,13 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    padding: 5
+    flex: 1
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginRight: 15,
+    marginRight: 10,
     marginBottom: 10
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 16
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 16,
-    paddingHorizontal: 8
   },
 
   removeButton: {

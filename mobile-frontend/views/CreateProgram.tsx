@@ -41,6 +41,7 @@ const CreateProgram: React.FC = () => {
   const workouts = state.workout.workouts;
   const activeWorkoutId = state.workout.activeWorkout;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  const [isProgramFormVisible, setIsProgramFormVisible] = useState(true);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -127,7 +128,7 @@ const CreateProgram: React.FC = () => {
         <View style={styles.formContainer}>
           <ProgramForm
             program={program}
-            isExpanded={expandedWorkouts['program']}
+            isExpanded={true}
             onToggleExpand={handleToggleProgramForm}
           />
         </View>
@@ -216,13 +217,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 16
+    padding: 5
   },
-  formContainer: {
-    marginBottom: 20
-  },
+
   workoutsContainer: {
-    marginBottom: 20
+    marginBottom: 10
   },
 
   buttonRow: {
@@ -235,7 +234,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 4,
     alignItems: 'center',
-    marginBottom: 16
+    marginBottom: 10
   },
   addButtonText: {
     color: 'white',

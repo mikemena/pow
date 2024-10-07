@@ -212,10 +212,6 @@ const Workout: React.FC<WorkoutProps> = ({
   };
 
   const handleWorkoutExpand = () => {
-    console.log('handleWorkoutExpand called', {
-      workoutId: workout.id,
-      onToggleExpand: typeof onToggleExpand
-    });
     if (typeof onToggleExpand === 'function') {
       onToggleExpand(workout.id);
     } else {
@@ -438,11 +434,11 @@ const Workout: React.FC<WorkoutProps> = ({
 const styles = StyleSheet.create({
   containerWrapper: {
     position: 'relative',
-    marginBottom: 10,
+    marginBottom: 5,
     overflow: 'hidden'
   },
   workoutContainer: {
-    marginBottom: 10,
+    marginBottom: 5,
     position: 'relative',
     zIndex: 1,
     borderRadius: 10
@@ -451,7 +447,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16
+    padding: 10
   },
   headerContent: {
     flex: 1,

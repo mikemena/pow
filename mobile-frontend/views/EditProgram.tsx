@@ -44,6 +44,7 @@ const EditProgram: React.FC = () => {
   const program = state.program;
   const workouts = state.workout.workouts;
   const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  const [isProgramFormVisible, setIsProgramFormVisible] = useState(true);
 
   const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
@@ -177,16 +178,23 @@ const EditProgram: React.FC = () => {
     >
       <Header pageName='Edit Program' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.formContainer}>
-          <ProgramForm
-            program={program}
-            isExpanded={expandedWorkouts['program']}
-            onToggleExpand={handleToggleProgramForm}
-          />
-        </View>
+        <TouchableOpacity
+          onPress={handleToggleProgramForm}
+          style={styles.toggleButton}
+        ></TouchableOpacity>
 
-        {/* Workouts section */}
+        {isProgramFormVisible && (
+          <View style={styles.formContainer}>
+            <ProgramForm
+              program={program}
+              isExpanded={true}
+              onToggleExpand={handleToggleProgramForm}
+            />
+          </View>
+        )}
+
         <View style={styles.workoutsContainer}>
+          {/* Workouts section */}
           {workouts && workouts.length > 0 ? (
             workouts.map(workout => (
               <Workout
@@ -204,62 +212,6 @@ const EditProgram: React.FC = () => {
             </Text>
           )}
         </View>
-
-        {/* Add Workout button */}
-        <PillButton
-          label='Add Workout'
-          icon={
-            <Ionicons
-              name='add-outline'
-              size={16}
-              style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
-              }}
-            />
-          }
-          onPress={handleAddWorkout}
-        />
-
-        {/* Save and Cancel buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.saveButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleUpdateProgram}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              SAVE
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.cancelButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleCancel}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              CANCEL
-            </Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -271,13 +223,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    padding: 16
+    padding: 5
   },
-  formContainer: {
-    marginBottom: 20
-  },
+  formContainer: { borderRadius: 8 },
   workoutsContainer: {
-    marginBottom: 20
+    marginBottom: 10
   },
   buttonRow: {
     flexDirection: 'row',
