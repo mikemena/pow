@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   Text,
   StyleSheet,
@@ -20,6 +20,7 @@ import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
+import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
 
 type EditProgramRouteProp = RouteProp<RootStackParamList, 'EditProgram'>;
 type EditProgramNavigationProp = NativeStackNavigationProp<
@@ -43,8 +44,13 @@ const EditProgram: React.FC = () => {
 
   const program = state.program;
   const workouts = state.workout.workouts;
-  const [expandedWorkouts, setExpandedWorkouts] = useState({});
-  const [isProgramFormVisible, setIsProgramFormVisible] = useState(true);
+  const [isProgramFormExpanded, setIsProgramFormExpanded] = useState(true);
+  const {
+    expandedWorkouts,
+    toggleWorkout,
+    initializeExpanded,
+    collapseAllWorkouts
+  } = useExpandedWorkouts();
 
   const { state: themeState } = useTheme();
   const themedStyles: ThemedStyles = getThemedStyles(
@@ -55,26 +61,14 @@ const EditProgram: React.FC = () => {
   useEffect(() => {
     console.log('EditProgram useEffect - Initial state:', state);
     setMode('edit');
-
     if (
       !state.program ||
       !state.workout ||
       !state.workout.workouts ||
       state.workout.workouts.length === 0
     ) {
-      console.log('Initializing edit program state');
-      const programToEdit = route.params.program; // Make sure this is correct
-      console.log('Program to edit:', programToEdit);
-
+      const programToEdit = route.params.program;
       initializeEditProgramState(programToEdit, programToEdit.workouts);
-
-      // Log state after initialization
-      console.log('State after initialization:', state);
-    } else {
-      console.log('Program and workouts already in state:', {
-        program: state.program,
-        workouts: state.workout.workouts
-      });
     }
   }, []);
 
@@ -82,6 +76,10 @@ const EditProgram: React.FC = () => {
   useEffect(() => {
     console.log('State updated:', state);
   }, [state]);
+
+  useEffect(() => {
+    initializeExpanded(workouts);
+  }, [workouts]);
 
   const handleUpdateProgram = async () => {
     try {
@@ -114,18 +112,18 @@ const EditProgram: React.FC = () => {
     }
   };
 
-  const handleAddWorkout = () => {
-    addWorkout();
+  const handleAddWorkout = event => {
+    event.preventDefault();
+    addWorkout(program.id);
   };
 
   const handleToggleProgramForm = () => {
-    setExpandedWorkouts(prevState => ({
-      ...Object.keys(prevState).reduce((acc, key) => {
-        acc[key] = false; // collapse all workouts
-        return acc;
-      }, {}),
-      program: !prevState.program // toggle the program form
-    }));
+    setIsProgramFormExpanded(prev => {
+      if (!prev) {
+        collapseAllWorkouts();
+      }
+      return !prev;
+    });
   };
 
   const handleCancel = () => {
@@ -133,27 +131,14 @@ const EditProgram: React.FC = () => {
     navigation.goBack();
   };
 
-  const handleExpandWorkout = workoutId => {
-    console.log('handleExpandWorkout called', { workoutId });
-    const isCurrentlyExpanded = expandedWorkouts[workoutId];
-    setExpandedWorkouts(prevState => {
-      const newState = {
-        ...Object.keys(prevState).reduce((acc, key) => {
-          acc[key] = false;
-          return acc;
-        }, {}),
-        [workoutId]: !isCurrentlyExpanded
-      };
-      console.log('New expandedWorkouts state:', newState);
-      return newState;
-    });
-
-    if (!isCurrentlyExpanded) {
+  const handleExpandWorkout = useCallback(
+    workoutId => {
+      toggleWorkout(workoutId);
       setActiveWorkout(workoutId);
-    } else {
-      setActiveWorkout(null);
-    }
-  };
+      setIsProgramFormExpanded(false);
+    },
+    [toggleWorkout, setActiveWorkout]
+  );
 
   if (!state.program) {
     return (
@@ -183,15 +168,13 @@ const EditProgram: React.FC = () => {
           style={styles.toggleButton}
         ></TouchableOpacity>
 
-        {isProgramFormVisible && (
-          <View style={styles.formContainer}>
-            <ProgramForm
-              program={program}
-              isExpanded={true}
-              onToggleExpand={handleToggleProgramForm}
-            />
-          </View>
-        )}
+        <View style={styles.formContainer}>
+          <ProgramForm
+            program={program}
+            isExpanded={isProgramFormExpanded}
+            onToggleExpand={handleToggleProgramForm}
+          />
+        </View>
 
         <View style={styles.workoutsContainer}>
           {/* Workouts section */}
@@ -202,7 +185,8 @@ const EditProgram: React.FC = () => {
                 workout={workout}
                 programId={program.id}
                 isExpanded={expandedWorkouts[workout.id] || false}
-                onToggleExpand={handleExpandWorkout}
+                onToggleExpand={() => handleExpandWorkout(workout.id)}
+                onAddExercise={() => setActiveWorkout(workout.id)}
                 isEditing={true}
               />
             ))
