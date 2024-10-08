@@ -10,17 +10,20 @@ import {
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { ProgramContext } from '../src/context/programContext';
-import { Ionicons } from '@expo/vector-icons';
 import ProgramForm from '../components/ProgramForm';
 import Workout from '../components/Workout';
-import PillButton from '../components/PillButton';
 import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
 import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
+import {
+  Workout as WorkoutType,
+  Exercise as ExerciseType,
+  Set as SetType
+} from '../src/types/programTypes';
 
 type EditProgramRouteProp = RouteProp<RootStackParamList, 'EditProgram'>;
 type EditProgramNavigationProp = NativeStackNavigationProp<
@@ -85,20 +88,22 @@ const EditProgram: React.FC = () => {
     try {
       const updatedProgram = {
         ...program,
-        workouts: workouts.map(workout => {
+        workouts: workouts.map((workout: WorkoutType) => {
           const updatedWorkout = workouts[workout.id];
           return updatedWorkout
             ? {
                 ...updatedWorkout,
-                exercises: updatedWorkout.exercises.map(exercise => ({
-                  ...exercise,
-                  sets: exercise.sets.map(set => ({
-                    ...set,
-                    weight: parseInt(set.weight, 10) || 0,
-                    reps: parseInt(set.reps, 10) || 0,
-                    order: parseInt(set.order, 10) || 0
-                  }))
-                }))
+                exercises: updatedWorkout.exercises.map(
+                  (exercise: ExerciseType) => ({
+                    ...exercise,
+                    sets: exercise.sets.map((set: SetType) => ({
+                      ...set,
+                      weight: parseInt(set.weight, 10) || 0,
+                      reps: parseInt(set.reps, 10) || 0,
+                      order: parseInt(set.order, 10) || 0
+                    }))
+                  })
+                )
               }
             : workout;
         })
@@ -179,15 +184,12 @@ const EditProgram: React.FC = () => {
         <View style={styles.workoutsContainer}>
           {/* Workouts section */}
           {workouts && workouts.length > 0 ? (
-            workouts.map(workout => (
+            workouts.map((workout: WorkoutType) => (
               <Workout
                 key={workout.id}
                 workout={workout}
-                programId={program.id}
                 isExpanded={expandedWorkouts[workout.id] || false}
                 onToggleExpand={() => handleExpandWorkout(workout.id)}
-                onAddExercise={() => setActiveWorkout(workout.id)}
-                isEditing={true}
               />
             ))
           ) : (

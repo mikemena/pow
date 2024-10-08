@@ -23,6 +23,7 @@ import * as Haptics from 'expo-haptics';
 import Exercise from './Exercise';
 import {
   Workout as WorkoutType,
+  WorkoutProps,
   Exercise as ExerciseType
 } from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -30,34 +31,11 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { ProgramContext } from '../src/context/programContext';
 
-// define the interface for the WorkoutHeaderProps
-
-interface WorkoutProps {
-  workout: WorkoutType;
-  isExpanded: boolean;
-  onToggleExpand: (workoutId: number | string) => void;
-  isEditing?: boolean;
-  isNewProgram?: boolean;
-  programId?: number | string;
-  onDelete: (id: number) => void;
-  onAddExercise: () => void;
-  themedStyles: {
-    secondaryBackgroundColor: string;
-    accentColor: string;
-    textColor: string;
-  };
-  editMode: boolean;
-  onUpdateWorkoutTitle: (id: number, newTitle: string) => void;
-}
-
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
 const Workout: React.FC<WorkoutProps> = ({
   workout: initialWorkout,
-  isEditing,
-  isNewProgram,
-  onAddExercise,
   isExpanded,
   onToggleExpand
 }) => {
@@ -82,7 +60,6 @@ const Workout: React.FC<WorkoutProps> = ({
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
-  console.log('mode: ', mode);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -187,17 +164,22 @@ const Workout: React.FC<WorkoutProps> = ({
   const handleTitleSubmit = () => {
     if (workout) {
       const updatedWorkout = { ...workout, name: workoutTitle };
-      updateWorkout(updatedWorkout, isNewProgram);
+      updateWorkout(updatedWorkout);
     }
     setIsEditingTitle(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
-  const handleOutsidePress = useCallback(() => {
-    if (isEditingTitle) {
-      handleTitleSubmit();
-    }
-  }, [isEditingTitle, handleTitleSubmit]);
+  const handleOutsidePress = useCallback(
+    event => {
+      if (event.target === event.currentTarget) {
+        if (isEditingTitle) {
+          handleTitleSubmit();
+        }
+      }
+    },
+    [isEditingTitle, handleTitleSubmit]
+  );
 
   const handleDeleteWorkout = workoutId => {
     deleteWorkout(workoutId);
@@ -208,7 +190,6 @@ const Workout: React.FC<WorkoutProps> = ({
   };
 
   const handleWorkoutExpand = () => {
-    console.log('handleWorkoutExpand ', workout.id);
     onToggleExpand(workout.id);
   };
 
@@ -262,7 +243,7 @@ const Workout: React.FC<WorkoutProps> = ({
   };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
-    if (isEditing) {
+    if (mode !== 'view') {
       setLocalExercises(prevExercises =>
         prevExercises.map(ex =>
           ex.catalog_exercise_id === exerciseId
@@ -338,7 +319,7 @@ const Workout: React.FC<WorkoutProps> = ({
           {...panResponder.panHandlers}
           style={[styles.workoutContainer, itemStyle]}
         >
-          <TouchableOpacity onPress={onAddExercise}>
+          <TouchableOpacity>
             <View style={headerStyle}>
               <View style={styles.headerContent}>
                 <Animated.View>
@@ -410,7 +391,6 @@ const Workout: React.FC<WorkoutProps> = ({
                   key={exercise.id}
                   exercise={exercise}
                   index={index + 1}
-                  themedStyles={themedStyles}
                   workout={workout}
                 />
               ))}

@@ -128,7 +128,6 @@ const CreateProgram: React.FC = () => {
                 workout={workout}
                 isExpanded={expandedWorkouts[workout.id] || false}
                 onToggleExpand={() => handleExpandWorkout(workout.id)}
-                onAddExercise={() => setActiveWorkout(workout.id)}
               />
             ))
           ) : (

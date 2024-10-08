@@ -25,6 +25,12 @@ export interface Workout {
   exercises: Array<any>;
 }
 
+export interface WorkoutProps {
+  workout: Workout;
+  isExpanded: boolean;
+  onToggleExpand: (workoutId: number | string) => void;
+}
+
 export interface Program {
   id: string | null;
   name: string;
