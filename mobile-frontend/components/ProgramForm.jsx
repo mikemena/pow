@@ -10,8 +10,6 @@ import {
 import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../src/types/navigationTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { toUpperCase } from '../src/utils/stringUtils';
@@ -23,41 +21,10 @@ import {
   GOAL_TYPES
 } from '../src/utils/constants';
 
-interface ProgramFormProps {
-  program: Program;
-  isExpanded: boolean;
-  onToggleExpand: () => void;
-}
-
-type ProgramDetailsNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'ProgramDetails'
->;
-
-type Program = {
-  id: number | string;
-  name: string;
-  main_goal: string;
-  program_duration: number;
-  duration_unit: string;
-  days_per_week: number;
-  workouts: {
-    id: number | string;
-    name: string;
-    exercises: any[];
-    program_id: number | string;
-    order: number;
-  }[];
-};
-
-const ProgramForm: React.FC<ProgramFormProps> = ({
-  program,
-  isExpanded,
-  onToggleExpand
-}) => {
+const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
   const { updateProgramField, state } = useContext(ProgramContext);
   const { mode } = state;
-  const navigation = useNavigation<ProgramDetailsNavigationProp>();
+  const navigation = useNavigation();
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -92,14 +59,14 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
     }
   }, [program]);
 
-  const handleChange = (name: string, value: string | number) => {
+  const handleChange = (name, value) => {
     setFormValues(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
-  const handleBlur = (name: string, value: string | number) => {
+  const handleBlur = (name, value) => {
     updateProgramField(name, value);
   };
 
@@ -185,8 +152,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               options={GOAL_TYPES}
               selectedValue={formValues.main_goal}
               onValueChange={value => {
-                handleChange('main_goal', value as string);
-                handleBlur('main_goal', value as string);
+                handleChange('main_goal', value);
+                handleBlur('main_goal', value);
               }}
               label='Main Goal'
               placeholder='Main Goal'
@@ -222,8 +189,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
                 options={DURATION_TYPES}
                 selectedValue={formValues.duration_unit}
                 onValueChange={value => {
-                  handleChange('duration_unit', value as string);
-                  handleBlur('duration_unit', value as string);
+                  handleChange('duration_unit', value);
+                  handleBlur('duration_unit', value);
                 }}
                 label='Duration Unit'
                 placeholder='Duration Unit'
@@ -240,8 +207,8 @@ const ProgramForm: React.FC<ProgramFormProps> = ({
               options={DAYS_PER_WEEK}
               selectedValue={formValues.days_per_week}
               onValueChange={value => {
-                handleChange('days_per_week', value as number);
-                handleBlur('days_per_week', value as number);
+                handleChange('days_per_week', value);
+                handleBlur('days_per_week', value);
               }}
               label='Days Per Week'
               placeholder='Select days per week'

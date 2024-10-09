@@ -1,29 +1,10 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  StyleProp,
-  ViewStyle
-} from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { colors } from '../src/styles/globalStyles';
 
-interface PillButtonProps {
-  label: string;
-  icon: React.ReactNode;
-  onPress: () => void;
-  style?: StyleProp<ViewStyle>;
-}
-
-const PillButton: React.FC<PillButtonProps> = ({
-  label,
-  icon,
-  onPress,
-  style
-}) => {
+const PillButton = ({ label, icon, onPress, style }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 

@@ -12,35 +12,12 @@ import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
-import {
-  Workout,
-  Set,
-  Exercise as ExerciseType
-} from '../src/types/programTypes';
 
-interface ExerciseProps {
-  exercise: ExerciseType;
-  index: number;
-  workout: Workout;
-}
-
-interface UpdatedSetValue {
-  weight?: number | null;
-  reps?: number | null;
-}
-
-const Exercise: React.FC<ExerciseProps> = ({
-  exercise,
-  index,
-  workout: initialWorkout
-}) => {
+const Exercise = ({ exercise, index, workout: initialWorkout }) => {
   const { state, addSet, updateSet, removeSet, updateWorkout } =
     useContext(ProgramContext);
   const workouts = state.workout.workouts;
-  // console.log('workouts', workouts);
   const activeWorkout = state.workout.activeWorkout;
-  // console.log('activeWorkout', activeWorkout);
-  // console.log('initialWorkout', initialWorkout);
 
   const { mode } = state;
   const { state: themeState } = useTheme();
@@ -68,7 +45,9 @@ const Exercise: React.FC<ExerciseProps> = ({
     workout?.exercises || []
   );
 
-  const handleAddSet = (exercise: ExerciseType) => {
+  const handleAddSet = (event, exercise) => {
+    event.stopPropagation();
+    console.log('Add set button clicked', event.target, event.currentTarget);
     const exerciseId = exercise.id;
 
     if (!workout || !workout.id) {
@@ -80,7 +59,7 @@ const Exercise: React.FC<ExerciseProps> = ({
     addSet(workout.id, exerciseId);
 
     // Update local state
-    setLocalExercises((prevExercises: ExerciseType[]) =>
+    setLocalExercises(prevExercises =>
       prevExercises.map(ex =>
         ex.catalog_exercise_id === exercise.catalog_exercise_id
           ? {
@@ -100,12 +79,8 @@ const Exercise: React.FC<ExerciseProps> = ({
     );
   };
 
-  const handleUpdateSetLocally = (
-    updatedValue: UpdatedSetValue,
-    exerciseId: number | string,
-    setId: number | string
-  ) => {
-    setLocalExercises((prevExercises: ExerciseType[]) =>
+  const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
+    setLocalExercises(prevExercises =>
       prevExercises.map(exercise =>
         exercise.catalog_exercise_id === exerciseId
           ? {
@@ -119,20 +94,16 @@ const Exercise: React.FC<ExerciseProps> = ({
     );
   };
 
-  const handleUpdateSetOnBlur = (exerciseId: number | string, set: Set) => {
+  const handleUpdateSetOnBlur = (exerciseId, set) => {
     updateSet(workout.id, exerciseId, set);
     // Update context with the latest local exercise data
     updateWorkout({ ...workout, exercises: localExercises });
   };
 
-  const handleRemoveSet = (
-    workoutId: number | string,
-    exerciseId: number | string,
-    setId: number | string
-  ) => {
+  const handleRemoveSet = (workoutId, exerciseId, setId) => {
     if (mode === 'edit') {
-      setLocalExercises((prevExercises: ExerciseType[]) =>
-        prevExercises.map((exercise: ExerciseType) =>
+      setLocalExercises(prevExercises =>
+        prevExercises.map(exercise =>
           exercise.catalog_exercise_id === exerciseId
             ? {
                 ...exercise,
@@ -143,7 +114,7 @@ const Exercise: React.FC<ExerciseProps> = ({
       );
 
       // Update the context state after local state change
-      const updatedExercises = localExercises.map((exercise: ExerciseType) =>
+      const updatedExercises = localExercises.map(exercise =>
         exercise.catalog_exercise_id === exerciseId
           ? {
               ...exercise,
@@ -163,17 +134,14 @@ const Exercise: React.FC<ExerciseProps> = ({
     }
   };
 
-  const findLocalSet = (
-    exerciseId: number | string,
-    setId: number | string
-  ) => {
+  const findLocalSet = (exerciseId, setId) => {
     const exercise = localExercises.find(
       e => e.catalog_exercise_id === exerciseId
     );
     return exercise?.sets.find(s => s.id === setId);
   };
 
-  const renderSetInputs = (set: Set, setIndex: number) => {
+  const renderSetInputs = (set, setIndex) => {
     const localSet = findLocalSet(exercise.catalog_exercise_id, set.id);
     if (mode === 'view') {
       return (
@@ -207,6 +175,7 @@ const Exercise: React.FC<ExerciseProps> = ({
             value={mode === 'edit' ? localSet?.weight?.toString() ?? '' : ''}
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
+            onTouchStart={event => event.stopPropagation()}
             onChangeText={text =>
               handleUpdateSetLocally(
                 { weight: text ? parseInt(text, 10) : null },
@@ -230,6 +199,7 @@ const Exercise: React.FC<ExerciseProps> = ({
             value={mode === 'edit' ? localSet?.reps?.toString() ?? '' : ''}
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
+            onTouchStart={event => event.stopPropagation()}
             onChangeText={text =>
               handleUpdateSetLocally(
                 { reps: text ? parseInt(text, 10) : null },
@@ -269,6 +239,11 @@ const Exercise: React.FC<ExerciseProps> = ({
 
   return (
     <View
+      onStartShouldSetResponder={() => true}
+      onResponderRelease={event => event.stopPropagation()}
+      onTouchStart={event => {
+        console.log('Exercise component touched');
+      }}
       style={[
         styles.exerciseContainer,
         { backgroundColor: themedStyles.secondaryBackgroundColor }
@@ -310,7 +285,11 @@ const Exercise: React.FC<ExerciseProps> = ({
       {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
       {mode !== 'view' && (
         <TouchableOpacity
-          onPress={() => handleAddSet(exercise)}
+          onPress={event => {
+            event.stopPropagation();
+            console.log('Button pressed');
+            handleAddSet(event, exercise);
+          }}
           style={[
             { backgroundColor: themedStyles.primaryBackgroundColor },
             globalStyles.iconCircle,

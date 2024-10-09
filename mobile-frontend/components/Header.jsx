@@ -4,11 +4,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { colors } from '../src/styles/globalStyles';
 
-interface HeaderProps {
-  pageName: string;
-}
-
-const Header: React.FC<HeaderProps> = ({ pageName }) => {
+const Header = ({ pageName }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 

@@ -21,11 +21,6 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Exercise from './Exercise';
-import {
-  Workout as WorkoutType,
-  WorkoutProps,
-  Exercise as ExerciseType
-} from '../src/types/programTypes';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -34,11 +29,7 @@ import { ProgramContext } from '../src/context/programContext';
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
-const Workout: React.FC<WorkoutProps> = ({
-  workout: initialWorkout,
-  isExpanded,
-  onToggleExpand
-}) => {
+const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   const {
     state,
     setActiveWorkout,
@@ -68,7 +59,7 @@ const Workout: React.FC<WorkoutProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(workout.name);
   const [localExercises, setLocalExercises] = useState(workout.exercises);
-  const inputRef = useRef<TextInput>(null);
+  const inputRef = useRef(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
@@ -96,8 +87,8 @@ const Workout: React.FC<WorkoutProps> = ({
 
   const fadeOutDeleteText = () => {
     Animated.timing(deleteAnim, {
-      toValue: 0, // Fade out to zero opacity
-      duration: 100, // Adjust duration for how fast you want the text to fade out
+      toValue: 0,
+      duration: 100,
       useNativeDriver: false
     }).start();
   };
@@ -110,7 +101,6 @@ const Workout: React.FC<WorkoutProps> = ({
         gestureState
       );
 
-      // Update deleteAnim based on pan position
       if (gestureState.dx < -width * 0.3) {
         deleteAnim.setValue(
           Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
@@ -212,7 +202,7 @@ const Workout: React.FC<WorkoutProps> = ({
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
     }));
     navigation.navigate('ExerciseSelection', {
-      isNewProgram: true, // or false
+      isNewProgram: true,
       programId: 'your-program-id'
     });
   };
@@ -234,7 +224,6 @@ const Workout: React.FC<WorkoutProps> = ({
 
   const handleUpdateSetOnBlur = (exerciseId, set) => {
     updateSet(workout.id, exerciseId, set);
-    // Update context with the latest local exercise data
     updateWorkout({ ...workout, exercises: localExercises });
   };
 
@@ -255,7 +244,6 @@ const Workout: React.FC<WorkoutProps> = ({
         )
       );
 
-      // Update the context state after local state change
       const updatedExercises = localExercises.map(ex =>
         ex.catalog_exercise_id === exerciseId
           ? {
@@ -278,7 +266,7 @@ const Workout: React.FC<WorkoutProps> = ({
 
   const workoutExercises = localExercises;
 
-  const getExerciseCountText = useCallback((count: number) => {
+  const getExerciseCountText = useCallback(count => {
     if (count === 0) return 'NO EXERCISES';
     if (count === 1) return '1 EXERCISE';
     return `${count} EXERCISES`;

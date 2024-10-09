@@ -1,3 +1,55 @@
+import { Dispatch } from 'react';
+
+export interface ProgramContextType {
+  state: {
+    program: Program;
+    workout: {
+      workouts: Workout[];
+      activeWorkout: string | null;
+    };
+    mode: 'view' | 'edit' | 'create';
+  };
+  dispatch: Dispatch<any>;
+  setMode: (mode: 'view' | 'edit' | 'create') => void;
+  updateProgramField: (field: keyof Program, value: any) => void;
+  initializeNewProgramState: () => void;
+  initializeEditProgramState: (program: Program, workouts: Workout[]) => void;
+  addProgram: (details: Partial<Program>) => void;
+  updateProgram: (updatedProgram: Program) => Promise<void>;
+  deleteProgram: (programId: number | string) => Promise<void>;
+  addWorkout: () => void;
+  updateWorkoutField: (field: keyof Workout, value: any) => void;
+  updateWorkout: (updatedWorkout: Workout) => void;
+  deleteWorkout: (workoutId: number | string) => void;
+  setActiveWorkout: (workoutId: number | string) => void;
+  addExercise: (workoutId: number | string, exercises: Exercise[]) => void;
+  updateExercise: (
+    workoutId: number | string,
+    updatedExercises: Exercise[]
+  ) => void;
+  toggleExerciseSelection: (
+    exerciseId: number | string,
+    exerciseData: Exercise
+  ) => void;
+  removeExercise: (
+    workoutId: number | string,
+    exerciseId: number | string
+  ) => void;
+  addSet: (workoutId: number | string, exerciseId: number | string) => void;
+  updateSet: (
+    workoutId: number | string,
+    exerciseId: number | string,
+    updatedSet: Set
+  ) => void;
+  removeSet: (
+    workoutId: number | string,
+    exerciseId: number | string,
+    setId: number | string
+  ) => void;
+  saveProgram: () => Promise<void>;
+  clearProgram: () => void;
+}
+
 export interface Set {
   id: number;
   exercise_id: number;

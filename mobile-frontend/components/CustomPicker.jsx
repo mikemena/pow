@@ -11,20 +11,7 @@ import {
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
-interface PickerOption {
-  label: string;
-  value: string | number;
-}
-
-interface CustomPickerProps {
-  options: PickerOption[];
-  selectedValue: string | number;
-  onValueChange: (value: string | number) => void;
-  label: string;
-  placeholder?: string;
-}
-
-const CustomPicker: React.FC<CustomPickerProps> = ({
+const CustomPicker = ({
   options,
   selectedValue,
   onValueChange,
@@ -120,7 +107,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 8
   },
-
   modalOverlay: {
     flex: 1,
     justifyContent: 'center',

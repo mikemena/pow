@@ -14,57 +14,21 @@ import {
   Image,
   StyleSheet
 } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RouteProp } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
-import PillButton from '../components/PillButton';
-import Filter from '../components/Filter';
+import PillButton from './PillButton';
+import Filter from './Filter';
 
-// Update this type to include all your screens
-
-interface Exercise {
-  id: string;
-  name: string;
-  muscle: string;
-  equipment: string;
-  file_url: string;
-}
-
-interface FilterOption {
-  key: string;
-  label: string;
-  type: 'text' | 'picker';
-  options?: Array<{ label: string; value: string }>;
-}
-
-type RootStackParamList = {
-  ExerciseSelection: {
-    isNewProgram: boolean;
-    programId: string;
-  };
-  CreateProgram: undefined;
-  EditProgram: { programId: string };
-};
-
-type ExerciseSelectionProps = {
-  navigation: StackNavigationProp<RootStackParamList, 'ExerciseSelection'>;
-  route: RouteProp<RootStackParamList, 'ExerciseSelection'>;
-};
-
-const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
-  navigation,
-  route
-}) => {
+const ExerciseSelection = ({ navigation, route }) => {
   const { addExercise, state, dispatch } = useContext(ProgramContext);
   const { isNewProgram, programId } = route.params;
 
-  const [exercises, setExercises] = useState<Exercise[]>([]);
-  const [filteredExercises, setFilteredExercises] = useState<Exercise[]>([]);
-  const [selectedExercises, setSelectedExercises] = useState<Exercise[]>([]);
+  const [exercises, setExercises] = useState([]);
+  const [filteredExercises, setFilteredExercises] = useState([]);
+  const [selectedExercises, setSelectedExercises] = useState([]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [filterValues, setFilterValues] = useState({
     exerciseName: '',
@@ -106,7 +70,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     }
   };
 
-  const filterOptions: FilterOption[] = useMemo(
+  const filterOptions = useMemo(
     () => [
       { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
       {
@@ -153,7 +117,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     filterExercises();
   }, [filterExercises]);
 
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = (key, value) => {
     setFilterValues(prev => ({ ...prev, [key]: value }));
   };
 
@@ -167,7 +131,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
 
   const getTotalMatches = () => filteredExercises.length;
 
-  const toggleExerciseSelection = (exercise: Exercise) => {
+  const toggleExerciseSelection = exercise => {
     setSelectedExercises(prev =>
       prev.some(e => e.id === exercise.id)
         ? prev.filter(e => e.id !== exercise.id)
@@ -194,7 +158,7 @@ const ExerciseSelection: React.FC<ExerciseSelectionProps> = ({
     }
   };
 
-  const renderExerciseItem = ({ item }: { item: Exercise }) => (
+  const renderExerciseItem = ({ item }) => (
     <TouchableOpacity
       style={[
         styles.exerciseItem,
@@ -329,7 +293,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     alignItems: 'flex-start'
   },
-
   exerciseList: { flex: 1 },
   exerciseItem: {
     flexDirection: 'row',

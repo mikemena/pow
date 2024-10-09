@@ -1,17 +1,10 @@
-import React, { createContext, useReducer, useEffect, ReactNode } from 'react';
+import React, { createContext, useReducer, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { themeReducer, initialState } from '../reducers/themeReducer';
-import { ThemeContextType } from '../types/theme';
 
-export const ThemeContext = createContext<ThemeContextType | undefined>(
-  undefined
-);
+export const ThemeContext = createContext(undefined);
 
-interface ThemeProviderProps {
-  children: ReactNode;
-}
-
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+export const ThemeProvider = ({ children }) => {
   const [state, dispatch] = useReducer(themeReducer, initialState);
 
   useEffect(() => {
@@ -22,7 +15,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         if (savedTheme)
           dispatch({
             type: 'SET_THEME',
-            payload: savedTheme as 'light' | 'dark'
+            payload: savedTheme
           });
         if (savedAccentColor)
           dispatch({ type: 'SET_ACCENT_COLOR', payload: savedAccentColor });

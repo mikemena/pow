@@ -1,41 +1,34 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
+  Text,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
-  Text,
   View,
   ScrollView
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { ProgramContext } from '../src/context/programContext';
 import ProgramForm from '../components/ProgramForm';
 import Workout from '../components/Workout';
-import PillButton from '../components/PillButton';
-import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import { RootStackParamList } from '../src/types/navigationTypes';
 import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
 
-type CreateProgramNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'CreateProgram'
->;
-
-const CreateProgram: React.FC = () => {
-  const navigation = useNavigation<CreateProgramNavigationProp>();
+const EditProgram = () => {
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { program: initialProgram } = route.params;
   const {
     state,
-    initializeNewProgramState,
+    initializeEditProgramState,
     setMode,
-    saveProgram,
-    clearProgram,
+    updateProgram,
     addWorkout,
-    setActiveWorkout
+    setActiveWorkout,
+    clearProgram
   } = useContext(ProgramContext);
 
   const program = state.program;
@@ -55,19 +48,52 @@ const CreateProgram: React.FC = () => {
   );
 
   useEffect(() => {
-    setMode('create');
-    if (!state.program || !state.workout.workouts.length) {
-      initializeNewProgramState();
+    console.log('EditProgram useEffect - Initial state:', state);
+    setMode('edit');
+    if (
+      !state.program ||
+      !state.workout ||
+      !state.workout.workouts ||
+      state.workout.workouts.length === 0
+    ) {
+      const programToEdit = route.params.program;
+      initializeEditProgramState(programToEdit, programToEdit.workouts);
     }
   }, []);
+
+  useEffect(() => {
+    console.log('State updated:', state);
+  }, [state]);
 
   useEffect(() => {
     initializeExpanded(workouts);
   }, [workouts]);
 
-  const handleSaveProgram = async () => {
+  const handleUpdateProgram = async () => {
     try {
-      await saveProgram(state.program);
+      const updatedProgram = {
+        ...program,
+        workouts: workouts.map(workout => {
+          const updatedWorkout = workouts[workout.id];
+          return updatedWorkout
+            ? {
+                ...updatedWorkout,
+                exercises: updatedWorkout.exercises.map(exercise => ({
+                  ...exercise,
+                  sets: exercise.sets.map(set => ({
+                    ...set,
+                    weight: parseInt(set.weight, 10) || 0,
+                    reps: parseInt(set.reps, 10) || 0,
+                    order: parseInt(set.order, 10) || 0
+                  }))
+                }))
+              }
+            : workout;
+        })
+      };
+
+      await updateProgram(updatedProgram);
+
       navigation.goBack();
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -102,6 +128,20 @@ const CreateProgram: React.FC = () => {
     [toggleWorkout, setActiveWorkout]
   );
 
+  if (!state.program) {
+    return (
+      <SafeAreaView
+        style={[
+          globalStyles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='Edit Program' />
+        <Text style={{ color: themedStyles.textColor }}>Loading...</Text>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView
       style={[
@@ -109,8 +149,13 @@ const CreateProgram: React.FC = () => {
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
-      <Header pageName='Create Program' />
+      <Header pageName='Edit Program' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <TouchableOpacity
+          onPress={handleToggleProgramForm}
+          style={styles.toggleButton}
+        ></TouchableOpacity>
+
         <View style={styles.formContainer}>
           <ProgramForm
             program={program}
@@ -119,7 +164,6 @@ const CreateProgram: React.FC = () => {
           />
         </View>
 
-        {/* Workouts section */}
         <View style={styles.workoutsContainer}>
           {workouts && workouts.length > 0 ? (
             workouts.map(workout => (
@@ -136,62 +180,6 @@ const CreateProgram: React.FC = () => {
             </Text>
           )}
         </View>
-
-        {/* Add Workout button */}
-        <PillButton
-          label='Add Workout'
-          icon={
-            <Ionicons
-              name='add-outline'
-              size={16}
-              style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
-              }}
-            />
-          }
-          onPress={handleAddWorkout}
-        />
-
-        {/* Save and Cancel buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.saveButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleSaveProgram}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              SAVE
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.cancelButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleCancel}
-          >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              CANCEL
-            </Text>
-          </TouchableOpacity>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -205,11 +193,10 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 5
   },
-
+  formContainer: { borderRadius: 8 },
   workoutsContainer: {
     marginBottom: 10
   },
-
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -220,7 +207,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 4,
     alignItems: 'center',
-    marginBottom: 10
+    marginBottom: 16
   },
   addButtonText: {
     color: 'white',
@@ -236,4 +223,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default CreateProgram;
+export default EditProgram;

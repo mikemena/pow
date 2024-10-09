@@ -1,33 +1,16 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
-import { BottomTabDescriptorMap } from '@react-navigation/bottom-tabs/lib/typescript/src/types';
-import { EdgeInsets } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
-type NavigationItemProps = {
-  name: string;
-  icon: React.ReactNode;
-  isActive: boolean;
-  onPress: () => void;
-  accentColor: string;
-};
-
-const NavigationItem: React.FC<NavigationItemProps> = ({
-  name,
-  icon,
-  isActive,
-  onPress,
-  accentColor
-}) => {
+const NavigationItem = ({ name, icon, isActive, onPress, accentColor }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
   return (
     <TouchableOpacity style={styles.navItem} onPress={onPress}>
-      {React.cloneElement(icon as React.ReactElement, {
+      {React.cloneElement(icon, {
         style: [
           styles.navIcon,
           { color: themedStyles.textColor },
@@ -47,25 +30,14 @@ const NavigationItem: React.FC<NavigationItemProps> = ({
   );
 };
 
-type NavigationProps = {
-  state: TabNavigationState<ParamListBase>;
-  descriptors: BottomTabDescriptorMap;
-  navigation: any;
-  insets: EdgeInsets;
-};
-
-const Navigation: React.FC<NavigationProps> = ({
-  state,
-  descriptors,
-  navigation
-}) => {
+const Navigation = ({ state, descriptors, navigation }) => {
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
 
-  const getIcon = (routeName: string) => {
+  const getIcon = routeName => {
     switch (routeName) {
       case 'Programs':
         return <Ionicons name='clipboard-outline' />;

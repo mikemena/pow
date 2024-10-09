@@ -1,48 +1,34 @@
 import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
-  Text,
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Text,
   View,
   ScrollView
 } from 'react-native';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ProgramContext } from '../src/context/programContext';
+import { useNavigation } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import ProgramForm from '../components/ProgramForm';
 import Workout from '../components/Workout';
-import { RootStackParamList } from '../src/types/navigationTypes';
+import PillButton from '../components/PillButton';
+import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
-import { ThemedStyles } from '../src/types/theme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles } from '../src/styles/globalStyles';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
-import {
-  Workout as WorkoutType,
-  Exercise as ExerciseType,
-  Set as SetType
-} from '../src/types/programTypes';
 
-type EditProgramRouteProp = RouteProp<RootStackParamList, 'EditProgram'>;
-type EditProgramNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'EditProgram'
->;
-
-const EditProgram: React.FC = () => {
-  const navigation = useNavigation<EditProgramNavigationProp>();
-  const route = useRoute<EditProgramRouteProp>();
-  const { program: initialProgram } = route.params;
+const CreateProgram = () => {
+  const navigation = useNavigation();
   const {
     state,
-    initializeEditProgramState,
+    initializeNewProgramState,
     setMode,
-    updateProgram,
+    saveProgram,
+    clearProgram,
     addWorkout,
-    setActiveWorkout,
-    clearProgram
+    setActiveWorkout
   } = useContext(ProgramContext);
 
   const program = state.program;
@@ -56,61 +42,25 @@ const EditProgram: React.FC = () => {
   } = useExpandedWorkouts();
 
   const { state: themeState } = useTheme();
-  const themedStyles: ThemedStyles = getThemedStyles(
+  const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
 
   useEffect(() => {
-    console.log('EditProgram useEffect - Initial state:', state);
-    setMode('edit');
-    if (
-      !state.program ||
-      !state.workout ||
-      !state.workout.workouts ||
-      state.workout.workouts.length === 0
-    ) {
-      const programToEdit = route.params.program;
-      initializeEditProgramState(programToEdit, programToEdit.workouts);
+    setMode('create');
+    if (!state.program || !state.workout.workouts.length) {
+      initializeNewProgramState();
     }
   }, []);
-
-  // Add another useEffect to log state changes
-  useEffect(() => {
-    console.log('State updated:', state);
-  }, [state]);
 
   useEffect(() => {
     initializeExpanded(workouts);
   }, [workouts]);
 
-  const handleUpdateProgram = async () => {
+  const handleSaveProgram = async () => {
     try {
-      const updatedProgram = {
-        ...program,
-        workouts: workouts.map((workout: WorkoutType) => {
-          const updatedWorkout = workouts[workout.id];
-          return updatedWorkout
-            ? {
-                ...updatedWorkout,
-                exercises: updatedWorkout.exercises.map(
-                  (exercise: ExerciseType) => ({
-                    ...exercise,
-                    sets: exercise.sets.map((set: SetType) => ({
-                      ...set,
-                      weight: parseInt(set.weight, 10) || 0,
-                      reps: parseInt(set.reps, 10) || 0,
-                      order: parseInt(set.order, 10) || 0
-                    }))
-                  })
-                )
-              }
-            : workout;
-        })
-      };
-
-      await updateProgram(updatedProgram);
-
+      await saveProgram(state.program);
       navigation.goBack();
     } catch (error) {
       console.error('Failed to save the program:', error);
@@ -137,27 +87,20 @@ const EditProgram: React.FC = () => {
   };
 
   const handleExpandWorkout = useCallback(
-    workoutId => {
+    (workoutId, event) => {
+      if (event) {
+        console.log(
+          'Expand workout triggered from CreateProgram',
+          event.target,
+          event.currentTarget
+        );
+      }
       toggleWorkout(workoutId);
       setActiveWorkout(workoutId);
       setIsProgramFormExpanded(false);
     },
     [toggleWorkout, setActiveWorkout]
   );
-
-  if (!state.program) {
-    return (
-      <SafeAreaView
-        style={[
-          globalStyles.container,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-      >
-        <Header pageName='Edit Program' />
-        <Text style={{ color: themedStyles.textColor }}>Loading...</Text>
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView
@@ -166,13 +109,8 @@ const EditProgram: React.FC = () => {
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
-      <Header pageName='Edit Program' />
+      <Header pageName='Create Program' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <TouchableOpacity
-          onPress={handleToggleProgramForm}
-          style={styles.toggleButton}
-        ></TouchableOpacity>
-
         <View style={styles.formContainer}>
           <ProgramForm
             program={program}
@@ -181,14 +119,14 @@ const EditProgram: React.FC = () => {
           />
         </View>
 
+        {/* Workouts section */}
         <View style={styles.workoutsContainer}>
-          {/* Workouts section */}
           {workouts && workouts.length > 0 ? (
-            workouts.map((workout: WorkoutType) => (
+            workouts.map(workout => (
               <Workout
                 key={workout.id}
                 workout={workout}
-                isExpanded={expandedWorkouts[workout.id] || false}
+                isExpanded={expandedWorkouts[workout.id]}
                 onToggleExpand={() => handleExpandWorkout(workout.id)}
               />
             ))
@@ -197,6 +135,62 @@ const EditProgram: React.FC = () => {
               No workouts available
             </Text>
           )}
+        </View>
+
+        {/* Add Workout button */}
+        <PillButton
+          label='Add Workout'
+          icon={
+            <Ionicons
+              name='add-outline'
+              size={16}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
+          }
+          onPress={handleAddWorkout}
+        />
+
+        {/* Save and Cancel buttons */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              styles.saveButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            onPress={handleSaveProgram}
+          >
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              SAVE
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              styles.cancelButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            onPress={handleCancel}
+          >
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              CANCEL
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -211,7 +205,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 5
   },
-  formContainer: { borderRadius: 8 },
   workoutsContainer: {
     marginBottom: 10
   },
@@ -225,7 +218,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 4,
     alignItems: 'center',
-    marginBottom: 16
+    marginBottom: 10
   },
   addButtonText: {
     color: 'white',
@@ -241,4 +234,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default EditProgram;
+export default CreateProgram;

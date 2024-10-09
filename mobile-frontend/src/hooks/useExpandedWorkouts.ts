@@ -21,23 +21,34 @@ const useExpandedWorkouts = (
     {}
   );
 
-  const toggleWorkout = useCallback((workoutId: string | number) => {
-    setExpandedWorkouts(prevState => {
-      // Collapse all workouts
-      const newState: ExpandedWorkouts = Object.keys(prevState).reduce(
-        (acc, key) => {
-          acc[key] = false;
-          return acc;
-        },
-        {} as ExpandedWorkouts
-      );
+  const toggleWorkout = useCallback(
+    (workoutId: string | number, event?: any) => {
+      if (event) {
+        console.log(
+          'Toggle workout triggered',
+          event.target,
+          event.currentTarget
+        );
+      }
 
-      // Expand the clicked workout if it wasn't already expanded
-      newState[workoutId] = !prevState[workoutId];
+      setExpandedWorkouts(prevState => {
+        // Collapse all workouts
+        const newState: ExpandedWorkouts = Object.keys(prevState).reduce(
+          (acc, key) => {
+            acc[key] = false;
+            return acc;
+          },
+          {} as ExpandedWorkouts
+        );
 
-      return newState;
-    });
-  }, []);
+        // Expand the clicked workout if it wasn't already expanded
+        newState[workoutId] = !prevState[workoutId];
+
+        return newState;
+      });
+    },
+    []
+  );
 
   const collapseAllWorkouts = useCallback(() => {
     setExpandedWorkouts({});

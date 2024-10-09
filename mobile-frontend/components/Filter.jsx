@@ -7,28 +7,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { colors } from '../src/styles/globalStyles';
 
-interface FilterOption {
-  key: string;
-  label: string;
-  type: 'text' | 'picker';
-  options?: Array<{ label: string; value: string }>;
-}
-
-interface FilterValues {
-  [key: string]: string;
-}
-
-interface FilterProps {
-  isVisible: boolean;
-  onClose: () => void;
-  filterOptions: FilterOption[];
-  filterValues: FilterValues;
-  onFilterChange: (key: string, value: string) => void;
-  onClearFilters: () => void;
-  getTotalMatches: (filters: FilterValues) => number;
-}
-
-const Filter: React.FC<FilterProps> = ({
+const Filter = ({
   isVisible,
   onClose,
   filterOptions,
