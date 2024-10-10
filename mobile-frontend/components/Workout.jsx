@@ -35,7 +35,6 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     setActiveWorkout,
     updateWorkoutField,
     deleteWorkout,
-    updateExercise,
     removeExercise,
     updateWorkout,
     addSet,
@@ -356,20 +355,26 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={handleWorkoutExpand}
-                style={[
-                  globalStyles.iconCircle,
-                  { backgroundColor: themedStyles.primaryBackgroundColor }
-                ]}
-              >
-                <Ionicons
-                  name={
-                    isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
-                  }
-                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
-                />
-              </TouchableOpacity>
+
+              {sortedExercises.length > 0 && (
+                <TouchableOpacity
+                  onPress={handleWorkoutExpand}
+                  style={[
+                    globalStyles.iconCircle,
+                    { backgroundColor: themedStyles.primaryBackgroundColor }
+                  ]}
+                >
+                  <Ionicons
+                    name={
+                      isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
+                    }
+                    style={[
+                      globalStyles.icon,
+                      { color: themedStyles.textColor }
+                    ]}
+                  />
+                </TouchableOpacity>
+              )}
             </View>
           </TouchableOpacity>
           {isExpanded && (
