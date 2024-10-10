@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,35 +9,30 @@ import {
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
-import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import Workout from '../components/Workout';
+import useExpandedItems from '../src/hooks/useExpandedItems';
 
 const ProgramDetails = () => {
-  const { setMode, setActiveWorkout } = useContext(ProgramContext);
+  const { setMode, state } = useContext(ProgramContext);
   const navigation = useNavigation();
   const route = useRoute();
-  const { expandedWorkouts, toggleWorkout, initializeExpanded } =
-    useExpandedWorkouts();
+  const workouts = state.workout.workouts;
+  const { toggleItem, isItemExpanded } = useExpandedItems(workouts);
   const { program } = route.params;
-  const { state } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
 
   useEffect(() => {
     setMode('view');
   }, []);
-
-  const handleExpandWorkout = useCallback(
-    workoutId => {
-      toggleWorkout(workoutId);
-      setActiveWorkout(workoutId);
-    },
-    [toggleWorkout, setActiveWorkout]
-  );
 
   const handleEditProgram = () => {
     navigation.navigate('EditProgram', { program });
@@ -55,8 +50,8 @@ const ProgramDetails = () => {
       <Workout
         key={workout.id}
         workout={workout}
-        isExpanded={expandedWorkouts[workout.id] || false}
-        onToggleExpand={() => handleExpandWorkout(workout.id)}
+        isExpanded={isItemExpanded(workout.id)}
+        onToggleExpand={() => toggleItem(workout.id)}
       />
     </View>
   );

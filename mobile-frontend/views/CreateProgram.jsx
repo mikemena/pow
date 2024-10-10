@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -17,7 +17,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
+import useExpandedItems from '../src/hooks/useExpandedItems';
 
 const CreateProgram = () => {
   const navigation = useNavigation();
@@ -27,19 +27,17 @@ const CreateProgram = () => {
     setMode,
     saveProgram,
     clearProgram,
-    addWorkout,
-    setActiveWorkout
+    addWorkout
   } = useContext(ProgramContext);
 
   const program = state.program;
   const workouts = state.workout.workouts;
-  const [isProgramFormExpanded, setIsProgramFormExpanded] = useState(true);
   const {
-    expandedWorkouts,
-    toggleWorkout,
-    initializeExpanded,
-    collapseAllWorkouts
-  } = useExpandedWorkouts();
+    isProgramFormExpanded,
+    toggleItem,
+    toggleProgramForm,
+    isItemExpanded
+  } = useExpandedItems(workouts);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -53,10 +51,6 @@ const CreateProgram = () => {
       initializeNewProgramState();
     }
   }, []);
-
-  useEffect(() => {
-    initializeExpanded(workouts);
-  }, [workouts]);
 
   const handleSaveProgram = async () => {
     try {
@@ -72,35 +66,10 @@ const CreateProgram = () => {
     addWorkout(program.id);
   };
 
-  const handleToggleProgramForm = () => {
-    setIsProgramFormExpanded(prev => {
-      if (!prev) {
-        collapseAllWorkouts();
-      }
-      return !prev;
-    });
-  };
-
   const handleCancel = () => {
     clearProgram();
     navigation.goBack();
   };
-
-  const handleExpandWorkout = useCallback(
-    (workoutId, event) => {
-      if (event) {
-        console.log(
-          'Expand workout triggered from CreateProgram',
-          event.target,
-          event.currentTarget
-        );
-      }
-      toggleWorkout(workoutId);
-      setActiveWorkout(workoutId);
-      setIsProgramFormExpanded(false);
-    },
-    [toggleWorkout, setActiveWorkout]
-  );
 
   return (
     <SafeAreaView
@@ -115,7 +84,7 @@ const CreateProgram = () => {
           <ProgramForm
             program={program}
             isExpanded={isProgramFormExpanded}
-            onToggleExpand={handleToggleProgramForm}
+            onToggleExpand={toggleProgramForm}
           />
         </View>
 
@@ -126,8 +95,8 @@ const CreateProgram = () => {
               <Workout
                 key={workout.id}
                 workout={workout}
-                isExpanded={expandedWorkouts[workout.id]}
-                onToggleExpand={() => handleExpandWorkout(workout.id)}
+                isExpanded={isItemExpanded(workout.id)}
+                onToggleExpand={() => toggleItem(workout.id)}
               />
             ))
           ) : (

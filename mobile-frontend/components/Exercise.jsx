@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
 import {
   View,
   Text,
@@ -13,7 +13,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const Exercise = ({ exercise, index, workout: initialWorkout }) => {
+const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
   const { state, addSet, updateSet, removeSet, updateWorkout } =
     useContext(ProgramContext);
   const workouts = state.workout.workouts;
@@ -305,7 +305,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
       )}
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   exerciseContainer: {

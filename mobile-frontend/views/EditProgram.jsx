@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useCallback } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   Text,
   StyleSheet,
@@ -15,7 +15,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
-import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
+import useExpandedItems from '../src/hooks/useExpandedItems';
 
 const EditProgram = () => {
   const navigation = useNavigation();
@@ -27,19 +27,17 @@ const EditProgram = () => {
     setMode,
     updateProgram,
     addWorkout,
-    setActiveWorkout,
     clearProgram
   } = useContext(ProgramContext);
 
   const program = state.program;
   const workouts = state.workout.workouts;
-  const [isProgramFormExpanded, setIsProgramFormExpanded] = useState(true);
   const {
-    expandedWorkouts,
-    toggleWorkout,
-    initializeExpanded,
-    collapseAllWorkouts
-  } = useExpandedWorkouts();
+    isProgramFormExpanded,
+    toggleItem,
+    toggleProgramForm,
+    isItemExpanded
+  } = useExpandedItems(workouts);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -60,14 +58,6 @@ const EditProgram = () => {
       initializeEditProgramState(programToEdit, programToEdit.workouts);
     }
   }, []);
-
-  useEffect(() => {
-    console.log('State updated:', state);
-  }, [state]);
-
-  useEffect(() => {
-    initializeExpanded(workouts);
-  }, [workouts]);
 
   const handleUpdateProgram = async () => {
     try {
@@ -105,28 +95,10 @@ const EditProgram = () => {
     addWorkout(program.id);
   };
 
-  const handleToggleProgramForm = () => {
-    setIsProgramFormExpanded(prev => {
-      if (!prev) {
-        collapseAllWorkouts();
-      }
-      return !prev;
-    });
-  };
-
   const handleCancel = () => {
     clearProgram();
     navigation.goBack();
   };
-
-  const handleExpandWorkout = useCallback(
-    workoutId => {
-      toggleWorkout(workoutId);
-      setActiveWorkout(workoutId);
-      setIsProgramFormExpanded(false);
-    },
-    [toggleWorkout, setActiveWorkout]
-  );
 
   if (!state.program) {
     return (
@@ -160,7 +132,7 @@ const EditProgram = () => {
           <ProgramForm
             program={program}
             isExpanded={isProgramFormExpanded}
-            onToggleExpand={handleToggleProgramForm}
+            onToggleExpand={toggleProgramForm}
           />
         </View>
 
@@ -170,8 +142,8 @@ const EditProgram = () => {
               <Workout
                 key={workout.id}
                 workout={workout}
-                isExpanded={expandedWorkouts[workout.id] || false}
-                onToggleExpand={() => handleExpandWorkout(workout.id)}
+                isExpanded={isItemExpanded(workout.id)}
+                onToggleExpand={() => toggleItem(workout.id)}
               />
             ))
           ) : (
