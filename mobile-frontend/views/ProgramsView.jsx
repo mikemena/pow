@@ -12,16 +12,12 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Modal,
-  ListRenderItem
+  Modal
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../src/types/navigationTypes';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { ThemedStyles } from '../src/types/theme';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
@@ -29,52 +25,16 @@ import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
 import Filter from '../components/Filter';
 
-// Define types
-
-type ProgramsNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'ProgramsList'
->;
-
-interface Program {
-  id: number;
-  name: string;
-  main_goal: string;
-  program_duration: number;
-  duration_unit: string;
-  days_per_week: number;
-}
-
-interface ProgramList {
-  programs: Program[];
-  workouts: any[];
-}
-
-interface Filters {
-  [key: string]: string;
-}
-
-interface FilterOption {
-  key: string;
-  label: string;
-  type: 'text' | 'picker';
-  options?: Array<{ label: string; value: string }>;
-}
-
-interface FilterValues {
-  [key: string]: string;
-}
-
-const ProgramsView: React.FC = () => {
-  const navigation = useNavigation<ProgramsNavigationProp>();
+const ProgramsView = () => {
+  const navigation = useNavigation();
   const { state: contextState, fetchPrograms: contextFetchPrograms } =
     useContext(ProgramContext);
-  const [programList, setProgramList] = useState<ProgramList>({
+  const [programList, setProgramList] = useState({
     programs: [],
     workouts: []
   });
-  const [isFilterVisible, setIsFilterVisible] = useState<boolean>(false);
-  const [filters, setFilters] = useState<Filters>({
+  const [isFilterVisible, setIsFilterVisible] = useState(false);
+  const [filters, setFilters] = useState({
     programName: '',
     selectedGoal: '',
     durationType: '',
@@ -82,13 +42,12 @@ const ProgramsView: React.FC = () => {
   });
 
   const { state: themeState } = useTheme();
-  const themedStyles: ThemedStyles = getThemedStyles(
+  const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
 
   const fetchPrograms = useCallback(async () => {
-    // console.log(`${API_URL_MOBILE}/api/users/2/programs`);
     try {
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
       const data = await response.json();
@@ -112,7 +71,7 @@ const ProgramsView: React.FC = () => {
   );
 
   const getTotalMatches = useCallback(
-    (currentFilters: FilterValues): number => {
+    currentFilters => {
       return programList.programs.filter(program => {
         const matchesName =
           !currentFilters.programName ||
@@ -162,7 +121,7 @@ const ProgramsView: React.FC = () => {
     });
   }, [programList.programs, filters]);
 
-  const filterOptions: FilterOption[] = useMemo(
+  const filterOptions = useMemo(
     () => [
       { key: 'programName', label: 'Program Name', type: 'text' },
       {
@@ -208,7 +167,7 @@ const ProgramsView: React.FC = () => {
     [programList.programs]
   );
 
-  const handleFilterChange = (key: string, value: string) => {
+  const handleFilterChange = (key, value) => {
     setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
   };
 
@@ -225,14 +184,14 @@ const ProgramsView: React.FC = () => {
     navigation.navigate('CreateProgram');
   };
 
-  const formatDuration = (duration: number, unit: string): string => {
+  const formatDuration = (duration, unit) => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
     const formattedUnit =
       duration === 1 ? capitalizedUnit.slice(0, -1) : capitalizedUnit;
     return `${duration} ${formattedUnit}`;
   };
 
-  const renderProgramItem: ListRenderItem<Program> = ({ item }) => (
+  const renderProgramItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => navigation.navigate('ProgramDetails', { program: item })}
     >

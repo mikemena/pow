@@ -7,14 +7,8 @@ import {
   TouchableOpacity,
   SafeAreaView
 } from 'react-native';
-import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { RootStackParamList } from '../src/types/navigationTypes';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
-import {
-  Workout as WorkoutType,
-  WorkoutProps
-} from '../src/types/programTypes';
 import useExpandedWorkouts from '../src/hooks/useExpandedWorkouts';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
@@ -23,16 +17,10 @@ import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import Workout from '../components/Workout';
 
-type ProgramDetailsNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'ProgramDetails'
->;
-
-const ProgramDetails: React.FC = () => {
+const ProgramDetails = () => {
   const { setMode, setActiveWorkout } = useContext(ProgramContext);
-  const navigation = useNavigation<ProgramDetailsNavigationProp>();
-  const route = useRoute<RouteProp<RootStackParamList, 'ProgramDetails'>>();
-  // const [expandedWorkouts, setExpandedWorkouts] = useState({});
+  const navigation = useNavigation();
+  const route = useRoute();
   const { expandedWorkouts, toggleWorkout, initializeExpanded } =
     useExpandedWorkouts();
   const { program } = route.params;
@@ -55,14 +43,14 @@ const ProgramDetails: React.FC = () => {
     navigation.navigate('EditProgram', { program });
   };
 
-  const formatDuration = (duration: number, unit: string): string => {
+  const formatDuration = (duration, unit) => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
     const formattedUnit =
       duration === 1 ? capitalizedUnit.slice(0, -1) : capitalizedUnit;
     return `${duration} ${formattedUnit}`;
   };
 
-  const renderWorkout = (workout: WorkoutType) => (
+  const renderWorkout = workout => (
     <View key={workout.id} style={styles.workoutContainer}>
       <Workout
         key={workout.id}

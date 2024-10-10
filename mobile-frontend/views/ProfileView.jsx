@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { RouteProp } from '@react-navigation/native';
 import Header from '../components/Header';
 import {
   View,
@@ -15,29 +14,13 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-type RootStackParamList = {
-  Profile: {
-    initialUserName?: string;
-    initialEmail?: string;
-    initialDarkMode?: boolean;
-    initialAccentColor?: string;
-    onSave?: (data: any) => void;
-  };
-};
-
-type ProfileScreenRouteProp = RouteProp<RootStackParamList, 'Profile'>;
-
-interface ProfileViewProps {
-  route?: ProfileScreenRouteProp;
-}
-
-const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
+const ProfileView = ({ route }) => {
   const {
     initialUserName = '',
     initialEmail = '',
     initialDarkMode = false,
     initialAccentColor = '',
-    onSave = (data: any) => console.log('Saving profile data:', data)
+    onSave = data => console.log('Saving profile data:', data)
   } = route?.params || {};
 
   const [userName, setUserName] = useState(initialUserName);
@@ -63,16 +46,16 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
     setIsEditing(false);
   };
 
-  const handleDarkModeToggle = (value: boolean) => {
+  const handleDarkModeToggle = value => {
     setDarkMode(value);
     dispatch({ type: 'SET_THEME', payload: value ? 'dark' : 'light' });
   };
 
-  const handleAccentColorChange = (newColor: string) => {
+  const handleAccentColorChange = newColor => {
     dispatch({ type: 'SET_ACCENT_COLOR', payload: newColor });
   };
 
-  const handleSectionToggle = (section: 'profile' | 'settings') => {
+  const handleSectionToggle = section => {
     if (section === 'profile') {
       setIsProfileExpanded(!isProfileExpanded);
       setIsSettingsExpanded(false);
@@ -86,13 +69,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
     <SafeAreaView
       style={[
         styles.container,
-        // globalStyles.container,
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
       <Header pageName='Profile' />
 
-      {/* profile details section */}
       <View style={globalStyles.container}>
         <View
           style={[
@@ -100,10 +81,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
         >
-          <TouchableOpacity
-            // onPress={() => setIsProfileExpanded(!isProfileExpanded)}
-            onPress={() => handleSectionToggle('profile')}
-          >
+          <TouchableOpacity onPress={() => handleSectionToggle('profile')}>
             <View
               style={[
                 globalStyles.sectionHeader,
@@ -181,17 +159,13 @@ const ProfileView: React.FC<ProfileViewProps> = ({ route }) => {
           )}
         </View>
 
-        {/* settings section */}
         <View
           style={[
             globalStyles.section,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
         >
-          <TouchableOpacity
-            // onPress={() => setIsSettingsExpanded(!isSettingsExpanded)}
-            onPress={() => handleSectionToggle('settings')}
-          >
+          <TouchableOpacity onPress={() => handleSectionToggle('settings')}>
             <View
               style={[
                 globalStyles.sectionHeader,
@@ -389,7 +363,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-
   buttonRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

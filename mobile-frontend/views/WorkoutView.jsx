@@ -13,7 +13,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { useTheme } from '../src/hooks/useTheme';
 import { colors } from '../src/styles/globalStyles';
 
-const WorkoutView: React.FC = () => {
+const WorkoutView = () => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
   const navigation = useNavigation();
@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
     opacity: 0.1
   },
   textOverlay: {
-    // backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 20
   },
   imageText: {

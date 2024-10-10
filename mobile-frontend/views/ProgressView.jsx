@@ -13,12 +13,7 @@ import {
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
-interface WorkoutItemProps {
-  title: string;
-  onDelete: () => void;
-}
-
-const WorkoutItem: React.FC<WorkoutItemProps> = ({ title, onDelete }) => {
+const WorkoutItem = ({ title, onDelete }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
@@ -90,7 +85,7 @@ const WorkoutItem: React.FC<WorkoutItemProps> = ({ title, onDelete }) => {
   );
 };
 
-const ProgramsPage: React.FC = () => {
+const ProgramsPage = () => {
   const [workouts, setWorkouts] = useState([
     'Workout 1',
     'Workout 2',
@@ -99,7 +94,7 @@ const ProgramsPage: React.FC = () => {
     'Workout 5'
   ]);
 
-  const handleDelete = (index: number) => {
+  const handleDelete = index => {
     setWorkouts(workouts.filter((_, i) => i !== index));
   };
 

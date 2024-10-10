@@ -1,14 +1,9 @@
-import { ThemeState, ThemeAction } from '../types/theme';
-
-export const initialState: ThemeState = {
+export const initialState = {
   theme: 'light',
   accentColor: '#90EE90'
 };
 
-export function themeReducer(
-  state: ThemeState,
-  action: ThemeAction
-): ThemeState {
+export function themeReducer(state, action) {
   switch (action.type) {
     case 'SET_THEME':
       return { ...state, theme: action.payload };
