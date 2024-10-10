@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import React, { useContext, useMemo, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import * as Crypto from 'expo-crypto';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 
 const Exercise = ({ exercise, index, workout: initialWorkout }) => {
   const { state, addSet, updateSet, removeSet, updateWorkout } =
@@ -30,13 +30,21 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
     );
   }, [state.workout.workouts, initialWorkout]);
 
-  const [localSets, setLocalSets] = useState(exercise.sets);
+  const [localExercises, setLocalExercises] = useState(
+    workout?.exercises || []
+  );
 
   useEffect(() => {
-    setLocalSets(exercise.sets);
-  }, [exercise.sets]);
+    if (workout) {
+      const sortedExercises = [...workout.exercises].sort(
+        (a, b) => a.order - b.order
+      );
+      setLocalExercises(sortedExercises);
+    }
+  }, [workout]);
 
   const handleAddSet = () => {
+    // console.log('handleAddSet called');
     if (!workout || !workout.id) {
       console.error('No active workout found.');
       return;
@@ -44,30 +52,45 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
 
     const newSet = {
       id: Crypto.randomUUID(),
-      order: localSets.length + 1,
+      order: exercise.sets.length + 1,
       weight: null,
       reps: null
     };
-
-    setLocalSets(prev => [...prev, newSet]);
-    addSet(workout.id, exercise.id);
+    // console.log('New set to be added:', newSet);
+    addSet(workout.id, exercise.id, newSet);
   };
 
-  const handleUpdateSetLocally = (setId, field, value) => {
-    setLocalSets(prev =>
-      prev.map(set => (set.id === setId ? { ...set, [field]: value } : set))
-    );
-  };
-
-  const handleUpdateSetOnBlur = setId => {
-    const updatedSet = localSets.find(s => s.id === setId);
+  const handleUpdateSet = (setId, field, value) => {
+    // console.log(
+    //   `handleUpdateSet called - setId: ${setId}, field: ${field}, value: ${value}`
+    // );
+    const updatedSet = exercise.sets.find(s => s.id === setId);
     if (updatedSet) {
-      updateSet(workout.id, exercise.id, updatedSet);
+      const newSet = { ...updatedSet, [field]: value };
+      updateSet(workout.id, exercise.id, newSet);
     }
   };
 
   const handleRemoveSet = setId => {
-    setLocalSets(prev => prev.filter(set => set.id !== setId));
+    console.log(`Removing set ${setId} from exercise ${exercise.id}`);
+
+    const updatedExercises = localExercises.map(ex =>
+      ex.id === exercise.id
+        ? {
+            ...ex,
+            sets: ex.sets.filter(s => s.id !== setId)
+          }
+        : ex
+    );
+
+    setLocalExercises(updatedExercises);
+
+    const updatedWorkout = {
+      ...workout,
+      exercises: updatedExercises
+    };
+
+    updateWorkout(updatedWorkout);
     removeSet(workout.id, exercise.id, setId);
   };
 
@@ -105,13 +128,12 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
             onChangeText={text =>
-              handleUpdateSetLocally(
+              handleUpdateSet(
                 set.id,
                 'weight',
                 text ? parseInt(text, 10) : null
               )
             }
-            onBlur={() => handleUpdateSetOnBlur(set.id)}
           />
           <TextInput
             style={[
@@ -126,34 +148,28 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
             onChangeText={text =>
-              handleUpdateSetLocally(
-                set.id,
-                'reps',
-                text ? parseInt(text, 10) : null
-              )
+              handleUpdateSet(set.id, 'reps', text ? parseInt(text, 10) : null)
             }
-            onBlur={() => handleUpdateSetOnBlur(set.id)}
           />
-          {mode !== 'view' && (
-            <TouchableOpacity
-              onPress={() => handleRemoveSet(set.id)}
-              style={[
-                { backgroundColor: themedStyles.primaryBackgroundColor },
-                globalStyles.iconCircle
-              ]}
-            >
-              <Ionicons
-                name={'trash-outline'}
-                style={[globalStyles.icon, { color: themedStyles.textColor }]}
-                size={24}
-              />
-            </TouchableOpacity>
-          )}
+          <TouchableOpacity
+            onPress={() => handleRemoveSet(set.id)}
+            style={[
+              { backgroundColor: themedStyles.primaryBackgroundColor },
+              globalStyles.iconCircle
+            ]}
+          >
+            <Ionicons
+              name={'trash-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              size={24}
+            />
+          </TouchableOpacity>
         </View>
       );
     }
   };
 
+  console.log('Exercise render - exercise.sets:', exercise.sets);
   return (
     <View
       style={[
@@ -194,7 +210,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
           Reps
         </Text>
       </View>
-      {localSets.map((set, setIndex) => renderSetInputs(set, setIndex))}
+      {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
       {mode !== 'view' && (
         <TouchableOpacity
           onPress={handleAddSet}
