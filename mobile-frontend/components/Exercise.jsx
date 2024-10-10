@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useMemo, memo } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -13,12 +13,9 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
+const Exercise = ({ exercise, index, workout: initialWorkout }) => {
   const { state, addSet, updateSet, removeSet, updateWorkout } =
     useContext(ProgramContext);
-  const workouts = state.workout.workouts;
-  const activeWorkout = state.workout.activeWorkout;
-
   const { mode } = state;
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -26,126 +23,58 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
     themeState.accentColor
   );
 
-  // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {
-    if (!workouts || !initialWorkout) {
-      console.warn('Workouts or initialWorkout is undefined');
-      return null;
-    }
-    return workouts.find(w => w.id === initialWorkout.id) || initialWorkout;
-  }, [workouts, initialWorkout]);
+    return (
+      state.workout.workouts.find(w => w.id === initialWorkout.id) ||
+      initialWorkout
+    );
+  }, [state.workout.workouts, initialWorkout]);
+
+  const [localSets, setLocalSets] = useState(exercise.sets);
 
   useEffect(() => {
-    if (workout) {
-      setLocalExercises(workout.exercises);
-    }
-  }, [workout]);
+    setLocalSets(exercise.sets);
+  }, [exercise.sets]);
 
-  const [localExercises, setLocalExercises] = useState(
-    workout?.exercises || []
-  );
-
-  const handleAddSet = (event, exercise) => {
-    event.stopPropagation();
-    console.log('Add set button clicked', event.target, event.currentTarget);
-    const exerciseId = exercise.id;
-
+  const handleAddSet = () => {
     if (!workout || !workout.id) {
       console.error('No active workout found.');
       return;
     }
 
-    // Call the context function to add the set
-    addSet(workout.id, exerciseId);
+    const newSet = {
+      id: Crypto.randomUUID(),
+      order: localSets.length + 1,
+      weight: null,
+      reps: null
+    };
 
-    // Update local state
-    setLocalExercises(prevExercises =>
-      prevExercises.map(ex =>
-        ex.catalog_exercise_id === exercise.catalog_exercise_id
-          ? {
-              ...ex,
-              sets: [
-                ...ex.sets,
-                {
-                  id: Crypto.randomUUID(),
-                  order: ex.sets.length + 1,
-                  weight: null,
-                  reps: null
-                }
-              ]
-            }
-          : ex
-      )
+    setLocalSets(prev => [...prev, newSet]);
+    addSet(workout.id, exercise.id);
+  };
+
+  const handleUpdateSetLocally = (setId, field, value) => {
+    setLocalSets(prev =>
+      prev.map(set => (set.id === setId ? { ...set, [field]: value } : set))
     );
   };
 
-  const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
-    setLocalExercises(prevExercises =>
-      prevExercises.map(exercise =>
-        exercise.catalog_exercise_id === exerciseId
-          ? {
-              ...exercise,
-              sets: exercise.sets.map(set =>
-                set.id === setId ? { ...set, ...updatedValue } : set
-              )
-            }
-          : exercise
-      )
-    );
-  };
-
-  const handleUpdateSetOnBlur = (exerciseId, set) => {
-    updateSet(workout.id, exerciseId, set);
-    // Update context with the latest local exercise data
-    updateWorkout({ ...workout, exercises: localExercises });
-  };
-
-  const handleRemoveSet = (workoutId, exerciseId, setId) => {
-    if (mode === 'edit') {
-      setLocalExercises(prevExercises =>
-        prevExercises.map(exercise =>
-          exercise.catalog_exercise_id === exerciseId
-            ? {
-                ...exercise,
-                sets: exercise.sets.filter(s => s.id !== setId)
-              }
-            : exercise
-        )
-      );
-
-      // Update the context state after local state change
-      const updatedExercises = localExercises.map(exercise =>
-        exercise.catalog_exercise_id === exerciseId
-          ? {
-              ...exercise,
-              sets: exercise.sets.filter(s => s.id !== setId)
-            }
-          : exercise
-      );
-
-      const updatedWorkout = {
-        ...workout,
-        exercises: updatedExercises
-      };
-
-      updateWorkout(updatedWorkout);
-    } else {
-      removeSet(workoutId, exerciseId, setId);
+  const handleUpdateSetOnBlur = setId => {
+    const updatedSet = localSets.find(s => s.id === setId);
+    if (updatedSet) {
+      updateSet(workout.id, exercise.id, updatedSet);
     }
   };
 
-  const findLocalSet = (exerciseId, setId) => {
-    const exercise = localExercises.find(
-      e => e.catalog_exercise_id === exerciseId
-    );
-    return exercise?.sets.find(s => s.id === setId);
+  const handleRemoveSet = setId => {
+    setLocalSets(prev => prev.filter(set => set.id !== setId));
+    removeSet(workout.id, exercise.id, setId);
   };
 
   const renderSetInputs = (set, setIndex) => {
-    const localSet = findLocalSet(exercise.catalog_exercise_id, set.id);
     if (mode === 'view') {
       return (
-        <View key={setIndex} style={styles.setInfo}>
+        <View key={set.id} style={styles.setInfo}>
           <Text style={[styles.setText, { color: themedStyles.textColor }]}>
             {set.order}
           </Text>
@@ -159,7 +88,7 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
       );
     } else {
       return (
-        <View key={setIndex} style={styles.setInfo}>
+        <View key={set.id} style={styles.setInfo}>
           <Text style={[styles.setText, { color: themedStyles.textColor }]}>
             {set.order}
           </Text>
@@ -172,20 +101,17 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
                 color: themedStyles.textColor
               }
             ]}
-            value={mode === 'edit' ? localSet?.weight?.toString() ?? '' : ''}
+            value={set.weight?.toString() ?? ''}
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
-            onTouchStart={event => event.stopPropagation()}
             onChangeText={text =>
               handleUpdateSetLocally(
-                { weight: text ? parseInt(text, 10) : null },
-                exercise.catalog_exercise_id,
-                set.id
+                set.id,
+                'weight',
+                text ? parseInt(text, 10) : null
               )
             }
-            onBlur={() =>
-              handleUpdateSetOnBlur(exercise.catalog_exercise_id, set)
-            }
+            onBlur={() => handleUpdateSetOnBlur(set.id)}
           />
           <TextInput
             style={[
@@ -196,30 +122,21 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
                 color: themedStyles.textColor
               }
             ]}
-            value={mode === 'edit' ? localSet?.reps?.toString() ?? '' : ''}
+            value={set.reps?.toString() ?? ''}
             placeholderTextColor={themedStyles.textColor}
             keyboardType='numeric'
-            onTouchStart={event => event.stopPropagation()}
             onChangeText={text =>
               handleUpdateSetLocally(
-                { reps: text ? parseInt(text, 10) : null },
-                exercise.catalog_exercise_id,
-                set.id
+                set.id,
+                'reps',
+                text ? parseInt(text, 10) : null
               )
             }
-            onBlur={() =>
-              handleUpdateSetOnBlur(exercise.catalog_exercise_id, set)
-            }
+            onBlur={() => handleUpdateSetOnBlur(set.id)}
           />
           {mode !== 'view' && (
             <TouchableOpacity
-              onPress={() =>
-                handleRemoveSet(
-                  workout.id,
-                  exercise.catalog_exercise_id,
-                  set.id
-                )
-              }
+              onPress={() => handleRemoveSet(set.id)}
               style={[
                 { backgroundColor: themedStyles.primaryBackgroundColor },
                 globalStyles.iconCircle
@@ -239,11 +156,6 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
 
   return (
     <View
-      onStartShouldSetResponder={() => true}
-      onResponderRelease={event => event.stopPropagation()}
-      onTouchStart={event => {
-        console.log('Exercise component touched');
-      }}
       style={[
         styles.exerciseContainer,
         { backgroundColor: themedStyles.secondaryBackgroundColor }
@@ -282,14 +194,10 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
           Reps
         </Text>
       </View>
-      {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
+      {localSets.map((set, setIndex) => renderSetInputs(set, setIndex))}
       {mode !== 'view' && (
         <TouchableOpacity
-          onPress={event => {
-            event.stopPropagation();
-            console.log('Button pressed');
-            handleAddSet(event, exercise);
-          }}
+          onPress={handleAddSet}
           style={[
             { backgroundColor: themedStyles.primaryBackgroundColor },
             globalStyles.iconCircle,
@@ -305,7 +213,7 @@ const Exercise = memo(({ exercise, index, workout: initialWorkout }) => {
       )}
     </View>
   );
-});
+};
 
 const styles = StyleSheet.create({
   exerciseContainer: {
