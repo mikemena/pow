@@ -74,14 +74,23 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
   const handleRemoveSet = setId => {
     console.log(`Removing set ${setId} from exercise ${exercise.id}`);
 
-    const updatedExercises = localExercises.map(ex =>
-      ex.id === exercise.id
-        ? {
-            ...ex,
-            sets: ex.sets.filter(s => s.id !== setId)
-          }
-        : ex
-    );
+    const updatedExercises = localExercises.map(ex => {
+      if (ex.id === exercise.id) {
+        // Filter out the removed set and renumber the remaining sets
+        const updatedSets = ex.sets
+          .filter(s => s.id !== setId)
+          .map((set, index) => ({
+            ...set,
+            order: index + 1 // Renumber starting from 1
+          }));
+
+        return {
+          ...ex,
+          sets: updatedSets
+        };
+      }
+      return ex;
+    });
 
     setLocalExercises(updatedExercises);
 
@@ -304,4 +313,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default Exercise;
+export default React.memo(Exercise);
