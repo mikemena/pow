@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -43,6 +43,23 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
     }`
   });
 
+  const handleChange = useCallback(
+    (name, value) => {
+      console.log(`Updating ${name} with value:`, value);
+      setFormValues(prev => ({
+        ...prev,
+        [name]: value
+      }));
+      updateProgramField(name, value);
+    },
+    [updateProgramField]
+  );
+
+  useEffect(() => {
+    console.log('Form values after update:', formValues);
+    console.log('Context state in ProgramForm:', state);
+  }, [formValues, state]);
+
   useEffect(() => {
     if (program) {
       setFormValues({
@@ -58,17 +75,6 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
       });
     }
   }, [program]);
-
-  const handleChange = (name, value) => {
-    setFormValues(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
-  const handleBlur = (name, value) => {
-    updateProgramField(name, value);
-  };
 
   return (
     <View style={styles.container}>
@@ -138,7 +144,6 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
               ]}
               value={formValues.name}
               onChangeText={text => handleChange('name', text)}
-              onBlur={() => handleBlur('name', formValues.name)}
               placeholder='Program Name'
             />
 
@@ -153,7 +158,6 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
               selectedValue={formValues.main_goal}
               onValueChange={value => {
                 handleChange('main_goal', value);
-                handleBlur('main_goal', value);
               }}
               label='Main Goal'
               placeholder='Main Goal'
@@ -176,12 +180,7 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
                   }
                 ]}
                 value={formValues.program_duration.toString()}
-                onChangeText={text =>
-                  handleChange('program_duration', parseInt(text) || 0)
-                }
-                onBlur={() =>
-                  handleBlur('program_duration', formValues.program_duration)
-                }
+                onChangeText={text => handleChange('program_duration', text)}
                 placeholder='Duration'
                 keyboardType='numeric'
               />
@@ -190,7 +189,6 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
                 selectedValue={formValues.duration_unit}
                 onValueChange={value => {
                   handleChange('duration_unit', value);
-                  handleBlur('duration_unit', value);
                 }}
                 label='Duration Unit'
                 placeholder='Duration Unit'
@@ -208,7 +206,6 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
               selectedValue={formValues.days_per_week}
               onValueChange={value => {
                 handleChange('days_per_week', value);
-                handleBlur('days_per_week', value);
               }}
               label='Days Per Week'
               placeholder='Select days per week'

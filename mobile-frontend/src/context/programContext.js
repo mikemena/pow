@@ -90,8 +90,18 @@ export const ProgramProvider = ({ children }) => {
   // Save new program to backend
 
   const saveProgram = async () => {
+    const formatValue = value => {
+      if (value === '' || value === null || value === undefined) {
+        return null;
+      }
+      const num = Number(value);
+      return isNaN(num) ? value : num;
+    };
+
     const newProgram = {
       ...state.program,
+      program_duration: formatValue(state.program.program_duration),
+      days_per_week: formatValue(state.program.days_per_week),
       workouts: state.workout.workouts.map(workout => ({
         id: workout.id,
         name: workout.name,
@@ -100,13 +110,18 @@ export const ProgramProvider = ({ children }) => {
           catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
           order: exercise.order || 1,
           sets: exercise.sets.map((set, index) => ({
-            reps: set.reps,
-            weight: set.weight,
+            reps: formatValue(set.reps),
+            weight: formatValue(set.weight),
             order: set.order || index + 1
           }))
         }))
       }))
     };
+
+    console.log(
+      'Program data being sent to backend:',
+      JSON.stringify(newProgram, null, 2)
+    );
 
     try {
       validateProgramData(newProgram); // Validate data before sending
@@ -119,7 +134,6 @@ export const ProgramProvider = ({ children }) => {
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Error saving program:', errorText);
-        Alert.alert('Error', 'Failed to save program');
         throw new Error('Network response was not ok');
       }
 
@@ -130,7 +144,6 @@ export const ProgramProvider = ({ children }) => {
       });
     } catch (error) {
       console.error('Failed to save program:', error);
-      Alert.alert('Error', error.message);
       dispatch({
         type: actionTypes.SAVE_PROGRAM_FAILURE,
         payload: error.message
