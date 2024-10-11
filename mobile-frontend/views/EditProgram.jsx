@@ -123,10 +123,10 @@ const EditProgram = () => {
     >
       <Header pageName='Edit Program' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={handleToggleProgramForm}
           style={styles.toggleButton}
-        ></TouchableOpacity>
+        ></TouchableOpacity> */}
 
         <View style={styles.formContainer}>
           <ProgramForm

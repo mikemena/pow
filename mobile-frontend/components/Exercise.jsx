@@ -72,7 +72,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
   };
 
   const handleRemoveSet = setId => {
-    console.log(`Removing set ${setId} from exercise ${exercise.id}`);
+    // console.log(`Removing set ${setId} from exercise ${exercise.id}`);
 
     const updatedExercises = localExercises.map(ex => {
       if (ex.id === exercise.id) {

@@ -53,7 +53,12 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   useEffect(() => {
     if (activeWorkout) {
-      setSelectedExercises(activeWorkout.exercises);
+      setSelectedExercises(
+        activeWorkout.exercises.map(ex => ({
+          ...ex,
+          id: ex.catalog_exercise_id || ex.id
+        }))
+      );
     }
   }, [activeWorkout]);
 
@@ -135,7 +140,7 @@ const ExerciseSelection = ({ navigation, route }) => {
     setSelectedExercises(prev =>
       prev.some(e => e.id === exercise.id)
         ? prev.filter(e => e.id !== exercise.id)
-        : [...prev, exercise]
+        : [...prev, { ...exercise, catalog_exercise_id: exercise.id }]
     );
   };
 
