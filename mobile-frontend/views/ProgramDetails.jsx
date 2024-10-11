@@ -18,7 +18,7 @@ import Workout from '../components/Workout';
 import useExpandedItems from '../src/hooks/useExpandedItems';
 
 const ProgramDetails = () => {
-  const { setMode, state, initializeEditProgramState } =
+  const { setMode, state, initializeEditProgramState, deleteProgram } =
     useContext(ProgramContext);
   const navigation = useNavigation();
   const route = useRoute();
@@ -38,6 +38,11 @@ const ProgramDetails = () => {
   const handleEditProgram = () => {
     initializeEditProgramState(program, program.workouts);
     navigation.navigate('EditProgram', { program });
+  };
+
+  const handleDeleteProgram = async programId => {
+    await deleteProgram(programId);
+    navigation.goBack();
   };
 
   const formatDuration = (duration, unit) => {
@@ -183,6 +188,7 @@ const ProgramDetails = () => {
                 styles.button,
                 { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
+              onPress={() => handleDeleteProgram(program.id)}
             >
               <Text
                 style={[
