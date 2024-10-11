@@ -27,8 +27,11 @@ import Filter from '../components/Filter';
 
 const ProgramsView = () => {
   const navigation = useNavigation();
-  const { state: contextState, fetchPrograms: contextFetchPrograms } =
-    useContext(ProgramContext);
+  const {
+    state: contextState,
+    fetchPrograms: contextFetchPrograms,
+    clearProgram
+  } = useContext(ProgramContext);
   const [programList, setProgramList] = useState({
     programs: [],
     workouts: []
@@ -66,6 +69,7 @@ const ProgramsView = () => {
 
   useFocusEffect(
     useCallback(() => {
+      clearProgram();
       fetchPrograms();
     }, [fetchPrograms])
   );
@@ -181,6 +185,7 @@ const ProgramsView = () => {
   };
 
   const handleCreateProgram = () => {
+    clearProgram();
     navigation.navigate('CreateProgram');
   };
 

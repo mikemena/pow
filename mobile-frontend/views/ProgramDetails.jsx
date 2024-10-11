@@ -18,7 +18,8 @@ import Workout from '../components/Workout';
 import useExpandedItems from '../src/hooks/useExpandedItems';
 
 const ProgramDetails = () => {
-  const { setMode, state } = useContext(ProgramContext);
+  const { setMode, state, initializeEditProgramState } =
+    useContext(ProgramContext);
   const navigation = useNavigation();
   const route = useRoute();
   const workouts = state.workout.workouts;
@@ -35,6 +36,7 @@ const ProgramDetails = () => {
   }, []);
 
   const handleEditProgram = () => {
+    initializeEditProgramState(program, program.workouts);
     navigation.navigate('EditProgram', { program });
   };
 

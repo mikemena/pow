@@ -1,12 +1,5 @@
-import React, { useContext, useEffect } from 'react';
-import {
-  Text,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-  View,
-  ScrollView
-} from 'react-native';
+import React, { useContext, useEffect, useState } from 'react';
+import { Text, StyleSheet, SafeAreaView, View, ScrollView } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
 import ProgramForm from '../components/ProgramForm';
@@ -21,8 +14,8 @@ const EditProgram = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const { program: initialProgram } = route.params;
+
   const {
-    state,
     initializeEditProgramState,
     setMode,
     updateProgram,
@@ -30,8 +23,9 @@ const EditProgram = () => {
     clearProgram
   } = useContext(ProgramContext);
 
-  const program = state.program;
-  const workouts = state.workout.workouts;
+  const [program, setProgram] = useState(initialProgram);
+  const [workouts, setWorkouts] = useState(initialProgram.workouts || []);
+
   const {
     isProgramFormExpanded,
     toggleItem,
@@ -46,53 +40,42 @@ const EditProgram = () => {
   );
 
   useEffect(() => {
-    console.log('EditProgram useEffect - Initial state:', state);
     setMode('edit');
-    if (
-      !state.program ||
-      !state.workout ||
-      !state.workout.workouts ||
-      state.workout.workouts.length === 0
-    ) {
-      const programToEdit = route.params.program;
-      initializeEditProgramState(programToEdit, programToEdit.workouts);
-    }
-  }, []);
+    initializeEditProgramState(initialProgram, initialProgram.workouts);
+
+    return () => {
+      clearProgram();
+    };
+  }, []); // Empty dependency array to run only once
 
   const handleUpdateProgram = async () => {
     try {
       const updatedProgram = {
         ...program,
-        workouts: workouts.map(workout => {
-          const updatedWorkout = workouts[workout.id];
-          return updatedWorkout
-            ? {
-                ...updatedWorkout,
-                exercises: updatedWorkout.exercises.map(exercise => ({
-                  ...exercise,
-                  sets: exercise.sets.map(set => ({
-                    ...set,
-                    weight: parseInt(set.weight, 10) || 0,
-                    reps: parseInt(set.reps, 10) || 0,
-                    order: parseInt(set.order, 10) || 0
-                  }))
-                }))
-              }
-            : workout;
-        })
+        workouts: workouts.map(workout => ({
+          ...workout,
+          exercises: workout.exercises.map(exercise => ({
+            ...exercise,
+            sets: exercise.sets.map(set => ({
+              ...set,
+              weight: parseInt(set.weight, 10) || 0,
+              reps: parseInt(set.reps, 10) || 0,
+              order: parseInt(set.order, 10) || 0
+            }))
+          }))
+        }))
       };
 
       await updateProgram(updatedProgram);
-
       navigation.goBack();
     } catch (error) {
       console.error('Failed to save the program:', error);
     }
   };
 
-  const handleAddWorkout = event => {
-    event.preventDefault();
-    addWorkout(program.id);
+  const handleAddWorkout = () => {
+    const newWorkout = addWorkout(program.id);
+    setWorkouts([...workouts, newWorkout]);
   };
 
   const handleCancel = () => {
@@ -100,7 +83,7 @@ const EditProgram = () => {
     navigation.goBack();
   };
 
-  if (!state.program) {
+  if (!program) {
     return (
       <SafeAreaView
         style={[
@@ -123,11 +106,6 @@ const EditProgram = () => {
     >
       <Header pageName='Edit Program' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* <TouchableOpacity
-          onPress={handleToggleProgramForm}
-          style={styles.toggleButton}
-        ></TouchableOpacity> */}
-
         <View style={styles.formContainer}>
           <ProgramForm
             program={program}
@@ -137,7 +115,7 @@ const EditProgram = () => {
         </View>
 
         <View style={styles.workoutsContainer}>
-          {workouts && workouts.length > 0 ? (
+          {workouts.length > 0 ? (
             workouts.map(workout => (
               <Workout
                 key={workout.id}
