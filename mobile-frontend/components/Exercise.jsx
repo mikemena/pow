@@ -178,7 +178,6 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
     }
   };
 
-  console.log('Exercise render - exercise.sets:', exercise.sets);
   return (
     <View
       style={[

@@ -1,8 +1,17 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, StyleSheet, SafeAreaView, View, ScrollView } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  SafeAreaView,
+  View,
+  ScrollView,
+  TouchableOpacity
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import { ProgramContext } from '../src/context/programContext';
 import ProgramForm from '../components/ProgramForm';
+import PillButton from '../components/PillButton';
 import Workout from '../components/Workout';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -16,6 +25,7 @@ const EditProgram = () => {
   const { program: initialProgram } = route.params;
 
   const {
+    state,
     initializeEditProgramState,
     setMode,
     updateProgram,
@@ -23,8 +33,8 @@ const EditProgram = () => {
     clearProgram
   } = useContext(ProgramContext);
 
-  const [program, setProgram] = useState(initialProgram);
-  const [workouts, setWorkouts] = useState(initialProgram.workouts || []);
+  const { program } = state;
+  const { workouts } = state.workout;
 
   const {
     isProgramFormExpanded,
@@ -51,8 +61,8 @@ const EditProgram = () => {
   const handleUpdateProgram = async () => {
     try {
       const updatedProgram = {
-        ...program,
-        workouts: workouts.map(workout => ({
+        ...state.program,
+        workouts: state.workout.workouts.map(workout => ({
           ...workout,
           exercises: workout.exercises.map(exercise => ({
             ...exercise,
@@ -66,24 +76,37 @@ const EditProgram = () => {
         }))
       };
 
+      console.log(
+        'Updated program being sent:',
+        JSON.stringify(updatedProgram, null, 2)
+      );
+
       await updateProgram(updatedProgram);
-      navigation.goBack();
+      // Reset the navigation stack to ProgramsList
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'ProgramsList' }]
+      });
     } catch (error) {
       console.error('Failed to save the program:', error);
     }
   };
 
-  const handleAddWorkout = () => {
-    const newWorkout = addWorkout(program.id);
-    setWorkouts([...workouts, newWorkout]);
+  const handleAddWorkout = event => {
+    event.preventDefault();
+    addWorkout(program.id);
   };
 
   const handleCancel = () => {
     clearProgram();
-    navigation.goBack();
+    // Reset the navigation stack to ProgramsList
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'ProgramsList' }]
+    });
   };
 
-  if (!program) {
+  if (!state.program) {
     return (
       <SafeAreaView
         style={[
@@ -129,6 +152,60 @@ const EditProgram = () => {
               No workouts available
             </Text>
           )}
+        </View>
+        {/* Add Workout button */}
+        <PillButton
+          label='Add Workout'
+          icon={
+            <Ionicons
+              name='add-outline'
+              size={16}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
+          }
+          onPress={handleAddWorkout}
+        />
+        {/* Save and Cancel buttons */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              styles.saveButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            onPress={handleUpdateProgram}
+          >
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              SAVE
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              styles.cancelButton,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
+            ]}
+            onPress={handleCancel}
+          >
+            <Text
+              style={[
+                globalStyles.buttonText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              CANCEL
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
