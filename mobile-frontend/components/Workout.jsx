@@ -133,12 +133,11 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   });
 
   const handleTitlePress = useCallback(() => {
-    // console.log('handleTitlePress');
+    if (mode === 'view') return; // Prevent editing in view mode
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsEditingTitle(true);
-    // console.log('inputRef', inputRef);
     setTimeout(() => inputRef.current?.focus(), 0);
-  }, []);
+  }, [mode]);
 
   const handleEditTitleChange = text => {
     // console.log('handleEditTitleChange');
@@ -314,9 +313,9 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
                       ]}
                       value={workoutTitle}
                       onChangeText={handleEditTitleChange}
-                      // onBlur={handleUpdateWorkoutTitleOnBlur}
+                      onBlur={handleTitleSubmit}
                     />
-                  ) : (
+                  ) : mode !== 'view' ? (
                     <TouchableOpacity onPress={handleTitlePress}>
                       <Text
                         style={[
@@ -327,6 +326,15 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
                         {workoutTitle}
                       </Text>
                     </TouchableOpacity>
+                  ) : (
+                    <Text
+                      style={[
+                        styles.workoutTitle,
+                        { color: themedStyles.accentColor }
+                      ]}
+                    >
+                      {workoutTitle}
+                    </Text>
                   )}
                 </Animated.View>
                 <TouchableOpacity
