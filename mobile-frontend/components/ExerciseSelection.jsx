@@ -23,7 +23,7 @@ import PillButton from './PillButton';
 import Filter from './Filter';
 
 const ExerciseSelection = ({ navigation, route }) => {
-  const { addExercise, state, dispatch } = useContext(ProgramContext);
+  const { updateExercise, state } = useContext(ProgramContext);
   const { isNewProgram, programId } = route.params;
 
   const [exercises, setExercises] = useState([]);
@@ -153,8 +153,8 @@ const ExerciseSelection = ({ navigation, route }) => {
       console.error('No active workout selected.');
       return;
     }
-
-    addExercise(activeWorkoutId, selectedExercises);
+    updateExercise(activeWorkoutId, selectedExercises);
+    //addExercise(activeWorkoutId, selectedExercises);
 
     if (isNewProgram) {
       navigation.navigate('CreateProgram');

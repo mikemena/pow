@@ -45,7 +45,7 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
 
   const handleChange = useCallback(
     (name, value) => {
-      console.log(`Updating ${name} with value:`, value);
+      // console.log(`Updating ${name} with value:`, value);
       setFormValues(prev => ({
         ...prev,
         [name]: value
@@ -55,10 +55,10 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
     [updateProgramField]
   );
 
-  useEffect(() => {
-    console.log('Form values after update:', formValues);
-    console.log('Context state in ProgramForm:', state);
-  }, [formValues, state]);
+  // useEffect(() => {
+  //   console.log('Form values after update:', formValues);
+  //   console.log('Context state in ProgramForm:', state);
+  // }, [formValues, state]);
 
   useEffect(() => {
     if (program) {

@@ -332,14 +332,26 @@ export const ProgramProvider = ({ children }) => {
       payload: { workoutId, exercises: standardizedExercises }
     });
     // update the program in the backend
-    updateProgram(state.program);
+    // updateProgram(state.program);
   };
 
   // Update an exercise
   const updateExercise = (workoutId, updatedExercises) => {
+    const standardizedExercises = updatedExercises.map((ex, index) => ({
+      ...ex,
+      id: ex.id || Crypto.randomUUID(),
+      catalog_exercise_id: ex.catalog_exercise_id || ex.id,
+      muscle: ex.muscle,
+      equipment: ex.equipment,
+      order: index + 1,
+      sets: ex.sets || [
+        { id: Crypto.randomUUID(), weight: '', reps: '', order: 1 }
+      ]
+    }));
+
     dispatch({
       type: actionTypes.UPDATE_EXERCISE,
-      payload: { workoutId, updatedExercises }
+      payload: { workoutId, updatedExercises: standardizedExercises }
     });
   };
 

@@ -66,15 +66,8 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (workout) {
-      setWorkoutTitle(workout.name);
-      const sortedExercises = [...workout.exercises].sort(
-        (a, b) => a.order - b.order
-      );
-
-      setLocalExercises(sortedExercises);
-    }
-  }, [workout]);
+    setWorkoutTitle(workout.name);
+  }, [workout.name]);
 
   const headerStyle = [
     styles.workoutHeader,
@@ -140,24 +133,26 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   });
 
   const handleTitlePress = useCallback(() => {
+    // console.log('handleTitlePress');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setIsEditingTitle(true);
+    // console.log('inputRef', inputRef);
     setTimeout(() => inputRef.current?.focus(), 0);
   }, []);
 
   const handleEditTitleChange = text => {
+    // console.log('handleEditTitleChange');
     setIsEditingTitle(true);
     setWorkoutTitle(text);
   };
 
-  const handleTitleSubmit = () => {
+  const handleTitleSubmit = useCallback(() => {
     if (workout) {
-      const updatedWorkout = { ...workout, name: workoutTitle };
-      updateWorkout(updatedWorkout);
+      updateWorkoutField(workout.id, 'name', workoutTitle);
     }
     setIsEditingTitle(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-  };
+  }, [workout, workoutTitle, updateWorkoutField]);
 
   const handleOutsidePress = useCallback(
     event => {
@@ -226,9 +221,9 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     updateWorkout({ ...workout, exercises: localExercises });
   };
 
-  const handleUpdateWorkoutTitleOnBlur = () => {
-    updateWorkoutField('name', workoutTitle);
-  };
+  // const handleUpdateWorkoutTitleOnBlur = () => {
+  //   updateWorkoutField('name', workoutTitle);
+  // };
 
   const handleRemoveSet = (workoutId, exerciseId, setId) => {
     if (mode !== 'view') {
@@ -319,7 +314,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
                       ]}
                       value={workoutTitle}
                       onChangeText={handleEditTitleChange}
-                      onBlur={handleUpdateWorkoutTitleOnBlur}
+                      // onBlur={handleUpdateWorkoutTitleOnBlur}
                     />
                   ) : (
                     <TouchableOpacity onPress={handleTitlePress}>
