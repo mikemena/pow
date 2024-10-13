@@ -85,7 +85,11 @@ function programReducer(state = currentProgram, action) {
         ...state,
         workout: {
           ...state.workout,
-          ...action.payload
+          workouts: state.workout.workouts.map(w =>
+            w.id === action.payload.workoutId
+              ? { ...w, [action.payload.field]: action.payload.value }
+              : w
+          )
         }
       };
 

@@ -14,8 +14,7 @@ import {
   StyleSheet,
   Animated,
   PanResponder,
-  Dimensions,
-  TouchableWithoutFeedback
+  Dimensions
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,17 +29,8 @@ const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
 const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
-  const {
-    state,
-    setActiveWorkout,
-    updateWorkoutField,
-    deleteWorkout,
-    removeExercise,
-    updateWorkout,
-    addSet,
-    updateSet,
-    removeSet
-  } = useContext(ProgramContext);
+  const { state, setActiveWorkout, updateWorkoutField, deleteWorkout } =
+    useContext(ProgramContext);
 
   const workouts = state.workout.workouts;
 
@@ -69,6 +59,10 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     setWorkoutTitle(workout.name);
   }, [workout.name]);
 
+  useEffect(() => {
+    setLocalExercises(workout.exercises);
+  }, [workout.exercises]);
+
   const headerStyle = [
     styles.workoutHeader,
     { backgroundColor: themedStyles.secondaryBackgroundColor },
@@ -77,60 +71,58 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
       : { borderRadius: 10 }
   ];
 
-  const fadeOutDeleteText = () => {
-    Animated.timing(deleteAnim, {
-      toValue: 0,
-      duration: 100,
-      useNativeDriver: false
-    }).start();
-  };
+  //Disable swipe when expanded
+  const panResponder = useMemo(() => {
+    if (isExpanded) return PanResponder.create({});
 
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: () => true,
-    onPanResponderMove: (_, gestureState) => {
-      Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
-        _,
-        gestureState
-      );
-
-      if (gestureState.dx < -width * 0.3) {
-        deleteAnim.setValue(
-          Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
+    return PanResponder.create({
+      onMoveShouldSetPanResponder: () => !isExpanded,
+      onPanResponderMove: (_, gestureState) => {
+        if (isExpanded) return; // Prevent movement when expanded
+        Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
+          _,
+          gestureState
         );
-      } else {
-        deleteAnim.setValue(0);
-      }
-    },
-    onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dx < SWIPE_THRESHOLD) {
-        Animated.parallel([
-          Animated.timing(pan.x, {
-            toValue: -width,
-            duration: 200,
+        if (gestureState.dx < -width * 0.3) {
+          deleteAnim.setValue(
+            Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
+          );
+        } else {
+          deleteAnim.setValue(0);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (isExpanded) return; // Prevent release action when expanded
+        if (gestureState.dx < SWIPE_THRESHOLD) {
+          Animated.parallel([
+            Animated.timing(pan.x, {
+              toValue: -width,
+              duration: 200,
+              useNativeDriver: false
+            }),
+            Animated.timing(deleteAnim, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: false
+            })
+          ]).start(() => {
+            setIsDeleting(true);
+            setTimeout(() => deleteWorkout(workout.id), 100);
+          });
+        } else {
+          Animated.spring(pan.x, {
+            toValue: 0,
             useNativeDriver: false
-          }),
+          }).start();
           Animated.timing(deleteAnim, {
             toValue: 0,
             duration: 200,
             useNativeDriver: false
-          })
-        ]).start(() => {
-          setIsDeleting(true);
-          setTimeout(() => handleDeleteWorkout(workout.id), 100);
-        });
-      } else {
-        Animated.spring(pan.x, {
-          toValue: 0,
-          useNativeDriver: false
-        }).start();
-        Animated.timing(deleteAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start();
+          }).start();
+        }
       }
-    }
-  });
+    });
+  }, [isExpanded, workout.id, deleteWorkout]);
 
   const handleTitlePress = useCallback(() => {
     if (mode === 'view') return; // Prevent editing in view mode
@@ -153,111 +145,18 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   }, [workout, workoutTitle, updateWorkoutField]);
 
-  const handleOutsidePress = useCallback(
-    event => {
-      if (event.target === event.currentTarget) {
-        if (isEditingTitle) {
-          handleTitleSubmit();
-        }
-      }
-    },
-    [isEditingTitle, handleTitleSubmit]
-  );
-
-  const handleDeleteWorkout = workoutId => {
-    deleteWorkout(workoutId);
-  };
-
-  const handleDeleteExercise = (workoutId, exerciseId) => {
-    removeExercise(workoutId, exerciseId);
-  };
-
-  const handleWorkoutExpand = () => {
+  const handleWorkoutExpand = useCallback(() => {
     onToggleExpand(workout.id);
-  };
-
-  const handleAddSet = exercise => {
-    const exerciseId = exercise.id;
-
-    if (!workout || !workout.id) {
-      console.error('No active workout found.');
-      return;
-    }
-
-    addSet(workout.id, exerciseId);
-  };
+  }, [onToggleExpand, workout.id]);
 
   const handleAddExercises = workoutId => {
     setActiveWorkout(workoutId);
 
-    const selectedExercises = workout.exercises.map(exercise => ({
-      ...exercise,
-      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id
-    }));
     navigation.navigate('ExerciseSelection', {
       isNewProgram: true,
       programId: 'your-program-id'
     });
   };
-
-  const handleUpdateSetLocally = (updatedValue, exerciseId, setId) => {
-    setLocalExercises(prevExercises =>
-      prevExercises.map(exercise =>
-        exercise.catalog_exercise_id === exerciseId
-          ? {
-              ...exercise,
-              sets: exercise.sets.map(set =>
-                set.id === setId ? { ...set, ...updatedValue } : set
-              )
-            }
-          : exercise
-      )
-    );
-  };
-
-  const handleUpdateSetOnBlur = (exerciseId, set) => {
-    updateSet(workout.id, exerciseId, set);
-    updateWorkout({ ...workout, exercises: localExercises });
-  };
-
-  // const handleUpdateWorkoutTitleOnBlur = () => {
-  //   updateWorkoutField('name', workoutTitle);
-  // };
-
-  const handleRemoveSet = (workoutId, exerciseId, setId) => {
-    if (mode !== 'view') {
-      setLocalExercises(prevExercises =>
-        prevExercises.map(ex =>
-          ex.catalog_exercise_id === exerciseId
-            ? {
-                ...ex,
-                sets: ex.sets.filter(s => s.id !== setId)
-              }
-            : ex
-        )
-      );
-
-      const updatedExercises = localExercises.map(ex =>
-        ex.catalog_exercise_id === exerciseId
-          ? {
-              ...ex,
-              sets: ex.sets.filter(s => s.id !== setId)
-            }
-          : ex
-      );
-
-      const updatedWorkout = {
-        ...workout,
-        exercises: updatedExercises
-      };
-
-      updateWorkout(updatedWorkout);
-    } else {
-      removeSet(workoutId, exerciseId, setId);
-    }
-  };
-
-  const workoutExercises = localExercises;
 
   const getExerciseCountText = useCallback(count => {
     if (count === 0) return 'NO EXERCISES';
@@ -284,49 +183,38 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={handleOutsidePress}>
-      <View style={[styles.containerWrapper]}>
-        <Animated.View
-          style={[
-            styles.deleteTextContainer,
-            {
-              opacity: deleteTextOpacity
-            }
-          ]}
-        >
-          <Text style={styles.deleteText}>Delete</Text>
-        </Animated.View>
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={[styles.workoutContainer, itemStyle]}
-        >
-          <TouchableOpacity>
-            <View style={headerStyle}>
-              <View style={styles.headerContent}>
-                <Animated.View>
-                  {isEditingTitle ? (
-                    <TextInput
-                      ref={inputRef}
-                      style={[
-                        styles.workoutTitle,
-                        { color: themedStyles.accentColor }
-                      ]}
-                      value={workoutTitle}
-                      onChangeText={handleEditTitleChange}
-                      onBlur={handleTitleSubmit}
-                    />
-                  ) : mode !== 'view' ? (
-                    <TouchableOpacity onPress={handleTitlePress}>
-                      <Text
-                        style={[
-                          styles.workoutTitle,
-                          { color: themedStyles.accentColor }
-                        ]}
-                      >
-                        {workoutTitle}
-                      </Text>
-                    </TouchableOpacity>
-                  ) : (
+    <View style={[styles.containerWrapper]}>
+      <Animated.View
+        style={[
+          styles.deleteTextContainer,
+          {
+            opacity: deleteTextOpacity
+          }
+        ]}
+      >
+        <Text style={styles.deleteText}>Delete</Text>
+      </Animated.View>
+      <Animated.View
+        {...panResponder.panHandlers}
+        style={[styles.workoutContainer, itemStyle]}
+      >
+        <TouchableOpacity>
+          <View style={headerStyle}>
+            <View style={styles.headerContent}>
+              <Animated.View>
+                {isEditingTitle ? (
+                  <TextInput
+                    ref={inputRef}
+                    style={[
+                      styles.workoutTitle,
+                      { color: themedStyles.accentColor }
+                    ]}
+                    value={workoutTitle}
+                    onChangeText={handleEditTitleChange}
+                    onBlur={handleTitleSubmit}
+                  />
+                ) : mode !== 'view' ? (
+                  <TouchableOpacity onPress={handleTitlePress}>
                     <Text
                       style={[
                         styles.workoutTitle,
@@ -335,66 +223,70 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
                     >
                       {workoutTitle}
                     </Text>
-                  )}
-                </Animated.View>
-                <TouchableOpacity
-                  onPress={() => handleAddExercises(workout.id)}
-                >
+                  </TouchableOpacity>
+                ) : (
                   <Text
                     style={[
-                      styles.exerciseCountText,
-                      { color: themedStyles.textColor }
+                      styles.workoutTitle,
+                      { color: themedStyles.accentColor }
                     ]}
                   >
-                    {getExerciseCountText(workout.exercises.length)}
-                    {mode !== 'view' && (
-                      <>
-                        {' - '}
-                        <Text style={{ color: themedStyles.accentColor }}>
-                          ADD
-                        </Text>
-                      </>
-                    )}
+                    {workoutTitle}
                   </Text>
-                </TouchableOpacity>
-              </View>
-
-              {sortedExercises.length > 0 && (
-                <TouchableOpacity
-                  onPress={handleWorkoutExpand}
+                )}
+              </Animated.View>
+              <TouchableOpacity onPress={() => handleAddExercises(workout.id)}>
+                <Text
                   style={[
-                    globalStyles.iconCircle,
-                    { backgroundColor: themedStyles.primaryBackgroundColor }
+                    styles.exerciseCountText,
+                    { color: themedStyles.textColor }
                   ]}
                 >
-                  <Ionicons
-                    name={
-                      isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
-                    }
-                    style={[
-                      globalStyles.icon,
-                      { color: themedStyles.textColor }
-                    ]}
-                  />
-                </TouchableOpacity>
-              )}
+                  {getExerciseCountText(workout.exercises.length)}
+                  {mode !== 'view' && (
+                    <>
+                      {' - '}
+                      <Text style={{ color: themedStyles.accentColor }}>
+                        ADD
+                      </Text>
+                    </>
+                  )}
+                </Text>
+              </TouchableOpacity>
             </View>
-          </TouchableOpacity>
-          {isExpanded && (
-            <View style={styles.expandedContent}>
-              {sortedExercises.map((exercise, index) => (
-                <Exercise
-                  key={exercise.id}
-                  exercise={exercise}
-                  index={index + 1}
-                  workout={workout}
+
+            {sortedExercises.length > 0 && (
+              <TouchableOpacity
+                onPress={handleWorkoutExpand}
+                style={[
+                  globalStyles.iconCircle,
+                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                ]}
+              >
+                <Ionicons
+                  name={
+                    isExpanded ? 'chevron-up-outline' : 'chevron-down-outline'
+                  }
+                  style={[globalStyles.icon, { color: themedStyles.textColor }]}
                 />
-              ))}
-            </View>
-          )}
-        </Animated.View>
-      </View>
-    </TouchableWithoutFeedback>
+              </TouchableOpacity>
+            )}
+          </View>
+        </TouchableOpacity>
+        {isExpanded && (
+          <View style={styles.expandedContent}>
+            {localExercises.map((exercise, index) => (
+              <Exercise
+                key={exercise.id}
+                exercise={exercise}
+                index={index + 1}
+                workout={workout}
+              />
+            ))}
+          </View>
+        )}
+      </Animated.View>
+    </View>
   );
 };
 

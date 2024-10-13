@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -38,6 +38,13 @@ const CreateProgram = () => {
     toggleProgramForm,
     isItemExpanded
   } = useExpandedItems(workouts);
+
+  const memoizedToggleItem = useCallback(
+    workoutId => {
+      toggleItem(workoutId);
+    },
+    [toggleItem]
+  );
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -96,7 +103,7 @@ const CreateProgram = () => {
                 key={workout.id}
                 workout={workout}
                 isExpanded={isItemExpanded(workout.id)}
-                onToggleExpand={() => toggleItem(workout.id)}
+                onToggleExpand={memoizedToggleItem}
               />
             ))
           ) : (

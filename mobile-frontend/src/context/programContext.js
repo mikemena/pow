@@ -283,12 +283,12 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
-  // Function to update a single field in the program
+  // Function to update a single field in the workout
 
-  const updateWorkoutField = (field, value) => {
+  const updateWorkoutField = (workoutId, field, value) => {
     dispatch({
       type: actionTypes.UPDATE_WORKOUT_FIELD,
-      payload: { [field]: value } // Field and value as key-value pair
+      payload: { workoutId, field, value }
     });
   };
 
