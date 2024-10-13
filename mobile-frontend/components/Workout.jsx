@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   },
   workoutTitle: {
     fontFamily: 'Lexend',
-    fontSize: 18,
+    fontSize: 16,
     marginBottom: 4
   },
   exerciseCountText: {
