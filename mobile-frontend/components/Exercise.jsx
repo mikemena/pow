@@ -252,9 +252,15 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
     }
   };
 
+  const deleteContainerTranslateX = pan.x.interpolate({
+    inputRange: [-width, 0],
+    outputRange: [-width * 0.4, 0],
+    extrapolate: 'clamp'
+  });
+
   const deleteTextOpacity = pan.x.interpolate({
-    inputRange: [-width * 0.3, 0, width * 0.3],
-    outputRange: [1, 0, 1],
+    inputRange: [-width * 0.6, -width * 0.3, 0],
+    outputRange: [0, 1, 0],
     extrapolate: 'clamp'
   });
 
@@ -268,6 +274,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
         style={[
           styles.deleteTextContainer,
           {
+            transform: [{ translateX: deleteContainerTranslateX }],
             opacity: deleteTextOpacity
           }
         ]}
@@ -419,12 +426,15 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    width: width * 0.3,
+    width: width * 0.5,
     justifyContent: 'center',
     alignItems: 'flex-end',
-    paddingRight: 20,
+    paddingRight: 15,
+    marginTop: 1,
     backgroundColor: colors.red,
-    zIndex: 0
+    zIndex: 0,
+    borderBottomRightRadius: 5,
+    borderTopRightRadius: 5
   },
   deleteText: {
     color: colors.offWhite,

@@ -172,9 +172,15 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     transform: [{ translateX: pan.x }]
   };
 
+  const deleteContainerTranslateX = pan.x.interpolate({
+    inputRange: [-width, 0],
+    outputRange: [-width * 0.4, 0],
+    extrapolate: 'clamp'
+  });
+
   const deleteTextOpacity = pan.x.interpolate({
-    inputRange: [-width * 0.3, 0, width * 0.3],
-    outputRange: [1, 0, 1],
+    inputRange: [-width * 0.6, -width * 0.3, 0],
+    outputRange: [0, 1, 0],
     extrapolate: 'clamp'
   });
 
@@ -188,6 +194,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
         style={[
           styles.deleteTextContainer,
           {
+            transform: [{ translateX: deleteContainerTranslateX }],
             opacity: deleteTextOpacity
           }
         ]}
@@ -292,13 +299,12 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    position: 'relative',
     marginBottom: 5,
     overflow: 'hidden'
   },
   workoutContainer: {
-    marginBottom: 5,
-    position: 'relative',
+    marginBottom: 1,
+    // position: 'relative',
     zIndex: 1,
     borderRadius: 10
   },
@@ -349,13 +355,15 @@ const styles = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
+    width: width * 0.5,
     justifyContent: 'center',
-    paddingLeft: 20,
-    paddingRight: 20,
+    alignItems: 'flex-end',
+    paddingRight: 15,
     backgroundColor: colors.red,
-    borderBottomLeftRadius: 60,
-    borderTopLeftRadius: 60,
-    height: '90%'
+    zIndex: 0,
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+    height: '98%'
   },
   deleteText: {
     color: colors.offWhite,
