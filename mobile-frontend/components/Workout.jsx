@@ -40,6 +40,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
+  console.log('mode in workout component', mode);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -78,7 +79,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     return PanResponder.create({
       onMoveShouldSetPanResponder: () => !isExpanded,
       onPanResponderMove: (_, gestureState) => {
-        if (isExpanded) return; // Prevent movement when expanded
+        if (isExpanded || mode == 'view') return; // Prevent movement when expanded or view mode
         Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
           _,
           gestureState
@@ -92,7 +93,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (isExpanded) return; // Prevent release action when expanded
+        if (isExpanded || mode == 'view') return; // Prevent release action when expanded or view mode
         if (gestureState.dx < SWIPE_THRESHOLD) {
           Animated.parallel([
             Animated.timing(pan.x, {
