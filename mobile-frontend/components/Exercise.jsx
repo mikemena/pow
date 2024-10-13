@@ -353,7 +353,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    marginBottom: 5,
+    marginTop: 1,
     overflow: 'hidden'
   },
   exerciseContainer: {
