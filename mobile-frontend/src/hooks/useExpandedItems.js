@@ -1,4 +1,4 @@
-import { useState, useCallback, useContext } from 'react';
+import { useState, useCallback, useContext, useEffect } from 'react';
 import { ProgramContext } from '../../src/context/programContext';
 
 const useExpandedItems = (initialWorkouts = []) => {
@@ -11,11 +11,11 @@ const useExpandedItems = (initialWorkouts = []) => {
       setExpandedItemId(prevId => {
         if (prevId === itemId) {
           // If the same item is clicked, collapse it and clear active workout
-          setActiveWorkout(null);
+          // setActiveWorkout(null);
           return null;
         } else {
           // Expand the clicked item, set it as active, and collapse the program form
-          setActiveWorkout(itemId);
+          // setActiveWorkout(itemId);
           setIsProgramFormExpanded(false);
           return itemId;
         }
@@ -23,6 +23,15 @@ const useExpandedItems = (initialWorkouts = []) => {
     },
     [setActiveWorkout]
   );
+
+  useEffect(() => {
+    // Now, react to changes in expandedItemId
+    if (expandedItemId === null) {
+      setActiveWorkout(null); // Collapse and clear active workout
+    } else {
+      setActiveWorkout(expandedItemId); // Set new active workout
+    }
+  }, []);
 
   const toggleProgramForm = useCallback(() => {
     setIsProgramFormExpanded(prev => {

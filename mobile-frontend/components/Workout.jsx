@@ -40,7 +40,7 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
-  console.log('mode in workout component', mode);
+  // console.log('mode in workout component', mode);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
