@@ -19,7 +19,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
-const Exercise = ({ exercise, index, workout: initialWorkout }) => {
+const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
   // console.log('Exercise component rendering:', exercise.name);
 
   const { state, addSet, updateSet, removeSet, removeExercise, updateWorkout } =
@@ -54,63 +54,68 @@ const Exercise = ({ exercise, index, workout: initialWorkout }) => {
     }
   }, [workout]);
 
-  const panResponder = PanResponder.create({
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      // console.log('onMoveShouldSetPanResponder:', gestureState.dx);
-      return Math.abs(gestureState.dx) > 10;
-    },
-    onPanResponderGrant: () => {
-      // console.log('Pan responder granted');
-    },
-    onPanResponderMove: (_, gestureState) => {
-      // console.log('Pan responder move:', gestureState.dx);
-      Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
-        _,
-        gestureState
-      );
-      if (gestureState.dx < -width * 0.3) {
-        deleteAnim.setValue(
-          Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
+  const panResponder = useMemo(() => {
+    if (isExpanded || mode === 'view') {
+      return PanResponder.create({}); // Returns an empty PanResponder
+    }
+
+    return PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) => {
+        return Math.abs(gestureState.dx) > 10;
+      },
+      onPanResponderGrant: () => {
+        if (isExpanded || mode === 'view') return; // Prevent any action when expanded or in view mode
+      },
+      onPanResponderMove: (_, gestureState) => {
+        if (isExpanded || mode === 'view') return; // Prevent movement when expanded or in view mode
+        Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
+          _,
+          gestureState
         );
-      } else {
-        deleteAnim.setValue(0);
-      }
-    },
-    onPanResponderRelease: (_, gestureState) => {
-      console.log('Pan responder release:', gestureState.dx);
-      if (gestureState.dx < SWIPE_THRESHOLD) {
-        // console.log('Swipe threshold reached, initiating delete animation');
-        Animated.parallel([
-          Animated.timing(pan.x, {
-            toValue: -width,
-            duration: 200,
+        if (gestureState.dx < -width * 0.3) {
+          deleteAnim.setValue(
+            Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
+          );
+        } else {
+          deleteAnim.setValue(0);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        if (isExpanded || mode === 'view') return; // Prevent release action when expanded or in view mode
+        if (gestureState.dx < SWIPE_THRESHOLD) {
+          // console.log('Swipe threshold reached, initiating delete animation');
+          Animated.parallel([
+            Animated.timing(pan.x, {
+              toValue: -width,
+              duration: 200,
+              useNativeDriver: false
+            }),
+            Animated.timing(deleteAnim, {
+              toValue: 0,
+              duration: 200,
+              useNativeDriver: false
+            })
+          ]).start(() => {
+            // console.log('Delete animation completed');
+            setIsDeleting(true);
+            setTimeout(() => handleDeleteExercise(), 100);
+          });
+        } else {
+          // console.log('Swipe threshold not reached, resetting position');
+
+          Animated.spring(pan.x, {
+            toValue: 0,
             useNativeDriver: false
-          }),
+          }).start();
           Animated.timing(deleteAnim, {
             toValue: 0,
             duration: 200,
             useNativeDriver: false
-          })
-        ]).start(() => {
-          // console.log('Delete animation completed');
-          setIsDeleting(true);
-          setTimeout(() => handleDeleteExercise(), 100);
-        });
-      } else {
-        // console.log('Swipe threshold not reached, resetting position');
-
-        Animated.spring(pan.x, {
-          toValue: 0,
-          useNativeDriver: false
-        }).start();
-        Animated.timing(deleteAnim, {
-          toValue: 0,
-          duration: 200,
-          useNativeDriver: false
-        }).start();
+          }).start();
+        }
       }
-    }
-  });
+    });
+  }, [isExpanded, mode]);
 
   const handleDeleteExercise = () => {
     // console.log('Deleting exercise:', exercise.id);
