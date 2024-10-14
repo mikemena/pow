@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
+import * as Crypto from 'expo-crypto';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -24,7 +25,8 @@ import Filter from './Filter';
 
 const ExerciseSelection = ({ navigation, route }) => {
   const { updateExercise, state } = useContext(ProgramContext);
-  const { isNewProgram, programId } = route.params;
+  const { mode } = state;
+  const { programId } = route.params;
 
   const [exercises, setExercises] = useState([]);
   const [filteredExercises, setFilteredExercises] = useState([]);
@@ -53,12 +55,7 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   useEffect(() => {
     if (activeWorkout) {
-      setSelectedExercises(
-        activeWorkout.exercises.map(ex => ({
-          ...ex,
-          id: ex.catalog_exercise_id || ex.id
-        }))
-      );
+      setSelectedExercises(activeWorkout.exercises);
     }
   }, [activeWorkout]);
 
@@ -137,11 +134,25 @@ const ExerciseSelection = ({ navigation, route }) => {
   const getTotalMatches = () => filteredExercises.length;
 
   const toggleExerciseSelection = exercise => {
-    setSelectedExercises(prev =>
-      prev.some(e => e.id === exercise.id)
-        ? prev.filter(e => e.id !== exercise.id)
-        : [...prev, { ...exercise, catalog_exercise_id: exercise.id }]
+    const isSelected = selectedExercises.some(
+      e => e.catalog_exercise_id === exercise.id
     );
+
+    if (isSelected) {
+      setSelectedExercises(prev =>
+        prev.filter(e => e.catalog_exercise_id !== exercise.id)
+      );
+    } else {
+      setSelectedExercises(prev => [
+        ...prev,
+        {
+          ...exercise,
+          id: Crypto.randomUUID(),
+          catalog_exercise_id: exercise.id,
+          sets: []
+        }
+      ]);
+    }
   };
 
   const handleBack = () => {
@@ -154,12 +165,13 @@ const ExerciseSelection = ({ navigation, route }) => {
       return;
     }
     updateExercise(activeWorkoutId, selectedExercises);
-    //addExercise(activeWorkoutId, selectedExercises);
 
-    if (isNewProgram) {
+    if (mode === 'create') {
       navigation.navigate('CreateProgram');
-    } else {
+    } else if (mode === 'edit') {
       navigation.navigate('EditProgram', { programId });
+    } else {
+      console.error('Unknown mode:', mode);
     }
   };
 
@@ -168,7 +180,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       style={[
         styles.exerciseItem,
         { borderBottomColor: themedStyles.secondaryBackgroundColor },
-        selectedExercises.some(e => e.id === item.id) && {
+        selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
           backgroundColor: themedStyles.accentColor + '33'
         }
       ]}
