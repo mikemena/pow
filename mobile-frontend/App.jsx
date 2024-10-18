@@ -17,9 +17,12 @@ import WorkoutView from './views/WorkoutView';
 import ProgressView from './views/ProgressView';
 import ProfileView from './views/ProfileView';
 import ExerciseSelectionView from './views/ExerciseSelectionView';
+import CurrentProgramView from './views/CurrentProgramView';
+import FlexWorkoutView from './views/FlexWorkoutView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
+const WorkoutStack = createStackNavigator();
 const RootStack = createStackNavigator();
 
 const ProgramsStackScreen = () => (
@@ -35,6 +38,14 @@ const ProgramsStackScreen = () => (
   </ProgramsStack.Navigator>
 );
 
+const WorkoutStackScreen = () => (
+  <WorkoutStack.Navigator screenOptions={{ headerShown: false }}>
+    <WorkoutStack.Screen name='WorkoutMain' component={WorkoutView} />
+    <WorkoutStack.Screen name='CurrentProgram' component={CurrentProgramView} />
+    <WorkoutStack.Screen name='FlexWorkout' component={FlexWorkoutView} />
+  </WorkoutStack.Navigator>
+);
+
 const TabNavigator = () => (
   <Tab.Navigator tabBar={props => <Navigation {...props} />}>
     <Tab.Screen
@@ -44,7 +55,7 @@ const TabNavigator = () => (
     />
     <Tab.Screen
       name='Workout'
-      component={WorkoutView}
+      component={WorkoutStackScreen}
       options={{ headerShown: false }}
     />
     <Tab.Screen
