@@ -24,7 +24,6 @@ SELECT \* FROM active_programs
 WHERE user_id = :user_id AND is_active = TRUE;
 
 -- Active Programs table
-CREATE TABLE active_programs (
 id SERIAL PRIMARY KEY,
 user_id INTEGER REFERENCES users(id),
 program_id INTEGER REFERENCES programs(id),
@@ -36,41 +35,37 @@ is_active BOOLEAN DEFAULT TRUE,
 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 UNIQUE (user_id, program_id, start_date)
-);
 
 # The workouts table can be used for both program workouts and flex workouts. The program_id can be null for flex workouts.
 
--- Workouts table
-CREATE TABLE completed_exercises (
+-- Completed Workouts table
+id SERIAL PRIMARY KEY,
+user_id INTEGER,
+program_id INTEGER REFERENCES programs(id),
+name CHAR VAR 255,
+date DATE,
+duration INTEGER,
+is_completed BOOLEAN,
+created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+
+# The workout_exercises table links exercises to workouts and maintains their order.
+
+-- Completed Exercises table
 id SERIAL PRIMARY KEY,
 workout_id INTEGER REFERENCES completed_workouts(id),
 exercise_id INTEGER REFERENCES exercises(id),
 order_index INTEGER,
 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 UNIQUE (workout_id, exercise_id)
-);
-
-# The workout_exercises table links exercises to workouts and maintains their order.
-
--- Workout Exercises table
-CREATE TABLE completed_exercises (
-id SERIAL PRIMARY KEY,
-workout_id INTEGER REFERENCES completed_workouts(id),
-catalog_exercise_id INTEGER REFERENCES exercises(id),
-order_index INTEGER,
-created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
-UNIQUE (workout_id, exercise_id)
-);
 
 # The sets table stores the actual performance data (weight, reps, duration) for each exercise in a workout.
 
 -- Sets table
-CREATE TABLE completed_sets (
 id SERIAL PRIMARY KEY,
 exercise_id INTEGER REFERENCES completed_exercises(id),
-weight DECIMAL(5,2),
+weight INTEGER,
 reps INTEGER,
 order_index INTEGER,
 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
-);
