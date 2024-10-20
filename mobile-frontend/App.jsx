@@ -7,6 +7,7 @@ import * as Font from 'expo-font';
 import Navigation from './components/Navigation';
 import { ThemeProvider } from './src/context/themeContext';
 import { ProgramProvider } from './src/context/programContext';
+import { WorkoutProvider } from './src/context/workoutContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramsView';
@@ -19,6 +20,7 @@ import ProfileView from './views/ProfileView';
 import ExerciseSelectionView from './views/ExerciseSelectionView';
 import CurrentProgramView from './views/CurrentProgramView';
 import FlexWorkoutView from './views/FlexWorkoutView';
+import CurrentProgramDetailsView from './views/CurrentProgramDetailsView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
@@ -43,6 +45,10 @@ const WorkoutStackScreen = () => (
     <WorkoutStack.Screen name='WorkoutMain' component={WorkoutView} />
     <WorkoutStack.Screen name='CurrentProgram' component={CurrentProgramView} />
     <WorkoutStack.Screen name='FlexWorkout' component={FlexWorkoutView} />
+    <WorkoutStack.Screen
+      name='WorkoutExecution'
+      component={CurrentProgramDetailsView}
+    />
   </WorkoutStack.Navigator>
 );
 
@@ -93,19 +99,21 @@ const App = () => {
 
   return (
     <ProgramProvider>
-      <ThemeProvider>
-        <View style={styles.container}>
-          <NavigationContainer>
-            <RootStack.Navigator screenOptions={{ headerShown: false }}>
-              <RootStack.Screen name='MainTabs' component={TabNavigator} />
-              <RootStack.Screen
-                name='ExerciseSelection'
-                component={ExerciseSelectionView}
-              />
-            </RootStack.Navigator>
-          </NavigationContainer>
-        </View>
-      </ThemeProvider>
+      <WorkoutProvider>
+        <ThemeProvider>
+          <View style={styles.container}>
+            <NavigationContainer>
+              <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                <RootStack.Screen name='MainTabs' component={TabNavigator} />
+                <RootStack.Screen
+                  name='ExerciseSelection'
+                  component={ExerciseSelectionView}
+                />
+              </RootStack.Navigator>
+            </NavigationContainer>
+          </View>
+        </ThemeProvider>
+      </WorkoutProvider>
     </ProgramProvider>
   );
 };

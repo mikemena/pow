@@ -15,7 +15,7 @@ import {
   Modal
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
-import { ProgramContext } from '../src/context/programContext';
+import { WorkoutContext } from '../src/context/workoutContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
@@ -27,17 +27,15 @@ import Filter from '../components/Filter';
 
 const CurrentProgramView = () => {
   const navigation = useNavigation();
-  const {
-    state: contextState,
-    fetchPrograms: contextFetchPrograms,
-    clearProgram
-  } = useContext(ProgramContext);
+  const { state: workoutState, setActiveProgram } = useContext(WorkoutContext);
+  const activeProgram = workoutState.activeProgram;
+
   const [programList, setProgramList] = useState({
     programs: [],
     workouts: []
   });
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  const [activeProgram, setActiveProgram] = useState(null);
+  // const [activeProgram, setActiveProgram] = useState(null);
   const [filters, setFilters] = useState({
     programName: '',
     selectedGoal: '',
@@ -51,12 +49,14 @@ const CurrentProgramView = () => {
     themeState.accentColor
   );
 
-  const handleSetActiveProgram = useCallback(program => {
-    setActiveProgram(program.id);
-    // Here you would typically make an API call to update the active program in the backend
-    // For now, we'll just update the local state
-    console.log(`Set program ${program.id} as active`);
-  }, []);
+  const handleSetActiveProgram = useCallback(
+    program => {
+      setActiveProgram(program.id);
+      console.log(`Set program ${program.id} as active`);
+      console.log(program.name);
+    },
+    [setActiveProgram]
+  );
 
   const fetchPrograms = useCallback(async () => {
     try {
@@ -77,7 +77,6 @@ const CurrentProgramView = () => {
 
   useFocusEffect(
     useCallback(() => {
-      clearProgram();
       fetchPrograms();
     }, [fetchPrograms])
   );
@@ -192,9 +191,45 @@ const CurrentProgramView = () => {
     });
   };
 
-  const handleCreateProgram = () => {
-    clearProgram();
-    navigation.navigate('CreateProgram');
+  const handleSaveActiveProgram = async () => {
+    if (!activeProgram) {
+      console.error('No active program selected');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userId: 2, // Replace with actual user ID
+          programId: activeProgram
+        })
+      });
+
+      const responseText = await response.text();
+      console.log('Raw server response:', responseText);
+
+      let data;
+      try {
+        data = JSON.parse(responseText);
+      } catch (parseError) {
+        console.error('Failed to parse server response as JSON:', parseError);
+        throw new Error('Server returned an invalid response');
+      }
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save active program');
+      }
+
+      console.log('Active program saved:', data);
+      navigation.navigate('WorkoutExecution');
+    } catch (error) {
+      console.error('Error saving active program:', error.message);
+      // Handle error (e.g., show an error message to the user)
+    }
   };
 
   const formatDuration = (duration, unit) => {
@@ -345,7 +380,7 @@ const CurrentProgramView = () => {
               globalStyles.button,
               { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
-            onPress={handleCreateProgram}
+            onPress={handleSaveActiveProgram}
           >
             <Text
               style={[

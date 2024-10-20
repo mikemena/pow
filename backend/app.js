@@ -22,6 +22,7 @@ const programRoutes = require('./routes/programs');
 const userSetsRoutes = require('./routes/sets');
 const userExercisesRoutes = require('./routes/exercises');
 const workoutHistoryRoutes = require('./routes/workout_history');
+const activeProgramRoutes = require('./routes/active_program');
 
 // Use your routes with a base path
 app.use('/api', imageRoutes);
@@ -34,6 +35,7 @@ app.use('/api', userSetsRoutes);
 app.use('/api', userExercisesRoutes);
 app.use('/api', workoutHistoryRoutes);
 app.use('/api', programRoutes);
+app.use('/api', activeProgramRoutes);
 
 // Your existing setup and routes...
 
