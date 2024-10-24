@@ -294,6 +294,16 @@ const CurrentProgramView = () => {
             </Text>
           </View>
         </View>
+        {activeProgram === item.id && (
+          <Text
+            style={[
+              styles.currentProgramText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            CURRENT PROGRAM
+          </Text>
+        )}
         <View style={globalStyles.iconContainer}></View>
       </View>
     </TouchableOpacity>
@@ -453,7 +463,7 @@ const styles = StyleSheet.create({
     marginBottom: 24
   },
   activeProgramBorder: {
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: colors.accent
   },
   currentProgramIndicator: {
@@ -466,9 +476,9 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   currentProgramText: {
-    color: colors.offWhite,
-    fontFamily: 'Lexend-Bold',
-    fontSize: 12
+    fontFamily: 'Lexend',
+    fontSize: 12,
+    textAlign: 'center'
   }
 });
 
