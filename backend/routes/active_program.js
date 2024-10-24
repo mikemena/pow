@@ -2,6 +2,35 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
+// Get active program for a user
+router.get('/active-programs/user/:userId', async (req, res) => {
+  const { userId } = req.params;
+
+  try {
+    const result = await pool.query(
+      `SELECT ap.*, p.name, p.main_goal, p.program_duration, p.duration_unit, p.days_per_week
+       FROM active_programs ap
+       JOIN programs p ON ap.program_id = p.id
+       WHERE ap.user_id = $1 AND ap.is_active = TRUE
+       ORDER BY ap.start_date DESC
+       LIMIT 1`,
+      [userId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(200).json({ activeProgram: null });
+    }
+
+    res.json({ activeProgram: result.rows[0] });
+  } catch (error) {
+    console.error('Error fetching active program:', error);
+    res.status(500).json({
+      error: 'Failed to fetch active program',
+      details: error.message
+    });
+  }
+});
+
 router.post('/active-programs', async (req, res) => {
   const { userId, programId } = req.body;
 

@@ -35,7 +35,7 @@ const CurrentProgramView = () => {
     workouts: []
   });
   const [isFilterVisible, setIsFilterVisible] = useState(false);
-  // const [activeProgram, setActiveProgram] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
     programName: '',
     selectedGoal: '',
@@ -49,15 +49,7 @@ const CurrentProgramView = () => {
     themeState.accentColor
   );
 
-  const handleSetActiveProgram = useCallback(
-    program => {
-      setActiveProgram(program.id);
-      console.log(`Set program ${program.id} as active`);
-      console.log(program.name);
-    },
-    [setActiveProgram]
-  );
-
+  // Fetch programs
   const fetchPrograms = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
@@ -71,14 +63,87 @@ const CurrentProgramView = () => {
     }
   }, []);
 
+  // Fetch active program
+  const fetchActiveProgram = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/active-programs/user/2`
+      );
+      const data = await response.json();
+
+      if (data.activeProgram) {
+        setActiveProgram(data.activeProgram.program_id);
+      }
+    } catch (error) {
+      console.error('Error fetching active program:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [setActiveProgram]);
+
+  // Define fetchInitialData as a memoized callback
+  const fetchInitialData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await Promise.all([fetchPrograms(), fetchActiveProgram()]);
+    } catch (error) {
+      console.error('Error fetching initial data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fetchPrograms, fetchActiveProgram]);
+
+  const handleSetActiveProgram = useCallback(
+    async program => {
+      try {
+        setIsLoading(true);
+
+        const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userId: 2,
+            programId: program.id
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to set active program');
+        }
+
+        // Update local state
+        setActiveProgram(program.id);
+      } catch (error) {
+        console.error('Error setting active program:', error);
+        // You might want to add error handling UI here
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [setActiveProgram]
+  );
+
   useEffect(() => {
-    fetchPrograms();
-  }, [fetchPrograms]);
+    const fetchInitialData = async () => {
+      setIsLoading(true);
+      await Promise.all([fetchPrograms(), fetchActiveProgram()]);
+      setIsLoading(false);
+    };
+
+    fetchInitialData();
+  }, [fetchPrograms, fetchActiveProgram]);
 
   useFocusEffect(
     useCallback(() => {
-      fetchPrograms();
-    }, [fetchPrograms])
+      fetchInitialData();
+      return () => {
+        // Cleanup if needed
+      };
+    }, [fetchInitialData])
   );
 
   const getTotalMatches = useCallback(
