@@ -388,16 +388,11 @@ const CurrentProgramView = () => {
           <TouchableOpacity
             style={[
               globalStyles.button,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
+              { backgroundColor: themedStyles.accentColor }
             ]}
             onPress={handleSaveActiveProgram}
           >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
+            <Text style={[globalStyles.buttonText, { color: colors.black }]}>
               SAVE
             </Text>
           </TouchableOpacity>

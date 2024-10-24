@@ -50,9 +50,13 @@ router.post('/active-programs', async (req, res) => {
     // Insert the new active program
     const result = await pool.query(
       `INSERT INTO active_programs
-         (user_id, program_id, start_date, end_date, is_active)
-         VALUES ($1, $2, $3, $4, TRUE)
-         RETURNING *`,
+       (user_id, program_id, start_date, end_date, is_active)
+       VALUES ($1, $2, $3, $4, TRUE)
+       ON CONFLICT (user_id, program_id, start_date)
+       DO UPDATE SET
+         is_active = TRUE,
+         end_date = EXCLUDED.end_date
+       RETURNING *`,
       [userId, programId, startDate, endDate]
     );
 
@@ -61,14 +65,18 @@ router.post('/active-programs', async (req, res) => {
     // Commit the transaction
     await pool.query('COMMIT');
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json({
+      message: 'Program activated successfully',
+      activeProgram: result.rows[0]
+    });
   } catch (error) {
     // Rollback in case of error
     await pool.query('ROLLBACK');
-    console.error('Detailed error:', error);
-    res
-      .status(500)
-      .json({ error: 'Failed to save active program', details: error.message });
+    console.error('Error activating program:', error);
+    res.status(500).json({
+      error: 'Failed to save active program',
+      details: error.message
+    });
   }
 });
 

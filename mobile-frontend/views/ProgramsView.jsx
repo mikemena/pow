@@ -333,16 +333,11 @@ const ProgramsView = () => {
           <TouchableOpacity
             style={[
               globalStyles.button,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
+              { backgroundColor: themedStyles.accentColor }
             ]}
             onPress={handleCreateProgram}
           >
-            <Text
-              style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
+            <Text style={[globalStyles.buttonText, { color: colors.black }]}>
               CREATE PROGRAM
             </Text>
           </TouchableOpacity>

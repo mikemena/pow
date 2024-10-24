@@ -8,6 +8,7 @@ import {
   SafeAreaView
 } from 'react-native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
@@ -52,23 +53,38 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   return (
     <SafeAreaView
       style={[
-        styles.container,
+        globalStyles.container,
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
       <Header pageName='WORKOUT' />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView style={globalStyles.container}>
         <Text style={[styles.title, { color: themedStyles.textColor }]}>
           {currentWorkout.name}
         </Text>
-        <View style={styles.progressBar}>
-          <View
+        <View>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
             style={[
-              styles.progressFill,
-              { width: `${currentWorkout.progress}%` }
+              { backgroundColor: themedStyles.secondaryBackgroundColor },
+              globalStyles.iconCircle
             ]}
-          />
-          <Text style={styles.progressText}>{currentWorkout.progress}%</Text>
+          >
+            <Ionicons
+              name={'arrow-back-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              size={24}
+            />
+          </TouchableOpacity>
+          <View style={styles.progressBar}>
+            <View
+              style={[
+                styles.progressFill,
+                { width: `${currentWorkout.progress}%` }
+              ]}
+            />
+            <Text style={styles.progressText}>{currentWorkout.progress}%</Text>
+          </View>
         </View>
 
         <View style={styles.workoutInfo}>
@@ -153,7 +169,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
         <TouchableOpacity
           style={[
-            styles.startButton,
+            globalStyles.button,
             { backgroundColor: themedStyles.accentColor }
           ]}
           onPress={() => {
@@ -161,7 +177,9 @@ const CurrentProgramDetailsView = ({ navigation }) => {
             // navigation.navigate('ActualWorkout');
           }}
         >
-          <Text style={styles.startButtonText}>GO TO WORKOUT</Text>
+          <Text style={[globalStyles.buttonText, { color: colors.black }]}>
+            GO TO WORKOUT
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
@@ -169,19 +187,14 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1
-  },
-  scrollContent: {
-    padding: 20
-  },
   title: {
-    fontSize: 24,
+    fontSize: 16,
+    marginLeft: 10,
     fontWeight: 'bold',
     marginBottom: 10
   },
   progressBar: {
-    height: 20,
+    height: 25,
     backgroundColor: '#444',
     borderRadius: 10,
     marginBottom: 20
@@ -195,7 +208,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 10,
     color: 'white',
-    lineHeight: 20
+    lineHeight: 25
   },
   workoutInfo: {
     flexDirection: 'row',
@@ -244,16 +257,6 @@ const styles = StyleSheet.create({
   },
   infoValue: {
     fontSize: 16,
-    fontWeight: 'bold'
-  },
-  startButton: {
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center'
-  },
-  startButtonText: {
-    color: 'white',
-    fontSize: 18,
     fontWeight: 'bold'
   }
 });
