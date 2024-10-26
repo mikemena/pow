@@ -1,18 +1,6 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import * as Crypto from 'expo-crypto';
-
-// Define action types
-const actionTypes = {
-  SET_ACTIVE_PROGRAM: 'SET_ACTIVE_PROGRAM',
-  START_WORKOUT: 'START_WORKOUT',
-  ADD_EXERCISE_TO_WORKOUT: 'ADD_EXERCISE_TO_WORKOUT',
-  REMOVE_EXERCISE_FROM_WORKOUT: 'REMOVE_EXERCISE_FROM_WORKOUT',
-  ADD_SET: 'ADD_SET',
-  UPDATE_SET: 'UPDATE_SET',
-  REMOVE_SET: 'REMOVE_SET',
-  COMPLETE_WORKOUT: 'COMPLETE_WORKOUT',
-  CLEAR_CURRENT_WORKOUT: 'CLEAR_CURRENT_WORKOUT'
-};
+import { actionTypes } from '../actions/actionTypes';
 
 // Initial state
 const initialState = {
@@ -25,6 +13,11 @@ const workoutReducer = (state, action) => {
   switch (action.type) {
     case actionTypes.SET_ACTIVE_PROGRAM:
       return { ...state, activeProgram: action.payload };
+    case actionTypes.SET_ACTIVE_PROGRAM_DETAILS:
+      return {
+        ...state,
+        activeProgramDetails: action.payload
+      };
     case actionTypes.START_WORKOUT:
       return { ...state, currentWorkout: action.payload };
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
@@ -112,9 +105,58 @@ export const WorkoutContext = createContext();
 export const WorkoutProvider = ({ children }) => {
   const [state, dispatch] = useReducer(workoutReducer, initialState);
 
+  const fetchActiveProgramDetails = useCallback(async () => {
+    try {
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/active-programs/user/2`
+      );
+      const data = await response.json();
+
+      if (data.activeProgram) {
+        // Fetch the full program details
+        const programResponse = await fetch(
+          `${API_URL_MOBILE}/api/programs/${data.activeProgram.program_id}`
+        );
+        const programDetails = await programResponse.json();
+
+        // Set both the active program ID and its details
+        dispatch({
+          type: actionTypes.SET_ACTIVE_PROGRAM,
+          payload: data.activeProgram.program_id
+        });
+        dispatch({
+          type: actionTypes.SET_ACTIVE_PROGRAM_DETAILS,
+          payload: programDetails
+        });
+
+        return true; // Program exists
+      }
+      return false; // No active program
+    } catch (error) {
+      console.error('Error fetching active program details:', error);
+      return false;
+    }
+  }, []);
+
   // Action creators
-  const setActiveProgram = useCallback(program => {
-    dispatch({ type: actionTypes.SET_ACTIVE_PROGRAM, payload: program });
+  const setActiveProgram = useCallback(programId => {
+    dispatch({ type: actionTypes.SET_ACTIVE_PROGRAM, payload: programId });
+  }, []);
+
+  const setActiveProgramDetails = useCallback(programDetails => {
+    dispatch({
+      type: actionTypes.SET_ACTIVE_PROGRAM_DETAILS,
+      payload: programDetails
+    });
+  }, []);
+
+  // Function to set both ID and details at once
+  const setActiveProgramWithDetails = useCallback(program => {
+    dispatch({ type: actionTypes.SET_ACTIVE_PROGRAM, payload: program.id });
+    dispatch({
+      type: actionTypes.SET_ACTIVE_PROGRAM_DETAILS,
+      payload: program
+    });
   }, []);
 
   const startWorkout = useCallback(workoutData => {
@@ -182,7 +224,10 @@ export const WorkoutProvider = ({ children }) => {
     <WorkoutContext.Provider
       value={{
         state,
+        fetchActiveProgramDetails,
         setActiveProgram,
+        setActiveProgramDetails,
+        setActiveProgramWithDetails,
         startWorkout,
         addExerciseToWorkout,
         removeExerciseFromWorkout,

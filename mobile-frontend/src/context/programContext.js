@@ -1,5 +1,4 @@
 import React, { createContext, useReducer, useCallback } from 'react';
-import { Alert } from 'react-native';
 import * as Crypto from 'expo-crypto';
 import { actionTypes } from '../actions/actionTypes';
 import { programReducer } from '../reducers/programReducer.js';

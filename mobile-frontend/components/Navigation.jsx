@@ -31,11 +31,29 @@ const NavigationItem = ({ name, icon, isActive, onPress, accentColor }) => {
 };
 
 const Navigation = ({ state, descriptors, navigation }) => {
+  const { state: workoutState, fetchActiveProgramDetails } =
+    useContext(WorkoutContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
+
+  const handleWorkoutPress = async () => {
+    try {
+      const hasActiveProgram = await fetchActiveProgramDetails();
+
+      if (hasActiveProgram) {
+        navigation.navigate('CurrentProgramDetailsView');
+      } else {
+        navigation.navigate('CurrentProgramView');
+      }
+    } catch (error) {
+      console.error('Error handling workout navigation:', error);
+      // Default to CurrentProgramView on error
+      navigation.navigate('CurrentProgramView');
+    }
+  };
 
   const getIcon = routeName => {
     switch (routeName) {

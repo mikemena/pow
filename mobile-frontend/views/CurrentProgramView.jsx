@@ -27,7 +27,11 @@ import Filter from '../components/Filter';
 
 const CurrentProgramView = () => {
   const navigation = useNavigation();
-  const { state: workoutState, setActiveProgram } = useContext(WorkoutContext);
+  const {
+    state: workoutState,
+    setActiveProgram,
+    setActiveProgramWithDetails
+  } = useContext(WorkoutContext);
   const activeProgram = workoutState.activeProgram;
 
   const [programList, setProgramList] = useState({
@@ -52,14 +56,35 @@ const CurrentProgramView = () => {
   // Fetch programs
   const fetchPrograms = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
+      // Add timeout and more detailed error logging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setProgramList({
         programs: data,
         workouts: []
       });
     } catch (error) {
-      console.error('Error fetching programs:', error);
+      console.error('Detailed fetch error:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        url: `${API_URL_MOBILE}/api/users/2/programs`
+      });
     }
   }, []);
 
@@ -81,6 +106,8 @@ const CurrentProgramView = () => {
     }
   }, [setActiveProgram]);
 
+  console.log('activeProgram', activeProgram);
+
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
     try {
@@ -97,6 +124,14 @@ const CurrentProgramView = () => {
     async program => {
       try {
         setIsLoading(true);
+
+        // Find the complete program details from the already fetched programs
+        const programDetails = programList.programs.find(
+          p => p.id === program.id
+        );
+
+        // Store both the ID and complete details in context
+        setActiveProgramWithDetails(programDetails);
 
         const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
           method: 'POST',
@@ -124,7 +159,7 @@ const CurrentProgramView = () => {
         setIsLoading(false);
       }
     },
-    [setActiveProgram]
+    [programList.programs, setActiveProgramWithDetails]
   );
 
   useEffect(() => {
@@ -257,43 +292,16 @@ const CurrentProgramView = () => {
   };
 
   const handleSaveActiveProgram = async () => {
-    if (!activeProgram) {
+    if (!workoutState.activeProgram || !workoutState.activeProgramDetails) {
       console.error('No active program selected');
       return;
     }
 
     try {
-      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          userId: 2, // Replace with actual user ID
-          programId: activeProgram
-        })
-      });
-
-      const responseText = await response.text();
-      console.log('Raw server response:', responseText);
-
-      let data;
-      try {
-        data = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Failed to parse server response as JSON:', parseError);
-        throw new Error('Server returned an invalid response');
-      }
-
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to save active program');
-      }
-
-      console.log('Active program saved:', data);
-      navigation.navigate('WorkoutExecution');
+      // Navigate to program details view
+      navigation.navigate('CurrentProgramDetailsView');
     } catch (error) {
-      console.error('Error saving active program:', error.message);
-      // Handle error (e.g., show an error message to the user)
+      console.error('Error navigating to program details:', error);
     }
   };
 

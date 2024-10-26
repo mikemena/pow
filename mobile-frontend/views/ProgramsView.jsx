@@ -52,14 +52,35 @@ const ProgramsView = () => {
 
   const fetchPrograms = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
+      // Add timeout and more detailed error logging
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
+        signal: controller.signal,
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        }
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const data = await response.json();
       setProgramList({
         programs: data,
         workouts: []
       });
     } catch (error) {
-      console.error('Error fetching programs:', error);
+      console.error('Detailed fetch error:', {
+        message: error.message,
+        name: error.name,
+        stack: error.stack,
+        url: `${API_URL_MOBILE}/api/users/2/programs`
+      });
     }
   }, []);
 

@@ -22,29 +22,51 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     themeState.accentColor
   );
 
-  const [currentWorkout, setCurrentWorkout] = useState(null);
+  console.log('workoutState', workoutState);
+  const program = workoutState.activeProgramDetails;
 
   useEffect(() => {
-    // Fetch the current workout details based on the active program
-    // This is a placeholder - you'll need to implement the actual data fetching
-    setCurrentWorkout({
-      name: 'The Ultimate Bro Split: 12 Weeks to MASS...',
-      progress: 10,
-      currentWorkout: {
-        number: 2,
-        total: 4,
-        name: 'Biceps & Triceps'
-      },
-      exercises: [
-        'Barbell Preacher Curls',
-        'Alternating Hammer Curls',
-        'Barbell Concentration Bicep Curl'
-      ],
-      equipment: ['Barbell', 'Dumbbells'],
-      typicalDuration: 42,
-      lastCompleted: '3 DAYS AGO'
-    });
-  }, []);
+    if (!program) {
+      navigation.goBack();
+    }
+  }, [program, navigation]);
+
+  if (!program) {
+    return (
+      <SafeAreaView
+        style={[
+          globalStyles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='WORKOUT' />
+        <View style={styles.loadingContainer}>
+          <Text style={[styles.loadingText, { color: themedStyles.textColor }]}>
+            Loading program details...
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  // Transform the program data into the format expected by the view
+  const currentWorkout = {
+    name: program.name,
+    progress: program.progress || 0,
+    currentWorkout: {
+      number: 2, // You'll need to calculate this based on program progress
+      total: program.workouts?.length || 0,
+      name: program.workouts?.[0]?.name || ''
+    },
+    exercises: program.workouts?.[0]?.exercises?.map(ex => ex.name) || [],
+    equipment: [
+      ...new Set(program.workouts?.[0]?.exercises?.map(ex => ex.equipment))
+    ],
+    typicalDuration: program.estimated_duration || 0,
+    lastCompleted: program.last_completed || 'Never'
+  };
+
+  console.log('currentWorkout', currentWorkout);
 
   if (!currentWorkout) {
     return <Text>Loading...</Text>;
