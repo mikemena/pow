@@ -1,12 +1,17 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { WorkoutContext } from '../src/context/workoutContext';
+import { API_URL_MOBILE } from '@env';
 
 const NavigationItem = ({ name, icon, isActive, onPress, accentColor }) => {
-  const { state } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
 
   return (
     <TouchableOpacity style={styles.navItem} onPress={onPress}>
@@ -44,17 +49,24 @@ const Navigation = ({ state, descriptors, navigation }) => {
       const hasActiveProgram = await fetchActiveProgramDetails();
 
       if (hasActiveProgram) {
-        navigation.navigate('CurrentProgramDetailsView');
+        // Navigate to the workout stack first, then to the details screen
+        navigation.navigate('Workout', {
+          screen: 'WorkoutExecution' // This matches your WorkoutStack screen name
+        });
       } else {
-        navigation.navigate('CurrentProgramView');
+        // Navigate to the workout stack first, then to the current program screen
+        navigation.navigate('Workout', {
+          screen: 'CurrentProgram' // This matches your WorkoutStack screen name
+        });
       }
     } catch (error) {
       console.error('Error handling workout navigation:', error);
       // Default to CurrentProgramView on error
-      navigation.navigate('CurrentProgramView');
+      navigation.navigate('Workout', {
+        screen: 'CurrentProgram'
+      });
     }
   };
-
   const getIcon = routeName => {
     switch (routeName) {
       case 'Programs':
@@ -88,7 +100,24 @@ const Navigation = ({ state, descriptors, navigation }) => {
 
         const isFocused = state.index === index;
 
+        // const onPress = () => {
+        //   const event = navigation.emit({
+        //     type: 'tabPress',
+        //     target: route.key,
+        //     canPreventDefault: true
+        //   });
+
+        //   if (!isFocused && !event.defaultPrevented) {
+        //     navigation.navigate(route.name);
+        //   }
+        // };
+
         const onPress = () => {
+          if (route.name === 'Workout') {
+            handleWorkoutPress();
+            return;
+          }
+
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,

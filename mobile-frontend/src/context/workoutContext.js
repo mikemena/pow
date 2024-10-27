@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import * as Crypto from 'expo-crypto';
 import { actionTypes } from '../actions/actionTypes';
+import { API_URL_MOBILE } from '@env';
 
 // Initial state
 const initialState = {
