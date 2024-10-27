@@ -46,7 +46,7 @@ const WorkoutStackScreen = () => (
     <WorkoutStack.Screen name='CurrentProgram' component={CurrentProgramView} />
     <WorkoutStack.Screen name='FlexWorkout' component={FlexWorkoutView} />
     <WorkoutStack.Screen
-      name='WorkoutExecution'
+      name='CurrentProgramDetails'
       component={CurrentProgramDetailsView}
     />
   </WorkoutStack.Navigator>

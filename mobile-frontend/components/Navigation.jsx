@@ -51,7 +51,7 @@ const Navigation = ({ state, descriptors, navigation }) => {
       if (hasActiveProgram) {
         // Navigate to the workout stack first, then to the details screen
         navigation.navigate('Workout', {
-          screen: 'WorkoutExecution' // This matches your WorkoutStack screen name
+          screen: 'CurrentProgramDetails' // This matches your WorkoutStack screen name
         });
       } else {
         // Navigate to the workout stack first, then to the current program screen

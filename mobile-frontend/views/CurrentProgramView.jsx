@@ -299,7 +299,7 @@ const CurrentProgramView = () => {
 
     try {
       // Navigate to program details view
-      navigation.navigate('CurrentProgramDetailsView');
+      navigation.navigate('CurrentProgramDetails');
     } catch (error) {
       console.error('Error navigating to program details:', error);
     }

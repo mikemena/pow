@@ -71,6 +71,13 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   if (!currentWorkout) {
     return <Text>Loading...</Text>;
   }
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', e => {
+      console.log('Navigation State:', e.data);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   return (
     <SafeAreaView
