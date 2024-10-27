@@ -100,18 +100,6 @@ const Navigation = ({ state, descriptors, navigation }) => {
 
         const isFocused = state.index === index;
 
-        // const onPress = () => {
-        //   const event = navigation.emit({
-        //     type: 'tabPress',
-        //     target: route.key,
-        //     canPreventDefault: true
-        //   });
-
-        //   if (!isFocused && !event.defaultPrevented) {
-        //     navigation.navigate(route.name);
-        //   }
-        // };
-
         const onPress = () => {
           if (route.name === 'Workout') {
             handleWorkoutPress();

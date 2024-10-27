@@ -22,6 +22,10 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     themeState.accentColor
   );
 
+  const handleBack = () => {
+    navigation.navigate('CurrentProgram');
+  };
+
   console.log('workoutState', workoutState);
   const program = workoutState.activeProgramDetails;
 
@@ -93,7 +97,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
         </Text>
         <View>
           <TouchableOpacity
-            onPress={() => navigation.goBack()}
+            onPress={handleBack}
             style={[
               { backgroundColor: themedStyles.secondaryBackgroundColor },
               globalStyles.iconCircle
