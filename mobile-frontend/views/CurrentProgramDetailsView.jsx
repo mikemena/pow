@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const CurrentProgramDetailsView = ({ navigation }) => {
+  const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const { state: workoutState } = useContext(WorkoutContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -22,12 +23,50 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     themeState.accentColor
   );
 
+  const program = workoutState.activeProgramDetails;
+
+  // Get all workouts from the program
+  const workouts = program?.workouts || [];
+  const totalWorkouts = workouts.length;
+
+  // Get current workout
+  const currentWorkout = useMemo(() => {
+    if (!workouts.length) return null;
+    return {
+      name: program.name,
+      progress: program.progress || 0,
+      currentWorkout: {
+        number: currentWorkoutIndex + 1,
+        total: totalWorkouts,
+        name: workouts[currentWorkoutIndex]?.name || ''
+      },
+      exercises:
+        workouts[currentWorkoutIndex]?.exercises?.map(ex => ex.name) || [],
+      equipment: [
+        ...new Set(
+          workouts[currentWorkoutIndex]?.exercises?.map(ex => ex.equipment)
+        )
+      ],
+      typicalDuration: program.estimated_duration || 0,
+      lastCompleted: program.last_completed || 'Never'
+    };
+  }, [program, workouts, currentWorkoutIndex]);
+
   const handleBack = () => {
     navigation.navigate('CurrentProgram');
   };
 
-  console.log('workoutState', workoutState);
-  const program = workoutState.activeProgramDetails;
+  const handlePreviousWorkout = () => {
+    if (currentWorkoutIndex > 0) {
+      setCurrentWorkoutIndex(prev => prev - 1);
+    }
+  };
+
+  const handleNextWorkout = () => {
+    if (currentWorkoutIndex < totalWorkouts - 1) {
+      setCurrentWorkoutIndex(prev => prev + 1);
+    }
+  };
 
   useEffect(() => {
     if (!program) {
@@ -52,23 +91,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
       </SafeAreaView>
     );
   }
-
-  // Transform the program data into the format expected by the view
-  const currentWorkout = {
-    name: program.name,
-    progress: program.progress || 0,
-    currentWorkout: {
-      number: 2, // You'll need to calculate this based on program progress
-      total: program.workouts?.length || 0,
-      name: program.workouts?.[0]?.name || ''
-    },
-    exercises: program.workouts?.[0]?.exercises?.map(ex => ex.name) || [],
-    equipment: [
-      ...new Set(program.workouts?.[0]?.exercises?.map(ex => ex.equipment))
-    ],
-    typicalDuration: program.estimated_duration || 0,
-    lastCompleted: program.last_completed || 'Never'
-  };
 
   console.log('currentWorkout', currentWorkout);
 
@@ -95,12 +117,13 @@ const CurrentProgramDetailsView = ({ navigation }) => {
         <Text style={[styles.title, { color: themedStyles.textColor }]}>
           {currentWorkout.name}
         </Text>
-        <View>
+        <View style={styles.progressContainer}>
           <TouchableOpacity
             onPress={handleBack}
             style={[
               { backgroundColor: themedStyles.secondaryBackgroundColor },
-              globalStyles.iconCircle
+              globalStyles.iconCircle,
+              styles.backButton
             ]}
           >
             <Ionicons
@@ -121,10 +144,20 @@ const CurrentProgramDetailsView = ({ navigation }) => {
         </View>
 
         <View style={styles.workoutInfo}>
-          <TouchableOpacity>
-            <Text style={[styles.navArrow, { color: themedStyles.textColor }]}>
-              {'<'}
-            </Text>
+          <TouchableOpacity
+            onPress={handlePreviousWorkout}
+            disabled={currentWorkoutIndex === 0}
+          >
+            <Ionicons
+              name='chevron-back-outline'
+              size={24}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
           </TouchableOpacity>
           <View>
             <Text
@@ -142,10 +175,20 @@ const CurrentProgramDetailsView = ({ navigation }) => {
               {currentWorkout.currentWorkout.name}
             </Text>
           </View>
-          <TouchableOpacity>
-            <Text style={[styles.navArrow, { color: themedStyles.textColor }]}>
-              {'>'}
-            </Text>
+          <TouchableOpacity
+            onPress={handleNextWorkout}
+            disabled={currentWorkoutIndex === totalWorkouts - 1}
+          >
+            <Ionicons
+              name='chevron-forward-outline'
+              size={24}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
           </TouchableOpacity>
         </View>
 
@@ -199,21 +242,24 @@ const CurrentProgramDetailsView = ({ navigation }) => {
             </Text>
           </View>
         </View>
-
-        <TouchableOpacity
-          style={[
-            globalStyles.button,
-            { backgroundColor: themedStyles.accentColor }
-          ]}
-          onPress={() => {
-            // Navigate to the actual workout screen
-            // navigation.navigate('ActualWorkout');
-          }}
-        >
-          <Text style={[globalStyles.buttonText, { color: colors.black }]}>
-            GO TO WORKOUT
-          </Text>
-        </TouchableOpacity>
+        <View style={globalStyles.centeredButtonContainer}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              {
+                backgroundColor: themedStyles.accentColor
+              }
+            ]}
+            onPress={() => {
+              // Navigate to the actual workout screen
+              // navigation.navigate('ActualWorkout');
+            }}
+          >
+            <Text style={[globalStyles.buttonText, { color: colors.black }]}>
+              GO TO WORKOUT
+            </Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -226,11 +272,23 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 10
   },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 10,
+    gap: 10
+  },
+  backButton: {
+    marginRight: 5
+  },
   progressBar: {
-    height: 25,
+    flex: 1,
+    height: 35,
     backgroundColor: '#444',
-    borderRadius: 10,
-    marginBottom: 20
+    borderRadius: 8,
+    position: 'relative',
+    overflow: 'hidden'
   },
   progressFill: {
     height: '100%',
@@ -266,15 +324,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 10
+    marginBottom: 10,
+    textAlign: 'center'
   },
   exerciseName: {
     fontSize: 16,
-    marginBottom: 5
+    marginBottom: 10,
+    marginLeft: 10
   },
   equipmentItem: {
     fontSize: 16,
-    marginBottom: 5
+    marginBottom: 10,
+    marginLeft: 10
   },
   infoRow: {
     flexDirection: 'row',
@@ -282,7 +343,8 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
   infoItem: {
-    flex: 1
+    flex: 1,
+    marginLeft: 10
   },
   infoLabel: {
     fontSize: 14,
