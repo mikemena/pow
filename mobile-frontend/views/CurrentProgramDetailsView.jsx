@@ -143,7 +143,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           </View>
         </View>
 
-        <View style={styles.workoutInfo}>
+        <View
+          style={[
+            styles.workoutInfo,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
           <TouchableOpacity
             onPress={handlePreviousWorkout}
             disabled={currentWorkoutIndex === 0}
@@ -192,7 +197,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.section}>
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
           <Text
             style={[styles.sectionTitle, { color: themedStyles.textColor }]}
           >
@@ -208,7 +218,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           ))}
         </View>
 
-        <View style={styles.section}>
+        <View
+          style={[
+            styles.section,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
           <Text
             style={[styles.sectionTitle, { color: themedStyles.textColor }]}
           >
@@ -224,7 +239,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           ))}
         </View>
 
-        <View style={styles.infoRow}>
+        <View
+          style={[
+            styles.infoRow,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
           <View style={styles.infoItem}>
             <Text style={[styles.infoLabel, { color: themedStyles.textColor }]}>
               TYPICAL DURATION
@@ -267,16 +287,17 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   title: {
+    fontFamily: 'Lexend',
     fontSize: 16,
     marginLeft: 10,
-    fontWeight: 'bold',
+    fontWeight: 'semibold',
     marginBottom: 10
   },
   progressContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginVertical: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 5,
     gap: 10
   },
   backButton: {
@@ -296,16 +317,20 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   progressText: {
+    fontFamily: 'Lexend',
     position: 'absolute',
     right: 10,
     color: 'white',
-    lineHeight: 25
+    lineHeight: 35
   },
   workoutInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 20
+    marginBottom: 10,
+    marginHorizontal: 5,
+    borderRadius: 10,
+    padding: 10
   },
   navArrow: {
     fontSize: 24,
@@ -316,23 +341,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   },
   workoutName: {
+    fontFamily: 'Lexend',
     fontSize: 18
   },
   section: {
-    marginBottom: 20
+    marginBottom: 10,
+    marginHorizontal: 5,
+    borderRadius: 10,
+    padding: 10
   },
   sectionTitle: {
+    fontFamily: 'Lexend',
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 10,
     textAlign: 'center'
   },
   exerciseName: {
+    fontFamily: 'Lexend',
     fontSize: 16,
     marginBottom: 10,
     marginLeft: 10
   },
   equipmentItem: {
+    fontFamily: 'Lexend',
     fontSize: 16,
     marginBottom: 10,
     marginLeft: 10
@@ -340,7 +372,10 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 20
+    marginBottom: 20,
+    marginHorizontal: 5,
+    borderRadius: 10,
+    padding: 10
   },
   infoItem: {
     flex: 1,
