@@ -12,7 +12,8 @@ import {
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
-  Modal
+  Modal,
+  Alert
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
@@ -85,53 +86,156 @@ const CurrentProgramView = () => {
         stack: error.stack,
         url: `${API_URL_MOBILE}/api/users/2/programs`
       });
+      setProgramList({
+        programs: [],
+        workouts: []
+      });
     }
-  }, []);
+  }, [fetchActiveProgram]);
 
   // Fetch active program
-  const fetchActiveProgram = useCallback(async () => {
-    try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/active-programs/user/2`
-      );
-      const data = await response.json();
+  const fetchActiveProgram = useCallback(
+    async programsList => {
+      try {
+        const response = await fetch(
+          `${API_URL_MOBILE}/api/active-programs/user/2`
+        );
+        const data = await response.json();
 
-      if (data.activeProgram) {
-        setActiveProgram(data.activeProgram.program_id);
+        if (data.activeProgram) {
+          setActiveProgram(data.activeProgram.program_id);
+          // Use passed programs list instead of programList.programs
+          const programDetails = programsList.find(
+            p => p.id === data.activeProgram.program_id
+          );
+          setActiveProgramWithDetails(programDetails || null);
+        } else {
+          setActiveProgram(null);
+          setActiveProgramWithDetails(null);
+        }
+      } catch (error) {
+        console.error('Error fetching active program:', error);
+        setActiveProgram(null);
+        setActiveProgramWithDetails(null);
       }
-    } catch (error) {
-      console.error('Error fetching active program:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [setActiveProgram]);
-
-  console.log('activeProgram', activeProgram);
+    },
+    [setActiveProgram, setActiveProgramWithDetails]
+  );
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
     try {
       setIsLoading(true);
-      await Promise.all([fetchPrograms(), fetchActiveProgram()]);
+      await fetchPrograms();
     } catch (error) {
       console.error('Error fetching initial data:', error);
     } finally {
       setIsLoading(false);
     }
-  }, [fetchPrograms, fetchActiveProgram]);
+  }, [fetchPrograms]);
 
   const handleSetActiveProgram = useCallback(
     async program => {
+      if (!program) {
+        console.log('Program is null, returning early');
+        return;
+      }
+
       try {
         setIsLoading(true);
+        console.log('Current active program:', activeProgram);
+        console.log('Attempting to handle program:', program.id);
 
-        // Find the complete program details from the already fetched programs
+        // If clicking on the already active program, prompt for deactivation
+        if (activeProgram === program.id) {
+          console.log('Deactivating current program:', program.id);
+          Alert.alert(
+            'Remove Current Program',
+            'Do you want to remove this as your current program?',
+            [
+              {
+                text: 'Cancel',
+                style: 'cancel',
+                onPress: () => {
+                  console.log('Deactivation cancelled');
+                  setIsLoading(false);
+                }
+              },
+              {
+                text: 'Remove',
+                style: 'destructive',
+                onPress: async () => {
+                  try {
+                    console.log('Starting program deactivation process');
+
+                    // First make the DELETE request to server
+                    console.log('Making DELETE request to server');
+                    const response = await fetch(
+                      `${API_URL_MOBILE}/api/active-programs/user/2`,
+                      {
+                        method: 'DELETE',
+                        headers: {
+                          'Content-Type': 'application/json'
+                        }
+                      }
+                    );
+
+                    console.log('Server response status:', response.status);
+                    const responseData = await response.json();
+                    console.log('Server response data:', responseData);
+
+                    if (!response.ok) {
+                      throw new Error(
+                        responseData.error || 'Failed to deactivate program'
+                      );
+                    }
+
+                    // Only clear state after successful server response
+                    console.log(
+                      'Clearing context state after successful deactivation'
+                    );
+                    setActiveProgram(null);
+                    setActiveProgramWithDetails(null);
+
+                    console.log('Program deactivated successfully');
+                    Alert.alert(
+                      'Success',
+                      'Program has been removed as your current program'
+                    );
+
+                    console.log('Refreshing program list');
+                    await fetchInitialData();
+                  } catch (error) {
+                    console.error('Detailed deactivation error:', {
+                      message: error.message,
+                      stack: error.stack,
+                      name: error.name
+                    });
+
+                    Alert.alert(
+                      'Error',
+                      'Failed to remove program. Please try again.'
+                    );
+                  } finally {
+                    setIsLoading(false);
+                    console.log('Deactivation process completed');
+                  }
+                }
+              }
+            ]
+          );
+          return;
+        }
+
+        // Regular flow for setting a new active program
+        console.log('Setting new active program');
         const programDetails = programList.programs.find(
           p => p.id === program.id
         );
 
-        // Store both the ID and complete details in context
-        setActiveProgramWithDetails(programDetails);
+        if (!programDetails) {
+          throw new Error('Program details not found');
+        }
 
         const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
           method: 'POST',
@@ -150,27 +254,38 @@ const CurrentProgramView = () => {
           throw new Error(data.error || 'Failed to set active program');
         }
 
-        // Update local state
+        // Update context and local state after successful server response
         setActiveProgram(program.id);
+        setActiveProgramWithDetails(programDetails);
+
+        Alert.alert(
+          'Success',
+          `${program.name} has been set as your current program`
+        );
+
+        await fetchInitialData();
       } catch (error) {
-        console.error('Error setting active program:', error);
-        // You might want to add error handling UI here
+        console.error('Error managing active program:', error);
+        Alert.alert(
+          'Error',
+          'Failed to update program status. Please try again.'
+        );
       } finally {
         setIsLoading(false);
       }
     },
-    [programList.programs, setActiveProgramWithDetails]
+    [
+      programList.programs,
+      setActiveProgramWithDetails,
+      setActiveProgram,
+      activeProgram,
+      fetchInitialData
+    ]
   );
 
   useEffect(() => {
-    const fetchInitialData = async () => {
-      setIsLoading(true);
-      await Promise.all([fetchPrograms(), fetchActiveProgram()]);
-      setIsLoading(false);
-    };
-
     fetchInitialData();
-  }, [fetchPrograms, fetchActiveProgram]);
+  }, [fetchInitialData]);
 
   useFocusEffect(
     useCallback(() => {
@@ -292,17 +407,8 @@ const CurrentProgramView = () => {
   };
 
   const handleSaveActiveProgram = async () => {
-    if (!workoutState.activeProgram || !workoutState.activeProgramDetails) {
-      console.error('No active program selected');
-      return;
-    }
-
-    try {
-      // Navigate to program details view
-      navigation.navigate('CurrentProgramDetails');
-    } catch (error) {
-      console.error('Error navigating to program details:', error);
-    }
+    // No active program is now a valid state, so we can just navigate
+    navigation.navigate('CurrentProgramDetails');
   };
 
   const formatDuration = (duration, unit) => {
@@ -374,7 +480,7 @@ const CurrentProgramView = () => {
               { color: themedStyles.accentColor }
             ]}
           >
-            CURRENT PROGRAM
+            CURRENT PROGRAM • TAP TO REMOVE
           </Text>
         )}
         <View style={globalStyles.iconContainer}></View>
