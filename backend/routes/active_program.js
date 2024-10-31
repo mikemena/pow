@@ -17,10 +17,18 @@ router.get('/active-programs/user/:userId', async (req, res) => {
       [userId]
     );
 
-    if (result.rows.length === 0) {
+    // Log the query result
+    console.log('Active program query result:', result.rows);
+
+    if (!result?.rows || result.rows.length === 0) {
+      console.log('No active program found for user:', userId);
       return res.status(200).json({ activeProgram: null });
     }
 
+    // Log the response being sent
+    console.log('Sending active program response:', {
+      activeProgram: result.rows[0]
+    });
     res.json({ activeProgram: result.rows[0] });
   } catch (error) {
     console.error('Error fetching active program:', error);

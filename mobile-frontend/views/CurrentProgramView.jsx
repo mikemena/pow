@@ -55,9 +55,54 @@ const CurrentProgramView = () => {
   );
 
   // Fetch programs
+  // Move fetchActiveProgram definition before fetchPrograms
+  const fetchActiveProgram = useCallback(
+    async programsList => {
+      if (!programsList || !Array.isArray(programsList)) {
+        console.log('No programs list provided to fetchActiveProgram');
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          `${API_URL_MOBILE}/api/active-programs/user/2`
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        console.log('Active program response:', data);
+
+        if (data?.activeProgram?.program_id) {
+          setActiveProgram(data.activeProgram.program_id);
+          const programDetails = programsList.find(
+            p => p?.id === data.activeProgram.program_id
+          );
+          setActiveProgramWithDetails(programDetails || null);
+        } else {
+          console.log('No active program found');
+          setActiveProgram(null);
+          setActiveProgramWithDetails(null);
+        }
+      } catch (error) {
+        console.error('Error fetching active program:', error);
+        setActiveProgram(null);
+        setActiveProgramWithDetails(null);
+      }
+    },
+    [setActiveProgram, setActiveProgramWithDetails]
+  );
+
+  // Remove fetchActiveProgram from fetchPrograms dependencies
   const fetchPrograms = useCallback(async () => {
     try {
-      // Add timeout and more detailed error logging
+      console.log(
+        'Fetching programs from:',
+        `${API_URL_MOBILE}/api/users/2/programs`
+      );
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000);
 
@@ -74,11 +119,27 @@ const CurrentProgramView = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
+
       const data = await response.json();
+      console.log('Programs fetched:', data);
+
+      if (!data || !Array.isArray(data)) {
+        console.error('Invalid programs data received:', data);
+        setProgramList({ programs: [], workouts: [] });
+        return;
+      }
+
       setProgramList({
         programs: data,
         workouts: []
       });
+
+      // Only fetch active program if we have programs
+      if (data.length > 0) {
+        await fetchActiveProgram(data);
+      } else {
+        console.log('No programs available, skipping active program fetch');
+      }
     } catch (error) {
       console.error('Detailed fetch error:', {
         message: error.message,
@@ -91,36 +152,14 @@ const CurrentProgramView = () => {
         workouts: []
       });
     }
-  }, [fetchActiveProgram]);
+  }, []); // Remove fetchActiveProgram from dependencies
 
-  // Fetch active program
-  const fetchActiveProgram = useCallback(
-    async programsList => {
-      try {
-        const response = await fetch(
-          `${API_URL_MOBILE}/api/active-programs/user/2`
-        );
-        const data = await response.json();
-
-        if (data.activeProgram) {
-          setActiveProgram(data.activeProgram.program_id);
-          // Use passed programs list instead of programList.programs
-          const programDetails = programsList.find(
-            p => p.id === data.activeProgram.program_id
-          );
-          setActiveProgramWithDetails(programDetails || null);
-        } else {
-          setActiveProgram(null);
-          setActiveProgramWithDetails(null);
-        }
-      } catch (error) {
-        console.error('Error fetching active program:', error);
-        setActiveProgram(null);
-        setActiveProgramWithDetails(null);
-      }
-    },
-    [setActiveProgram, setActiveProgramWithDetails]
-  );
+  // Add a useEffect to handle re-fetching on program list changes
+  useEffect(() => {
+    if (programList.programs.length > 0) {
+      fetchActiveProgram(programList.programs);
+    }
+  }, [programList.programs, fetchActiveProgram]);
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
@@ -542,7 +581,18 @@ const CurrentProgramView = () => {
           </View>
         </Modal>
 
-        {filteredPrograms.length > 0 ? (
+        {isLoading ? (
+          <View style={styles.noPrograms}>
+            <Text
+              style={[
+                styles.noProgramsText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              Loading programs...
+            </Text>
+          </View>
+        ) : filteredPrograms.length > 0 ? (
           <View style={globalStyles.container}>
             <FlatList
               data={filteredPrograms}
@@ -550,6 +600,18 @@ const CurrentProgramView = () => {
               keyExtractor={item => item.id.toString()}
               contentContainerStyle={styles.listContainer}
             />
+          </View>
+        ) : programList.programs.length > 0 ? (
+          <View style={styles.noPrograms}>
+            <Text
+              style={[
+                styles.noProgramsText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              No programs match your filters. Try adjusting your search
+              criteria.
+            </Text>
           </View>
         ) : (
           <View style={styles.noPrograms}>
