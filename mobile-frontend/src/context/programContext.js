@@ -86,6 +86,13 @@ export const ProgramProvider = ({ children }) => {
     });
   };
 
+  const setPrograms = useCallback(programs => {
+    dispatch({
+      type: actionTypes.SET_PROGRAMS,
+      payload: programs
+    });
+  }, []);
+
   // Save new program to backend
 
   const saveProgram = async () => {
@@ -435,6 +442,7 @@ export const ProgramProvider = ({ children }) => {
       value={{
         state,
         dispatch,
+        setPrograms,
         setMode,
         updateProgramField,
         initializeNewProgramState,

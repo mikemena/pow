@@ -27,11 +27,7 @@ import Filter from '../components/Filter';
 
 const ProgramsView = () => {
   const navigation = useNavigation();
-  const {
-    state: contextState,
-    fetchPrograms: contextFetchPrograms,
-    clearProgram
-  } = useContext(ProgramContext);
+  const { setPrograms, clearProgram } = useContext(ProgramContext);
   const [programList, setProgramList] = useState({
     programs: [],
     workouts: []
@@ -74,6 +70,8 @@ const ProgramsView = () => {
         programs: data,
         workouts: []
       });
+      setPrograms(data);
+      console.log('Programs saved to context:', data);
     } catch (error) {
       console.error('Detailed fetch error:', {
         message: error.message,

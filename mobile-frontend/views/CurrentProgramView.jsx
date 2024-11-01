@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
@@ -28,6 +29,10 @@ import Filter from '../components/Filter';
 
 const CurrentProgramView = () => {
   const navigation = useNavigation();
+  const {
+    state: { programs }
+  } = useContext(ProgramContext);
+  console.log('Programs in current programs view:', programs);
   const {
     state: workoutState,
     setActiveProgram,
@@ -54,46 +59,40 @@ const CurrentProgramView = () => {
     themeState.accentColor
   );
 
-  // Fetch programs
-  // Move fetchActiveProgram definition before fetchPrograms
-  const fetchActiveProgram = useCallback(
-    async programsList => {
-      if (!programsList || !Array.isArray(programsList)) {
-        console.log('No programs list provided to fetchActiveProgram');
-        return;
+  // Fetch active program
+  const fetchActiveProgram = useCallback(async () => {
+    if (!programs || programs.length === 0) return;
+
+    try {
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/active-programs/user/2`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      try {
-        const response = await fetch(
-          `${API_URL_MOBILE}/api/active-programs/user/2`
+      const data = await response.json();
+
+      if (data?.activeProgram?.program_id) {
+        const programDetails = programs.find(
+          p => p.id === data.activeProgram.program_id
         );
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log('Active program response:', data);
-
-        if (data?.activeProgram?.program_id) {
+        if (programDetails) {
+          setActiveId(data.activeProgram.program_id);
           setActiveProgram(data.activeProgram.program_id);
-          const programDetails = programsList.find(
-            p => p?.id === data.activeProgram.program_id
-          );
-          setActiveProgramWithDetails(programDetails || null);
-        } else {
-          console.log('No active program found');
-          setActiveProgram(null);
-          setActiveProgramWithDetails(null);
+          setActiveProgramWithDetails(programDetails);
         }
-      } catch (error) {
-        console.error('Error fetching active program:', error);
-        setActiveProgram(null);
-        setActiveProgramWithDetails(null);
       }
-    },
-    [setActiveProgram, setActiveProgramWithDetails]
-  );
+    } catch (error) {
+      console.error('Error fetching active program:', error);
+    }
+  }, [programs, setActiveProgram, setActiveProgramWithDetails]);
+
+  useEffect(() => {
+    fetchActiveProgram();
+  }, [fetchActiveProgram]);
 
   // Remove fetchActiveProgram from fetchPrograms dependencies
   const fetchPrograms = useCallback(async () => {
@@ -394,7 +393,7 @@ const CurrentProgramView = () => {
               { color: themedStyles.accentColor }
             ]}
           >
-            CURRENT PROGRAM • TAP TO REMOVE
+            CURRENT PROGRAM
           </Text>
         )}
         <View style={globalStyles.iconContainer}></View>
