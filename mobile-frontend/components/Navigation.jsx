@@ -1,10 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { WorkoutContext } from '../src/context/workoutContext';
-import { API_URL_MOBILE } from '@env';
 
 const NavigationItem = ({ name, icon, isActive, onPress, accentColor }) => {
   const { state: themeState } = useTheme();
@@ -36,8 +34,6 @@ const NavigationItem = ({ name, icon, isActive, onPress, accentColor }) => {
 };
 
 const Navigation = ({ state, descriptors, navigation }) => {
-  const { state: workoutState, fetchActiveProgramDetails } =
-    useContext(WorkoutContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -46,27 +42,15 @@ const Navigation = ({ state, descriptors, navigation }) => {
 
   const handleWorkoutPress = async () => {
     try {
-      const hasActiveProgram = await fetchActiveProgramDetails();
-
-      if (hasActiveProgram) {
-        // Navigate to the workout stack first, then to the details screen
-        navigation.navigate('Workout', {
-          screen: 'CurrentProgramDetails' // This matches your WorkoutStack screen name
-        });
-      } else {
-        // Navigate to the workout stack first, then to the current program screen
-        navigation.navigate('Workout', {
-          screen: 'CurrentProgram' // This matches your WorkoutStack screen name
-        });
-      }
+      navigation.navigate('Workout', {
+        screen: 'WorkoutMain'
+      });
     } catch (error) {
       console.error('Error handling workout navigation:', error);
-      // Default to CurrentProgramView on error
-      navigation.navigate('Workout', {
-        screen: 'CurrentProgram'
-      });
+      navigation.navigate('Workout', { screen: 'WorkoutMain' });
     }
   };
+
   const getIcon = routeName => {
     switch (routeName) {
       case 'Programs':

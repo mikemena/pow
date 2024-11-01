@@ -103,18 +103,12 @@ const CurrentProgramView = () => {
         `${API_URL_MOBILE}/api/users/2/programs`
       );
 
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
-
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
-        signal: controller.signal,
         headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         }
       });
-
-      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -123,36 +117,22 @@ const CurrentProgramView = () => {
       const data = await response.json();
       console.log('Programs fetched:', data);
 
-      if (!data || !Array.isArray(data)) {
-        console.error('Invalid programs data received:', data);
-        setProgramList({ programs: [], workouts: [] });
-        return;
-      }
-
+      // Always set program list, even if there's no active program
       setProgramList({
-        programs: data,
+        programs: data || [],
         workouts: []
       });
 
-      // Only fetch active program if we have programs
-      if (data.length > 0) {
-        await fetchActiveProgram(data);
-      } else {
-        console.log('No programs available, skipping active program fetch');
-      }
+      // Fetch active program separately
+      await fetchActiveProgram(data);
     } catch (error) {
-      console.error('Detailed fetch error:', {
-        message: error.message,
-        name: error.name,
-        stack: error.stack,
-        url: `${API_URL_MOBILE}/api/users/2/programs`
-      });
+      console.error('Detailed fetch error:', error);
       setProgramList({
         programs: [],
         workouts: []
       });
     }
-  }, []); // Remove fetchActiveProgram from dependencies
+  }, [fetchActiveProgram]);
 
   // Add a useEffect to handle re-fetching on program list changes
   useEffect(() => {
@@ -175,151 +155,38 @@ const CurrentProgramView = () => {
 
   const handleSetActiveProgram = useCallback(
     async program => {
-      if (!program) {
-        console.log('Program is null, returning early');
-        return;
-      }
-
       try {
         setIsLoading(true);
-        console.log('Current active program:', activeProgram);
-        console.log('Attempting to handle program:', program.id);
 
-        // If clicking on the already active program, prompt for deactivation
         if (activeProgram === program.id) {
-          console.log('Deactivating current program:', program.id);
-          Alert.alert(
-            'Remove Current Program',
-            'Do you want to remove this as your current program?',
-            [
-              {
-                text: 'Cancel',
-                style: 'cancel',
-                onPress: () => {
-                  console.log('Deactivation cancelled');
-                  setIsLoading(false);
-                }
-              },
-              {
-                text: 'Remove',
-                style: 'destructive',
-                onPress: async () => {
-                  try {
-                    console.log('Starting program deactivation process');
-
-                    // First make the DELETE request to server
-                    console.log('Making DELETE request to server');
-                    const response = await fetch(
-                      `${API_URL_MOBILE}/api/active-programs/user/2`,
-                      {
-                        method: 'DELETE',
-                        headers: {
-                          'Content-Type': 'application/json'
-                        }
-                      }
-                    );
-
-                    console.log('Server response status:', response.status);
-                    const responseData = await response.json();
-                    console.log('Server response data:', responseData);
-
-                    if (!response.ok) {
-                      throw new Error(
-                        responseData.error || 'Failed to deactivate program'
-                      );
-                    }
-
-                    // Only clear state after successful server response
-                    console.log(
-                      'Clearing context state after successful deactivation'
-                    );
-                    setActiveProgram(null);
-                    setActiveProgramWithDetails(null);
-
-                    console.log('Program deactivated successfully');
-                    Alert.alert(
-                      'Success',
-                      'Program has been removed as your current program'
-                    );
-
-                    console.log('Refreshing program list');
-                    await fetchInitialData();
-                  } catch (error) {
-                    console.error('Detailed deactivation error:', {
-                      message: error.message,
-                      stack: error.stack,
-                      name: error.name
-                    });
-
-                    Alert.alert(
-                      'Error',
-                      'Failed to remove program. Please try again.'
-                    );
-                  } finally {
-                    setIsLoading(false);
-                    console.log('Deactivation process completed');
-                  }
-                }
-              }
-            ]
-          );
+          // Navigate to details if clicking active program
+          navigation.navigate('CurrentProgramDetails');
           return;
         }
 
-        // Regular flow for setting a new active program
-        console.log('Setting new active program');
-        const programDetails = programList.programs.find(
-          p => p.id === program.id
-        );
-
-        if (!programDetails) {
-          throw new Error('Program details not found');
-        }
-
+        // Set new active program
         const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             userId: 2,
             programId: program.id
           })
         });
 
-        const data = await response.json();
+        if (!response.ok) throw new Error('Failed to set active program');
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to set active program');
-        }
-
-        // Update context and local state after successful server response
         setActiveProgram(program.id);
-        setActiveProgramWithDetails(programDetails);
-
-        Alert.alert(
-          'Success',
-          `${program.name} has been set as your current program`
-        );
-
-        await fetchInitialData();
+        setActiveProgramWithDetails(program);
+        navigation.navigate('CurrentProgramDetails');
       } catch (error) {
-        console.error('Error managing active program:', error);
-        Alert.alert(
-          'Error',
-          'Failed to update program status. Please try again.'
-        );
+        console.error('Error:', error);
+        Alert.alert('Error', 'Failed to update program status.');
       } finally {
         setIsLoading(false);
       }
     },
-    [
-      programList.programs,
-      setActiveProgramWithDetails,
-      setActiveProgram,
-      activeProgram,
-      fetchInitialData
-    ]
+    [activeProgram, navigation]
   );
 
   useEffect(() => {
@@ -445,9 +312,17 @@ const CurrentProgramView = () => {
     });
   };
 
+  const handleBack = () => {
+    navigation.navigate('WorkoutMain');
+  };
+
   const handleSaveActiveProgram = async () => {
-    // No active program is now a valid state, so we can just navigate
-    navigation.navigate('CurrentProgramDetails');
+    if (activeProgram) {
+      navigation.navigate('CurrentProgramDetails');
+    } else {
+      // If no active program, stay on current view to allow selection
+      await fetchPrograms();
+    }
   };
 
   const formatDuration = (duration, unit) => {
@@ -536,6 +411,20 @@ const CurrentProgramView = () => {
     >
       <Header pageName='Workout' />
       <View style={globalStyles.container}>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={[
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            globalStyles.iconCircle,
+            styles.backButton
+          ]}
+        >
+          <Ionicons
+            name={'arrow-back-outline'}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
+        </TouchableOpacity>
         {programList.programs.length > 0 && (
           <PillButton
             label='Filter'
@@ -592,7 +481,8 @@ const CurrentProgramView = () => {
               Loading programs...
             </Text>
           </View>
-        ) : filteredPrograms.length > 0 ? (
+        ) : programList.programs.length > 0 ? (
+          // Always show program list if programs exist
           <View style={globalStyles.container}>
             <FlatList
               data={filteredPrograms}
@@ -600,18 +490,6 @@ const CurrentProgramView = () => {
               keyExtractor={item => item.id.toString()}
               contentContainerStyle={styles.listContainer}
             />
-          </View>
-        ) : programList.programs.length > 0 ? (
-          <View style={styles.noPrograms}>
-            <Text
-              style={[
-                styles.noProgramsText,
-                { color: themedStyles.accentColor }
-              ]}
-            >
-              No programs match your filters. Try adjusting your search
-              criteria.
-            </Text>
           </View>
         ) : (
           <View style={styles.noPrograms}>

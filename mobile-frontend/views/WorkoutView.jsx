@@ -1,3 +1,4 @@
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -7,14 +8,33 @@ import {
   TouchableOpacity
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { WorkoutContext } from '../src/context/workoutContext';
 import Header from '../components/Header';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { useTheme } from '../src/hooks/useTheme';
 import { colors } from '../src/styles/globalStyles';
 
 const WorkoutView = () => {
-  const { state } = useTheme();
-  const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const { state: workoutState } = useContext(WorkoutContext);
+  const activeProgram = workoutState.activeProgram;
+  console.log('activeProgram:', activeProgram);
+
+  const handleProgramWorkoutPress = () => {
+    if (activeProgram) {
+      // If there's an active program, go directly to program details
+      navigation.navigate('CurrentProgramDetails');
+    } else {
+      // If no active program, go to program selection
+      navigation.navigate('CurrentProgram');
+    }
+  };
+
   const navigation = useNavigation();
 
   return (
@@ -28,7 +48,7 @@ const WorkoutView = () => {
       <View style={[styles.container]}>
         <TouchableOpacity
           style={styles.imageContainer}
-          onPress={() => navigation.navigate('CurrentProgram')}
+          onPress={handleProgramWorkoutPress}
         >
           <ImageBackground
             source={require('../assets/images/workout-1.jpg')}
@@ -37,7 +57,9 @@ const WorkoutView = () => {
             <View style={styles.lightenOverlay} />
             <View style={styles.textOverlay}>
               <Text style={[styles.imageText, { color: colors.offWhite }]}>
-                Start Workout{'\n'}Using a Program
+                {activeProgram
+                  ? 'Continue Current Program'
+                  : 'Start Workout Using a Program'}
               </Text>
             </View>
           </ImageBackground>
