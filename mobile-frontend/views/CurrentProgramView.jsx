@@ -410,40 +410,42 @@ const CurrentProgramView = () => {
     >
       <Header pageName='Workout' />
       <View style={globalStyles.container}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={[
-            { backgroundColor: themedStyles.secondaryBackgroundColor },
-            globalStyles.iconCircle,
-            styles.backButton
-          ]}
-        >
-          <Ionicons
-            name={'arrow-back-outline'}
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
-            size={24}
-          />
-        </TouchableOpacity>
-        {programList.programs.length > 0 && (
-          <PillButton
-            label='Filter'
-            icon={
-              <Ionicons
-                name='options-outline'
-                size={16}
-                style={{
-                  color:
-                    themeState.theme === 'dark'
-                      ? themedStyles.accentColor
-                      : colors.eggShell
-                }}
-              />
-            }
-            onPress={() => {
-              setIsFilterVisible(!isFilterVisible);
-            }}
-          />
-        )}
+        <View style={styles.controlsContainer}>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={[
+              { backgroundColor: themedStyles.secondaryBackgroundColor },
+              globalStyles.iconCircle,
+              styles.backButton
+            ]}
+          >
+            <Ionicons
+              name={'arrow-back-outline'}
+              style={[globalStyles.icon, { color: themedStyles.textColor }]}
+              size={24}
+            />
+          </TouchableOpacity>
+          {programList.programs.length > 0 && (
+            <PillButton
+              label='Filter'
+              icon={
+                <Ionicons
+                  name='options-outline'
+                  size={16}
+                  style={{
+                    color:
+                      themeState.theme === 'dark'
+                        ? themedStyles.accentColor
+                        : colors.eggShell
+                  }}
+                />
+              }
+              onPress={() => {
+                setIsFilterVisible(!isFilterVisible);
+              }}
+            />
+          )}
+        </View>
         <Modal
           visible={isFilterVisible}
           animationType='slide'
@@ -523,6 +525,11 @@ const CurrentProgramView = () => {
 const styles = StyleSheet.create({
   listContainer: {
     paddingTop: 20
+  },
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 10
   },
   modalOverlay: {
     flex: 1,
