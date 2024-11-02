@@ -80,7 +80,6 @@ const CurrentProgramView = () => {
         );
 
         if (programDetails) {
-          setActiveId(data.activeProgram.program_id);
           setActiveProgram(data.activeProgram.program_id);
           setActiveProgramWithDetails(programDetails);
         }
@@ -139,6 +138,21 @@ const CurrentProgramView = () => {
       fetchActiveProgram(programList.programs);
     }
   }, [programList.programs, fetchActiveProgram]);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const isActive = true;
+
+  //     if (isActive) {
+  //       fetchInitialData();
+  //     }
+
+  //     return () => {
+  //       // Cleanup when screen loses focus
+  //       isActive = false;
+  //     };
+  //   }, [fetchInitialData])
+  // );
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
@@ -315,15 +329,6 @@ const CurrentProgramView = () => {
     navigation.navigate('WorkoutMain');
   };
 
-  const handleSaveActiveProgram = async () => {
-    if (activeProgram) {
-      navigation.navigate('CurrentProgramDetails');
-    } else {
-      // If no active program, stay on current view to allow selection
-      await fetchPrograms();
-    }
-  };
-
   const formatDuration = (duration, unit) => {
     const capitalizedUnit = unit.charAt(0).toUpperCase() + unit.slice(1);
     const formattedUnit =
@@ -483,7 +488,7 @@ const CurrentProgramView = () => {
             </Text>
           </View>
         ) : programList.programs.length > 0 ? (
-          // Always show program list if programs exist
+          // Show program list if programs exist
           <View style={globalStyles.container}>
             <FlatList
               data={filteredPrograms}
@@ -504,19 +509,6 @@ const CurrentProgramView = () => {
             </Text>
           </View>
         )}
-        <View style={globalStyles.centeredButtonContainer}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              { backgroundColor: themedStyles.accentColor }
-            ]}
-            onPress={handleSaveActiveProgram}
-          >
-            <Text style={[globalStyles.buttonText, { color: colors.black }]}>
-              SAVE
-            </Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </SafeAreaView>
   );

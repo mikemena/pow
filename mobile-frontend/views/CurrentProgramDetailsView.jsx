@@ -7,6 +7,7 @@ import {
   ScrollView,
   SafeAreaView
 } from 'react-native';
+// import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
@@ -15,6 +16,7 @@ import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const CurrentProgramDetailsView = ({ navigation }) => {
+  // const navigation = useNavigation();
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const { state: workoutState } = useContext(WorkoutContext);
   const { state: themeState } = useTheme();
@@ -51,6 +53,10 @@ const CurrentProgramDetailsView = ({ navigation }) => {
       lastCompleted: program.last_completed || 'Never'
     };
   }, [program, workouts, currentWorkoutIndex]);
+
+  const handleStartWorkout = () => {
+    navigation.navigate('StartWorkout', { workout: currentWorkout });
+  };
 
   const handleBack = () => {
     navigation.navigate('CurrentProgram');
@@ -270,10 +276,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
                 backgroundColor: themedStyles.accentColor
               }
             ]}
-            onPress={() => {
-              // Navigate to the actual workout screen
-              // navigation.navigate('ActualWorkout');
-            }}
+            onPress={handleStartWorkout}
           >
             <Text style={[globalStyles.buttonText, { color: colors.black }]}>
               GO TO WORKOUT

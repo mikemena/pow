@@ -21,6 +21,7 @@ import ExerciseSelectionView from './views/ExerciseSelectionView';
 import CurrentProgramView from './views/CurrentProgramView';
 import FlexWorkoutView from './views/FlexWorkoutView';
 import CurrentProgramDetailsView from './views/CurrentProgramDetailsView';
+import StartWorkoutView from './views/StartWorkoutView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
@@ -49,6 +50,7 @@ const WorkoutStackScreen = () => (
       name='CurrentProgramDetails'
       component={CurrentProgramDetailsView}
     />
+    <WorkoutStack.Screen name='StartWorkout' component={StartWorkoutView} />
   </WorkoutStack.Navigator>
 );
 

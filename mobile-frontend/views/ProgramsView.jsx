@@ -71,7 +71,7 @@ const ProgramsView = () => {
         workouts: []
       });
       setPrograms(data);
-      console.log('Programs saved to context:', data);
+      // console.log('Programs saved to context:', data);
     } catch (error) {
       console.error('Detailed fetch error:', {
         message: error.message,
