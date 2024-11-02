@@ -178,7 +178,7 @@ const StartWorkoutView = ({ navigation, route }) => {
         <TouchableOpacity
           onPress={handlePause}
           style={[
-            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            { backgroundColor: themedStyles.accentColor },
             globalStyles.iconCircle,
             styles.backButton,
             !isStarted && styles.disabledButton
@@ -189,7 +189,7 @@ const StartWorkoutView = ({ navigation, route }) => {
             name={isPaused ? 'play-outline' : 'pause-outline'}
             style={[
               globalStyles.icon,
-              { color: themedStyles.textColor },
+              { color: colors.offWhite },
               !isStarted && styles.disabledIcon
             ]}
             size={24}

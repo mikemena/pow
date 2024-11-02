@@ -33,7 +33,14 @@ const ProfileView = ({ route }) => {
   const { state, dispatch } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
-  const accentColors = ['#F99C57', '#A6E221', '#D93B56', '#3F75DF', '#FC63D2'];
+  const accentColors = [
+    '#F99C57',
+    '#A6E221',
+    '#159651',
+    '#D93B56',
+    '#3F75DF',
+    '#FC63D2'
+  ];
 
   const handleSave = () => {
     onSave({ userName, email });
