@@ -11,7 +11,7 @@ import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { colors } from '../src/styles/globalStyles';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = ({ navigation, route }) => {
   const [isStarted, setIsStarted] = useState(false);
@@ -40,6 +40,25 @@ const StartWorkoutView = ({ navigation, route }) => {
 
   const currentExercise = workout.exercises[currentExerciseIndex];
 
+  const handleCancel = () => {
+    navigation.goBack();
+  };
+  const handleBack = () => {
+    navigation.navigate('CurrentProgramDetails');
+  };
+
+  const handlePause = () => {
+    console.log('Pause workout');
+  };
+
+  const handleAddExercise = async () => {
+    try {
+      console.error('Add exercise functionality not implemented');
+    } catch (error) {
+      console.error('Failed to save the program:', error);
+    }
+  };
+
   const handlePreviousExercise = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
@@ -63,28 +82,66 @@ const StartWorkoutView = ({ navigation, route }) => {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.black }]}>
+    <SafeAreaView
+      style={[
+        globalStyles.container,
+        { backgroundColor: themedStyles.primaryBackgroundColor }
+      ]}
+    >
       <Header pageName='START WORKOUT' />
       <View style={styles.header}>
-        <Text style={styles.timerText}>F•0•4</Text>
-        <Text style={styles.workoutName}>
-          {workout.name} - <Text style={styles.changeText}>CHANGE</Text>
+        <TouchableOpacity
+          onPress={handleBack}
+          style={[
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            globalStyles.iconCircle,
+            styles.backButton
+          ]}
+        >
+          <Ionicons
+            name={'arrow-back-outline'}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
+        </TouchableOpacity>
+        <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
+          {workout.name}
         </Text>
       </View>
 
       <View style={styles.mainControls}>
         <TouchableOpacity
-          style={styles.startButton}
+          style={[
+            globalStyles.button,
+            styles.stopWatchBtn,
+            { backgroundColor: themedStyles.accentColor }
+          ]}
           onPress={() => setIsStarted(!isStarted)}
         >
-          <Text style={styles.startButtonText}>
-            {isStarted ? 'PAUSE WORKOUT' : 'START WORKOUT'}
+          <Text style={[globalStyles.buttonText, { color: colors.black }]}>
+            {isStarted ? 'COMPLETE WORKOUT' : 'START WORKOUT'}
           </Text>
         </TouchableOpacity>
-
-        <Text style={styles.timerDisplay}>0 MINUTES</Text>
+        <TouchableOpacity
+          onPress={handlePause}
+          style={[
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            globalStyles.iconCircle,
+            styles.backButton
+          ]}
+        >
+          <Ionicons
+            name={'pause-outline'}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            size={24}
+          />
+        </TouchableOpacity>
+        <Text
+          style={[styles.timerDisplay, { color: themedStyles.accentColor }]}
+        >
+          0 MINUTES
+        </Text>
       </View>
-
       <View style={styles.exerciseContainer}>
         <View style={styles.exerciseHeader}>
           <Text style={styles.exerciseNumber}>1</Text>
@@ -134,16 +191,41 @@ const StartWorkoutView = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
-
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.footerButton}>
-          <Text style={styles.footerButtonText}>ADD EXERCISE</Text>
+      {/* Add Exercise and Cancel buttons */}
+      <View style={styles.buttonRow}>
+        <TouchableOpacity
+          style={[
+            globalStyles.button,
+            styles.addExerciseButton,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+          onPress={handleAddExercise}
+        >
+          <Text
+            style={[
+              globalStyles.buttonText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            ADD EXERCISE
+          </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.footerButton, styles.cancelButton]}
-          onPress={() => navigation.goBack()}
+          style={[
+            globalStyles.button,
+            styles.cancelButton,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+          onPress={handleCancel}
         >
-          <Text style={styles.footerButtonText}>CANCEL</Text>
+          <Text
+            style={[
+              globalStyles.buttonText,
+              { color: themedStyles.accentColor }
+            ]}
+          >
+            CANCEL
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -156,18 +238,16 @@ const styles = StyleSheet.create({
     backgroundColor: colors.black
   },
   header: {
+    flexDirection: 'row',
     padding: 16,
     alignItems: 'center'
   },
-  timerText: {
-    color: colors.accent,
-    fontSize: 24,
-    fontFamily: 'monospace',
-    marginBottom: 8
+  stopWatchBtn: {
+    width: 190
   },
   workoutName: {
-    color: colors.white,
-    fontSize: 18
+    paddingLeft: 20,
+    fontSize: 16
   },
   changeText: {
     color: colors.accent
@@ -178,20 +258,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16
   },
-  startButton: {
-    backgroundColor: '#333',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+    marginBottom: 10
   },
-  startButtonText: {
-    color: colors.accent,
-    fontSize: 16
+  addExerciseButton: {
+    flex: 1,
+    marginRight: 10
   },
+  cancelButton: {
+    flex: 1,
+    marginLeft: 10
+  },
+
   timerDisplay: {
-    color: colors.accent,
-    fontSize: 16,
-    fontFamily: 'monospace'
+    fontSize: 24,
+    fontWeight: 'bold',
+    fontFamily: 'Tiny5'
   },
   exerciseContainer: {
     flex: 1,
@@ -280,41 +365,6 @@ const styles = StyleSheet.create({
   addSetText: {
     color: colors.accent,
     marginLeft: 8
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16
-  },
-  footerButton: {
-    flex: 1,
-    backgroundColor: '#333',
-    padding: 16,
-    borderRadius: 8,
-    marginHorizontal: 8,
-    alignItems: 'center'
-  },
-  cancelButton: {
-    backgroundColor: '#444'
-  },
-  footerButtonText: {
-    color: colors.accent
-  },
-  navigation: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#333'
-  },
-  navText: {
-    color: colors.gray,
-    fontSize: 12,
-    textAlign: 'center',
-    marginTop: 4
-  },
-  activeNavText: {
-    color: colors.accent
   }
 });
 
