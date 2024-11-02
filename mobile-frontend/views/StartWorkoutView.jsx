@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,8 +15,10 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = ({ navigation, route }) => {
   const [isStarted, setIsStarted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
+  const timerRef = useRef(null);
   const [sets, setSets] = useState([{ weight: '30', reps: '10' }]);
 
   const { state: themeState } = useTheme();
@@ -24,6 +26,15 @@ const StartWorkoutView = ({ navigation, route }) => {
     themeState.theme,
     themeState.accentColor
   );
+
+  useEffect(() => {
+    // Cleanup timer on component unmount
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, []);
 
   // Mock data - replace with actual workout data from route.params
   const workout = {
@@ -47,8 +58,50 @@ const StartWorkoutView = ({ navigation, route }) => {
     navigation.navigate('CurrentProgramDetails');
   };
 
+  const startTimer = () => {
+    if (!isStarted) {
+      setIsStarted(true);
+      setIsPaused(false);
+      timerRef.current = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+  };
+
+  const pauseTimer = () => {
+    if (isStarted && !isPaused) {
+      clearInterval(timerRef.current);
+      setIsPaused(true);
+    } else if (isStarted && isPaused) {
+      setIsPaused(false);
+      timerRef.current = setInterval(() => {
+        setTime(prevTime => prevTime + 1);
+      }, 1000);
+    }
+  };
+
+  const stopTimer = () => {
+    clearInterval(timerRef.current);
+    setIsStarted(false);
+    setIsPaused(false);
+    // Optionally handle workout completion here
+    // For example, save the workout data
+    handleWorkoutComplete();
+  };
+
+  const handleWorkoutComplete = () => {
+    // Add logic to save workout data
+    console.log('Workout completed with duration:', formatTime(time));
+    navigation.goBack();
+  };
+
+  const formatTime = seconds => {
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes} MINUTES`;
+  };
+
   const handlePause = () => {
-    console.log('Pause workout');
+    pauseTimer();
   };
 
   const handleAddExercise = async () => {
@@ -116,7 +169,7 @@ const StartWorkoutView = ({ navigation, route }) => {
             styles.stopWatchBtn,
             { backgroundColor: themedStyles.accentColor }
           ]}
-          onPress={() => setIsStarted(!isStarted)}
+          onPress={isStarted ? stopTimer : startTimer}
         >
           <Text style={[globalStyles.buttonText, { color: colors.black }]}>
             {isStarted ? 'COMPLETE WORKOUT' : 'START WORKOUT'}
@@ -127,19 +180,25 @@ const StartWorkoutView = ({ navigation, route }) => {
           style={[
             { backgroundColor: themedStyles.secondaryBackgroundColor },
             globalStyles.iconCircle,
-            styles.backButton
+            styles.backButton,
+            !isStarted && styles.disabledButton
           ]}
+          disabled={!isStarted}
         >
           <Ionicons
-            name={'pause-outline'}
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            name={isPaused ? 'play-outline' : 'pause-outline'}
+            style={[
+              globalStyles.icon,
+              { color: themedStyles.textColor },
+              !isStarted && styles.disabledIcon
+            ]}
             size={24}
           />
         </TouchableOpacity>
         <Text
           style={[styles.timerDisplay, { color: themedStyles.accentColor }]}
         >
-          0 MINUTES
+          {formatTime(time)}
         </Text>
       </View>
       <View style={styles.exerciseContainer}>
@@ -277,6 +336,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'Tiny5'
+  },
+  disabledButton: {
+    opacity: 0.5
+  },
+  disabledIcon: {
+    opacity: 0.5
   },
   exerciseContainer: {
     flex: 1,
