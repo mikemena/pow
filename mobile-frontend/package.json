@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start --dev-client",
+    "start-ios": "expo start --ios",
     "ios-pro": "expo start --ios --simulator='iPhone 15 Pro'",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
