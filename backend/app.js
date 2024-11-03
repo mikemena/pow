@@ -18,7 +18,7 @@ const equipmentsRoutes = require('./routes/equipment_catalog');
 const exerciseCatalogRoutes = require('./routes/exercise_catalog');
 const usersRoutes = require('./routes/users');
 const programRoutes = require('./routes/programs');
-// const workoutTemplatesRoutes = require('./routes/workout_templates');
+const workoutRoutes = require('./routes/workout');
 const userSetsRoutes = require('./routes/sets');
 const userExercisesRoutes = require('./routes/exercises');
 const workoutHistoryRoutes = require('./routes/workout_history');
@@ -30,14 +30,12 @@ app.use('/api', musclesRoutes);
 app.use('/api', equipmentsRoutes);
 app.use('/api', exerciseCatalogRoutes);
 app.use('/api', usersRoutes);
-// app.use('/api', workoutTemplatesRoutes);
+app.use('/api', workoutRoutes);
 app.use('/api', userSetsRoutes);
 app.use('/api', userExercisesRoutes);
 app.use('/api', workoutHistoryRoutes);
 app.use('/api', programRoutes);
 app.use('/api', activeProgramRoutes);
-
-// Your existing setup and routes...
 
 const PORT = process.env.PORT || 9025;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

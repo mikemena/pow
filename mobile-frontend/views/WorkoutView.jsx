@@ -23,7 +23,6 @@ const WorkoutView = () => {
 
   const { state: workoutState } = useContext(WorkoutContext);
   const activeProgram = workoutState.activeProgram;
-  console.log('activeProgram:', activeProgram);
 
   const handleProgramWorkoutPress = () => {
     if (activeProgram) {

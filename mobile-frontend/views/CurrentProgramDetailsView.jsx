@@ -98,7 +98,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     );
   }
 
-  console.log('currentWorkout', currentWorkout);
+  // console.log('currentWorkout', currentWorkout);
 
   if (!currentWorkout) {
     return <Text>Loading...</Text>;

@@ -44,8 +44,12 @@ const StartWorkoutView = ({ navigation, route }) => {
         id: 1,
         name: 'Barbell Preacher Curls',
         muscle: 'Bicep'
+      },
+      {
+        id: 2,
+        name: 'Concentration Curls',
+        muscle: 'Bicep'
       }
-      // Add more exercises here
     ]
   };
 
@@ -202,12 +206,49 @@ const StartWorkoutView = ({ navigation, route }) => {
         </Text>
       </View>
       <View style={styles.exerciseContainer}>
-        <View style={styles.exerciseHeader}>
-          <Text style={styles.exerciseNumber}>1</Text>
+        <View style={[styles.exerciseHeader, styles.exerciseNavigation]}>
+          <TouchableOpacity
+            onPress={handlePreviousExercise}
+            disabled={currentExerciseIndex === 0}
+          >
+            <Ionicons
+              name='chevron-back-outline'
+              size={24}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell,
+                opacity: currentExerciseIndex === 0 ? 0.5 : 1
+              }}
+            />
+          </TouchableOpacity>
           <View style={styles.exerciseInfo}>
+            <Text style={styles.exerciseNumber}>
+              Exercise {currentExerciseIndex + 1} of {workout.exercises.length}
+            </Text>
             <Text style={styles.exerciseName}>{currentExercise.name}</Text>
             <Text style={styles.muscleName}>{currentExercise.muscle}</Text>
           </View>
+          <TouchableOpacity
+            onPress={handleNextExercise}
+            disabled={currentExerciseIndex === workout.exercises.length - 1}
+          >
+            <Ionicons
+              name='chevron-forward-outline'
+              size={24}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell,
+                opacity:
+                  currentExerciseIndex === workout.exercises.length - 1
+                    ? 0.5
+                    : 1
+              }}
+            />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.exerciseImage}>
@@ -357,6 +398,7 @@ const styles = StyleSheet.create({
   },
   exerciseNumber: {
     color: colors.white,
+    textAlign: 'center',
     fontSize: 24,
     marginRight: 16
   },

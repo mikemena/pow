@@ -32,7 +32,7 @@ const CurrentProgramView = () => {
   const {
     state: { programs }
   } = useContext(ProgramContext);
-  console.log('Programs in current programs view:', programs);
+  // console.log('Programs in current programs view:', programs);
   const {
     state: workoutState,
     setActiveProgram,
