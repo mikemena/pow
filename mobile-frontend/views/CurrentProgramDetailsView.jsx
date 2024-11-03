@@ -18,7 +18,8 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 const CurrentProgramDetailsView = ({ navigation }) => {
   // const navigation = useNavigation();
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const { state: workoutState } = useContext(WorkoutContext);
+  const { state: workoutState, fetchWorkoutDetails } =
+    useContext(WorkoutContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -33,11 +34,20 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   // Get current workout
   const currentWorkout = useMemo(() => {
+    console.log('Constructing currentWorkout with:', {
+      workouts,
+      currentWorkoutIndex,
+      workoutData: workouts[currentWorkoutIndex]
+    });
+
     if (!workouts.length) return null;
+
     return {
+      id: workouts[currentWorkoutIndex]?.id, // Add the ID here
       name: program.name,
       progress: program.progress || 0,
       currentWorkout: {
+        id: workouts[currentWorkoutIndex]?.id, // Also include it here if needed
         number: currentWorkoutIndex + 1,
         total: totalWorkouts,
         name: workouts[currentWorkoutIndex]?.name || ''
@@ -54,8 +64,45 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     };
   }, [program, workouts, currentWorkoutIndex]);
 
-  const handleStartWorkout = () => {
-    navigation.navigate('StartWorkout', { workout: currentWorkout });
+  const handleStartWorkout = async () => {
+    try {
+      console.log('Current workout data:', {
+        currentWorkout,
+        workoutId: workouts[currentWorkoutIndex]?.id,
+        currentIndex: currentWorkoutIndex,
+        totalWorkouts
+      });
+
+      const workoutId = workouts[currentWorkoutIndex]?.id;
+
+      if (!workoutId) {
+        console.error('No workout ID available:', {
+          workout: currentWorkout,
+          currentIndex: currentWorkoutIndex,
+          workouts: workouts
+        });
+        throw new Error('No workout ID available');
+      }
+
+      console.log('Starting workout with ID:', workoutId);
+      const workoutDetails = await fetchWorkoutDetails(workoutId);
+      console.log(
+        'Fetched workout details:',
+        JSON.stringify(workoutDetails, null, 2)
+      );
+      navigation.navigate('StartWorkout');
+    } catch (error) {
+      console.error('Failed to load workout details:', {
+        error: error.message,
+        workoutId: workouts[currentWorkoutIndex]?.id,
+        currentWorkout,
+        stack: error.stack
+      });
+      // Optionally show an alert to the user
+      Alert.alert('Error', 'Unable to start workout. Please try again.', [
+        { text: 'OK' }
+      ]);
+    }
   };
 
   const handleBack = () => {
