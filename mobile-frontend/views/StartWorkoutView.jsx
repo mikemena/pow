@@ -13,7 +13,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const StartWorkoutView = ({ navigation, route }) => {
+const StartWorkoutView = ({ navigation }) => {
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
