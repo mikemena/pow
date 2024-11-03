@@ -2,6 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
+const AWS = require('aws-sdk');
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.R2_ACCESS_KEY,
+  secretAccessKey: process.env.R2_SECRET_KEY,
+  endpoint: process.env.R2_URL,
+  region: 'auto',
+  signatureVersion: 'v4',
+  s3ForcePathStyle: true
+});
+
 // Logging utility
 const logQuery = (query, params) => {
   console.log('\nExecuting Query:');
@@ -102,22 +113,24 @@ router.get('/workout/:workout_id', async (req, res) => {
     // Convert Map to array and sort exercises by order
     workout.exercises = Array.from(exercisesMap.values())
       .sort((a, b) => a.order - b.order)
-      .map(exercise => ({
-        ...exercise,
-        sets: exercise.sets.sort((a, b) => a.order - b.order)
-      }));
+      .map(exercise => {
+        // Generate signed URL for each exercise image
+        const signedUrl = exercise.imageUrl
+          ? s3.getSignedUrl('getObject', {
+              Bucket: process.env.R2_BUCKET_NAME,
+              Key: exercise.imageUrl,
+              Expires: 60 * 60, // URL expires in 1 hour
+              ResponseContentType: 'image/gif',
+              ResponseCacheControl: 'public, max-age=86400'
+            })
+          : null;
 
-    const duration = Date.now() - startTime;
-    console.log(`Request completed in ${duration}ms`);
-    console.log('Response data:', {
-      workoutId: workout.id,
-      workoutName: workout.name,
-      exerciseCount: workout.exercises.length,
-      exercises: workout.exercises.map(e => ({
-        name: e.name,
-        setCount: e.sets.length
-      }))
-    });
+        return {
+          ...exercise,
+          sets: exercise.sets.sort((a, b) => a.order - b.order),
+          imageUrl: signedUrl // Replace file_path with signed URL
+        };
+      });
 
     res.json(workout);
   } catch (error) {

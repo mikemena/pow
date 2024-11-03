@@ -7,7 +7,6 @@ import {
   ScrollView,
   SafeAreaView
 } from 'react-native';
-// import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
@@ -16,7 +15,6 @@ import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const CurrentProgramDetailsView = ({ navigation }) => {
-  // const navigation = useNavigation();
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const { state: workoutState, fetchWorkoutDetails } =
     useContext(WorkoutContext);
@@ -34,11 +32,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   // Get current workout
   const currentWorkout = useMemo(() => {
-    console.log('Constructing currentWorkout with:', {
-      workouts,
-      currentWorkoutIndex,
-      workoutData: workouts[currentWorkoutIndex]
-    });
+    console.log('workout id:', workouts[currentWorkoutIndex]?.id);
 
     if (!workouts.length) return null;
 
@@ -66,15 +60,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const handleStartWorkout = async () => {
     try {
-      console.log('Current workout data:', {
-        currentWorkout,
-        workoutId: workouts[currentWorkoutIndex]?.id,
-        currentIndex: currentWorkoutIndex,
-        totalWorkouts
-      });
-
       const workoutId = workouts[currentWorkoutIndex]?.id;
-
       if (!workoutId) {
         console.error('No workout ID available:', {
           workout: currentWorkout,
@@ -144,8 +130,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
       </SafeAreaView>
     );
   }
-
-  // console.log('currentWorkout', currentWorkout);
 
   if (!currentWorkout) {
     return <Text>Loading...</Text>;

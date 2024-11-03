@@ -246,9 +246,6 @@ export const WorkoutProvider = ({ children }) => {
         apiUrl: API_URL_MOBILE
       });
 
-      // Log the API_URL_MOBILE value
-      console.log('API_URL_MOBILE value:', API_URL_MOBILE);
-
       throw error;
     }
   }, []);

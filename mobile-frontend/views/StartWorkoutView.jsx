@@ -1,12 +1,14 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  TextInput
+  TextInput,
+  Image
 } from 'react-native';
+import { WorkoutContext } from '../src/context/workoutContext';
 import Header from '../components/Header';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
@@ -14,17 +16,26 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = ({ navigation }) => {
+  const { state: workoutState } = useContext(WorkoutContext);
+
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
   const timerRef = useRef(null);
-  const [sets, setSets] = useState([{ weight: '30', reps: '10' }]);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
+  );
+
+  const workoutDetails = workoutState.workoutDetails;
+  console.log('workoutDetails:', workoutDetails);
+
+  // Initialize sets from the workout details instead of mock data
+  const [sets, setSets] = useState(
+    workoutDetails?.exercises[currentExerciseIndex]?.sets || []
   );
 
   useEffect(() => {
@@ -36,24 +47,17 @@ const StartWorkoutView = ({ navigation }) => {
     };
   }, []);
 
-  // Mock data - replace with actual workout data from route.params
-  const workout = {
-    name: 'Biceps & Triceps',
-    exercises: [
-      {
-        id: 1,
-        name: 'Barbell Preacher Curls',
-        muscle: 'Bicep'
-      },
-      {
-        id: 2,
-        name: 'Concentration Curls',
-        muscle: 'Bicep'
-      }
-    ]
-  };
+  // Add check for workout details
+  useEffect(() => {
+    if (!workoutDetails) {
+      console.error('No workout details available in context');
+      navigation.goBack();
+      return;
+    }
+  }, [workoutDetails, navigation]);
 
-  const currentExercise = workout.exercises[currentExerciseIndex];
+  // Remove the mock workout data and use workoutDetails instead
+  const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
 
   const handleCancel = () => {
     navigation.goBack();
@@ -116,15 +120,19 @@ const StartWorkoutView = ({ navigation }) => {
     }
   };
 
-  const handlePreviousExercise = () => {
-    if (currentExerciseIndex > 0) {
-      setCurrentExerciseIndex(prev => prev - 1);
+  const handleNextExercise = () => {
+    if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
+      setCurrentExerciseIndex(prev => prev + 1);
+      // Update sets for the new exercise
+      setSets(workoutDetails.exercises[currentExerciseIndex + 1]?.sets || []);
     }
   };
 
-  const handleNextExercise = () => {
-    if (currentExerciseIndex < workout.exercises.length - 1) {
-      setCurrentExerciseIndex(prev => prev + 1);
+  const handlePreviousExercise = () => {
+    if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(prev => prev - 1);
+      // Update sets for the new exercise
+      setSets(workoutDetails.exercises[currentExerciseIndex - 1]?.sets || []);
     }
   };
 
@@ -162,7 +170,7 @@ const StartWorkoutView = ({ navigation }) => {
           />
         </TouchableOpacity>
         <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
-          {workout.name}
+          {workoutDetails?.name}
         </Text>
       </View>
 
@@ -225,14 +233,17 @@ const StartWorkoutView = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.exerciseInfo}>
             <Text style={styles.exerciseNumber}>
-              Exercise {currentExerciseIndex + 1} of {workout.exercises.length}
+              Exercise {currentExerciseIndex + 1} of{' '}
+              {workoutDetails?.exercises.length}
             </Text>
             <Text style={styles.exerciseName}>{currentExercise.name}</Text>
             <Text style={styles.muscleName}>{currentExercise.muscle}</Text>
           </View>
           <TouchableOpacity
             onPress={handleNextExercise}
-            disabled={currentExerciseIndex === workout.exercises.length - 1}
+            disabled={
+              currentExerciseIndex === workoutDetails?.exercises.length - 1
+            }
           >
             <Ionicons
               name='chevron-forward-outline'
@@ -243,7 +254,7 @@ const StartWorkoutView = ({ navigation }) => {
                     ? themedStyles.accentColor
                     : colors.eggShell,
                 opacity:
-                  currentExerciseIndex === workout.exercises.length - 1
+                  currentExerciseIndex === workoutDetails?.exercises.length - 1
                     ? 0.5
                     : 1
               }}
@@ -252,8 +263,15 @@ const StartWorkoutView = ({ navigation }) => {
         </View>
 
         <View style={styles.exerciseImage}>
-          {/* Replace with actual exercise image/animation */}
-          <View style={styles.placeholderImage} />
+          {currentExercise?.imageUrl ? (
+            <Image
+              source={{ uri: currentExercise.imageUrl }}
+              style={styles.exerciseGif}
+              resizeMode='contain'
+            />
+          ) : (
+            <View style={styles.placeholderImage} />
+          )}
         </View>
 
         <View style={styles.setControls}>
@@ -418,13 +436,18 @@ const styles = StyleSheet.create({
     height: 200,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#333',
+    // backgroundColor: '#333',
     borderRadius: 8,
     marginBottom: 16
   },
+  exerciseGif: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 8
+  },
   placeholderImage: {
-    width: 100,
-    height: 100,
+    width: 150,
+    height: 150,
     backgroundColor: '#444',
     borderRadius: 8
   },
