@@ -17,7 +17,6 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = ({ navigation }) => {
   const { state: workoutState } = useContext(WorkoutContext);
-
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -31,15 +30,11 @@ const StartWorkoutView = ({ navigation }) => {
   );
 
   const workoutDetails = workoutState.workoutDetails;
-  console.log('workoutDetails:', workoutDetails);
-
-  // Initialize sets from the workout details instead of mock data
   const [sets, setSets] = useState(
     workoutDetails?.exercises[currentExerciseIndex]?.sets || []
   );
 
   useEffect(() => {
-    // Cleanup timer on component unmount
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -47,7 +42,6 @@ const StartWorkoutView = ({ navigation }) => {
     };
   }, []);
 
-  // Add check for workout details
   useEffect(() => {
     if (!workoutDetails) {
       console.error('No workout details available in context');
@@ -56,15 +50,10 @@ const StartWorkoutView = ({ navigation }) => {
     }
   }, [workoutDetails, navigation]);
 
-  // Remove the mock workout data and use workoutDetails instead
   const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
 
-  const handleCancel = () => {
-    navigation.goBack();
-  };
-  const handleBack = () => {
-    navigation.navigate('CurrentProgramDetails');
-  };
+  const handleCancel = () => navigation.goBack();
+  const handleBack = () => navigation.navigate('CurrentProgramDetails');
 
   const startTimer = () => {
     if (!isStarted) {
@@ -92,13 +81,10 @@ const StartWorkoutView = ({ navigation }) => {
     clearInterval(timerRef.current);
     setIsStarted(false);
     setIsPaused(false);
-    // Optionally handle workout completion here
-    // For example, save the workout data
     handleWorkoutComplete();
   };
 
   const handleWorkoutComplete = () => {
-    // Add logic to save workout data
     console.log('Workout completed with duration:', formatTime(time));
     navigation.goBack();
   };
@@ -108,9 +94,7 @@ const StartWorkoutView = ({ navigation }) => {
     return `${minutes} MINUTES`;
   };
 
-  const handlePause = () => {
-    pauseTimer();
-  };
+  const handlePause = () => pauseTimer();
 
   const handleAddExercise = async () => {
     try {
@@ -123,7 +107,6 @@ const StartWorkoutView = ({ navigation }) => {
   const handleNextExercise = () => {
     if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
-      // Update sets for the new exercise
       setSets(workoutDetails.exercises[currentExerciseIndex + 1]?.sets || []);
     }
   };
@@ -131,7 +114,6 @@ const StartWorkoutView = ({ navigation }) => {
   const handlePreviousExercise = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
-      // Update sets for the new exercise
       setSets(workoutDetails.exercises[currentExerciseIndex - 1]?.sets || []);
     }
   };
@@ -154,19 +136,19 @@ const StartWorkoutView = ({ navigation }) => {
       ]}
     >
       <Header pageName='START WORKOUT' />
+
       <View style={styles.header}>
         <TouchableOpacity
           onPress={handleBack}
           style={[
             { backgroundColor: themedStyles.secondaryBackgroundColor },
-            globalStyles.iconCircle,
-            styles.backButton
+            globalStyles.iconCircle
           ]}
         >
           <Ionicons
-            name={'arrow-back-outline'}
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+            name='arrow-back-outline'
             size={24}
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
           />
         </TouchableOpacity>
         <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
@@ -178,33 +160,28 @@ const StartWorkoutView = ({ navigation }) => {
         <TouchableOpacity
           style={[
             globalStyles.button,
-            styles.stopWatchBtn,
+            styles.startButton,
             { backgroundColor: themedStyles.accentColor }
           ]}
           onPress={isStarted ? stopTimer : startTimer}
         >
-          <Text style={[globalStyles.buttonText, { color: colors.black }]}>
+          <Text style={styles.startButtonText}>
             {isStarted ? 'COMPLETE WORKOUT' : 'START WORKOUT'}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handlePause}
           style={[
+            styles.pauseButton,
             { backgroundColor: themedStyles.accentColor },
-            globalStyles.iconCircle,
-            styles.backButton,
             !isStarted && styles.disabledButton
           ]}
           disabled={!isStarted}
         >
           <Ionicons
             name={isPaused ? 'play-outline' : 'pause-outline'}
-            style={[
-              globalStyles.icon,
-              { color: colors.offWhite },
-              !isStarted && styles.disabledIcon
-            ]}
             size={24}
+            style={[styles.pauseIcon, !isStarted && styles.disabledIcon]}
           />
         </TouchableOpacity>
         <Text
@@ -213,86 +190,125 @@ const StartWorkoutView = ({ navigation }) => {
           {formatTime(time)}
         </Text>
       </View>
-      <View style={styles.exerciseContainer}>
-        <View style={[styles.exerciseHeader, styles.exerciseNavigation]}>
+
+      <View
+        style={[
+          styles.exerciseContainer,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <View style={styles.exerciseInfo}>
+          <Text
+            style={[styles.exerciseNumber, { color: themedStyles.textColor }]}
+          >
+            {currentExerciseIndex + 1}
+          </Text>
+          <Text
+            style={[styles.exerciseName, { color: themedStyles.textColor }]}
+          >
+            {currentExercise?.name}
+          </Text>
+          <Text style={[styles.muscleName, { color: themedStyles.textColor }]}>
+            {currentExercise?.muscle}
+          </Text>
+        </View>
+
+        <View style={styles.imageNavigationContainer}>
           <TouchableOpacity
             onPress={handlePreviousExercise}
             disabled={currentExerciseIndex === 0}
+            style={styles.navigationButton}
           >
             <Ionicons
               name='chevron-back-outline'
               size={24}
               style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell,
-                opacity: currentExerciseIndex === 0 ? 0.5 : 1
+                color: themeState.accentColor,
+                opacity: currentExerciseIndex === 0 ? 0.3 : 1
               }}
             />
           </TouchableOpacity>
-          <View style={styles.exerciseInfo}>
-            <Text style={styles.exerciseNumber}>
-              Exercise {currentExerciseIndex + 1} of{' '}
-              {workoutDetails?.exercises.length}
-            </Text>
-            <Text style={styles.exerciseName}>{currentExercise.name}</Text>
-            <Text style={styles.muscleName}>{currentExercise.muscle}</Text>
+
+          <View style={styles.exerciseImage}>
+            {currentExercise?.imageUrl ? (
+              <Image
+                source={{ uri: currentExercise.imageUrl }}
+                style={styles.exerciseGif}
+                resizeMode='contain'
+              />
+            ) : (
+              <View style={styles.placeholderImage} />
+            )}
           </View>
+
           <TouchableOpacity
             onPress={handleNextExercise}
             disabled={
               currentExerciseIndex === workoutDetails?.exercises.length - 1
             }
+            style={styles.navigationButton}
           >
             <Ionicons
               name='chevron-forward-outline'
               size={24}
               style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell,
+                color: themeState.accentColor,
                 opacity:
                   currentExerciseIndex === workoutDetails?.exercises.length - 1
-                    ? 0.5
+                    ? 0.3
                     : 1
               }}
             />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.exerciseImage}>
-          {currentExercise?.imageUrl ? (
-            <Image
-              source={{ uri: currentExercise.imageUrl }}
-              style={styles.exerciseGif}
-              resizeMode='contain'
-            />
-          ) : (
-            <View style={styles.placeholderImage} />
-          )}
-        </View>
-
         <View style={styles.setControls}>
           <View style={styles.setHeader}>
-            <Text style={styles.setHeaderText}>Set</Text>
-            <Text style={styles.setHeaderText}>Weight</Text>
-            <Text style={styles.setHeaderText}>Reps</Text>
+            <Text
+              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
+            >
+              Set
+            </Text>
+            <Text
+              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
+            >
+              Weight
+            </Text>
+            <Text
+              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
+            >
+              Reps
+            </Text>
           </View>
 
           {sets.map((set, index) => (
             <View key={index} style={styles.setRow}>
-              <Text style={styles.setNumber}>{index + 1}</Text>
+              <Text
+                style={[styles.setNumber, { color: themedStyles.textColor }]}
+              >
+                {index + 1}
+              </Text>
               <TextInput
-                style={styles.input}
-                value={set.weight}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: themedStyles.primaryBackgroundColor,
+                    color: themedStyles.textColor
+                  }
+                ]}
+                value={set.weight?.toString()}
                 onChangeText={value => handleSetChange(index, 'weight', value)}
                 keyboardType='numeric'
               />
               <TextInput
-                style={styles.input}
-                value={set.reps}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: themedStyles.primaryBackgroundColor,
+                    color: themedStyles.textColor
+                  }
+                ]}
+                value={set.reps?.toString()}
                 onChangeText={value => handleSetChange(index, 'reps', value)}
                 keyboardType='numeric'
               />
@@ -302,26 +318,29 @@ const StartWorkoutView = ({ navigation }) => {
           <TouchableOpacity style={styles.addSetButton} onPress={handleAddSet}>
             <Ionicons
               name='add-circle-outline'
-              size={24}
-              color={colors.accent}
+              size={20}
+              style={{ color: themedStyles.accentColor }}
             />
-            <Text style={styles.addSetText}>Add Set</Text>
+            <Text
+              style={[styles.addSetText, { color: themedStyles.accentColor }]}
+            >
+              Add Set
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
-      {/* Add Exercise and Cancel buttons */}
-      <View style={styles.buttonRow}>
+
+      <View style={styles.bottomButtons}>
         <TouchableOpacity
           style={[
-            globalStyles.button,
-            styles.addExerciseButton,
+            styles.bottomButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
           onPress={handleAddExercise}
         >
           <Text
             style={[
-              globalStyles.buttonText,
+              styles.bottomButtonText,
               { color: themedStyles.accentColor }
             ]}
           >
@@ -330,15 +349,14 @@ const StartWorkoutView = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           style={[
-            globalStyles.button,
-            styles.cancelButton,
+            styles.bottomButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
           onPress={handleCancel}
         >
           <Text
             style={[
-              globalStyles.buttonText,
+              styles.bottomButtonText,
               { color: themedStyles.accentColor }
             ]}
           >
@@ -351,150 +369,165 @@ const StartWorkoutView = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.black
-  },
   header: {
     flexDirection: 'row',
-    padding: 16,
-    alignItems: 'center'
-  },
-  stopWatchBtn: {
-    width: 190
+    alignItems: 'center',
+    marginHorizontal: 10
   },
   workoutName: {
     paddingLeft: 20,
-    fontSize: 16
-  },
-  changeText: {
-    color: colors.accent
+    fontSize: 16,
+    fontFamily: 'Lexend'
   },
   mainControls: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16
+    padding: 10
   },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
-    marginBottom: 10
+  startButton: {
+    width: 190,
+    height: 50
   },
-  addExerciseButton: {
-    flex: 1,
-    marginRight: 10
+  startButtonText: {
+    color: colors.black,
+    fontSize: 16,
+    fontFamily: 'Lexend'
   },
-  cancelButton: {
-    flex: 1,
-    marginLeft: 10
+  pauseButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-
+  pauseIcon: {
+    color: colors.offWhite
+  },
   timerDisplay: {
     fontSize: 24,
-    fontWeight: 'bold',
     fontFamily: 'Tiny5'
-  },
-  disabledButton: {
-    opacity: 0.5
-  },
-  disabledIcon: {
-    opacity: 0.5
   },
   exerciseContainer: {
     flex: 1,
-    backgroundColor: '#222',
     borderRadius: 12,
-    margin: 16,
-    padding: 16
-  },
-  exerciseHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16
-  },
-  exerciseNumber: {
-    color: colors.white,
-    textAlign: 'center',
-    fontSize: 24,
-    marginRight: 16
+    margin: 5,
+    padding: 10
   },
   exerciseInfo: {
-    flex: 1
+    marginBottom: 10,
+    flexDirection: 'row'
+  },
+  exerciseNumber: {
+    fontSize: 16,
+    fontFamily: 'Lexend',
+    marginBottom: 8
   },
   exerciseName: {
-    color: colors.white,
-    fontSize: 18,
-    marginBottom: 4
+    fontSize: 16,
+    fontFamily: 'Lexend-Bold',
+    marginLeft: 10
   },
   muscleName: {
-    color: colors.gray,
-    fontSize: 16
+    fontSize: 16,
+    fontFamily: 'Lexend',
+    marginLeft: 10
+  },
+  imageNavigationContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15
+  },
+  navigationButton: {
+    padding: 12,
+    justifyContent: 'center'
   },
   exerciseImage: {
+    flex: 1,
     height: 200,
-    justifyContent: 'center',
-    alignItems: 'center',
-    // backgroundColor: '#333',
     borderRadius: 8,
-    marginBottom: 16
+    overflow: 'hidden'
   },
   exerciseGif: {
     width: '100%',
-    height: '100%',
-    borderRadius: 8
+    height: '100%'
   },
   placeholderImage: {
-    width: 150,
-    height: 150,
-    backgroundColor: '#444',
-    borderRadius: 8
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#444'
   },
   setControls: {
     flex: 1
   },
   setHeader: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    marginBottom: 8
+    paddingHorizontal: 8,
+    marginBottom: 12
   },
   setHeaderText: {
-    color: colors.gray,
-    fontSize: 14,
     flex: 1,
-    textAlign: 'center'
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: 'Lexend'
   },
   setRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8
+    marginBottom: 12,
+    paddingHorizontal: 8
   },
   setNumber: {
-    color: colors.white,
-    fontSize: 16,
     width: 40,
-    textAlign: 'center'
+    fontSize: 16,
+    textAlign: 'center',
+    fontFamily: 'Lexend'
   },
   input: {
     flex: 1,
-    backgroundColor: '#333',
-    color: colors.white,
-    padding: 8,
-    borderRadius: 4,
+    height: 40,
     marginHorizontal: 8,
-    textAlign: 'center'
+    borderRadius: 10,
+    textAlign: 'center',
+    fontFamily: 'Lexend'
   },
   addSetButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#333',
+    padding: 12,
+    borderRadius: 20,
     marginTop: 16
   },
   addSetText: {
-    color: colors.accent,
-    marginLeft: 8
+    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: 'Lexend'
+  },
+  bottomButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    padding: 16
+  },
+  bottomButton: {
+    flex: 1,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginHorizontal: 8
+  },
+  bottomButtonText: {
+    fontSize: 14,
+    fontFamily: 'Lexend-Bold'
+  },
+  disabledButton: {
+    opacity: 0.5
+  },
+  disabledIcon: {
+    opacity: 0.5
   }
 });
 

@@ -194,10 +194,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
               name='chevron-back-outline'
               size={24}
               style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
+                color: themeState.accentColor
               }}
             />
           </TouchableOpacity>
@@ -225,10 +222,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
               name='chevron-forward-outline'
               size={24}
               style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
+                color: themeState.accentColor
               }}
             />
           </TouchableOpacity>
