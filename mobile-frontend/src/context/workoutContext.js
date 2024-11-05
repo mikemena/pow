@@ -184,8 +184,6 @@ export const WorkoutProvider = ({ children }) => {
 
   // Fetch workout details
   const fetchWorkoutDetails = useCallback(async workoutId => {
-    console.log('fetchWorkoutDetails called with ID:', workoutId);
-
     try {
       if (!workoutId) {
         throw new Error('Workout ID is required');
@@ -193,7 +191,6 @@ export const WorkoutProvider = ({ children }) => {
 
       // Log the full URL being called
       const url = `${API_URL_MOBILE}/api/workout/${workoutId}`;
-      console.log('Attempting to fetch from URL:', url);
 
       // Add explicit headers and log them
       const response = await fetch(url, {
@@ -204,12 +201,8 @@ export const WorkoutProvider = ({ children }) => {
         }
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-
       // Get response text first to see what we're dealing with
       const responseText = await response.text();
-      console.log('Raw response:', responseText);
 
       // Try to parse as JSON if possible
       let workoutDetails;
@@ -225,8 +218,6 @@ export const WorkoutProvider = ({ children }) => {
           `HTTP error! status: ${response.status}, body: ${responseText}`
         );
       }
-
-      console.log('Parsed workout details:', workoutDetails);
 
       if (!workoutDetails || !workoutDetails.id) {
         throw new Error('Invalid workout details received');

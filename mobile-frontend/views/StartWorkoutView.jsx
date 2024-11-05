@@ -5,11 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  TextInput,
   Image
 } from 'react-native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import PillButton from '../components/PillButton';
 import Header from '../components/Header';
+import Set from '../components/Set';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -30,9 +31,17 @@ const StartWorkoutView = ({ navigation }) => {
   );
 
   const workoutDetails = workoutState.workoutDetails;
-  const [sets, setSets] = useState(
-    workoutDetails?.exercises[currentExerciseIndex]?.sets || []
-  );
+  const [sets, setSets] = useState(() => {
+    const initialSets =
+      workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
+    const setsWithIds = initialSets.map((set, idx) => ({
+      ...set,
+      id: set.id || Math.random().toString(36).substr(2, 9),
+      order: idx + 1
+    }));
+    console.log('Initial sets:', setsWithIds);
+    return setsWithIds;
+  });
 
   useEffect(() => {
     return () => {
@@ -107,25 +116,57 @@ const StartWorkoutView = ({ navigation }) => {
   const handleNextExercise = () => {
     if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
-      setSets(workoutDetails.exercises[currentExerciseIndex + 1]?.sets || []);
+      const nextSets =
+        workoutDetails.exercises[currentExerciseIndex + 1]?.sets || [];
+      setSets(
+        nextSets.map((set, idx) => ({
+          ...set,
+          id: set.id || Math.random().toString(36).substr(2, 9),
+          order: idx + 1
+        }))
+      );
     }
   };
 
   const handlePreviousExercise = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
-      setSets(workoutDetails.exercises[currentExerciseIndex - 1]?.sets || []);
+      const prevSets =
+        workoutDetails.exercises[currentExerciseIndex - 1]?.sets || [];
+      setSets(
+        prevSets.map((set, idx) => ({
+          ...set,
+          id: set.id || Math.random().toString(36).substr(2, 9),
+          order: idx + 1
+        }))
+      );
     }
   };
 
   const handleAddSet = () => {
-    setSets([...sets, { weight: '30', reps: '10' }]);
+    setSets(currentSets => {
+      const newSet = {
+        id: Math.random().toString(36).substr(2, 9),
+        weight: '30',
+        reps: '10',
+        order: currentSets.length + 1
+      };
+      console.log('Adding new set:', newSet);
+      const updatedSets = [...currentSets, newSet];
+      console.log('All sets after adding:', updatedSets);
+      return updatedSets;
+    });
   };
 
   const handleSetChange = (index, field, value) => {
-    const newSets = [...sets];
-    newSets[index] = { ...newSets[index], [field]: value };
-    setSets(newSets);
+    setSets(currentSets =>
+      currentSets.map(set => {
+        if (set.order === index + 1) {
+          return { ...set, [field]: value };
+        }
+        return set;
+      })
+    );
   };
 
   return (
@@ -203,14 +244,18 @@ const StartWorkoutView = ({ navigation }) => {
           >
             {currentExerciseIndex + 1}
           </Text>
-          <Text
-            style={[styles.exerciseName, { color: themedStyles.textColor }]}
-          >
-            {currentExercise?.name}
-          </Text>
-          <Text style={[styles.muscleName, { color: themedStyles.textColor }]}>
-            {currentExercise?.muscle}
-          </Text>
+          <View>
+            <Text
+              style={[styles.exerciseName, { color: themedStyles.textColor }]}
+            >
+              {currentExercise?.name}
+            </Text>
+            <Text
+              style={[styles.muscleName, { color: themedStyles.textColor }]}
+            >
+              {currentExercise?.muscle}
+            </Text>
+          </View>
         </View>
 
         <View style={styles.imageNavigationContainer}>
@@ -281,52 +326,48 @@ const StartWorkoutView = ({ navigation }) => {
             </Text>
           </View>
 
-          {sets.map((set, index) => (
-            <View key={index} style={styles.setRow}>
-              <Text
-                style={[styles.setNumber, { color: themedStyles.textColor }]}
-              >
-                {index + 1}
-              </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: themedStyles.primaryBackgroundColor,
-                    color: themedStyles.textColor
-                  }
-                ]}
-                value={set.weight?.toString()}
-                onChangeText={value => handleSetChange(index, 'weight', value)}
-                keyboardType='numeric'
-              />
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: themedStyles.primaryBackgroundColor,
-                    color: themedStyles.textColor
-                  }
-                ]}
-                value={set.reps?.toString()}
-                onChangeText={value => handleSetChange(index, 'reps', value)}
-                keyboardType='numeric'
-              />
-            </View>
+          {sets.map(set => (
+            <Set
+              key={set.id}
+              index={set.order - 1}
+              set={set}
+              onSetChange={handleSetChange}
+              onDelete={setId => {
+                setSets(currentSets => {
+                  console.log('Current sets before deletion:', currentSets);
+                  console.log('Attempting to delete set with ID:', setId);
+
+                  const newSets = currentSets
+                    .filter(s => String(s.id) !== String(setId))
+                    .map((s, idx) => ({
+                      ...s,
+                      order: idx + 1
+                    }));
+
+                  console.log('Sets after deletion and reordering:', newSets);
+                  return newSets;
+                });
+              }}
+              themedStyles={themedStyles}
+            />
           ))}
 
-          <TouchableOpacity style={styles.addSetButton} onPress={handleAddSet}>
-            <Ionicons
-              name='add-circle-outline'
-              size={20}
-              style={{ color: themedStyles.accentColor }}
-            />
-            <Text
-              style={[styles.addSetText, { color: themedStyles.accentColor }]}
-            >
-              Add Set
-            </Text>
-          </TouchableOpacity>
+          <PillButton
+            label='Add Set'
+            icon={
+              <Ionicons
+                name='add-outline'
+                size={16}
+                style={{
+                  color:
+                    themeState.theme === 'dark'
+                      ? themedStyles.accentColor
+                      : colors.eggShell
+                }}
+              />
+            }
+            onPress={handleAddSet}
+          />
         </View>
       </View>
 
@@ -425,7 +466,7 @@ const styles = StyleSheet.create({
   },
   exerciseName: {
     fontSize: 16,
-    fontFamily: 'Lexend-Bold',
+    fontFamily: 'Lexend',
     marginLeft: 10
   },
   muscleName: {

@@ -136,7 +136,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   }
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', e => {
-      console.log('Navigation State:', e.data);
+      // console.log('Navigation State:', e.data);
     });
 
     return unsubscribe;
