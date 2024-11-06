@@ -5,7 +5,8 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Image
+  Image,
+  ScrollView
 } from 'react-native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import PillButton from '../components/PillButton';
@@ -325,33 +326,37 @@ const StartWorkoutView = ({ navigation }) => {
               Reps
             </Text>
           </View>
+          <ScrollView
+            style={styles.setsScrollView}
+            contentContainerStyle={styles.setsScrollContent}
+            showsVerticalScrollIndicator={true}
+          >
+            {sets.map(set => (
+              <Set
+                key={set.id}
+                index={set.order - 1}
+                set={set}
+                onSetChange={handleSetChange}
+                onDelete={setId => {
+                  setSets(currentSets => {
+                    console.log('Current sets before deletion:', currentSets);
+                    console.log('Attempting to delete set with ID:', setId);
 
-          {sets.map(set => (
-            <Set
-              key={set.id}
-              index={set.order - 1}
-              set={set}
-              onSetChange={handleSetChange}
-              onDelete={setId => {
-                setSets(currentSets => {
-                  console.log('Current sets before deletion:', currentSets);
-                  console.log('Attempting to delete set with ID:', setId);
+                    const newSets = currentSets
+                      .filter(s => String(s.id) !== String(setId))
+                      .map((s, idx) => ({
+                        ...s,
+                        order: idx + 1
+                      }));
 
-                  const newSets = currentSets
-                    .filter(s => String(s.id) !== String(setId))
-                    .map((s, idx) => ({
-                      ...s,
-                      order: idx + 1
-                    }));
-
-                  console.log('Sets after deletion and reordering:', newSets);
-                  return newSets;
-                });
-              }}
-              themedStyles={themedStyles}
-            />
-          ))}
-
+                    console.log('Sets after deletion and reordering:', newSets);
+                    return newSets;
+                  });
+                }}
+                themedStyles={themedStyles}
+              />
+            ))}
+          </ScrollView>
           <PillButton
             label='Add Set'
             icon={
@@ -486,7 +491,7 @@ const styles = StyleSheet.create({
   },
   exerciseImage: {
     flex: 1,
-    height: 200,
+    height: 180,
     borderRadius: 8,
     overflow: 'hidden'
   },
@@ -500,6 +505,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
+    flex: 1
+  },
+  setsScrollView: {
     flex: 1
   },
   setHeader: {
@@ -540,7 +548,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#333',
     padding: 12,
     borderRadius: 20,
-    marginTop: 16
+    marginTop: 10
   },
   addSetText: {
     marginLeft: 8,
@@ -550,7 +558,7 @@ const styles = StyleSheet.create({
   bottomButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 16
+    padding: 5
   },
   bottomButton: {
     flex: 1,
