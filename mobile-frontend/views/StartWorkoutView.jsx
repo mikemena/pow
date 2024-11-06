@@ -101,7 +101,11 @@ const StartWorkoutView = ({ navigation }) => {
 
   const formatTime = seconds => {
     const minutes = Math.floor(seconds / 60);
-    return `${minutes} MINUTES`;
+    const remainingSeconds = seconds % 60;
+    // Add leading zeros using padStart
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    const formattedSeconds = String(remainingSeconds).padStart(2, '0');
+    return `T+${formattedMinutes}:${formattedSeconds}`;
   };
 
   const handlePause = () => pauseTimer();
@@ -437,7 +441,7 @@ const styles = StyleSheet.create({
   },
   startButtonText: {
     color: colors.black,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'Lexend'
   },
   pauseButton: {
@@ -451,7 +455,7 @@ const styles = StyleSheet.create({
     color: colors.offWhite
   },
   timerDisplay: {
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: 'Tiny5'
   },
   exerciseContainer: {
