@@ -313,6 +313,7 @@ const StartWorkoutView = ({ navigation }) => {
         </View>
 
         <View style={styles.setControls}>
+          {/* setHeader */}
           <View style={styles.setHeader}>
             <Text
               style={[styles.setHeaderText, { color: themedStyles.textColor }]}
@@ -337,6 +338,7 @@ const StartWorkoutView = ({ navigation }) => {
           >
             {sets.map(set => (
               <Set
+                style={styles.setRow}
                 key={set.id}
                 index={set.order - 1}
                 set={set}
@@ -462,8 +464,16 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 12,
     margin: 5,
-    padding: 10
+    padding: 10,
+    gap: 15
   },
+  exerciseDetailsSection: {
+    backgroundColor: 'transparent',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 5 // Additional spacing after exercise details
+  },
+
   exerciseInfo: {
     marginBottom: 10,
     flexDirection: 'row'
@@ -481,7 +491,8 @@ const styles = StyleSheet.create({
   muscleName: {
     fontSize: 16,
     fontFamily: 'Lexend',
-    marginLeft: 10
+    marginLeft: 10,
+    marginVertical: 5
   },
   imageNavigationContainer: {
     flexDirection: 'row',
@@ -493,6 +504,7 @@ const styles = StyleSheet.create({
     padding: 12,
     justifyContent: 'center'
   },
+
   exerciseImage: {
     flex: 1,
     height: 180,
@@ -509,27 +521,40 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
-    flex: 1
+    flex: 1,
+    gap: 10
   },
   setsScrollView: {
     flex: 1
   },
+
+  setsScrollContent: {
+    gap: 10
+  },
   setHeader: {
     flexDirection: 'row',
-    paddingHorizontal: 8,
-    marginBottom: 12
+    justifyContent: 'space-between',
+    paddingHorizontal: 8
   },
+  setHeaderSection: {
+    backgroundColor: 'transparent',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 5
+  },
+
   setHeaderText: {
     flex: 1,
     fontSize: 16,
     textAlign: 'center',
-    fontFamily: 'Lexend'
+    fontFamily: 'Lexend',
+    marginHorizontal: 8
   },
-  setRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    paddingHorizontal: 8
+  setRowSection: {
+    backgroundColor: 'transparent',
+    padding: 10,
+    borderRadius: 8,
+    marginBottom: 5
   },
   setNumber: {
     width: 40,
