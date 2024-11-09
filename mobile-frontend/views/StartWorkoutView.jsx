@@ -184,19 +184,6 @@ const StartWorkoutView = ({ navigation }) => {
       <Header pageName='START WORKOUT' />
 
       <View style={styles.header}>
-        <TouchableOpacity
-          onPress={handleBack}
-          style={[
-            { backgroundColor: themedStyles.secondaryBackgroundColor },
-            globalStyles.iconCircle
-          ]}
-        >
-          <Ionicons
-            name='arrow-back-outline'
-            size={24}
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
-          />
-        </TouchableOpacity>
         <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
           {workoutDetails?.name}
         </Text>
@@ -267,7 +254,7 @@ const StartWorkoutView = ({ navigation }) => {
           <TouchableOpacity
             onPress={handlePreviousExercise}
             disabled={currentExerciseIndex === 0}
-            style={styles.navigationButton}
+            style={[styles.navigationButton, styles.leftNavigationButton]}
           >
             <Ionicons
               name='chevron-back-outline'
@@ -296,7 +283,7 @@ const StartWorkoutView = ({ navigation }) => {
             disabled={
               currentExerciseIndex === workoutDetails?.exercises.length - 1
             }
-            style={styles.navigationButton}
+            style={[styles.navigationButton, styles.rightNavigationButton]}
           >
             <Ionicons
               name='chevron-forward-outline'
@@ -380,6 +367,7 @@ const StartWorkoutView = ({ navigation }) => {
         </ScrollView>
         <PillButton
           label='Add Set'
+          style={styles.addSetButton}
           icon={
             <Ionicons
               name='add-outline'
@@ -436,12 +424,10 @@ const StartWorkoutView = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginHorizontal: 10
+    paddingBottom: 10,
+    alignItems: 'center'
   },
   workoutName: {
-    paddingLeft: 20,
     fontSize: 16,
     fontFamily: 'Lexend'
   },
@@ -453,10 +439,11 @@ const styles = StyleSheet.create({
   },
   startButton: {
     width: 190,
-    height: 50
+    height: 40,
+    padding: 10
   },
   startButtonText: {
-    color: colors.black,
+    color: colors.offWhite,
     fontSize: 14,
     fontFamily: 'Lexend'
   },
@@ -479,7 +466,8 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 5,
     padding: 10,
-    gap: 15
+    gap: 15,
+    position: 'relative'
   },
   exerciseInfo: {
     marginBottom: 10,
@@ -504,18 +492,32 @@ const styles = StyleSheet.create({
   imageNavigationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    position: 'relative',
+    height: 180
   },
   navigationButton: {
     padding: 5,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    position: 'absolute',
+    transform: [{ translateY: -40 }],
+    zIndex: 1,
+    width: 30
+  },
+  leftNavigationButton: {
+    left: -5
+  },
+
+  rightNavigationButton: {
+    right: -5
   },
   exerciseImage: {
     flex: 1,
     height: 180,
     borderRadius: 8,
     overflow: 'hidden',
-    paddingBottom: 20
+    marginHorizontal: 30,
+    marginBottom: 30
   },
   exerciseGif: {
     width: '100%',
@@ -527,13 +529,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
+    marginTop: 5,
     flex: 1,
     gap: 2,
-    paddingHorizontal: 5
+    paddingHorizontal: 5,
+    paddingBottom: 10
   },
-
+  setsScrollView: {
+    flexGrow: 0
+  },
   setsScrollContent: {
-    gap: 2
+    gap: 2,
+    flexGrow: 0
   },
   setHeader: {
     flexDirection: 'row',
@@ -559,18 +566,7 @@ const styles = StyleSheet.create({
     marginRight: 55
   },
   addSetButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#333',
-    padding: 12,
-    borderRadius: 20,
     marginTop: 10
-  },
-  addSetText: {
-    marginLeft: 8,
-    fontSize: 14,
-    fontFamily: 'Lexend'
   },
   bottomButtons: {
     flexDirection: 'row',
@@ -587,7 +583,7 @@ const styles = StyleSheet.create({
   },
   bottomButtonText: {
     fontSize: 14,
-    fontFamily: 'Lexend-Bold'
+    fontFamily: 'Lexend'
   },
   disabledButton: {
     opacity: 0.5
