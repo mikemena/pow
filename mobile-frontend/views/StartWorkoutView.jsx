@@ -181,7 +181,7 @@ const StartWorkoutView = ({ navigation }) => {
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
-      <Header pageName='START WORKOUT' />
+      <Header pageName='WORKOUT' />
 
       <View style={styles.header}>
         <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
@@ -443,7 +443,7 @@ const styles = StyleSheet.create({
     padding: 10
   },
   startButtonText: {
-    color: colors.offWhite,
+    color: colors.flatBlack,
     fontSize: 14,
     fontFamily: 'Lexend'
   },
@@ -455,7 +455,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   pauseIcon: {
-    color: colors.offWhite
+    color: colors.flatBlack
   },
   timerDisplay: {
     fontSize: 26,
@@ -553,6 +553,7 @@ const styles = StyleSheet.create({
   setHeaderText: {
     flex: 1,
     fontSize: 16,
+    padding: 1,
     textAlign: 'center',
     fontFamily: 'Lexend',
     marginRight: 10
@@ -566,7 +567,8 @@ const styles = StyleSheet.create({
     marginRight: 55
   },
   addSetButton: {
-    marginTop: 10
+    marginTop: 10,
+    marginLeft: 5
   },
   bottomButtons: {
     flexDirection: 'row',
