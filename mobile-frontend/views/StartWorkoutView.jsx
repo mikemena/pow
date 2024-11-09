@@ -40,7 +40,7 @@ const StartWorkoutView = ({ navigation }) => {
       id: set.id || Math.random().toString(36).substr(2, 9),
       order: idx + 1
     }));
-    console.log('Initial sets:', setsWithIds);
+    // console.log('Initial sets:', setsWithIds);
     return setsWithIds;
   });
 
@@ -311,75 +311,89 @@ const StartWorkoutView = ({ navigation }) => {
             />
           </TouchableOpacity>
         </View>
+      </View>
 
-        <View style={styles.setControls}>
-          {/* setHeader */}
-          <View style={styles.setHeader}>
-            <Text
-              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
-            >
-              Set
-            </Text>
-            <Text
-              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
-            >
-              Weight
-            </Text>
-            <Text
-              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
-            >
-              Reps
-            </Text>
-          </View>
-          <ScrollView
-            style={styles.setsScrollView}
-            contentContainerStyle={styles.setsScrollContent}
-            showsVerticalScrollIndicator={true}
+      <View style={styles.setControls}>
+        {/* setHeader */}
+        <View
+          style={[
+            styles.setHeader,
+            { backgroundColor: themedStyles.secondaryBackgroundColor }
+          ]}
+        >
+          <Text
+            style={[styles.setHeaderText, { color: themedStyles.textColor }]}
           >
-            {sets.map(set => (
-              <Set
-                style={styles.setRow}
-                key={set.id}
-                index={set.order - 1}
-                set={set}
-                onSetChange={handleSetChange}
-                onDelete={setId => {
-                  setSets(currentSets => {
-                    console.log('Current sets before deletion:', currentSets);
-                    console.log('Attempting to delete set with ID:', setId);
-
-                    const newSets = currentSets
-                      .filter(s => String(s.id) !== String(setId))
-                      .map((s, idx) => ({
-                        ...s,
-                        order: idx + 1
-                      }));
-
-                    console.log('Sets after deletion and reordering:', newSets);
-                    return newSets;
-                  });
-                }}
-                themedStyles={themedStyles}
-              />
-            ))}
-          </ScrollView>
-          <PillButton
-            label='Add Set'
-            icon={
-              <Ionicons
-                name='add-outline'
-                size={16}
-                style={{
-                  color:
-                    themeState.theme === 'dark'
-                      ? themedStyles.accentColor
-                      : colors.eggShell
-                }}
-              />
-            }
-            onPress={handleAddSet}
-          />
+            Set
+          </Text>
+          <Text
+            style={[
+              styles.setHeaderText,
+              styles.setWeight,
+              { color: themedStyles.textColor }
+            ]}
+          >
+            Weight
+          </Text>
+          <Text
+            style={[
+              styles.setHeaderText,
+              styles.setReps,
+              { color: themedStyles.textColor }
+            ]}
+          >
+            Reps
+          </Text>
         </View>
+        <ScrollView
+          style={styles.setsScrollView}
+          contentContainerStyle={styles.setsScrollContent}
+          showsVerticalScrollIndicator={true}
+        >
+          {sets.map((set, index) => (
+            <Set
+              style={styles.setRow}
+              key={set.id}
+              index={set.order - 1}
+              set={set}
+              isLast={index === sets.length - 1}
+              onSetChange={handleSetChange}
+              onDelete={setId => {
+                setSets(currentSets => {
+                  console.log('Current sets before deletion:', currentSets);
+                  console.log('Attempting to delete set with ID:', setId);
+
+                  const newSets = currentSets
+                    .filter(s => String(s.id) !== String(setId))
+                    .map((s, idx) => ({
+                      ...s,
+                      order: idx + 1
+                    }));
+
+                  console.log('Sets after deletion and reordering:', newSets);
+                  return newSets;
+                });
+              }}
+              themedStyles={themedStyles}
+            />
+          ))}
+        </ScrollView>
+        <PillButton
+          label='Add Set'
+          icon={
+            <Ionicons
+              name='add-outline'
+              size={16}
+              style={{
+                color:
+                  themeState.theme === 'dark'
+                    ? themedStyles.accentColor
+                    : colors.eggShell
+              }}
+            />
+          }
+          onPress={handleAddSet}
+        />
       </View>
 
       <View style={styles.bottomButtons}>
@@ -467,13 +481,6 @@ const styles = StyleSheet.create({
     padding: 10,
     gap: 15
   },
-  exerciseDetailsSection: {
-    backgroundColor: 'transparent',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 5 // Additional spacing after exercise details
-  },
-
   exerciseInfo: {
     marginBottom: 10,
     flexDirection: 'row'
@@ -497,19 +504,18 @@ const styles = StyleSheet.create({
   imageNavigationContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 15
+    justifyContent: 'space-between'
   },
   navigationButton: {
-    padding: 12,
+    padding: 5,
     justifyContent: 'center'
   },
-
   exerciseImage: {
     flex: 1,
     height: 180,
     borderRadius: 8,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    paddingBottom: 20
   },
   exerciseGif: {
     width: '100%',
@@ -522,25 +528,19 @@ const styles = StyleSheet.create({
   },
   setControls: {
     flex: 1,
-    gap: 10
-  },
-  setsScrollView: {
-    flex: 1
+    gap: 2,
+    paddingHorizontal: 5
   },
 
   setsScrollContent: {
-    gap: 10
+    gap: 2
   },
   setHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 8
-  },
-  setHeaderSection: {
-    backgroundColor: 'transparent',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 5
+    height: 25,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10
   },
 
   setHeaderText: {
@@ -548,27 +548,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     fontFamily: 'Lexend',
-    marginHorizontal: 8
+    marginRight: 10
   },
-  setRowSection: {
-    backgroundColor: 'transparent',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 5
+
+  setWeight: {
+    marginRight: 80
   },
-  setNumber: {
-    width: 40,
-    fontSize: 16,
-    textAlign: 'center',
-    fontFamily: 'Lexend'
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    marginHorizontal: 8,
-    borderRadius: 10,
-    textAlign: 'center',
-    fontFamily: 'Lexend'
+
+  setReps: {
+    marginRight: 55
   },
   addSetButton: {
     flexDirection: 'row',

@@ -70,12 +70,8 @@ const CurrentProgramDetailsView = ({ navigation }) => {
         throw new Error('No workout ID available');
       }
 
-      console.log('Starting workout with ID:', workoutId);
       const workoutDetails = await fetchWorkoutDetails(workoutId);
-      console.log(
-        'Fetched workout details:',
-        JSON.stringify(workoutDetails, null, 2)
-      );
+
       navigation.navigate('StartWorkout');
     } catch (error) {
       console.error('Failed to load workout details:', {

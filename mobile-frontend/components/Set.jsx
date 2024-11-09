@@ -12,7 +12,7 @@ import {
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
 
-const Set = ({ index, set, onSetChange, onDelete, themedStyles }) => {
+const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const pan = useRef(new Animated.ValueXY()).current;
   const deleteAnim = useRef(new Animated.Value(0)).current;
@@ -98,7 +98,12 @@ const Set = ({ index, set, onSetChange, onDelete, themedStyles }) => {
       </Animated.View>
       <Animated.View
         {...panResponder.panHandlers}
-        style={[styles.setRow, { transform: [{ translateX: pan.x }] }]}
+        style={[
+          styles.setRow,
+          { backgroundColor: themedStyles.secondaryBackgroundColor },
+          { transform: [{ translateX: pan.x }] },
+          isLast && styles.lastSetRow
+        ]}
       >
         <Text style={[styles.setNumber, { color: themedStyles.textColor }]}>
           {index + 1}
@@ -136,15 +141,19 @@ const Set = ({ index, set, onSetChange, onDelete, themedStyles }) => {
 const styles = StyleSheet.create({
   setRowWrapper: {
     position: 'relative',
-    marginBottom: 12,
     overflow: 'hidden'
   },
   setRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 8,
-    backgroundColor: 'transparent',
-    zIndex: 1
+    paddingHorizontal: 20,
+    height: 45
+    // zIndex: 1,
+    // borderRadius: 10
+  },
+  lastSetRow: {
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10
   },
   deleteTextContainer: {
     position: 'absolute',
@@ -171,7 +180,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40,
+    height: 35,
     marginHorizontal: 8,
     borderRadius: 10,
     textAlign: 'center',
