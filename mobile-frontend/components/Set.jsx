@@ -8,6 +8,7 @@ import {
   PanResponder,
   Dimensions
 } from 'react-native';
+import { colors } from '../src/styles/globalStyles';
 
 const { width } = Dimensions.get('window');
 const SWIPE_THRESHOLD = -width * 0.3;
@@ -162,11 +163,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'flex-end',
     paddingRight: 15,
-    backgroundColor: '#FF3B30',
-    zIndex: 0
+    backgroundColor: colors.red,
+    zIndex: 0,
+    borderBottomRightRadius: 10,
+    borderTopRightRadius: 10,
+    height: '98%'
   },
   deleteText: {
-    color: '#FFFFFF',
+    color: colors.offWhite,
     fontSize: 16,
     fontWeight: 'bold'
   },
