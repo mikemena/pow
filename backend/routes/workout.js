@@ -166,7 +166,7 @@ router.get('/workout/:workout_id', async (req, res) => {
   }
 });
 
-// Add a test endpoint to verify the route is mounted correctly
+// test endpoint to verify the route is mounted correctly
 router.get('/workout/test', (req, res) => {
   res.json({ message: 'Workout route is working' });
 });

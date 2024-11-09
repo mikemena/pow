@@ -424,7 +424,7 @@ const StartWorkoutView = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   header: {
-    paddingBottom: 10,
+    paddingBottom: 5,
     alignItems: 'center'
   },
   workoutName: {
