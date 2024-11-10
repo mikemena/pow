@@ -176,6 +176,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       ...exercise,
       id: exercise.id || Crypto.randomUUID(),
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+      imageUrl: exercise.file_url,
       sets: exercise.sets || [
         { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
       ]

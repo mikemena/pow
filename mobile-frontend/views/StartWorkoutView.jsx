@@ -21,7 +21,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = () => {
   const { state: workoutState } = useContext(WorkoutContext);
-  const { setActiveWorkout, setMode } = useContext(ProgramContext);
+  const { setMode } = useContext(ProgramContext);
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -37,8 +37,8 @@ const StartWorkoutView = () => {
   );
 
   const workoutDetails = workoutState.workoutDetails;
-  console.log('workoutState:', workoutState);
-  console.log('Workout details:', workoutDetails);
+  // console.log('workoutState:', workoutState);
+  // console.log('Workout details:', workoutDetails);
   const [sets, setSets] = useState(() => {
     const initialSets =
       workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
@@ -61,6 +61,13 @@ const StartWorkoutView = () => {
   }, []);
 
   useEffect(() => {
+    // If we don't have a current workout in context but have workout data in route
+    if (!workoutState.currentWorkout && route.params?.workout) {
+      startWorkout(route.params.workout);
+    }
+  }, []);
+
+  useEffect(() => {
     if (!workoutDetails) {
       console.error('No workout details available in context');
       navigation.goBack();
@@ -71,7 +78,6 @@ const StartWorkoutView = () => {
   const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
 
   const handleCancel = () => navigation.goBack();
-  const handleBack = () => navigation.navigate('CurrentProgramDetails');
 
   const startTimer = () => {
     if (!isStarted) {
@@ -275,9 +281,11 @@ const StartWorkoutView = () => {
           </TouchableOpacity>
 
           <View style={styles.exerciseImage}>
-            {currentExercise?.imageUrl ? (
+            {currentExercise?.imageUrl || currentExercise?.file_url ? (
               <Image
-                source={{ uri: currentExercise.imageUrl }}
+                source={{
+                  uri: currentExercise.imageUrl || currentExercise.file_url
+                }}
                 style={styles.exerciseGif}
                 resizeMode='contain'
               />

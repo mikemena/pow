@@ -16,8 +16,11 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const CurrentProgramDetailsView = ({ navigation }) => {
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const { state: workoutState, fetchWorkoutDetails } =
-    useContext(WorkoutContext);
+  const {
+    state: workoutState,
+    fetchWorkoutDetails,
+    startWorkout
+  } = useContext(WorkoutContext);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -60,30 +63,29 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const handleStartWorkout = async () => {
     try {
-      const workoutId = workouts[currentWorkoutIndex]?.id;
-      if (!workoutId) {
-        console.error('No workout ID available:', {
-          workout: currentWorkout,
-          currentIndex: currentWorkoutIndex,
-          workouts: workouts
+      // First fetch the workout details
+      const workoutDetails = await fetchWorkoutDetails(
+        workouts[currentWorkoutIndex].id
+      );
+
+      // Only proceed if we got the details
+      if (workoutDetails) {
+        // Start the workout with both the current workout data and fetched details
+        startWorkout({
+          name: currentWorkout.name,
+          programWorkoutId: workouts[currentWorkoutIndex].id,
+          exercises: workoutDetails.exercises || []
         });
-        throw new Error('No workout ID available');
+
+        navigation.navigate('StartWorkout', {
+          workout: currentWorkout
+        });
+      } else {
+        console.error('No workout details available');
       }
-
-      const workoutDetails = await fetchWorkoutDetails(workoutId);
-
-      navigation.navigate('StartWorkout');
     } catch (error) {
-      console.error('Failed to load workout details:', {
-        error: error.message,
-        workoutId: workouts[currentWorkoutIndex]?.id,
-        currentWorkout,
-        stack: error.stack
-      });
-      // Optionally show an alert to the user
-      Alert.alert('Error', 'Unable to start workout. Please try again.', [
-        { text: 'OK' }
-      ]);
+      console.error('Error starting workout:', error);
+      // Optionally show an error message to the user
     }
   };
 
