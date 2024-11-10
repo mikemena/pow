@@ -8,7 +8,9 @@ import {
   Image,
   ScrollView
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import { ProgramContext } from '../src/context/programContext';
 import PillButton from '../components/PillButton';
 import Header from '../components/Header';
 import Set from '../components/Set';
@@ -17,13 +19,16 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const StartWorkoutView = ({ navigation }) => {
+const StartWorkoutView = () => {
   const { state: workoutState } = useContext(WorkoutContext);
+  const { setActiveWorkout, setMode } = useContext(ProgramContext);
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
   const timerRef = useRef(null);
+
+  const navigation = useNavigation();
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -32,6 +37,8 @@ const StartWorkoutView = ({ navigation }) => {
   );
 
   const workoutDetails = workoutState.workoutDetails;
+  console.log('workoutState:', workoutState);
+  console.log('Workout details:', workoutDetails);
   const [sets, setSets] = useState(() => {
     const initialSets =
       workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
@@ -45,6 +52,7 @@ const StartWorkoutView = ({ navigation }) => {
   });
 
   useEffect(() => {
+    setMode('workout');
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -110,12 +118,12 @@ const StartWorkoutView = ({ navigation }) => {
 
   const handlePause = () => pauseTimer();
 
-  const handleAddExercise = async () => {
-    try {
-      console.error('Add exercise functionality not implemented');
-    } catch (error) {
-      console.error('Failed to save the program:', error);
-    }
+  const handleAddExercises = () => {
+    navigation.navigate('ExerciseSelection', {
+      mode: 'workout',
+      isNewProgram: false,
+      programId: workoutState.currentWorkout?.id
+    });
   };
 
   const handleNextExercise = () => {
@@ -390,7 +398,7 @@ const StartWorkoutView = ({ navigation }) => {
             styles.bottomButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
-          onPress={handleAddExercise}
+          onPress={() => handleAddExercises(workoutDetails.id)}
         >
           <Text
             style={[

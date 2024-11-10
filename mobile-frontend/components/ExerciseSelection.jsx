@@ -15,6 +15,7 @@ import {
   StyleSheet
 } from 'react-native';
 import { ProgramContext } from '../src/context/programContext';
+import { WorkoutContext } from '../src/context/workoutContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { useTheme } from '../src/hooks/useTheme';
@@ -24,8 +25,11 @@ import PillButton from './PillButton';
 import Filter from './Filter';
 
 const ExerciseSelection = ({ navigation, route }) => {
-  const { updateExercise, state } = useContext(ProgramContext);
-  const { mode } = state;
+  const { updateExercise, state: programState } = useContext(ProgramContext);
+  const { addExerciseToWorkout, state: workoutState } =
+    useContext(WorkoutContext);
+
+  const { mode } = programState;
   const { programId } = route.params;
 
   const [exercises, setExercises] = useState([]);
@@ -44,20 +48,30 @@ const ExerciseSelection = ({ navigation, route }) => {
     themeState.accentColor
   );
 
-  const activeWorkoutId = state.workout.activeWorkout;
-  const activeWorkout = state.workout.workouts.find(
+  const activeWorkoutId = programState.workout.activeWorkout;
+  const activeWorkout = programState.workout.workouts.find(
     workout => workout.id === activeWorkoutId
   );
+
+  // Initialize selected exercises based on context
+  useEffect(() => {
+    if (mode === 'workout' && workoutState.currentWorkout) {
+      // For active workouts, get exercises from workout context
+      setSelectedExercises(workoutState.currentWorkout.exercises || []);
+    } else {
+      // For program creation/editing, get exercises from program context
+      const activeWorkout = programState.workout.workouts.find(
+        w => w.id === programState.workout.activeWorkout
+      );
+      if (activeWorkout) {
+        setSelectedExercises(activeWorkout.exercises || []);
+      }
+    }
+  }, [mode, workoutState.currentWorkout, programState.workout]);
 
   useEffect(() => {
     fetchExercises();
   }, []);
-
-  useEffect(() => {
-    if (activeWorkout) {
-      setSelectedExercises(activeWorkout.exercises);
-    }
-  }, [activeWorkout]);
 
   const fetchExercises = async () => {
     try {
@@ -143,15 +157,13 @@ const ExerciseSelection = ({ navigation, route }) => {
         prev.filter(e => e.catalog_exercise_id !== exercise.id)
       );
     } else {
-      setSelectedExercises(prev => [
-        ...prev,
-        {
-          ...exercise,
-          id: Crypto.randomUUID(),
-          catalog_exercise_id: exercise.id,
-          sets: []
-        }
-      ]);
+      const newExercise = {
+        ...exercise,
+        id: Crypto.randomUUID(),
+        catalog_exercise_id: exercise.id,
+        sets: [{ id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }]
+      };
+      setSelectedExercises(prev => [...prev, newExercise]);
     }
   };
 
@@ -160,18 +172,35 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   const handleAdd = () => {
-    if (!activeWorkoutId) {
-      console.error('No active workout selected.');
-      return;
-    }
-    updateExercise(activeWorkoutId, selectedExercises);
+    const standardizedExercises = selectedExercises.map(exercise => ({
+      ...exercise,
+      id: exercise.id || Crypto.randomUUID(),
+      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+      sets: exercise.sets || [
+        { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+      ]
+    }));
 
-    if (mode === 'create') {
-      navigation.navigate('CreateProgram');
-    } else if (mode === 'edit') {
-      navigation.navigate('EditProgram', { programId });
+    if (mode === 'workout') {
+      // Add exercises to workout context
+      standardizedExercises.forEach(exercise => {
+        addExerciseToWorkout(exercise);
+      });
+      navigation.navigate('StartWorkout');
     } else {
-      console.error('Unknown mode:', mode);
+      // Add exercises to program context
+      const activeWorkoutId = programState.workout.activeWorkout;
+      if (!activeWorkoutId) {
+        console.error('No active workout selected.');
+        return;
+      }
+      updateExercise(activeWorkoutId, standardizedExercises);
+
+      if (mode === 'create') {
+        navigation.navigate('CreateProgram');
+      } else if (mode === 'edit') {
+        navigation.navigate('EditProgram', { programId });
+      }
     }
   };
 
@@ -259,7 +288,7 @@ const ExerciseSelection = ({ navigation, route }) => {
                 name='options-outline'
                 size={16}
                 color={
-                  state.theme === 'dark'
+                  themeState.theme === 'dark'
                     ? themedStyles.accentColor
                     : colors.eggShell
                 }
