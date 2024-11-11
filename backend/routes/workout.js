@@ -14,18 +14,18 @@ const s3 = new AWS.S3({
 });
 
 // Logging utility
-const logQuery = (query, params) => {
-  console.log('\nExecuting Query:');
-  console.log('SQL:', query.replace(/\s+/g, ' ').trim());
-  console.log('Parameters:', params);
-};
+// const logQuery = (query, params) => {
+//   console.log('\nExecuting Query:');
+//   console.log('SQL:', query.replace(/\s+/g, ' ').trim());
+//   console.log('Parameters:', params);
+// };
 
 // Endpoint to get a workout by ID
 router.get('/workout/:workout_id', async (req, res) => {
   const startTime = Date.now();
   const { workout_id } = req.params;
 
-  console.log(`\n[${new Date().toISOString()}] Fetching workout ${workout_id}`);
+  // console.log(`\n[${new Date().toISOString()}] Fetching workout ${workout_id}`);
 
   try {
     // Validate workout_id
@@ -60,10 +60,10 @@ router.get('/workout/:workout_id', async (req, res) => {
       WHERE w.id = $1
       ORDER BY e.order, s.order`;
 
-    logQuery(query, [parsedId]);
+    // logQuery(query, [parsedId]);
 
     const workoutResult = await pool.query(query, [parsedId]);
-    console.log(`Query returned ${workoutResult.rows.length} rows`);
+    // console.log(`Query returned ${workoutResult.rows.length} rows`);
 
     if (workoutResult.rows.length === 0) {
       console.log(`No workout found with ID ${workout_id}`);
@@ -93,9 +93,9 @@ router.get('/workout/:workout_id', async (req, res) => {
           imageUrl: row.image_url,
           sets: []
         });
-        console.log(
-          `Added exercise: ${row.exercise_name} (ID: ${row.exercise_id})`
-        );
+        // console.log(
+        //   `Added exercise: ${row.exercise_name} (ID: ${row.exercise_id})`
+        // );
       }
 
       // Add set to exercise if it exists
@@ -163,6 +163,87 @@ router.get('/workout/:workout_id', async (req, res) => {
       error: error.message,
       timestamp: new Date().toISOString()
     });
+  }
+});
+
+// POST route to save a completed workout
+router.post('/workout/complete', async (req, res) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+
+    const { userId, programId, name, duration, exercises } = req.body;
+
+    // Validate required fields
+    if (
+      !userId ||
+      !name ||
+      !duration ||
+      !exercises ||
+      !Array.isArray(exercises)
+    ) {
+      return res.status(400).json({
+        message: 'Missing or invalid required fields'
+      });
+    }
+
+    // Insert completed workout
+    const workoutResult = await client.query(
+      `INSERT INTO completed_workouts
+       (user_id, program_id, name, duration, is_completed, date)
+       VALUES ($1, $2, $3, $4, true, CURRENT_DATE)
+       RETURNING id`,
+      [userId, programId || null, name, duration]
+    );
+
+    const workoutId = workoutResult.rows[0].id;
+
+    // Insert exercises and their sets
+    for (let i = 0; i < exercises.length; i++) {
+      const exercise = exercises[i];
+
+      // Insert exercise record
+      const exerciseResult = await client.query(
+        `INSERT INTO completed_exercises
+         (workout_id, exercise_id, "order")
+         VALUES ($1, $2, $3)
+         RETURNING id`,
+        [workoutId, exercise.id, i + 1]
+      );
+
+      const completedExerciseId = exerciseResult.rows[0].id;
+
+      // Insert sets into completed_sets table
+      if (exercise.sets && Array.isArray(exercise.sets)) {
+        for (let j = 0; j < exercise.sets.length; j++) {
+          const set = exercise.sets[j];
+          await client.query(
+            `INSERT INTO completed_sets
+             (exercise_id, weight, reps, "order")
+             VALUES ($1, $2, $3, $4)`,
+            [completedExerciseId, set.weight, set.reps, j + 1]
+          );
+        }
+      }
+    }
+
+    await client.query('COMMIT');
+
+    res.status(201).json({
+      message: 'Workout completed successfully',
+      workoutId
+    });
+  } catch (error) {
+    await client.query('ROLLBACK');
+    console.error('Error saving completed workout:', error);
+
+    res.status(500).json({
+      message: 'Failed to save workout',
+      error: error.message
+    });
+  } finally {
+    client.release();
   }
 });
 

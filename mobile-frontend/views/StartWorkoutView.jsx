@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   SafeAreaView,
   Image,
-  ScrollView
+  ScrollView,
+  Alert
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
@@ -20,7 +21,11 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const StartWorkoutView = () => {
-  const { state: workoutState } = useContext(WorkoutContext);
+  const {
+    state: workoutState,
+    completeWorkout,
+    updateWorkoutDuration
+  } = useContext(WorkoutContext);
   const { setMode } = useContext(ProgramContext);
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
@@ -37,8 +42,6 @@ const StartWorkoutView = () => {
   );
 
   const workoutDetails = workoutState.workoutDetails;
-  // console.log('workoutState:', workoutState);
-  // console.log('Workout details:', workoutDetails);
   const [sets, setSets] = useState(() => {
     const initialSets =
       workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
@@ -101,16 +104,29 @@ const StartWorkoutView = () => {
     }
   };
 
-  const stopTimer = () => {
-    clearInterval(timerRef.current);
-    setIsStarted(false);
-    setIsPaused(false);
-    handleWorkoutComplete();
-  };
+  const stopTimer = async () => {
+    try {
+      clearInterval(timerRef.current);
+      setIsStarted(false);
+      setIsPaused(false);
 
-  const handleWorkoutComplete = () => {
-    console.log('Workout completed with duration:', formatTime(time));
-    navigation.goBack();
+      // Calculate duration in minutes
+      const durationInMinutes = Math.floor(time / 60);
+      console.log('Completing workout with duration:', durationInMinutes);
+
+      // Complete workout with duration directly
+      await completeWorkout(durationInMinutes);
+
+      navigation.goBack();
+    } catch (error) {
+      console.error('Failed to complete workout:', error);
+      Alert.alert('Error', `Failed to save workout: ${error.message}`, [
+        {
+          text: 'OK',
+          onPress: () => navigation.goBack()
+        }
+      ]);
+    }
   };
 
   const formatTime = seconds => {
@@ -166,8 +182,8 @@ const StartWorkoutView = () => {
     setSets(currentSets => {
       const newSet = {
         id: Math.random().toString(36).substr(2, 9),
-        weight: '30',
-        reps: '10',
+        weight: '0',
+        reps: '0',
         order: currentSets.length + 1
       };
       console.log('Adding new set:', newSet);
