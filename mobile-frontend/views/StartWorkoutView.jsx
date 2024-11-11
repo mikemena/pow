@@ -24,7 +24,8 @@ const StartWorkoutView = () => {
   const {
     state: workoutState,
     completeWorkout,
-    updateWorkoutDuration
+    updateWorkoutDuration,
+    updateExerciseSets
   } = useContext(WorkoutContext);
   const { setMode } = useContext(ProgramContext);
   const [isStarted, setIsStarted] = useState(false);
@@ -45,14 +46,25 @@ const StartWorkoutView = () => {
   const [sets, setSets] = useState(() => {
     const initialSets =
       workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
-    const setsWithIds = initialSets.map((set, idx) => ({
+    return initialSets.map((set, idx) => ({
       ...set,
       id: set.id || Math.random().toString(36).substr(2, 9),
       order: idx + 1
     }));
-    // console.log('Initial sets:', setsWithIds);
-    return setsWithIds;
   });
+
+  // Effect to update sets when exercise changes
+  useEffect(() => {
+    const currentSets =
+      workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
+    setSets(
+      currentSets.map((set, idx) => ({
+        ...set,
+        id: set.id || Math.random().toString(36).substr(2, 9),
+        order: idx + 1
+      }))
+    );
+  }, [currentExerciseIndex, workoutDetails?.exercises]);
 
   useEffect(() => {
     setMode('workout');
@@ -186,22 +198,55 @@ const StartWorkoutView = () => {
         reps: '0',
         order: currentSets.length + 1
       };
-      console.log('Adding new set:', newSet);
-      const updatedSets = [...currentSets, newSet];
-      console.log('All sets after adding:', updatedSets);
-      return updatedSets;
+
+      const newSets = [...currentSets, newSet];
+
+      // Sync with context
+      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      if (currentExercise) {
+        updateExerciseSets(currentExercise.id, newSets);
+      }
+
+      return newSets;
     });
   };
 
   const handleSetChange = (index, field, value) => {
-    setSets(currentSets =>
-      currentSets.map(set => {
+    setSets(currentSets => {
+      const newSets = currentSets.map(set => {
         if (set.order === index + 1) {
           return { ...set, [field]: value };
         }
         return set;
-      })
-    );
+      });
+
+      // Sync with context
+      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      if (currentExercise) {
+        updateExerciseSets(currentExercise.id, newSets);
+      }
+
+      return newSets;
+    });
+  };
+
+  const handleDeleteSet = setId => {
+    setSets(currentSets => {
+      const newSets = currentSets
+        .filter(s => String(s.id) !== String(setId))
+        .map((s, idx) => ({
+          ...s,
+          order: idx + 1
+        }));
+
+      // Sync with context
+      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      if (currentExercise) {
+        updateExerciseSets(currentExercise.id, newSets);
+      }
+
+      return newSets;
+    });
   };
 
   return (
@@ -377,22 +422,7 @@ const StartWorkoutView = () => {
               set={set}
               isLast={index === sets.length - 1}
               onSetChange={handleSetChange}
-              onDelete={setId => {
-                setSets(currentSets => {
-                  console.log('Current sets before deletion:', currentSets);
-                  console.log('Attempting to delete set with ID:', setId);
-
-                  const newSets = currentSets
-                    .filter(s => String(s.id) !== String(setId))
-                    .map((s, idx) => ({
-                      ...s,
-                      order: idx + 1
-                    }));
-
-                  console.log('Sets after deletion and reordering:', newSets);
-                  return newSets;
-                });
-              }}
+              onDelete={handleDeleteSet}
               themedStyles={themedStyles}
             />
           ))}

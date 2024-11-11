@@ -97,6 +97,19 @@ const workoutReducer = (state, action) => {
         }
       };
 
+    case actionTypes.UPDATE_EXERCISE_SETS:
+      return {
+        ...state,
+        workoutDetails: {
+          ...state.workoutDetails,
+          exercises: state.workoutDetails.exercises.map(exercise =>
+            exercise.id === action.payload.exerciseId
+              ? { ...exercise, sets: action.payload.sets }
+              : exercise
+          )
+        }
+      };
+
     case actionTypes.REMOVE_SET:
       return {
         ...state,
@@ -320,6 +333,13 @@ export const WorkoutProvider = ({ children }) => {
     });
   }, []);
 
+  const updateExerciseSets = useCallback((exerciseId, sets) => {
+    dispatch({
+      type: actionTypes.UPDATE_EXERCISE_SETS,
+      payload: { exerciseId, sets }
+    });
+  }, []);
+
   const removeSet = useCallback((exerciseId, setId) => {
     dispatch({ type: actionTypes.REMOVE_SET, payload: { exerciseId, setId } });
   }, []);
@@ -434,6 +454,7 @@ export const WorkoutProvider = ({ children }) => {
         removeExerciseFromWorkout,
         addSet,
         updateSet,
+        updateExerciseSets,
         removeSet,
         completeWorkout,
         clearCurrentWorkout,
