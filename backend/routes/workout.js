@@ -40,6 +40,7 @@ router.get('/workout/:workout_id', async (req, res) => {
         w.id as workout_id,
         w.name as workout_name,
         e.id as exercise_id,
+        e.catalog_exercise_id,
         e.order as exercise_order,
         ex.name as exercise_name,
         mg.muscle,
@@ -80,7 +81,7 @@ router.get('/workout/:workout_id', async (req, res) => {
     // Use a Map to group exercises and their sets
     const exercisesMap = new Map();
 
-    workoutResult.rows.forEach((row, index) => {
+    workoutResult.rows.forEach(row => {
       if (!exercisesMap.has(row.exercise_id)) {
         // Create new exercise entry
         exercisesMap.set(row.exercise_id, {
@@ -203,13 +204,30 @@ router.post('/workout/complete', async (req, res) => {
     for (let i = 0; i < exercises.length; i++) {
       const exercise = exercises[i];
 
-      // Insert exercise record
+      // First get the catalog_exercise_id from the original exercise
+      const catalogExerciseQuery = await client.query(
+        `SELECT catalog_exercise_id
+         FROM exercises
+         WHERE id = $1`,
+        [exercise.id]
+      );
+
+      const catalogExerciseId =
+        catalogExerciseQuery.rows[0]?.catalog_exercise_id;
+
+      if (!catalogExerciseId) {
+        throw new Error(
+          `No catalog exercise found for exercise ID: ${exercise.id}`
+        );
+      }
+
+      // Insert exercise record with catalog_exercise_id
       const exerciseResult = await client.query(
         `INSERT INTO completed_exercises
-         (workout_id, exercise_id, "order")
-         VALUES ($1, $2, $3)
+         (workout_id, exercise_id, catalog_exercise_id, "order")
+         VALUES ($1, $2, $3, $4)
          RETURNING id`,
-        [workoutId, exercise.id, i + 1]
+        [workoutId, exercise.id, catalogExerciseId, i + 1]
       );
 
       const completedExerciseId = exerciseResult.rows[0].id;
