@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
+import { Swipeable } from 'react-native-gesture-handler';
 import {
   View,
   Text,
@@ -326,21 +327,29 @@ const StartWorkoutView = () => {
         </View>
 
         <View style={styles.imageNavigationContainer}>
-          <TouchableOpacity
-            onPress={handlePreviousExercise}
-            disabled={currentExerciseIndex === 0}
-            style={[styles.navigationButton, styles.leftNavigationButton]}
-          >
-            <Ionicons
-              name='chevron-back-outline'
-              size={24}
-              style={{
-                color: themeState.accentColor,
-                opacity: currentExerciseIndex === 0 ? 0.3 : 1
-              }}
-            />
-          </TouchableOpacity>
+          {/* Previous Exercise Button */}
+          <View style={styles.navigationWrapper}>
+            <TouchableOpacity
+              onPress={handlePreviousExercise}
+              disabled={currentExerciseIndex === 0}
+              style={[
+                styles.navigationButton,
+                { backgroundColor: themedStyles.primaryBackgroundColor },
+                currentExerciseIndex === 0 && styles.disabledButton
+              ]}
+            >
+              <Ionicons
+                name='chevron-up-outline'
+                size={24}
+                style={{
+                  color: themeState.accentColor,
+                  opacity: currentExerciseIndex === 0 ? 0.3 : 1
+                }}
+              />
+            </TouchableOpacity>
+          </View>
 
+          {/* Exercise Image */}
           <View style={styles.exerciseImage}>
             {currentExercise?.imageUrl || currentExercise?.file_url ? (
               <Image
@@ -355,25 +364,34 @@ const StartWorkoutView = () => {
             )}
           </View>
 
-          <TouchableOpacity
-            onPress={handleNextExercise}
-            disabled={
-              currentExerciseIndex === workoutDetails?.exercises.length - 1
-            }
-            style={[styles.navigationButton, styles.rightNavigationButton]}
-          >
-            <Ionicons
-              name='chevron-forward-outline'
-              size={24}
-              style={{
-                color: themeState.accentColor,
-                opacity:
-                  currentExerciseIndex === workoutDetails?.exercises.length - 1
-                    ? 0.3
-                    : 1
-              }}
-            />
-          </TouchableOpacity>
+          {/* Next Exercise Button */}
+          <View style={styles.navigationWrapper}>
+            <TouchableOpacity
+              onPress={handleNextExercise}
+              disabled={
+                currentExerciseIndex === workoutDetails?.exercises.length - 1
+              }
+              style={[
+                styles.navigationButton,
+                { backgroundColor: themedStyles.primaryBackgroundColor },
+                currentExerciseIndex === workoutDetails?.exercises.length - 1 &&
+                  styles.disabledButton
+              ]}
+            >
+              <Ionicons
+                name='chevron-down-outline'
+                size={24}
+                style={{
+                  color: themeState.accentColor,
+                  opacity:
+                    currentExerciseIndex ===
+                    workoutDetails?.exercises.length - 1
+                      ? 0.3
+                      : 1
+                }}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -528,17 +546,17 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 5,
     padding: 10,
-    gap: 15,
-    position: 'relative'
+    gap: 15
   },
   exerciseInfo: {
-    marginBottom: 10,
-    flexDirection: 'row'
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    paddingHorizontal: 10
   },
   exerciseNumber: {
     fontSize: 16,
     fontFamily: 'Lexend',
-    marginBottom: 8
+    marginBottom: 10
   },
   exerciseName: {
     fontSize: 16,
@@ -548,38 +566,35 @@ const styles = StyleSheet.create({
   muscleName: {
     fontSize: 16,
     fontFamily: 'Lexend',
+    marginTop: 5,
     marginLeft: 10,
-    marginVertical: 5
+    opacity: 0.8
   },
   imageNavigationContainer: {
-    flexDirection: 'row',
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'space-between',
-    position: 'relative',
-    height: 180
+    justifyContent: 'center',
+    position: 'relative'
+  },
+  navigationWrapper: {
+    position: 'absolute',
+    width: '100%',
+    alignItems: 'center',
+    zIndex: 1
   },
   navigationButton: {
-    padding: 5,
+    width: 40,
+    height: 40,
     justifyContent: 'center',
-    position: 'absolute',
-    transform: [{ translateY: -40 }],
-    zIndex: 1,
-    width: 30
-  },
-  leftNavigationButton: {
-    left: -5
-  },
-
-  rightNavigationButton: {
-    right: -5
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    borderRadius: 20
   },
   exerciseImage: {
-    flex: 1,
+    width: '100%',
     height: 180,
     borderRadius: 8,
-    overflow: 'hidden',
-    marginHorizontal: 30,
-    marginBottom: 30
+    overflow: 'hidden'
   },
   exerciseGif: {
     width: '100%',
