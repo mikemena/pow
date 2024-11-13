@@ -54,16 +54,16 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 1,
-    paddingLeft: 1,
+    // paddingVertical: 1,
+    // paddingLeft: 0,
     paddingRight: 12,
     borderRadius: 25,
     alignSelf: 'flex-start'
   },
   iconContainer: {
     marginRight: 8,
-    width: 28,
-    height: 28,
+    width: 25,
+    height: 25,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 14

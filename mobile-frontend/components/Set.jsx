@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 20,
-    height: 45
+    height: 40
   },
   lastSetRow: {
     borderBottomLeftRadius: 10,
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    height: 40,
+    height: 35,
     marginHorizontal: 8,
     borderRadius: 10,
     textAlign: 'center',

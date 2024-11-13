@@ -513,12 +513,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 10
+    paddingHorizontal: 10,
+    marginVertical: 5
   },
   startButton: {
     width: 190,
-    height: 40,
-    padding: 10
+    height: 35,
+    padding: 9
   },
   startButtonText: {
     color: colors.flatBlack,
@@ -581,11 +582,11 @@ const styles = StyleSheet.create({
     height: 35
   },
   topNavigationWrapper: {
-    marginBottom: 10 // Add space between top button and image
+    marginBottom: 10
   },
 
   bottomNavigationWrapper: {
-    marginTop: 10 // Add space between bottom button and image
+    marginTop: 10
   },
   navigationButton: {
     width: 40,
@@ -649,8 +650,9 @@ const styles = StyleSheet.create({
     marginRight: 55
   },
   addSetButton: {
-    marginTop: 10,
-    marginLeft: 5
+    marginTop: 6,
+    marginLeft: 5,
+    height: 25
   },
   bottomButtons: {
     flexDirection: 'row',
@@ -659,11 +661,11 @@ const styles = StyleSheet.create({
   },
   bottomButton: {
     flex: 1,
-    height: 40,
+    height: 35,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal: 8
+    marginHorizontal: 10
   },
   bottomButtonText: {
     fontSize: 14,

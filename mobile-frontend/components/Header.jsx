@@ -25,7 +25,7 @@ const Header = ({ pageName }) => {
 
 const styles = StyleSheet.create({
   header: {
-    padding: 10,
+    paddingHorizontal: 10,
     paddingTop: 0,
     flexDirection: 'row',
     justifyContent: 'space-between',
