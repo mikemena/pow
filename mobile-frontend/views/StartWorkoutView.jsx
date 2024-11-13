@@ -306,6 +306,26 @@ const StartWorkoutView = () => {
           { backgroundColor: themedStyles.secondaryBackgroundColor }
         ]}
       >
+        <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
+          <TouchableOpacity
+            onPress={handlePreviousExercise}
+            disabled={currentExerciseIndex === 0}
+            style={[
+              styles.navigationButton,
+              { backgroundColor: themedStyles.primaryBackgroundColor },
+              currentExerciseIndex === 0 && styles.disabledButton
+            ]}
+          >
+            <Ionicons
+              name='chevron-up-outline'
+              size={24}
+              style={{
+                color: themeState.accentColor,
+                opacity: currentExerciseIndex === 0 ? 0.3 : 1
+              }}
+            />
+          </TouchableOpacity>
+        </View>
         <View style={styles.exerciseInfo}>
           <Text
             style={[styles.exerciseNumber, { color: themedStyles.textColor }]}
@@ -327,27 +347,6 @@ const StartWorkoutView = () => {
         </View>
 
         <View style={styles.imageNavigationContainer}>
-          <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
-            <TouchableOpacity
-              onPress={handlePreviousExercise}
-              disabled={currentExerciseIndex === 0}
-              style={[
-                styles.navigationButton,
-                { backgroundColor: themedStyles.primaryBackgroundColor },
-                currentExerciseIndex === 0 && styles.disabledButton
-              ]}
-            >
-              <Ionicons
-                name='chevron-up-outline'
-                size={24}
-                style={{
-                  color: themeState.accentColor,
-                  opacity: currentExerciseIndex === 0 ? 0.3 : 1
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-
           <View style={styles.exerciseImage}>
             {currentExercise?.imageUrl || currentExercise?.file_url ? (
               <Image
@@ -545,15 +544,14 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 5,
     padding: 10,
-    minHeight: 90,
+    minHeight: 170,
     display: 'flex',
     gap: 1
   },
   exerciseInfo: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    paddingTop: 20
+    paddingHorizontal: 10
   },
   exerciseNumber: {
     fontSize: 16,
@@ -568,7 +566,7 @@ const styles = StyleSheet.create({
   muscleName: {
     fontSize: 16,
     fontFamily: 'Lexend',
-    marginTop: 5,
+    marginVertical: 5,
     marginLeft: 10,
     opacity: 0.8
   },
@@ -580,7 +578,7 @@ const styles = StyleSheet.create({
   navigationWrapper: {
     width: '100%',
     alignItems: 'center',
-    height: 40
+    height: 35
   },
   topNavigationWrapper: {
     marginBottom: 10 // Add space between top button and image
