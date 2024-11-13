@@ -327,8 +327,7 @@ const StartWorkoutView = () => {
         </View>
 
         <View style={styles.imageNavigationContainer}>
-          {/* Previous Exercise Button */}
-          <View style={styles.navigationWrapper}>
+          <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
             <TouchableOpacity
               onPress={handlePreviousExercise}
               disabled={currentExerciseIndex === 0}
@@ -349,7 +348,6 @@ const StartWorkoutView = () => {
             </TouchableOpacity>
           </View>
 
-          {/* Exercise Image */}
           <View style={styles.exerciseImage}>
             {currentExercise?.imageUrl || currentExercise?.file_url ? (
               <Image
@@ -364,8 +362,9 @@ const StartWorkoutView = () => {
             )}
           </View>
 
-          {/* Next Exercise Button */}
-          <View style={styles.navigationWrapper}>
+          <View
+            style={[styles.navigationWrapper, styles.bottomNavigationWrapper]}
+          >
             <TouchableOpacity
               onPress={handleNextExercise}
               disabled={
@@ -546,12 +545,15 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     margin: 5,
     padding: 10,
-    gap: 15
+    minHeight: 90,
+    display: 'flex',
+    gap: 1
   },
   exerciseInfo: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
+    paddingTop: 20
   },
   exerciseNumber: {
     fontSize: 16,
@@ -573,14 +575,19 @@ const styles = StyleSheet.create({
   imageNavigationContainer: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative'
+    justifyContent: 'space-between'
   },
   navigationWrapper: {
-    position: 'absolute',
     width: '100%',
     alignItems: 'center',
-    zIndex: 1
+    height: 40
+  },
+  topNavigationWrapper: {
+    marginBottom: 10 // Add space between top button and image
+  },
+
+  bottomNavigationWrapper: {
+    marginTop: 10 // Add space between bottom button and image
   },
   navigationButton: {
     width: 40,
