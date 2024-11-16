@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from 'react';
+import { Swipeable } from 'react-native-gesture-handler';
 import {
   View,
   Text,
@@ -13,7 +14,6 @@ import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { ProgramContext } from '../src/context/programContext';
 import PillButton from '../components/PillButton';
-import WorkoutItemSwipeable from '../components/WorkoutItemSwipeable';
 import Header from '../components/Header';
 import Set from '../components/Set';
 import { Ionicons } from '@expo/vector-icons';
@@ -161,15 +161,6 @@ const StartWorkoutView = () => {
     });
   };
 
-  const handleDeleteExercise = exerciseId => {
-    removeExerciseFromWorkout(exerciseId);
-
-    // Parent component can handle additional logic
-    if (currentExerciseIndex >= workoutDetails.exercises.length - 1) {
-      setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
-    }
-  };
-
   const handleNextExercise = () => {
     if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
@@ -261,6 +252,58 @@ const StartWorkoutView = () => {
 
   // delete exercise action
 
+  const renderRightActions = () => {
+    return (
+      <TouchableOpacity
+        style={styles.deleteAction}
+        onPress={() => {
+          Alert.alert(
+            'Delete Exercise',
+            'Are you sure you want to delete this exercise?',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              {
+                text: 'Delete',
+                style: 'destructive',
+                onPress: () => onDelete(exercise.id)
+              }
+            ]
+          );
+        }}
+      >
+        <Ionicons name='trash-outline' size={24} color='#FFFFFF' />
+        <Text style={styles.deleteActionText}>Delete</Text>
+      </TouchableOpacity>
+    );
+  };
+
+  const handleDeleteExercise = exerciseId => {
+    Alert.alert(
+      'Delete Exercise',
+      'Are you sure you want to delete this exercise?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel'
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: () => {
+            removeExerciseFromWorkout(exerciseId);
+
+            // If we're deleting the current exercise, navigate to an appropriate one
+            if (currentExerciseIndex >= workoutDetails.exercises.length - 1) {
+              // If we're deleting the last exercise, go to previous one
+              setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
+            }
+            // If we're deleting from the middle, current index will point to next exercise automatically
+          }
+        }
+      ]
+    );
+  };
+
   return (
     <SafeAreaView
       style={[
@@ -311,10 +354,15 @@ const StartWorkoutView = () => {
         </Text>
       </View>
       <View style={styles.swipeableContainer}>
-        <WorkoutItemSwipeable
-          onDelete={() => handleDeleteExercise(currentExercise?.id)}
+        <Swipeable
+          renderRightActions={renderRightActions}
+          overshootRight={false}
+          friction={2}
+          leftThreshold={30}
+          rightThreshold={30}
         >
-          <View
+          <TouchableOpacity
+            activeOpacity={0.9}
             style={[
               styles.exerciseContainer,
               { backgroundColor: themedStyles.secondaryBackgroundColor }
@@ -342,6 +390,7 @@ const StartWorkoutView = () => {
                 />
               </TouchableOpacity>
             </View>
+
             <View style={styles.exerciseInfo}>
               <Text
                 style={[
@@ -358,22 +407,22 @@ const StartWorkoutView = () => {
                     { color: themedStyles.textColor }
                   ]}
                 >
-                  {currentExercise?.name}
+                  {exercise?.name}
                 </Text>
                 <Text
                   style={[styles.muscleName, { color: themedStyles.textColor }]}
                 >
-                  {currentExercise?.muscle}
+                  {exercise?.muscle}
                 </Text>
               </View>
             </View>
 
             <View style={styles.imageNavigationContainer}>
               <View style={styles.exerciseImage}>
-                {currentExercise?.imageUrl || currentExercise?.file_url ? (
+                {exercise?.imageUrl || exercise?.file_url ? (
                   <Image
                     source={{
-                      uri: currentExercise.imageUrl || currentExercise.file_url
+                      uri: exercise.imageUrl || exercise.file_url
                     }}
                     style={styles.exerciseGif}
                     resizeMode='contain'
@@ -391,15 +440,11 @@ const StartWorkoutView = () => {
                 >
                   <TouchableOpacity
                     onPress={handleNextExercise}
-                    disabled={
-                      currentExerciseIndex ===
-                      workoutDetails?.exercises.length - 1
-                    }
+                    disabled={currentExerciseIndex === totalExercises - 1}
                     style={[
                       styles.navigationButton,
                       { backgroundColor: themedStyles.primaryBackgroundColor },
-                      currentExerciseIndex ===
-                        workoutDetails?.exercises.length - 1 &&
+                      currentExerciseIndex === totalExercises - 1 &&
                         styles.disabledButton
                     ]}
                   >
@@ -409,18 +454,15 @@ const StartWorkoutView = () => {
                       style={{
                         color: themeState.accentColor,
                         opacity:
-                          currentExerciseIndex ===
-                          workoutDetails?.exercises.length - 1
-                            ? 0.3
-                            : 1
+                          currentExerciseIndex === totalExercises - 1 ? 0.3 : 1
                       }}
                     />
                   </TouchableOpacity>
                 </View>
               </View>
             </View>
-          </View>
-        </WorkoutItemSwipeable>
+          </TouchableOpacity>
+        </Swipeable>
       </View>
 
       <View style={styles.setControls}>
@@ -575,20 +617,20 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginBottom: 10
   },
-  // deleteAction: {
-  //   backgroundColor: colors.error,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   width: 80,
-  //   height: '100%',
-  //   borderTopRightRadius: 12,
-  //   borderBottomRightRadius: 12
-  // },
+  deleteAction: {
+    backgroundColor: colors.error,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 80,
+    height: '100%',
+    borderTopRightRadius: 12,
+    borderBottomRightRadius: 12
+  },
   exerciseContainer: {
+    borderRadius: 10,
     padding: 10,
     height: 350,
-    display: 'flex',
-    width: '100%'
+    display: 'flex'
   },
   exerciseContent: {
     flex: 1,
@@ -613,7 +655,7 @@ const styles = StyleSheet.create({
   muscleName: {
     fontSize: 16,
     fontFamily: 'Lexend',
-    marginTop: 5,
+    marginVertical: 5,
     marginLeft: 10,
     opacity: 0.8
   },
