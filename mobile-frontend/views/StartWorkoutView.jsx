@@ -13,7 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { ProgramContext } from '../src/context/programContext';
 import PillButton from '../components/PillButton';
-import WorkoutItemSwipeable from '../components/WorkoutItemSwipeable';
+import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 import Header from '../components/Header';
 import Set from '../components/Set';
 import { Ionicons } from '@expo/vector-icons';
@@ -311,7 +311,7 @@ const StartWorkoutView = () => {
         </Text>
       </View>
       <View style={styles.swipeableContainer}>
-        <WorkoutItemSwipeable
+        <SwipeableItemDeletion
           onDelete={() => handleDeleteExercise(currentExercise?.id)}
         >
           <View
@@ -420,7 +420,7 @@ const StartWorkoutView = () => {
               </View>
             </View>
           </View>
-        </WorkoutItemSwipeable>
+        </SwipeableItemDeletion>
       </View>
 
       <View style={styles.setControls}>

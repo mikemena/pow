@@ -3,7 +3,7 @@ import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '../src/styles/globalStyles';
 
-const WorkoutItemSwipeable = ({ onDelete, children }) => {
+const SwipeableItemDeletion = ({ onDelete, children }) => {
   // Create an animated value for border radius
   const animatedBorderRadius = new Animated.Value(10);
 
@@ -80,4 +80,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default WorkoutItemSwipeable;
+export default SwipeableItemDeletion;
