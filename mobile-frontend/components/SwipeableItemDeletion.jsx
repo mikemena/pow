@@ -1,20 +1,14 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Animated
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colors, themedStyles } from '../src/styles/globalStyles';
+import { colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
-const SwipeableItemDeletion = ({ onDelete, children }) => {
-  // Create an animated value for border radius
-  const animatedBorderRadius = new Animated.Value(10);
+const SwipeableItemDeletion = ({ onDelete, children, isLast }) => {
+  // Only create animated border radius if it's the last item
+  const animatedBorderRadius = new Animated.Value(isLast ? 10 : 0);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -22,7 +16,7 @@ const SwipeableItemDeletion = ({ onDelete, children }) => {
     themeState.accentColor
   );
 
-  const renderRightActions = (progress, dragX) => {
+  const renderRightActions = progress => {
     // Animated interpolation for the gradient opacity
     const opacity = progress.interpolate({
       inputRange: [0, 1],
@@ -39,7 +33,6 @@ const SwipeableItemDeletion = ({ onDelete, children }) => {
                 size={24}
                 color={colors.eggShell}
               />
-              <Text style={styles.deleteActionText}>Delete</Text>
             </View>
             {/* Overlay the gradient on top */}
             <LinearGradient
@@ -82,10 +75,10 @@ const SwipeableItemDeletion = ({ onDelete, children }) => {
         style={[
           styles.contentContainer,
           {
-            borderTopRightRadius: animatedBorderRadius,
-            borderBottomRightRadius: animatedBorderRadius,
-            borderTopLeftRadius: 10,
-            borderBottomLeftRadius: 10
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: isLast ? animatedBorderRadius : 0,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: isLast ? animatedBorderRadius : 0
           }
         ]}
       >

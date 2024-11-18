@@ -679,11 +679,11 @@ const styles = StyleSheet.create({
     gap: 2,
     flexGrow: 0
   },
+
   setHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     height: 25,
-    // borderRadius: 10,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10
   },

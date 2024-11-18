@@ -1,16 +1,11 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { View, Text, TextInput, StyleSheet } from 'react-native';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 
 const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
-  //log isLast in useEffect
-  useEffect(() => {
-    console.log(isLast);
-  }, [isLast]);
-
   return (
     <View style={styles.setRowWrapper}>
-      <SwipeableItemDeletion onDelete={() => onDelete(set.id)}>
+      <SwipeableItemDeletion onDelete={() => onDelete(set.id)} isLast={isLast}>
         <View
           style={[
             styles.setRow,
