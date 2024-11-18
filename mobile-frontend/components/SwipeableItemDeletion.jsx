@@ -107,21 +107,21 @@ const styles = StyleSheet.create({
   },
   deleteAction: {
     flex: 1,
-    backgroundColor: colors.red, // Fallback color
+    backgroundColor: colors.red,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    overflow: 'hidden' // Important for the gradient
+    overflow: 'hidden'
   },
   deleteActionContent: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1 // Ensure content stays above gradient
+    zIndex: 1
   },
   gradient: {
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
-    opacity: 1 // Adjust this value to blend the gradient
+    opacity: 1
   },
   deleteActionText: {
     color: colors.eggShell,

@@ -683,9 +683,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     height: 25,
-    borderRadius: 10
-    // borderTopLeftRadius: 10,
-    // borderTopRightRadius: 10
+    // borderRadius: 10,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10
   },
 
   setHeaderText: {
