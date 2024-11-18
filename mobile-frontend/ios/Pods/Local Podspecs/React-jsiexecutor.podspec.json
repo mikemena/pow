@@ -43,6 +43,9 @@
     ],
     "React-jsinspector": [
 
+    ],
+    "hermes-engine": [
+
     ]
   }
 }

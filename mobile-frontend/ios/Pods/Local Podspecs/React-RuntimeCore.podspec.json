@@ -59,7 +59,7 @@
     "React-featureflags": [
 
     ],
-    "React-jsc": [
+    "hermes-engine": [
 
     ],
     "React-jsinspector": [

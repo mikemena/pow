@@ -75,7 +75,7 @@
     "React-featureflags": [
 
     ],
-    "React-jsc": [
+    "hermes-engine": [
 
     ]
   },

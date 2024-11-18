@@ -1,18 +1,56 @@
-import { Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Animated
+} from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '../src/styles/globalStyles';
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors, themedStyles } from '../src/styles/globalStyles';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
 
 const SwipeableItemDeletion = ({ onDelete, children }) => {
   // Create an animated value for border radius
   const animatedBorderRadius = new Animated.Value(10);
 
-  const renderRightActions = () => {
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const renderRightActions = (progress, dragX) => {
+    // Animated interpolation for the gradient opacity
+    const opacity = progress.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1]
+    });
+
     return (
-      <TouchableOpacity style={styles.deleteAction} onPress={onDelete}>
-        <Ionicons name='trash-outline' size={24} color={colors.eggShell} />
-        <Text style={styles.deleteActionText}>Delete</Text>
-      </TouchableOpacity>
+      <Animated.View style={[styles.deleteActionContainer, { opacity }]}>
+        <TouchableOpacity onPress={onDelete} style={{ flex: 1 }}>
+          <View style={styles.deleteAction}>
+            <View style={styles.deleteActionContent}>
+              <Ionicons
+                name='trash-outline'
+                size={24}
+                color={colors.eggShell}
+              />
+              <Text style={styles.deleteActionText}>Delete</Text>
+            </View>
+            {/* Overlay the gradient on top */}
+            <LinearGradient
+              colors={[themedStyles.secondaryBackgroundColor, colors.red]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={[StyleSheet.absoluteFill, styles.gradient]}
+            />
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
     );
   };
 
@@ -46,7 +84,6 @@ const SwipeableItemDeletion = ({ onDelete, children }) => {
           {
             borderTopRightRadius: animatedBorderRadius,
             borderBottomRightRadius: animatedBorderRadius,
-            // Keep these static
             borderTopLeftRadius: 10,
             borderBottomLeftRadius: 10
           }
@@ -64,14 +101,27 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     overflow: 'hidden'
   },
+  deleteActionContainer: {
+    width: 80,
+    height: '100%'
+  },
   deleteAction: {
-    backgroundColor: colors.red,
+    flex: 1,
+    backgroundColor: colors.red, // Fallback color
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
+    overflow: 'hidden' // Important for the gradient
+  },
+  deleteActionContent: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    width: 80,
-    height: '100%',
+    zIndex: 1 // Ensure content stays above gradient
+  },
+  gradient: {
     borderTopRightRadius: 10,
-    borderBottomRightRadius: 10
+    borderBottomRightRadius: 10,
+    opacity: 1 // Adjust this value to blend the gradient
   },
   deleteActionText: {
     color: colors.eggShell,

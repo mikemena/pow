@@ -460,6 +460,19 @@ const StartWorkoutView = () => {
           contentContainerStyle={styles.setsScrollContent}
           showsVerticalScrollIndicator={true}
         >
+          {sets.length === 0 && (
+            <Text
+              style={{
+                color: themedStyles.textColor,
+                textAlign: 'center',
+                fontFamily: 'Lexend',
+                marginTop: 10
+              }}
+            >
+              {' '}
+              No Sets
+            </Text>
+          )}
           {sets.map((set, index) => (
             <Set
               style={styles.setRow}
@@ -575,15 +588,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
     marginBottom: 10
   },
-  // deleteAction: {
-  //   backgroundColor: colors.error,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  //   width: 80,
-  //   height: '100%',
-  //   borderTopRightRadius: 12,
-  //   borderBottomRightRadius: 12
-  // },
   exerciseContainer: {
     padding: 10,
     height: 350,
@@ -679,8 +683,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     height: 25,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10
+    borderRadius: 10
+    // borderTopLeftRadius: 10,
+    // borderTopRightRadius: 10
   },
 
   setHeaderText: {
