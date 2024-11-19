@@ -1,16 +1,25 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet } from 'react-native';
+import { View, Text, TextInput, StyleSheet, Animated } from 'react-native';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 
 const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
+  // const animatedBorderRadius = new Animated.Value(isLast ? 10 : 0);
+
   return (
     <View style={styles.setRowWrapper}>
-      <SwipeableItemDeletion onDelete={() => onDelete(set.id)} isLast={isLast}>
+      <SwipeableItemDeletion
+        onDelete={() => onDelete(set.id)}
+        isLast={isLast}
+        swipeableType='set'
+      >
         <View
           style={[
             styles.setRow,
-            { backgroundColor: themedStyles.secondaryBackgroundColor },
-            isLast && styles.lastSetRow
+            {
+              backgroundColor: themedStyles.secondaryBackgroundColor,
+              borderBottomLeftRadius: isLast ? 10 : 0,
+              borderBottomRightRadius: isLast ? 0 : 0
+            }
           ]}
         >
           <Text style={[styles.setNumber, { color: themedStyles.textColor }]}>

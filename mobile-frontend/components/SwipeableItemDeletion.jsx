@@ -6,9 +6,16 @@ import { colors } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
-const SwipeableItemDeletion = ({ onDelete, children, isLast }) => {
-  // Only create animated border radius if it's the last item
-  const animatedBorderRadius = new Animated.Value(isLast ? 10 : 0);
+const SwipeableItemDeletion = ({
+  onDelete,
+  children,
+  isLast,
+  swipeableType
+}) => {
+  // Create an animated value for border radius
+  const animatedBorderRadius = new Animated.Value(
+    isLast && swipeableType === 'set' ? 10 : 0
+  );
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -58,7 +65,7 @@ const SwipeableItemDeletion = ({ onDelete, children, isLast }) => {
 
   const onSwipeableWillClose = () => {
     Animated.timing(animatedBorderRadius, {
-      toValue: 10,
+      toValue: isLast && swipeableType === 'set' ? 10 : 0,
       duration: 200,
       useNativeDriver: false
     }).start();
@@ -74,12 +81,7 @@ const SwipeableItemDeletion = ({ onDelete, children, isLast }) => {
       <Animated.View
         style={[
           styles.contentContainer,
-          {
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: isLast ? animatedBorderRadius : 0,
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: isLast ? animatedBorderRadius : 0
-          }
+          { borderBottomRightRadius: animatedBorderRadius }
         ]}
       >
         {children}
@@ -90,8 +92,6 @@ const SwipeableItemDeletion = ({ onDelete, children, isLast }) => {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
     overflow: 'hidden'
   },
   deleteActionContainer: {

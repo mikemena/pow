@@ -475,7 +475,6 @@ const StartWorkoutView = () => {
           )}
           {sets.map((set, index) => (
             <Set
-              style={styles.setRow}
               key={set.id}
               index={set.order - 1}
               set={set}
