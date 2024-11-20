@@ -13,8 +13,19 @@ const SwipeableItemDeletion = ({
   swipeableType
 }) => {
   // Create an animated value for border radius
-  const animatedBorderRadius = new Animated.Value(
-    isLast && swipeableType === 'set' ? 10 : 0
+  const animatedTopRightRadius = new Animated.Value(
+    swipeableType === 'exercise'
+      ? 10
+      : isLast && swipeableType === 'set'
+      ? 10
+      : 0
+  );
+  const animatedBottomRightRadius = new Animated.Value(
+    swipeableType === 'exercise'
+      ? 10
+      : isLast && swipeableType === 'set'
+      ? 10
+      : 0
   );
 
   const { state: themeState } = useTheme();
@@ -56,19 +67,40 @@ const SwipeableItemDeletion = ({
 
   // Handle swipe progress
   const onSwipeableWillOpen = () => {
-    Animated.timing(animatedBorderRadius, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: false
-    }).start();
+    Animated.parallel([
+      Animated.timing(animatedTopRightRadius, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false
+      }),
+      Animated.timing(animatedBottomRightRadius, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: false
+      })
+    ]).start();
   };
 
   const onSwipeableWillClose = () => {
-    Animated.timing(animatedBorderRadius, {
-      toValue: isLast && swipeableType === 'set' ? 10 : 0,
-      duration: 200,
-      useNativeDriver: false
-    }).start();
+    const finalRadius =
+      swipeableType === 'exercise'
+        ? 10
+        : isLast && swipeableType === 'set'
+        ? 10
+        : 0;
+
+    Animated.parallel([
+      Animated.timing(animatedTopRightRadius, {
+        toValue: finalRadius,
+        duration: 200,
+        useNativeDriver: false
+      }),
+      Animated.timing(animatedBottomRightRadius, {
+        toValue: finalRadius,
+        duration: 200,
+        useNativeDriver: false
+      })
+    ]).start();
   };
 
   return (
@@ -81,7 +113,10 @@ const SwipeableItemDeletion = ({
       <Animated.View
         style={[
           styles.contentContainer,
-          { borderBottomRightRadius: animatedBorderRadius }
+          {
+            borderTopRightRadius: animatedTopRightRadius,
+            borderBottomRightRadius: animatedBottomRightRadius
+          }
         ]}
       >
         {children}

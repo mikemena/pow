@@ -312,6 +312,7 @@ const StartWorkoutView = () => {
       </View>
       <View style={styles.swipeableContainer}>
         <SwipeableItemDeletion
+          swipeableType='workout'
           onDelete={() => handleDeleteExercise(currentExercise?.id)}
         >
           <View
