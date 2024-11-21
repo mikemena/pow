@@ -114,11 +114,7 @@ const SwipeableItemDeletion = ({
         style={[
           styles.contentContainer,
           children.props.style,
-          getBorderRadius(),
-          {
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: borderRadius
-          }
+          getBorderRadius()
         ]}
       >
         {children.props.children}
