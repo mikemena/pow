@@ -35,8 +35,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   // Get current workout
   const currentWorkout = useMemo(() => {
-    console.log('workout id:', workouts[currentWorkoutIndex]?.id);
-
     if (!workouts.length) return null;
 
     return {

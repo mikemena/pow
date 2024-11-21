@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,22 +26,6 @@ const SwipeableItemDeletion = ({
     themeState.theme,
     themeState.accentColor
   );
-
-  useEffect(() => {
-    if (!isOpen) {
-      const finalRadius = isLast && swipeableType === 'set' ? 10 : 0;
-      animatedBottomRightRadius.setValue(finalRadius);
-    }
-  }, [isLast, swipeableType, isOpen]);
-
-  useEffect(() => {
-    console.log('Animated values:', {
-      top: animatedTopRightRadius._value,
-      bottom: animatedBottomRightRadius._value,
-      isLast,
-      isOpen
-    });
-  }, [isLast, isOpen]);
 
   const renderRightActions = progress => {
     // Animated interpolation for the gradient opacity
@@ -74,24 +58,18 @@ const SwipeableItemDeletion = ({
     );
   };
 
-  // Handle swipe progress
-
-  const animatedStyle = {
-    borderTopRightRadius: animatedTopRightRadius,
-    borderBottomRightRadius: animatedBottomRightRadius
-  };
-
   const onSwipeableWillOpen = () => {
     setIsOpen(true);
+    console.log('onSwipeableWillOpen');
     Animated.parallel([
       Animated.timing(animatedTopRightRadius, {
         toValue: 0,
-        duration: 200,
+        duration: 100,
         useNativeDriver: false
       }),
       Animated.timing(animatedBottomRightRadius, {
         toValue: 0,
-        duration: 200,
+        duration: 100,
         useNativeDriver: false
       })
     ]).start();
@@ -99,18 +77,31 @@ const SwipeableItemDeletion = ({
 
   const onSwipeableWillClose = () => {
     setIsOpen(false);
-    const finalRadius = isLast && swipeableType === 'set' ? 10 : 0;
 
     Animated.parallel([
       Animated.timing(animatedTopRightRadius, {
         toValue: 0,
-        duration: 200,
+        duration: 100,
         useNativeDriver: false
       })
     ]).start();
   };
 
-  const borderRadius = isOpen ? 0 : isLast && swipeableType === 'set' ? 10 : 0;
+  const borderRadius = isOpen ? 0 : isLast ? 10 : 0;
+
+  const getBorderRadius = () => {
+    if (swipeableType === 'workout') {
+      return {
+        borderRadius: isOpen ? 0 : 10
+      };
+    } else {
+      // Set type - only bottom right radius if last
+      return {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0
+      };
+    }
+  };
 
   return (
     <Swipeable
@@ -123,6 +114,7 @@ const SwipeableItemDeletion = ({
         style={[
           styles.contentContainer,
           children.props.style,
+          getBorderRadius(),
           {
             borderTopRightRadius: 0,
             borderBottomRightRadius: borderRadius
