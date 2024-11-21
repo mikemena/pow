@@ -592,8 +592,7 @@ const styles = StyleSheet.create({
     padding: 10,
     height: 350,
     display: 'flex',
-    width: '100%',
-    borderRadius: 10
+    width: '100%'
   },
   exerciseContent: {
     flex: 1,

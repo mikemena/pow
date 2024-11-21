@@ -1,10 +1,8 @@
 import React from 'react';
-import { View, Text, TextInput, StyleSheet, Animated } from 'react-native';
+import { View, Text, TextInput, StyleSheet } from 'react-native';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 
 const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
-  // const animatedBorderRadius = new Animated.Value(isLast ? 10 : 0);
-
   return (
     <View style={styles.setRowWrapper}>
       <SwipeableItemDeletion
@@ -18,7 +16,7 @@ const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
             {
               backgroundColor: themedStyles.secondaryBackgroundColor,
               borderBottomLeftRadius: isLast ? 10 : 0,
-              borderBottomRightRadius: isLast ? 0 : 0
+              borderBottomRightRadius: isLast ? 10 : 0
             }
           ]}
         >
@@ -56,11 +54,8 @@ const Set = ({ index, set, isLast, onSetChange, onDelete, themedStyles }) => {
 };
 
 // Update the existing styles with new ones for the slide-to-delete functionality
+
 const styles = StyleSheet.create({
-  setRowWrapper: {
-    position: 'relative',
-    overflow: 'hidden'
-  },
   setRow: {
     flexDirection: 'row',
     alignItems: 'center',
