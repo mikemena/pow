@@ -33,6 +33,7 @@ const StartWorkoutView = () => {
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
+  const [showExerciseInfo, setShowExerciseInfo] = useState(false);
   const timerRef = useRef(null);
 
   const navigation = useNavigation();
@@ -69,6 +70,16 @@ const StartWorkoutView = () => {
       }))
     );
   }, [currentExerciseIndex, workoutDetails?.exercises]);
+
+  // For exercise info auto-hide timer
+
+  useEffect(() => {
+    let timer;
+    if (showExerciseInfo) {
+      timer = setTimeout(() => setShowExerciseInfo(false), 3000);
+    }
+    return () => clearTimeout(timer);
+  }, [showExerciseInfo]);
 
   useEffect(() => {
     setMode('workout');
@@ -359,7 +370,7 @@ const StartWorkoutView = () => {
                 { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
             >
-              <View style={styles.exerciseInfo}>
+              {/* <View style={styles.exerciseInfo}>
                 <Text
                   style={[
                     styles.exerciseNumber,
@@ -386,7 +397,7 @@ const StartWorkoutView = () => {
                     {currentExercise?.muscle}
                   </Text>
                 </View>
-              </View>
+              </View> */}
 
               <View style={styles.exerciseImage}>
                 {currentExercise?.imageUrl || currentExercise?.file_url ? (
@@ -399,6 +410,27 @@ const StartWorkoutView = () => {
                   />
                 ) : (
                   <View style={styles.placeholderImage} />
+                )}
+                <TouchableOpacity
+                  style={styles.infoButton}
+                  onPress={() => setShowExerciseInfo(true)}
+                >
+                  <Ionicons
+                    name='information-circle'
+                    size={24}
+                    color={themeState.accentColor}
+                  />
+                </TouchableOpacity>
+
+                {showExerciseInfo && (
+                  <View style={styles.infoOverlay}>
+                    <Text style={styles.exerciseName}>
+                      {currentExercise?.name}
+                    </Text>
+                    <Text style={styles.muscleName}>
+                      {currentExercise?.muscle}
+                    </Text>
+                  </View>
                 )}
               </View>
             </View>
@@ -603,6 +635,7 @@ const styles = StyleSheet.create({
   },
   exerciseContainer: {
     padding: 10,
+
     height: 350,
     display: 'flex',
     width: '100%'
@@ -610,29 +643,6 @@ const styles = StyleSheet.create({
   exerciseContent: {
     flex: 1,
     position: 'relative'
-  },
-  exerciseInfo: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    paddingHorizontal: 10,
-    marginTop: 35
-  },
-  exerciseNumber: {
-    fontSize: 16,
-    fontFamily: 'Lexend',
-    marginBottom: 10
-  },
-  exerciseName: {
-    fontSize: 16,
-    fontFamily: 'Lexend',
-    marginLeft: 10
-  },
-  muscleName: {
-    fontSize: 16,
-    fontFamily: 'Lexend',
-    marginTop: 5,
-    marginLeft: 10,
-    opacity: 0.8
   },
   imageNavigationContainer: {
     flex: 1,
@@ -664,10 +674,9 @@ const styles = StyleSheet.create({
   },
   exerciseImage: {
     width: '100%',
-    height: 180,
+    height: 330,
     borderRadius: 8,
-    overflow: 'hidden',
-    marginVertical: 10
+    overflow: 'hidden'
   },
   exerciseGif: {
     width: '100%',
@@ -745,6 +754,22 @@ const styles = StyleSheet.create({
   },
   disabledIcon: {
     opacity: 0.5
+  },
+  infoButton: {
+    position: 'absolute',
+    top: 10,
+    right: 25,
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    borderRadius: 12,
+    padding: 4
+  },
+  infoOverlay: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    padding: 10
   }
 });
 
