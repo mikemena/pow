@@ -60,16 +60,15 @@ const SwipeableItemDeletion = ({
 
   const onSwipeableWillOpen = () => {
     setIsOpen(true);
-    console.log('onSwipeableWillOpen');
     Animated.parallel([
       Animated.timing(animatedTopRightRadius, {
         toValue: 0,
-        duration: 100,
+        duration: 0,
         useNativeDriver: false
       }),
       Animated.timing(animatedBottomRightRadius, {
         toValue: 0,
-        duration: 100,
+        duration: 0,
         useNativeDriver: false
       })
     ]).start();
@@ -81,24 +80,24 @@ const SwipeableItemDeletion = ({
     Animated.parallel([
       Animated.timing(animatedTopRightRadius, {
         toValue: 0,
-        duration: 100,
+        duration: 0,
         useNativeDriver: false
       })
     ]).start();
   };
 
-  const borderRadius = isOpen ? 0 : isLast ? 10 : 0;
-
   const getBorderRadius = () => {
     if (swipeableType === 'workout') {
       return {
-        borderRadius: isOpen ? 0 : 10
+        borderRadius: isOpen ? 0 : 10,
+        overflow: 'hidden'
       };
     } else {
       // Set type - only bottom right radius if last
       return {
-        borderTopRightRadius: 0,
-        borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0
+        borderTopRightRadius: isOpen ? 0 : 10,
+        borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0,
+        overflow: 'hidden'
       };
     }
   };

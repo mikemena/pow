@@ -54,6 +54,9 @@ const StartWorkoutView = () => {
     }));
   });
 
+  console.log('Total exercises:', workoutDetails?.exercises?.length);
+  console.log('Current index:', currentExerciseIndex);
+
   // Effect to update sets when exercise changes
   useEffect(() => {
     const currentSets =
@@ -171,6 +174,11 @@ const StartWorkoutView = () => {
   };
 
   const handleNextExercise = () => {
+    console.log('Next button pressed');
+    console.log(
+      'Can go next:',
+      currentExerciseIndex < workoutDetails?.exercises?.length - 1
+    );
     if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
       const nextSets =
@@ -186,6 +194,8 @@ const StartWorkoutView = () => {
   };
 
   const handlePreviousExercise = () => {
+    console.log('Previous button pressed');
+    console.log('Can go previous:', currentExerciseIndex > 0);
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
       const prevSets =
@@ -270,12 +280,6 @@ const StartWorkoutView = () => {
     >
       <Header pageName='WORKOUT' />
 
-      <View style={styles.header}>
-        <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
-          {workoutDetails?.name}
-        </Text>
-      </View>
-
       <View style={styles.mainControls}>
         <TouchableOpacity
           style={[
@@ -310,66 +314,82 @@ const StartWorkoutView = () => {
           {formatTime(time)}
         </Text>
       </View>
-      <View style={styles.swipeableContainer}>
-        <SwipeableItemDeletion
-          swipeableType='workout'
-          onDelete={() => handleDeleteExercise(currentExercise?.id)}
-        >
-          <View
-            style={[
-              styles.exerciseContainer,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
+
+      {/* exercise start */}
+      <SafeAreaView
+        style={[
+          globalStyles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <View style={styles.header}>
+          <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
+            {workoutDetails?.name}
+          </Text>
+        </View>
+
+        <View style={styles.swipeableContainer}>
+          {/* Previous Navigation Button */}
+          <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
+            <TouchableOpacity
+              onPress={handlePreviousExercise}
+              disabled={currentExerciseIndex === 0}
+              style={[
+                styles.navigationButton,
+                currentExerciseIndex === 0 && styles.disabledButton
+              ]}
+            >
+              <Ionicons
+                name='chevron-up-outline'
+                size={24}
+                style={{
+                  color: themeState.accentColor,
+                  opacity: currentExerciseIndex === 0 ? 0.3 : 1
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          {/* Swipeable Content */}
+          <SwipeableItemDeletion
+            swipeableType='workout'
+            onDelete={() => handleDeleteExercise(currentExercise?.id)}
           >
             <View
-              style={[styles.navigationWrapper, styles.topNavigationWrapper]}
+              style={[
+                styles.exerciseContainer,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
             >
-              <TouchableOpacity
-                onPress={handlePreviousExercise}
-                disabled={currentExerciseIndex === 0}
-                style={[
-                  styles.navigationButton,
-                  { backgroundColor: themedStyles.primaryBackgroundColor },
-                  currentExerciseIndex === 0 && styles.disabledButton
-                ]}
-              >
-                <Ionicons
-                  name='chevron-up-outline'
-                  size={24}
-                  style={{
-                    color: themeState.accentColor,
-                    opacity: currentExerciseIndex === 0 ? 0.3 : 1
-                  }}
-                />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.exerciseInfo}>
-              <Text
-                style={[
-                  styles.exerciseNumber,
-                  { color: themedStyles.textColor }
-                ]}
-              >
-                {currentExerciseIndex + 1}
-              </Text>
-              <View>
+              <View style={styles.exerciseInfo}>
                 <Text
                   style={[
-                    styles.exerciseName,
+                    styles.exerciseNumber,
                     { color: themedStyles.textColor }
                   ]}
                 >
-                  {currentExercise?.name}
+                  {currentExerciseIndex + 1}
                 </Text>
-                <Text
-                  style={[styles.muscleName, { color: themedStyles.textColor }]}
-                >
-                  {currentExercise?.muscle}
-                </Text>
+                <View>
+                  <Text
+                    style={[
+                      styles.exerciseName,
+                      { color: themedStyles.textColor }
+                    ]}
+                  >
+                    {currentExercise?.name}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.muscleName,
+                      { color: themedStyles.textColor }
+                    ]}
+                  >
+                    {currentExercise?.muscle}
+                  </Text>
+                </View>
               </View>
-            </View>
 
-            <View style={styles.imageNavigationContainer}>
               <View style={styles.exerciseImage}>
                 {currentExercise?.imageUrl || currentExercise?.file_url ? (
                   <Image
@@ -383,46 +403,41 @@ const StartWorkoutView = () => {
                   <View style={styles.placeholderImage} />
                 )}
               </View>
-              <View style={styles.exerciseContent}>
-                <View
-                  style={[
-                    styles.navigationWrapper,
-                    styles.bottomNavigationWrapper
-                  ]}
-                >
-                  <TouchableOpacity
-                    onPress={handleNextExercise}
-                    disabled={
-                      currentExerciseIndex ===
-                      workoutDetails?.exercises.length - 1
-                    }
-                    style={[
-                      styles.navigationButton,
-                      { backgroundColor: themedStyles.primaryBackgroundColor },
-                      currentExerciseIndex ===
-                        workoutDetails?.exercises.length - 1 &&
-                        styles.disabledButton
-                    ]}
-                  >
-                    <Ionicons
-                      name='chevron-down-outline'
-                      size={24}
-                      style={{
-                        color: themeState.accentColor,
-                        opacity:
-                          currentExerciseIndex ===
-                          workoutDetails?.exercises.length - 1
-                            ? 0.3
-                            : 1
-                      }}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </View>
             </View>
+          </SwipeableItemDeletion>
+
+          {/* Next Navigation Button */}
+          <View
+            style={[styles.navigationWrapper, styles.bottomNavigationWrapper]}
+          >
+            <TouchableOpacity
+              onPress={handleNextExercise}
+              disabled={
+                currentExerciseIndex === workoutDetails?.exercises.length - 1
+              }
+              style={[
+                styles.navigationButton,
+                currentExerciseIndex === workoutDetails?.exercises.length - 1 &&
+                  styles.disabledButton
+              ]}
+            >
+              <Ionicons
+                name='chevron-down-outline'
+                size={24}
+                style={{
+                  color: themeState.accentColor,
+                  opacity:
+                    currentExerciseIndex ===
+                    workoutDetails?.exercises.length - 1
+                      ? 0.3
+                      : 1
+                }}
+              />
+            </TouchableOpacity>
           </View>
-        </SwipeableItemDeletion>
-      </View>
+        </View>
+      </SafeAreaView>
+      {/* exercise end */}
 
       <View style={styles.setControls}>
         {/* setHeader */}
@@ -630,7 +645,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     alignItems: 'center',
-    zIndex: 1
+    zIndex: 10
     // height: 40
   },
   topNavigationWrapper: {
@@ -638,7 +653,7 @@ const styles = StyleSheet.create({
   },
 
   bottomNavigationWrapper: {
-    bottom: -1
+    bottom: -175
   },
   navigationButton: {
     width: 40,
@@ -646,7 +661,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    borderRadius: 20
+    borderRadius: 20,
+    zIndex: 20
   },
   exerciseImage: {
     width: '100%',
@@ -665,7 +681,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
-    marginTop: 10,
+    marginTop: 20,
     padding: 160,
     flex: 1,
     gap: 3,
