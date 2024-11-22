@@ -398,8 +398,8 @@ const StartWorkoutView = () => {
                   </Text>
                 </View>
               </View> */}
-
               <View style={styles.exerciseImage}>
+                <View style={styles.imageOverlay} />
                 {currentExercise?.imageUrl || currentExercise?.file_url ? (
                   <Image
                     source={{
@@ -676,7 +676,18 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 330,
     borderRadius: 8,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    position: 'relative'
+  },
+  imageOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 16,
+    right: 16,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    backdropFilter: 'blur(1px)',
+    zIndex: 1
   },
   exerciseGif: {
     width: '100%',
