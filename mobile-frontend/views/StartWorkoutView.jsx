@@ -279,7 +279,11 @@ const StartWorkoutView = () => {
       ]}
     >
       <Header pageName='WORKOUT' />
-
+      <View style={styles.header}>
+        <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
+          {workoutDetails?.name}
+        </Text>
+      </View>
       <View style={styles.mainControls}>
         <TouchableOpacity
           style={[
@@ -322,12 +326,6 @@ const StartWorkoutView = () => {
           { backgroundColor: themedStyles.primaryBackgroundColor }
         ]}
       >
-        <View style={styles.header}>
-          <Text style={[styles.workoutName, { color: themedStyles.textColor }]}>
-            {workoutDetails?.name}
-          </Text>
-        </View>
-
         <View style={styles.swipeableContainer}>
           {/* Previous Navigation Button */}
           <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
@@ -653,7 +651,7 @@ const styles = StyleSheet.create({
   },
 
   bottomNavigationWrapper: {
-    bottom: -175
+    bottom: -155
   },
   navigationButton: {
     width: 40,
@@ -681,7 +679,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
-    marginTop: 180,
+    marginTop: 160,
 
     flex: 1,
     gap: 3,
