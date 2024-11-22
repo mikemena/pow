@@ -643,10 +643,10 @@ const styles = StyleSheet.create({
   },
   navigationWrapper: {
     position: 'absolute',
-    width: '100%',
+    left: '50%',
+    transform: [{ translateX: -20 }],
     alignItems: 'center',
     zIndex: 10
-    // height: 40
   },
   topNavigationWrapper: {
     top: 5
@@ -681,8 +681,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#444'
   },
   setControls: {
-    marginTop: 20,
-    padding: 160,
+    marginTop: 180,
+
     flex: 1,
     gap: 3,
     paddingHorizontal: 5,
