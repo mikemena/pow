@@ -41,8 +41,32 @@ const StartWorkoutView = () => {
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
-    themeState.accentColor
+    themeState.accentColor,
+    themeState.overlayOpacity
   );
+
+  const imageOverlayStyle = {
+    position: 'absolute',
+    top: 0,
+    left: 16,
+    right: 16,
+    bottom: 0,
+    backgroundColor: `rgba(0,0,0,${themedStyles.overlayOpacity})`,
+    backdropFilter: 'blur(1px)',
+    zIndex: 1
+  };
+
+  const infoOverlayStyle = {
+    position: 'absolute',
+    bottom: 12,
+    left: 0,
+    right: 0,
+    backgroundColor: `rgba(0,0,0,${themedStyles.overlayOpacity})`,
+    padding: 10,
+    width: 330,
+    marginLeft: 16,
+    marginBottom: 265
+  };
 
   const workoutDetails = workoutState.workoutDetails;
   const [sets, setSets] = useState(() => {
@@ -370,36 +394,8 @@ const StartWorkoutView = () => {
                 { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
             >
-              {/* <View style={styles.exerciseInfo}>
-                <Text
-                  style={[
-                    styles.exerciseNumber,
-                    { color: themedStyles.textColor }
-                  ]}
-                >
-                  {currentExerciseIndex + 1}
-                </Text>
-                <View>
-                  <Text
-                    style={[
-                      styles.exerciseName,
-                      { color: themedStyles.textColor }
-                    ]}
-                  >
-                    {currentExercise?.name}
-                  </Text>
-                  <Text
-                    style={[
-                      styles.muscleName,
-                      { color: themedStyles.textColor }
-                    ]}
-                  >
-                    {currentExercise?.muscle}
-                  </Text>
-                </View>
-              </View> */}
               <View style={styles.exerciseImage}>
-                <View style={styles.imageOverlay} />
+                <View style={imageOverlayStyle} />
                 {currentExercise?.imageUrl || currentExercise?.file_url ? (
                   <Image
                     source={{
@@ -413,21 +409,34 @@ const StartWorkoutView = () => {
                 )}
                 <TouchableOpacity
                   style={styles.infoButton}
-                  onPress={() => setShowExerciseInfo(true)}
+                  onPress={() => {
+                    setShowExerciseInfo(true);
+                    console.log('Setting showExerciseInfo to:', true);
+                  }}
                 >
                   <Ionicons
-                    name='information-circle'
+                    name='information-outline'
                     size={24}
                     color={themeState.accentColor}
                   />
                 </TouchableOpacity>
 
                 {showExerciseInfo && (
-                  <View style={styles.infoOverlay}>
-                    <Text style={styles.exerciseName}>
+                  <View style={infoOverlayStyle}>
+                    <Text
+                      style={[
+                        styles.exerciseName,
+                        { color: themedStyles.textColor }
+                      ]}
+                    >
                       {currentExercise?.name}
                     </Text>
-                    <Text style={styles.muscleName}>
+                    <Text
+                      style={[
+                        styles.muscleName,
+                        { color: themedStyles.altTextColor }
+                      ]}
+                    >
                       {currentExercise?.muscle}
                     </Text>
                   </View>
@@ -679,16 +688,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative'
   },
-  imageOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 16,
-    right: 16,
-    bottom: 0,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    backdropFilter: 'blur(1px)',
-    zIndex: 1
-  },
+
   exerciseGif: {
     width: '100%',
     height: '100%'
@@ -771,16 +771,9 @@ const styles = StyleSheet.create({
     top: 10,
     right: 25,
     backgroundColor: 'rgba(0,0,0,0.2)',
-    borderRadius: 12,
-    padding: 4
-  },
-  infoOverlay: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: 'rgba(0,0,0,0.7)',
-    padding: 10
+    borderRadius: 30,
+    padding: 4,
+    zIndex: 10
   }
 });
 
