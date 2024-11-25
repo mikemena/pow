@@ -789,7 +789,7 @@ const styles = StyleSheet.create({
   infoButton: {
     position: 'absolute',
     top: 10,
-    right: 25,
+    right: 15,
     backgroundColor: 'rgba(0,0,0,0.2)',
     borderRadius: 30,
     padding: 4,
