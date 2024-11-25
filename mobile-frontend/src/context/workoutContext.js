@@ -61,6 +61,12 @@ const workoutReducer = (state, action) => {
           exercises: state.currentWorkout.exercises.filter(
             exercise => exercise.id !== action.payload
           )
+        },
+        workoutDetails: {
+          ...state.workoutDetails,
+          exercises: state.workoutDetails.exercises.filter(
+            exercise => exercise.id !== action.payload
+          )
         }
       };
 
