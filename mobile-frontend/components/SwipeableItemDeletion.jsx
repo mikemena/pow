@@ -95,7 +95,7 @@ const SwipeableItemDeletion = ({
     } else {
       // Set type - only bottom right radius if last
       return {
-        borderTopRightRadius: isOpen ? 0 : 10,
+        borderTopRightRadius: 0,
         borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0,
         overflow: 'hidden'
       };
