@@ -5,7 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   SafeAreaView,
-  Image,
+  Animated,
   ScrollView,
   Alert
 } from 'react-native';
@@ -34,6 +34,7 @@ const StartWorkoutView = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
   const [showExerciseInfo, setShowExerciseInfo] = useState(false);
+  const [imageOpacity] = useState(new Animated.Value(1));
   const timerRef = useRef(null);
 
   const navigation = useNavigation();
@@ -58,24 +59,36 @@ const StartWorkoutView = () => {
   const imageOverlayStyle = {
     position: 'absolute',
     top: 0,
-    left: 16,
-    right: 16.6,
+    left: 0,
+    right: 0,
     bottom: 0,
     backgroundColor: `rgba(0,0,0,${themedStyles.overlayOpacity})`,
-    backdropFilter: 'blur(1px)',
-    zIndex: 1
+    zIndex: 1,
+    borderRadius: 10
   };
 
   const infoOverlayStyle = {
     position: 'absolute',
-    width: 330,
+    width: '100%',
+    bottom: 230,
     top: 0,
     left: 0,
     right: 0,
     backgroundColor: `rgba(0,0,0,${themedStyles.overlayOpacity})`,
     padding: 10,
-    marginLeft: 16
+    // marginLeft: 16,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10
   };
+
+  // Effect to animate image opacity when showing exercise info
+  useEffect(() => {
+    Animated.timing(imageOpacity, {
+      toValue: showExerciseInfo ? 0.3 : 1,
+      duration: 200,
+      useNativeDriver: true
+    }).start();
+  }, [showExerciseInfo]);
 
   // Effect to update sets when exercise changes
   useEffect(() => {
@@ -95,7 +108,7 @@ const StartWorkoutView = () => {
   useEffect(() => {
     let timer;
     if (showExerciseInfo) {
-      timer = setTimeout(() => setShowExerciseInfo(false), 9000);
+      timer = setTimeout(() => setShowExerciseInfo(false), 2000);
     }
     return () => clearTimeout(timer);
   }, [showExerciseInfo]);
@@ -356,25 +369,29 @@ const StartWorkoutView = () => {
       >
         <View style={styles.swipeableContainer}>
           {/* Previous Navigation Button */}
-          <View style={[styles.navigationWrapper, styles.topNavigationWrapper]}>
-            <TouchableOpacity
-              onPress={handlePreviousExercise}
-              disabled={currentExerciseIndex === 0}
-              style={[
-                styles.navigationButton,
-                currentExerciseIndex === 0 && styles.disabledButton
-              ]}
+          {!showExerciseInfo && (
+            <View
+              style={[styles.navigationWrapper, styles.topNavigationWrapper]}
             >
-              <Ionicons
-                name='chevron-up-outline'
-                size={24}
-                style={{
-                  color: themeState.accentColor,
-                  opacity: currentExerciseIndex === 0 ? 0.3 : 1
-                }}
-              />
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={handlePreviousExercise}
+                disabled={currentExerciseIndex === 0}
+                style={[
+                  styles.navigationButton,
+                  currentExerciseIndex === 0 && styles.disabledButton
+                ]}
+              >
+                <Ionicons
+                  name='chevron-up-outline'
+                  size={24}
+                  style={{
+                    color: themeState.accentColor,
+                    opacity: currentExerciseIndex === 0 ? 0.3 : 1
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Swipeable Content */}
           <SwipeableItemDeletion
@@ -390,26 +407,28 @@ const StartWorkoutView = () => {
               <View style={styles.exerciseImage}>
                 <View style={imageOverlayStyle} />
                 {currentExercise?.imageUrl || currentExercise?.file_url ? (
-                  <Image
+                  <Animated.Image
                     source={{
                       uri: currentExercise.imageUrl || currentExercise.file_url
                     }}
-                    style={styles.exerciseGif}
+                    style={[styles.exerciseGif, { opacity: imageOpacity }]}
                     resizeMode='contain'
                   />
                 ) : (
                   <View style={styles.placeholderImage} />
                 )}
-                <TouchableOpacity
-                  style={styles.infoButton}
-                  onPress={() => setShowExerciseInfo(true)}
-                >
-                  <Ionicons
-                    name='information-outline'
-                    size={24}
-                    color={themeState.accentColor}
-                  />
-                </TouchableOpacity>
+                {!showExerciseInfo && (
+                  <TouchableOpacity
+                    style={styles.infoButton}
+                    onPress={() => setShowExerciseInfo(true)}
+                  >
+                    <Ionicons
+                      name='information-outline'
+                      size={24}
+                      color={themeState.accentColor}
+                    />
+                  </TouchableOpacity>
+                )}
 
                 {showExerciseInfo && (
                   <View style={infoOverlayStyle}>
@@ -634,10 +653,10 @@ const styles = StyleSheet.create({
   },
   exerciseContainer: {
     padding: 10,
-
     height: 350,
     display: 'flex',
-    width: '100%'
+    width: '100%',
+    alignItems: 'center'
   },
   exerciseContent: {
     flex: 1,
@@ -656,11 +675,11 @@ const styles = StyleSheet.create({
     zIndex: 10
   },
   topNavigationWrapper: {
-    top: 5
+    top: 12
   },
 
   bottomNavigationWrapper: {
-    bottom: -155
+    bottom: -150
   },
   navigationButton: {
     width: 40,
@@ -672,25 +691,36 @@ const styles = StyleSheet.create({
     zIndex: 20
   },
   exerciseImage: {
-    width: '100%',
+    width: '91%', // Adjust this to match the desired width with padding
     height: 330,
-    borderRadius: 8,
+    borderRadius: 10,
     overflow: 'hidden',
     position: 'relative'
+  },
+  exerciseName: {
+    fontSize: 16,
+    fontFamily: 'Lexend',
+    padding: 5
+  },
+  muscleName: {
+    fontSize: 14,
+    fontFamily: 'Lexend',
+    paddingLeft: 5
   },
 
   exerciseGif: {
     width: '100%',
-    height: '100%'
+    height: '100%',
+    borderRadius: 10
   },
   placeholderImage: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#444'
+    backgroundColor: '#444',
+    borderRadius: 10
   },
   setControls: {
     marginTop: 160,
-
     flex: 1,
     gap: 3,
     paddingHorizontal: 5,
@@ -751,10 +781,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend'
   },
   disabledButton: {
-    opacity: 0.5
+    opacity: 0
   },
   disabledIcon: {
-    opacity: 0.5
+    opacity: 4
   },
   infoButton: {
     position: 'absolute',
