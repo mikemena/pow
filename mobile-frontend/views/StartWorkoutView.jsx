@@ -412,7 +412,7 @@ const StartWorkoutView = () => {
                       { color: themedStyles.textColor }
                     ]}
                   >
-                    No exercises selected
+                    No Exercises
                   </Text>
                   <TouchableOpacity
                     style={[
@@ -521,87 +521,88 @@ const StartWorkoutView = () => {
         </View>
       </SafeAreaView>
       {/* exercise end */}
-
-      <View style={styles.setControls}>
-        {/* setHeader */}
-        <View
-          style={[
-            styles.setHeader,
-            { backgroundColor: themedStyles.secondaryBackgroundColor }
-          ]}
-        >
-          <Text
-            style={[styles.setHeaderText, { color: themedStyles.textColor }]}
-          >
-            Set
-          </Text>
-          <Text
+      {workoutDetails?.exercises?.length > 0 && (
+        <View style={styles.setControls}>
+          {/* setHeader */}
+          <View
             style={[
-              styles.setHeaderText,
-              styles.setWeight,
-              { color: themedStyles.textColor }
+              styles.setHeader,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            Weight
-          </Text>
-          <Text
-            style={[
-              styles.setHeaderText,
-              styles.setReps,
-              { color: themedStyles.textColor }
-            ]}
-          >
-            Reps
-          </Text>
-        </View>
-        <ScrollView
-          style={styles.setsScrollView}
-          contentContainerStyle={styles.setsScrollContent}
-          showsVerticalScrollIndicator={true}
-        >
-          {sets.length === 0 && (
             <Text
-              style={{
-                color: themedStyles.textColor,
-                textAlign: 'center',
-                fontFamily: 'Lexend',
-                marginTop: 10
-              }}
+              style={[styles.setHeaderText, { color: themedStyles.textColor }]}
             >
-              {' '}
-              No Sets
+              Set
             </Text>
-          )}
-          {sets.map((set, index) => (
-            <Set
-              key={set.id}
-              index={set.order - 1}
-              set={set}
-              isLast={index === sets.length - 1}
-              onSetChange={handleSetChange}
-              onDelete={handleDeleteSet}
-              themedStyles={themedStyles}
-            />
-          ))}
-        </ScrollView>
-        <PillButton
-          label='Add Set'
-          style={styles.addSetButton}
-          icon={
-            <Ionicons
-              name='add-outline'
-              size={16}
-              style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
-              }}
-            />
-          }
-          onPress={handleAddSet}
-        />
-      </View>
+            <Text
+              style={[
+                styles.setHeaderText,
+                styles.setWeight,
+                { color: themedStyles.textColor }
+              ]}
+            >
+              Weight
+            </Text>
+            <Text
+              style={[
+                styles.setHeaderText,
+                styles.setReps,
+                { color: themedStyles.textColor }
+              ]}
+            >
+              Reps
+            </Text>
+          </View>
+          <ScrollView
+            style={styles.setsScrollView}
+            contentContainerStyle={styles.setsScrollContent}
+            showsVerticalScrollIndicator={true}
+          >
+            {sets.length === 0 && (
+              <Text
+                style={{
+                  color: themedStyles.textColor,
+                  textAlign: 'center',
+                  fontFamily: 'Lexend',
+                  marginTop: 10
+                }}
+              >
+                {' '}
+                No Sets
+              </Text>
+            )}
+            {sets.map((set, index) => (
+              <Set
+                key={set.id}
+                index={set.order - 1}
+                set={set}
+                isLast={index === sets.length - 1}
+                onSetChange={handleSetChange}
+                onDelete={handleDeleteSet}
+                themedStyles={themedStyles}
+              />
+            ))}
+          </ScrollView>
+          <PillButton
+            label='Add Set'
+            style={styles.addSetButton}
+            icon={
+              <Ionicons
+                name='add-outline'
+                size={16}
+                style={{
+                  color:
+                    themeState.theme === 'dark'
+                      ? themedStyles.accentColor
+                      : colors.eggShell
+                }}
+              />
+            }
+            onPress={handleAddSet}
+          />
+        </View>
+      )}
 
       <View style={styles.bottomButtons}>
         <TouchableOpacity
