@@ -59,6 +59,7 @@ const StartWorkoutView = () => {
     themeState.accentColor
   );
 
+  // Dismiss keyboard when tapping outside
   const dismissKeyboard = () => {
     Keyboard.dismiss();
     if (isEditingTitle) {

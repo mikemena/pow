@@ -9,6 +9,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 
 const SwipeableItemDeletion = forwardRef(
   ({ onDelete, children, isLast, swipeableType }, ref) => {
+    const [progress] = useState(new Animated.Value(0));
     const [isOpen, setIsOpen] = useState(false);
     const swipeableRef = useRef(null);
 
@@ -38,8 +39,15 @@ const SwipeableItemDeletion = forwardRef(
         outputRange: [0, 1]
       });
 
+      const dragProgress = progress.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1]
+      });
+
       return (
-        <Animated.View style={[styles.deleteActionContainer, { opacity }]}>
+        <Animated.View
+          style={[styles.deleteActionContainer, { opacity: dragProgress }]}
+        >
           <TouchableOpacity onPress={onDelete} style={{ flex: 1 }}>
             <View style={styles.deleteAction}>
               <View style={styles.deleteActionContent}>
@@ -64,15 +72,17 @@ const SwipeableItemDeletion = forwardRef(
 
     const onSwipeableWillOpen = () => {
       setIsOpen(true);
+      console.log('onSwipeableWillOpen');
+      console.log('isOpen', isOpen);
       Animated.parallel([
         Animated.timing(animatedTopRightRadius, {
           toValue: 0,
-          duration: 0,
+          duration: 200,
           useNativeDriver: false
         }),
         Animated.timing(animatedBottomRightRadius, {
           toValue: 0,
-          duration: 0,
+          duration: 200,
           useNativeDriver: false
         })
       ]).start();
@@ -80,11 +90,15 @@ const SwipeableItemDeletion = forwardRef(
 
     const onSwipeableWillClose = () => {
       setIsOpen(false);
-
       Animated.parallel([
         Animated.timing(animatedTopRightRadius, {
-          toValue: 0,
-          duration: 0,
+          toValue: 10,
+          duration: 200,
+          useNativeDriver: false
+        }),
+        Animated.timing(animatedBottomRightRadius, {
+          toValue: 10,
+          duration: 200,
           useNativeDriver: false
         })
       ]).start();
@@ -93,11 +107,11 @@ const SwipeableItemDeletion = forwardRef(
     const getBorderRadius = () => {
       if (swipeableType === 'exercise' || swipeableType === 'workout') {
         return {
-          borderRadius: isOpen ? 0 : 10,
+          borderTopRightRadius: animatedTopRightRadius,
+          borderBottomRightRadius: animatedBottomRightRadius,
           overflow: 'hidden'
         };
       } else {
-        // Set type - only bottom right radius if last
         return {
           borderTopRightRadius: 0,
           borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0,
@@ -105,7 +119,6 @@ const SwipeableItemDeletion = forwardRef(
         };
       }
     };
-
     return (
       <Swipeable
         ref={swipeableRef}
@@ -114,7 +127,7 @@ const SwipeableItemDeletion = forwardRef(
         onSwipeableWillClose={onSwipeableWillClose}
         overshootRight={false}
       >
-        <View
+        <Animated.View
           style={[
             styles.contentContainer,
             children.props.style,
@@ -122,7 +135,7 @@ const SwipeableItemDeletion = forwardRef(
           ]}
         >
           {children.props.children}
-        </View>
+        </Animated.View>
       </Swipeable>
     );
   }

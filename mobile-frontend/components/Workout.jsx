@@ -19,7 +19,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import Exercise from './Exercise';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { ProgramContext } from '../src/context/programContext';
@@ -230,8 +230,8 @@ const styles = StyleSheet.create({
   workoutContainer: {
     marginBottom: 1,
     // position: 'relative',
-    zIndex: 1,
-    borderRadius: 10
+    zIndex: 1
+    // borderRadius: 10
   },
   workoutHeader: {
     flexDirection: 'row',
@@ -252,48 +252,10 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend',
     fontSize: 14
   },
-
-  deleteIcon: {
-    position: 'absolute',
-    marginLeft: 10
-  },
   expandedContent: {
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     overflow: 'hidden'
-  },
-  exerciseHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingVertical: 8
-  },
-  headerText: {
-    fontFamily: 'Lexend-Bold',
-    fontSize: 14,
-    flex: 1,
-    textAlign: 'center'
-  },
-
-  deleteTextContainer: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    width: width * 0.5,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
-    paddingRight: 15,
-    backgroundColor: colors.red,
-    zIndex: 0,
-    borderBottomRightRadius: 10,
-    borderTopRightRadius: 10,
-    height: '98%'
-  },
-  deleteText: {
-    color: colors.offWhite,
-    fontSize: 16,
-    fontWeight: 'bold'
   }
 });
 

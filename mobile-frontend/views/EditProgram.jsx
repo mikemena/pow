@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 5
   },
-  formContainer: { borderRadius: 8 },
+  formContainer: { borderRadius: 10 },
   workoutsContainer: {
     marginBottom: 10
   },
