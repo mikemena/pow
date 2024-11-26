@@ -34,6 +34,15 @@ const workoutReducer = (state, action) => {
         workoutDetails: null
       };
 
+    case actionTypes.UPDATE_WORKOUT_NAME:
+      return {
+        ...state,
+        workoutDetails: {
+          ...state.workoutDetails,
+          name: action.payload
+        }
+      };
+
     case actionTypes.START_WORKOUT:
       return { ...state, currentWorkout: action.payload };
 
@@ -223,6 +232,14 @@ export const WorkoutProvider = ({ children }) => {
     dispatch({
       type: actionTypes.SET_ACTIVE_PROGRAM_DETAILS,
       payload: program
+    });
+  }, []);
+
+  // Update workout name
+  const updateWorkoutName = useCallback(name => {
+    dispatch({
+      type: actionTypes.UPDATE_WORKOUT_NAME,
+      payload: name
     });
   }, []);
 
@@ -464,7 +481,8 @@ export const WorkoutProvider = ({ children }) => {
         removeSet,
         completeWorkout,
         clearCurrentWorkout,
-        updateWorkoutDuration
+        updateWorkoutDuration,
+        updateWorkoutName
       }}
     >
       {children}
