@@ -91,7 +91,7 @@ const SwipeableItemDeletion = forwardRef(
     };
 
     const getBorderRadius = () => {
-      if (swipeableType === 'workout') {
+      if (swipeableType === 'exercise' || swipeableType === 'workout') {
         return {
           borderRadius: isOpen ? 0 : 10,
           overflow: 'hidden'

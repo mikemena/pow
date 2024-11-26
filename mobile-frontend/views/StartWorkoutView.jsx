@@ -449,7 +449,7 @@ const StartWorkoutView = () => {
 
             {/* Swipeable Content */}
             <SwipeableItemDeletion
-              swipeableType='workout'
+              swipeableType='exercise'
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
             >
               {workoutDetails?.exercises?.length === 0 ? (
