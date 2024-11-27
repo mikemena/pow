@@ -12,8 +12,7 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
-  Animated,
-  Dimensions
+  Animated
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,8 +23,6 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { ProgramContext } from '../src/context/programContext';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
-
-const { width } = Dimensions.get('window');
 
 const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   const { state, setActiveWorkout, updateWorkoutField, deleteWorkout } =
@@ -39,7 +36,6 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
-  // console.log('mode in workout component', mode);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -65,8 +61,13 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
     styles.workoutHeader,
     { backgroundColor: themedStyles.secondaryBackgroundColor },
     isExpanded
-      ? { borderTopLeftRadius: 10, borderTopRightRadius: 10 }
-      : { borderRadius: 10 }
+      ? {
+          borderTopLeftRadius: 10
+        }
+      : {
+          borderTopLeftRadius: 10,
+          borderBottomLeftRadius: 10
+        }
   ];
 
   const handleTitlePress = useCallback(() => {
@@ -77,7 +78,6 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   }, [mode]);
 
   const handleEditTitleChange = text => {
-    // console.log('handleEditTitleChange');
     setIsEditingTitle(true);
     setWorkoutTitle(text);
   };
@@ -224,14 +224,10 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    marginBottom: 5,
     overflow: 'hidden'
   },
   workoutContainer: {
-    marginBottom: 1,
-    // position: 'relative',
     zIndex: 1
-    // borderRadius: 10
   },
   workoutHeader: {
     flexDirection: 'row',

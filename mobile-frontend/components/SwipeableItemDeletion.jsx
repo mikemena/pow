@@ -107,8 +107,10 @@ const SwipeableItemDeletion = forwardRef(
     const getBorderRadius = () => {
       if (swipeableType === 'exercise' || swipeableType === 'workout') {
         return {
-          borderTopRightRadius: animatedTopRightRadius,
-          borderBottomRightRadius: animatedBottomRightRadius,
+          // borderTopRightRadius: animatedTopRightRadius,
+          // borderBottomRightRadius: animatedBottomRightRadius,
+          borderTopRightRadius: isOpen ? 0 : 10,
+          borderBottomRightRadius: isOpen ? 0 : 10,
           overflow: 'hidden'
         };
       } else {
