@@ -28,7 +28,8 @@ const Workout = ({
   workout: initialWorkout,
   isExpanded,
   onToggleExpand,
-  onTitleEditingChange
+  onTitleEditingChange,
+  swipeEnabled = true
 }) => {
   const { state, setActiveWorkout, updateWorkoutField, deleteWorkout } =
     useContext(ProgramContext);
@@ -131,6 +132,7 @@ const Workout = ({
       <SwipeableItemDeletion
         onDelete={() => deleteWorkout(workout.id)}
         swipeableType='workout'
+        enabled={swipeEnabled}
       >
         <View style={[styles.workoutContainer]}>
           <TouchableOpacity>
@@ -233,7 +235,8 @@ const Workout = ({
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    overflow: 'hidden'
+    overflow: 'hidden',
+    marginBottom: 5
   },
   workoutContainer: {
     zIndex: 1

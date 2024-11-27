@@ -8,7 +8,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
 const SwipeableItemDeletion = forwardRef(
-  ({ onDelete, children, isLast, swipeableType }, ref) => {
+  ({ onDelete, children, isLast, swipeableType, enabled = true }, ref) => {
     const [progress] = useState(new Animated.Value(0));
     const [isOpen, setIsOpen] = useState(false);
     const swipeableRef = useRef(null);
@@ -121,6 +121,22 @@ const SwipeableItemDeletion = forwardRef(
         };
       }
     };
+
+    // If not enabled, just render children directly
+    if (!enabled) {
+      return (
+        <Animated.View
+          style={[
+            styles.contentContainer,
+            children.props.style,
+            getBorderRadius()
+          ]}
+        >
+          {children.props.children}
+        </Animated.View>
+      );
+    }
+
     return (
       <Swipeable
         ref={swipeableRef}

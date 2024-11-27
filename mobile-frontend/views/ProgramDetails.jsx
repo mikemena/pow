@@ -59,6 +59,7 @@ const ProgramDetails = () => {
         workout={workout}
         isExpanded={isItemExpanded(workout.id)}
         onToggleExpand={() => toggleItem(workout.id)}
+        swipeEnabled={false}
       />
     </View>
   );
