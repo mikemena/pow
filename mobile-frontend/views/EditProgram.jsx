@@ -5,7 +5,9 @@ import {
   SafeAreaView,
   View,
   ScrollView,
-  TouchableOpacity
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Keyboard
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -35,6 +37,7 @@ const EditProgram = () => {
 
   const { program } = state;
   const { workouts } = state.workout;
+  const [isWorkoutTitleEditing, setIsWorkoutTitleEditing] = useState(false);
 
   const {
     isProgramFormExpanded,
@@ -57,6 +60,14 @@ const EditProgram = () => {
       clearProgram();
     };
   }, []); // Empty dependency array to run only once
+
+  // Dismiss keyboard when tapping outside
+  const dismissKeyboard = () => {
+    Keyboard.dismiss();
+    if (isWorkoutTitleEditing) {
+      Keyboard.dismiss();
+    }
+  };
 
   const handleUpdateProgram = async () => {
     try {
@@ -121,94 +132,99 @@ const EditProgram = () => {
   }
 
   return (
-    <SafeAreaView
-      style={[
-        globalStyles.container,
-        { backgroundColor: themedStyles.primaryBackgroundColor }
-      ]}
-    >
-      <Header pageName='Edit Program' />
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.formContainer}>
-          <ProgramForm
-            program={program}
-            isExpanded={isProgramFormExpanded}
-            onToggleExpand={toggleProgramForm}
-          />
-        </View>
-
-        <View style={styles.workoutsContainer}>
-          {workouts.length > 0 ? (
-            workouts.map(workout => (
-              <Workout
-                key={workout.id}
-                workout={workout}
-                isExpanded={isItemExpanded(workout.id)}
-                onToggleExpand={() => toggleItem(workout.id)}
-              />
-            ))
-          ) : (
-            <Text style={{ color: themedStyles.textColor }}>
-              No workouts available
-            </Text>
-          )}
-        </View>
-        {/* Add Workout button */}
-        <PillButton
-          label='Add Workout'
-          icon={
-            <Ionicons
-              name='add-outline'
-              size={16}
-              style={{
-                color:
-                  themeState.theme === 'dark'
-                    ? themedStyles.accentColor
-                    : colors.eggShell
-              }}
+    <TouchableWithoutFeedback onPress={dismissKeyboard}>
+      <SafeAreaView
+        style={[
+          globalStyles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='Edit Program' />
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.formContainer}>
+            <ProgramForm
+              program={program}
+              isExpanded={isProgramFormExpanded}
+              onToggleExpand={toggleProgramForm}
             />
-          }
-          onPress={handleAddWorkout}
-        />
-        {/* Save and Cancel buttons */}
-        <View style={styles.buttonRow}>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.saveButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleUpdateProgram}
-          >
-            <Text
+          </View>
+
+          <View style={styles.workoutsContainer}>
+            {workouts.length > 0 ? (
+              workouts.map(workout => (
+                <Workout
+                  key={workout.id}
+                  workout={workout}
+                  isExpanded={isItemExpanded(workout.id)}
+                  onToggleExpand={() => toggleItem(workout.id)}
+                  onTitleEditingChange={isEditing =>
+                    setIsWorkoutTitleEditing(isEditing)
+                  }
+                />
+              ))
+            ) : (
+              <Text style={{ color: themedStyles.textColor }}>
+                No workouts available
+              </Text>
+            )}
+          </View>
+          {/* Add Workout button */}
+          <PillButton
+            label='Add Workout'
+            icon={
+              <Ionicons
+                name='add-outline'
+                size={16}
+                style={{
+                  color:
+                    themeState.theme === 'dark'
+                      ? themedStyles.accentColor
+                      : colors.eggShell
+                }}
+              />
+            }
+            onPress={handleAddWorkout}
+          />
+          {/* Save and Cancel buttons */}
+          <View style={styles.buttonRow}>
+            <TouchableOpacity
               style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
+                globalStyles.button,
+                styles.saveButton,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
+              onPress={handleUpdateProgram}
             >
-              SAVE
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              globalStyles.button,
-              styles.cancelButton,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-            onPress={handleCancel}
-          >
-            <Text
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                SAVE
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               style={[
-                globalStyles.buttonText,
-                { color: themedStyles.accentColor }
+                globalStyles.button,
+                styles.cancelButton,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
               ]}
+              onPress={handleCancel}
             >
-              CANCEL
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+              <Text
+                style={[
+                  globalStyles.buttonText,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                CANCEL
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 

@@ -24,7 +24,12 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { ProgramContext } from '../src/context/programContext';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 
-const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
+const Workout = ({
+  workout: initialWorkout,
+  isExpanded,
+  onToggleExpand,
+  onTitleEditingChange
+}) => {
   const { state, setActiveWorkout, updateWorkoutField, deleteWorkout } =
     useContext(ProgramContext);
 
@@ -52,6 +57,10 @@ const Workout = ({ workout: initialWorkout, isExpanded, onToggleExpand }) => {
   useEffect(() => {
     setWorkoutTitle(workout.name);
   }, [workout.name]);
+
+  useEffect(() => {
+    onTitleEditingChange?.(isEditingTitle);
+  }, [isEditingTitle]);
 
   useEffect(() => {
     setLocalExercises(workout.exercises);
