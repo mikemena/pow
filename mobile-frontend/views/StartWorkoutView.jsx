@@ -48,6 +48,7 @@ const StartWorkoutView = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [time, setTime] = useState(0);
   const [showExerciseInfo, setShowExerciseInfo] = useState(false);
+  const [isSwipeOpen, setIsSwipeOpen] = useState(false);
   const [imageOpacity] = useState(new Animated.Value(1));
   const timerRef = useRef(null);
 
@@ -424,7 +425,7 @@ const StartWorkoutView = () => {
         >
           <View style={styles.swipeableContainer}>
             {/* Previous Navigation Button */}
-            {!showExerciseInfo && (
+            {!showExerciseInfo && !isSwipeOpen && (
               <View
                 style={[styles.navigationWrapper, styles.topNavigationWrapper]}
               >
@@ -452,6 +453,7 @@ const StartWorkoutView = () => {
             <SwipeableItemDeletion
               swipeableType='exercise'
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
+              onSwipeChange={setIsSwipeOpen}
             >
               {workoutDetails?.exercises?.length === 0 ? (
                 <View
@@ -503,7 +505,7 @@ const StartWorkoutView = () => {
                     ) : (
                       <View style={styles.placeholderImage} />
                     )}
-                    {!showExerciseInfo && (
+                    {!showExerciseInfo && !isSwipeOpen && (
                       <TouchableOpacity
                         style={styles.infoButton}
                         onPress={() => setShowExerciseInfo(true)}
@@ -542,7 +544,7 @@ const StartWorkoutView = () => {
             </SwipeableItemDeletion>
 
             {/* Next Navigation Button */}
-            {workoutDetails?.exercises?.length > 0 && (
+            {workoutDetails?.exercises?.length > 0 && !isSwipeOpen && (
               <View
                 style={[
                   styles.navigationWrapper,

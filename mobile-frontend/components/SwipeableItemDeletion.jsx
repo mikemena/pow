@@ -8,7 +8,17 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
 const SwipeableItemDeletion = forwardRef(
-  ({ onDelete, children, isLast, swipeableType, enabled = true }, ref) => {
+  (
+    {
+      onDelete,
+      children,
+      isLast,
+      swipeableType,
+      enabled = true,
+      onSwipeChange
+    },
+    ref
+  ) => {
     const [progress] = useState(new Animated.Value(0));
     const [isOpen, setIsOpen] = useState(false);
     const swipeableRef = useRef(null);
@@ -72,8 +82,7 @@ const SwipeableItemDeletion = forwardRef(
 
     const onSwipeableWillOpen = () => {
       setIsOpen(true);
-      console.log('onSwipeableWillOpen');
-      console.log('isOpen', isOpen);
+      onSwipeChange?.(true);
       Animated.parallel([
         Animated.timing(animatedTopRightRadius, {
           toValue: 0,
@@ -90,6 +99,7 @@ const SwipeableItemDeletion = forwardRef(
 
     const onSwipeableWillClose = () => {
       setIsOpen(false);
+      onSwipeChange?.(false);
       Animated.parallel([
         Animated.timing(animatedTopRightRadius, {
           toValue: 10,

@@ -42,6 +42,7 @@ const Workout = ({
   }, [workouts, initialWorkout]);
 
   const { mode } = state;
+
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -52,7 +53,7 @@ const Workout = ({
   const [localExercises, setLocalExercises] = useState(workout.exercises);
   const inputRef = useRef(null);
   const [isDeleting, setIsDeleting] = useState(false);
-
+  const [isSwipeOpen, setIsSwipeOpen] = useState(false);
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -133,6 +134,7 @@ const Workout = ({
         onDelete={() => deleteWorkout(workout.id)}
         swipeableType='workout'
         enabled={swipeEnabled}
+        onSwipeChange={setIsSwipeOpen}
       >
         <View style={[styles.workoutContainer]}>
           <TouchableOpacity>
@@ -194,7 +196,7 @@ const Workout = ({
                 </TouchableOpacity>
               </View>
 
-              {sortedExercises.length > 0 && (
+              {sortedExercises.length > 0 && !isSwipeOpen && (
                 <TouchableOpacity
                   onPress={handleWorkoutExpand}
                   style={[
