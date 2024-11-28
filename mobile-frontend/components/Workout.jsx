@@ -146,7 +146,10 @@ const Workout = ({
                       ref={inputRef}
                       style={[
                         styles.workoutTitle,
-                        { color: themedStyles.accentColor }
+                        {
+                          color: themedStyles.accentColor,
+                          backgroundColor: themedStyles.primaryBackgroundColor
+                        }
                       ]}
                       value={workoutTitle}
                       onChangeText={handleEditTitleChange}

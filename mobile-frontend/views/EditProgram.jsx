@@ -17,7 +17,7 @@ import PillButton from '../components/PillButton';
 import Workout from '../components/Workout';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-import { globalStyles } from '../src/styles/globalStyles';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import useExpandedItems from '../src/hooks/useExpandedItems';
 
