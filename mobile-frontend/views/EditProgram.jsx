@@ -160,6 +160,7 @@ const EditProgram = () => {
                   onTitleEditingChange={isEditing =>
                     setIsWorkoutTitleEditing(isEditing)
                   }
+                  variant='edit-program'
                 />
               ))
             ) : (

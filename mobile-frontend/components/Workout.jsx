@@ -29,7 +29,8 @@ const Workout = ({
   isExpanded,
   onToggleExpand,
   onTitleEditingChange,
-  swipeEnabled = true
+  swipeEnabled = true,
+  variant
 }) => {
   const { state, setActiveWorkout, updateWorkoutField, deleteWorkout } =
     useContext(ProgramContext);
@@ -228,6 +229,7 @@ const Workout = ({
                   exercise={exercise}
                   index={index + 1}
                   workout={workout}
+                  variant={variant}
                 />
               ))}
             </View>

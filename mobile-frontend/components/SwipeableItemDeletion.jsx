@@ -15,7 +15,8 @@ const SwipeableItemDeletion = forwardRef(
       isLast,
       swipeableType,
       enabled = true,
-      onSwipeChange
+      onSwipeChange,
+      variant
     },
     ref
   ) => {
@@ -47,9 +48,24 @@ const SwipeableItemDeletion = forwardRef(
         outputRange: [0, 1]
       });
 
+      // Add extra spacing for program details or edit-program variant
+      const shouldApplySpacing =
+        variant === 'program-details' || variant === 'edit-program';
+
+      const deleteStyles = [
+        styles.deleteActionContainer,
+        shouldApplySpacing && styles.deleteActionContainerSpacing
+      ];
+
+      console.log('variant:', variant);
+
       return (
         <Animated.View
-          style={[styles.deleteActionContainer, { opacity: dragProgress }]}
+          style={[
+            styles.deleteActionContainer,
+            { opacity: dragProgress },
+            deleteStyles
+          ]}
         >
           <TouchableOpacity onPress={onDelete} style={{ flex: 1 }}>
             <View style={styles.deleteAction}>
@@ -163,6 +179,9 @@ const SwipeableItemDeletion = forwardRef(
 const styles = StyleSheet.create({
   deleteActionContainer: {
     width: 80
+  },
+  deleteActionContainerSpacing: {
+    marginTop: 1
   },
   deleteAction: {
     flex: 1,

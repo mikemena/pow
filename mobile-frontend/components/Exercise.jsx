@@ -22,7 +22,8 @@ const Exercise = ({
   index,
   workout: initialWorkout,
   isExpanded,
-  swipeEnabled = true
+  swipeEnabled = true,
+  variant
 }) => {
   const { state, addSet, updateSet, removeSet, removeExercise, updateWorkout } =
     useContext(ProgramContext);
@@ -54,16 +55,6 @@ const Exercise = ({
       setLocalExercises(sortedExercises);
     }
   }, [workout]);
-
-  const radiusStyle = [
-    isExpanded
-      ? {
-          borderBottomRightRadius: 0
-        }
-      : {
-          borderBottomRightRadius: 10
-        }
-  ];
 
   const handleDeleteExercise = () => {
     // console.log('Deleting exercise:', exercise.id);
@@ -210,6 +201,7 @@ const Exercise = ({
       swipeableType='exercise'
       enabled={swipeEnabled}
       onSwipeChange={setIsSwipeOpen}
+      variant={variant}
     >
       <View style={[styles.containerWrapper]}>
         <View
@@ -290,9 +282,9 @@ const Exercise = ({
 
 const styles = StyleSheet.create({
   containerWrapper: {
-    marginTop: 1,
     overflow: 'hidden'
   },
+
   exerciseContainer: {
     marginTop: 1,
     zIndex: 1
