@@ -19,7 +19,6 @@ const SwipeableItemDeletion = forwardRef(
     },
     ref
   ) => {
-    const [progress] = useState(new Animated.Value(0));
     const [isOpen, setIsOpen] = useState(false);
     const swipeableRef = useRef(null);
 
@@ -43,12 +42,6 @@ const SwipeableItemDeletion = forwardRef(
     }));
 
     const renderRightActions = progress => {
-      // Animated interpolation for the gradient opacity
-      const opacity = progress.interpolate({
-        inputRange: [0, 1],
-        outputRange: [0, 1]
-      });
-
       const dragProgress = progress.interpolate({
         inputRange: [0, 1],
         outputRange: [0, 1]
@@ -117,8 +110,6 @@ const SwipeableItemDeletion = forwardRef(
     const getBorderRadius = () => {
       if (swipeableType === 'exercise' || swipeableType === 'workout') {
         return {
-          // borderTopRightRadius: animatedTopRightRadius,
-          // borderBottomRightRadius: animatedBottomRightRadius,
           borderTopRightRadius: isOpen ? 0 : 10,
           borderBottomRightRadius: isOpen ? 0 : 10,
           overflow: 'hidden'
@@ -171,8 +162,7 @@ const SwipeableItemDeletion = forwardRef(
 
 const styles = StyleSheet.create({
   deleteActionContainer: {
-    width: 80,
-    height: '100%'
+    width: 80
   },
   deleteAction: {
     flex: 1,
@@ -191,11 +181,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
     opacity: 1
-  },
-  deleteActionText: {
-    color: colors.eggShell,
-    fontSize: 12,
-    marginTop: 4
   }
 });
 

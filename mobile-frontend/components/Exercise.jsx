@@ -1,12 +1,10 @@
-import React, { useContext, useMemo, useEffect, useState, useRef } from 'react';
+import React, { useContext, useMemo, useEffect, useState } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
-  Animated,
-  PanResponder,
   Dimensions
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -15,13 +13,17 @@ import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
+import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 
 const { width } = Dimensions.get('window');
-const SWIPE_THRESHOLD = -width * 0.3;
 
-const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
-  // console.log('Exercise component rendering:', exercise.name);
-
+const Exercise = ({
+  exercise,
+  index,
+  workout: initialWorkout,
+  isExpanded,
+  swipeEnabled = true
+}) => {
   const { state, addSet, updateSet, removeSet, removeExercise, updateWorkout } =
     useContext(ProgramContext);
   const { mode } = state;
@@ -42,8 +44,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
     workout?.exercises || []
   );
   const [isDeleting, setIsDeleting] = useState(false);
-  const pan = useRef(new Animated.ValueXY()).current;
-  const deleteAnim = useRef(new Animated.Value(0)).current;
+  const [isSwipeOpen, setIsSwipeOpen] = useState(false);
 
   useEffect(() => {
     if (workout) {
@@ -54,68 +55,15 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
     }
   }, [workout]);
 
-  const panResponder = useMemo(() => {
-    if (isExpanded || mode === 'view') {
-      return PanResponder.create({}); // Returns an empty PanResponder
-    }
-
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (_, gestureState) => {
-        return Math.abs(gestureState.dx) > 10;
-      },
-      onPanResponderGrant: () => {
-        if (isExpanded || mode === 'view') return; // Prevent any action when expanded or in view mode
-      },
-      onPanResponderMove: (_, gestureState) => {
-        if (isExpanded || mode === 'view') return; // Prevent movement when expanded or in view mode
-        Animated.event([null, { dx: pan.x }], { useNativeDriver: false })(
-          _,
-          gestureState
-        );
-        if (gestureState.dx < -width * 0.3) {
-          deleteAnim.setValue(
-            Math.min(1, (-gestureState.dx - width * 0.3) / (width * 0.2))
-          );
-        } else {
-          deleteAnim.setValue(0);
+  const radiusStyle = [
+    isExpanded
+      ? {
+          borderBottomRightRadius: 0
         }
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (isExpanded || mode === 'view') return; // Prevent release action when expanded or in view mode
-        if (gestureState.dx < SWIPE_THRESHOLD) {
-          // console.log('Swipe threshold reached, initiating delete animation');
-          Animated.parallel([
-            Animated.timing(pan.x, {
-              toValue: -width,
-              duration: 200,
-              useNativeDriver: false
-            }),
-            Animated.timing(deleteAnim, {
-              toValue: 0,
-              duration: 200,
-              useNativeDriver: false
-            })
-          ]).start(() => {
-            // console.log('Delete animation completed');
-            setIsDeleting(true);
-            setTimeout(() => handleDeleteExercise(), 100);
-          });
-        } else {
-          // console.log('Swipe threshold not reached, resetting position');
-
-          Animated.spring(pan.x, {
-            toValue: 0,
-            useNativeDriver: false
-          }).start();
-          Animated.timing(deleteAnim, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: false
-          }).start();
+      : {
+          borderBottomRightRadius: 10
         }
-      }
-    });
-  }, [isExpanded, mode]);
+  ];
 
   const handleDeleteExercise = () => {
     // console.log('Deleting exercise:', exercise.id);
@@ -140,9 +88,6 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
   };
 
   const handleUpdateSet = (setId, field, value) => {
-    // console.log(
-    //   `handleUpdateSet called - setId: ${setId}, field: ${field}, value: ${value}`
-    // );
     const updatedSet = exercise.sets.find(s => s.id === setId);
     if (updatedSet) {
       const newSet = { ...updatedSet, [field]: value };
@@ -151,8 +96,6 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
   };
 
   const handleRemoveSet = setId => {
-    // console.log(`Removing set ${setId} from exercise ${exercise.id}`);
-
     const updatedExercises = localExercises.map(ex => {
       if (ex.id === exercise.id) {
         // Filter out the removed set and renumber the remaining sets
@@ -160,7 +103,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
           .filter(s => s.id !== setId)
           .map((set, index) => ({
             ...set,
-            order: index + 1 // Renumber starting from 1
+            order: index + 1
           }));
 
         return {
@@ -182,7 +125,7 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
     removeSet(workout.id, exercise.id, setId);
   };
 
-  const renderSetInputs = (set, setIndex) => {
+  const renderSetInputs = set => {
     if (mode === 'view') {
       return (
         <View key={set.id} style={styles.setInfo}>
@@ -257,97 +200,91 @@ const Exercise = ({ exercise, index, workout: initialWorkout, isExpanded }) => {
     }
   };
 
-  const deleteContainerTranslateX = pan.x.interpolate({
-    inputRange: [-width, 0],
-    outputRange: [-width * 0.4, 0],
-    extrapolate: 'clamp'
-  });
-
-  const deleteTextOpacity = pan.x.interpolate({
-    inputRange: [-width * 0.6, -width * 0.3, 0],
-    outputRange: [0, 1, 0],
-    extrapolate: 'clamp'
-  });
-
   if (isDeleting) {
     return null;
   }
 
   return (
-    <View style={[styles.containerWrapper]}>
-      <Animated.View
-        style={[
-          styles.deleteTextContainer,
-          {
-            transform: [{ translateX: deleteContainerTranslateX }],
-            opacity: deleteTextOpacity
-          }
-        ]}
-      >
-        <Text style={styles.deleteText}>Delete</Text>
-      </Animated.View>
-      <Animated.View
-        {...panResponder.panHandlers}
-        style={[
-          styles.exerciseContainer,
-          { backgroundColor: themedStyles.secondaryBackgroundColor },
-          { transform: [{ translateX: pan.x }] }
-        ]}
-      >
-        <View style={styles.exerciseInfo}>
-          <Text
-            style={[styles.exerciseIndex, { color: themedStyles.textColor }]}
-          >
-            {index}
-          </Text>
-          <View>
-            <Text
-              style={[styles.exerciseName, { color: themedStyles.accentColor }]}
-            >
-              {exercise.name}
-            </Text>
-            <Text
-              style={[styles.exerciseMuscle, { color: themedStyles.textColor }]}
-            >
-              {exercise.muscle} - {exercise.equipment}
-            </Text>
-          </View>
-        </View>
+    <SwipeableItemDeletion
+      onDelete={() => handleDeleteExercise()}
+      swipeableType='exercise'
+      enabled={swipeEnabled}
+      onSwipeChange={setIsSwipeOpen}
+    >
+      <View style={[styles.containerWrapper]}>
         <View
           style={[
-            styles.exerciseHeader,
+            styles.exerciseContainer,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
         >
-          <Text style={[styles.headerText, { color: themedStyles.textColor }]}>
-            Set
-          </Text>
-          <Text style={[styles.headerText, { color: themedStyles.textColor }]}>
-            Weight
-          </Text>
-          <Text style={[styles.headerText, { color: themedStyles.textColor }]}>
-            Reps
-          </Text>
-        </View>
-        {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
-        {mode !== 'view' && (
-          <TouchableOpacity
-            onPress={handleAddSet}
+          <View style={styles.exerciseInfo}>
+            <Text
+              style={[styles.exerciseIndex, { color: themedStyles.textColor }]}
+            >
+              {index}
+            </Text>
+            <View>
+              <Text
+                style={[
+                  styles.exerciseName,
+                  { color: themedStyles.accentColor }
+                ]}
+              >
+                {exercise.name}
+              </Text>
+              <Text
+                style={[
+                  styles.exerciseMuscle,
+                  { color: themedStyles.textColor }
+                ]}
+              >
+                {exercise.muscle} - {exercise.equipment}
+              </Text>
+            </View>
+          </View>
+          <View
             style={[
-              { backgroundColor: themedStyles.primaryBackgroundColor },
-              globalStyles.iconCircle,
-              styles.addSetButton
+              styles.exerciseHeader,
+              { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
           >
-            <Ionicons
-              name={'add-outline'}
-              style={[globalStyles.icon, { color: themedStyles.textColor }]}
-              size={24}
-            />
-          </TouchableOpacity>
-        )}
-      </Animated.View>
-    </View>
+            <Text
+              style={[styles.headerText, { color: themedStyles.textColor }]}
+            >
+              Set
+            </Text>
+            <Text
+              style={[styles.headerText, { color: themedStyles.textColor }]}
+            >
+              Weight
+            </Text>
+            <Text
+              style={[styles.headerText, { color: themedStyles.textColor }]}
+            >
+              Reps
+            </Text>
+          </View>
+          {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
+          {mode !== 'view' && (
+            <TouchableOpacity
+              onPress={handleAddSet}
+              style={[
+                { backgroundColor: themedStyles.primaryBackgroundColor },
+                globalStyles.iconCircle,
+                styles.addSetButton
+              ]}
+            >
+              <Ionicons
+                name={'add-outline'}
+                style={[globalStyles.icon, { color: themedStyles.textColor }]}
+                size={24}
+              />
+            </TouchableOpacity>
+          )}
+        </View>
+      </View>
+    </SwipeableItemDeletion>
   );
 };
 
