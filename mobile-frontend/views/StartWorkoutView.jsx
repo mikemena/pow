@@ -43,6 +43,7 @@ const StartWorkoutView = () => {
     workoutState.workoutDetails?.name || ''
   );
   const inputRef = useRef(null);
+  const swipeableRef = useRef(null);
   const [isStarted, setIsStarted] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
@@ -238,10 +239,15 @@ const StartWorkoutView = () => {
     });
   };
 
-  const handleDeleteExercise = exerciseId => {
+  const handleDeleteExercise = async exerciseId => {
+    // Close swipe action first
+    swipeableRef.current?.close();
+
+    // Wait a brief moment for the animation to complete
+    await new Promise(resolve => setTimeout(resolve, 200));
+
     removeExerciseFromWorkout(exerciseId);
 
-    // Parent component can handle additional logic
     if (currentExerciseIndex >= workoutDetails.exercises.length - 1) {
       setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
     }
@@ -451,6 +457,7 @@ const StartWorkoutView = () => {
 
             {/* Swipeable Content */}
             <SwipeableItemDeletion
+              ref={swipeableRef}
               swipeableType='exercise-start'
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
               onSwipeChange={setIsSwipeOpen}
