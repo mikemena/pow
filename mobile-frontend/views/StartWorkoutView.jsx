@@ -451,7 +451,7 @@ const StartWorkoutView = () => {
 
             {/* Swipeable Content */}
             <SwipeableItemDeletion
-              swipeableType='exercise'
+              swipeableType='exercise-start'
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
               onSwipeChange={setIsSwipeOpen}
             >
@@ -754,12 +754,12 @@ const styles = StyleSheet.create({
     marginBottom: 10
   },
   exerciseContainer: {
-    // marginTop: 10,
     padding: 10,
     height: 350,
     display: 'flex',
     width: '100%',
-    alignItems: 'center'
+    alignItems: 'center',
+    borderRadius: 10
   },
   exerciseContent: {
     flex: 1,
@@ -823,7 +823,7 @@ const styles = StyleSheet.create({
     borderRadius: 10
   },
   setControls: {
-    marginTop: 160,
+    marginTop: 165,
     flex: 1,
     gap: 3,
     paddingHorizontal: 5,

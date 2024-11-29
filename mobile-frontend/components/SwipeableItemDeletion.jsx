@@ -124,19 +124,33 @@ const SwipeableItemDeletion = forwardRef(
     };
 
     const getBorderRadius = () => {
-      if (swipeableType === 'exercise' || swipeableType === 'workout') {
+      if (swipeableType === 'workout') {
         return {
           borderTopRightRadius: isOpen ? 0 : 10,
           borderBottomRightRadius: isOpen ? 0 : 10,
           overflow: 'hidden'
         };
-      } else {
+      }
+      if (swipeableType === 'exercise') {
         return {
           borderTopRightRadius: 0,
           borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0,
           overflow: 'hidden'
         };
       }
+      if (swipeableType === 'exercise-start') {
+        return {
+          borderTopRightRadius: isOpen ? 0 : 10,
+          borderBottomRightRadius: isOpen ? 0 : 10,
+          overflow: 'hidden'
+        };
+      }
+      // default case
+      return {
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: isOpen ? 0 : isLast ? 10 : 0,
+        overflow: 'hidden'
+      };
     };
 
     // If not enabled, just render children directly
