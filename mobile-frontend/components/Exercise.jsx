@@ -199,7 +199,7 @@ const Exercise = ({
     <SwipeableItemDeletion
       onDelete={() => handleDeleteExercise()}
       swipeableType='exercise'
-      enabled={swipeEnabled}
+      enabled={swipeEnabled && variant !== 'program-details'}
       onSwipeChange={setIsSwipeOpen}
       variant={variant}
     >
