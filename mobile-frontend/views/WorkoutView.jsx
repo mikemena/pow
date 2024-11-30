@@ -66,7 +66,15 @@ const WorkoutView = () => {
 
         <TouchableOpacity
           style={styles.imageContainer}
-          onPress={() => navigation.navigate('FlexWorkout')}
+          onPress={() => {
+            navigation.navigate('StartWorkout', {
+              isFlexWorkout: true,
+              workout: {
+                name: 'Flex Workout',
+                exercises: []
+              }
+            });
+          }}
         >
           <ImageBackground
             source={require('../assets/images/workout-2.jpg')}
