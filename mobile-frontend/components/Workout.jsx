@@ -179,7 +179,11 @@ const Workout = ({
                   )}
                 </Animated.View>
                 <TouchableOpacity
-                  onPress={() => handleAddExercises(workout.id)}
+                  onPress={
+                    variant !== 'program-details'
+                      ? () => handleAddExercises(workout.id)
+                      : undefined
+                  }
                 >
                   <Text
                     style={[

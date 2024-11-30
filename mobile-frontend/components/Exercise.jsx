@@ -235,28 +235,36 @@ const Exercise = ({
               </Text>
             </View>
           </View>
-          <View
-            style={[
-              styles.exerciseHeader,
-              { backgroundColor: themedStyles.secondaryBackgroundColor }
-            ]}
-          >
+          {exercise.sets.length > 0 ? (
+            <View
+              style={[
+                styles.exerciseHeader,
+                { backgroundColor: themedStyles.secondaryBackgroundColor }
+              ]}
+            >
+              <Text
+                style={[styles.headerText, { color: themedStyles.textColor }]}
+              >
+                Set
+              </Text>
+              <Text
+                style={[styles.headerText, { color: themedStyles.textColor }]}
+              >
+                Weight
+              </Text>
+              <Text
+                style={[styles.headerText, { color: themedStyles.textColor }]}
+              >
+                Reps
+              </Text>
+            </View>
+          ) : (
             <Text
               style={[styles.headerText, { color: themedStyles.textColor }]}
             >
-              Set
+              No Sets Added
             </Text>
-            <Text
-              style={[styles.headerText, { color: themedStyles.textColor }]}
-            >
-              Weight
-            </Text>
-            <Text
-              style={[styles.headerText, { color: themedStyles.textColor }]}
-            >
-              Reps
-            </Text>
-          </View>
+          )}
           {exercise.sets.map((set, setIndex) => renderSetInputs(set, setIndex))}
           {mode !== 'view' && (
             <TouchableOpacity
@@ -296,11 +304,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8
   },
   headerText: {
-    fontFamily: 'Lexend-Bold',
+    fontFamily: 'Lexend',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '400',
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
+    marginBottom: 5
   },
   exerciseInfo: {
     flexDirection: 'row',
