@@ -36,7 +36,8 @@ const StartWorkoutView = ({ route }) => {
     completeWorkout,
     removeExerciseFromWorkout,
     updateExerciseSets,
-    updateWorkoutName
+    updateWorkoutName,
+    startWorkout
   } = useContext(WorkoutContext);
   const isFlexWorkout = route.params?.isFlexWorkout;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -145,6 +146,7 @@ const StartWorkoutView = ({ route }) => {
     );
   }, [currentExerciseIndex, workoutDetails?.exercises]);
 
+  // start workout if it's a flex workout
   useEffect(() => {
     if (isFlexWorkout) {
       // Initialize an empty workout
@@ -170,12 +172,12 @@ const StartWorkoutView = ({ route }) => {
   }, []);
 
   useEffect(() => {
-    if (!workoutDetails) {
+    if (!workoutDetails && !isFlexWorkout) {
       console.error('No workout details available in context');
       navigation.goBack();
       return;
     }
-  }, [workoutDetails, navigation]);
+  }, [workoutDetails, navigation, isFlexWorkout]);
 
   const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
 
@@ -243,7 +245,8 @@ const StartWorkoutView = ({ route }) => {
     navigation.navigate('ExerciseSelection', {
       mode: 'workout',
       isNewProgram: false,
-      programId: workoutState.currentWorkout?.id
+      programId: workoutState.currentWorkout?.id,
+      isFlexWorkout: true
     });
   };
 
@@ -356,6 +359,13 @@ const StartWorkoutView = ({ route }) => {
       return newSets;
     });
   };
+
+  console.log('WorkoutDetails:', workoutDetails);
+  console.log('Exercises length:', workoutDetails?.exercises?.length);
+  console.log(
+    'Is exercises array empty?:',
+    workoutDetails?.exercises?.length === 0
+  );
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>

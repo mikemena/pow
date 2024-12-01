@@ -29,7 +29,8 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
-  const { mode } = programState;
+  const { isFlexWorkout } = route.params;
+  const mode = isFlexWorkout ? 'workout' : programState.mode;
   const { programId } = route.params;
 
   const [exercises, setExercises] = useState([]);
@@ -55,11 +56,14 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   // Initialize selected exercises based on context
   useEffect(() => {
-    if (mode === 'workout' && workoutState.currentWorkout) {
-      // For active workouts, get exercises from workout context
+    if (isFlexWorkout && workoutState.currentWorkout) {
+      // For flex workouts
+      setSelectedExercises(workoutState.currentWorkout.exercises || []);
+    } else if (mode === 'workout' && workoutState.currentWorkout) {
+      // For regular workouts
       setSelectedExercises(workoutState.currentWorkout.exercises || []);
     } else {
-      // For program creation/editing, get exercises from program context
+      // For program creation/editing
       const activeWorkout = programState.workout.workouts.find(
         w => w.id === programState.workout.activeWorkout
       );
@@ -67,7 +71,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         setSelectedExercises(activeWorkout.exercises || []);
       }
     }
-  }, [mode, workoutState.currentWorkout, programState.workout]);
+  }, [mode, isFlexWorkout, workoutState.currentWorkout, programState.workout]);
 
   useEffect(() => {
     fetchExercises();
@@ -182,7 +186,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       ]
     }));
 
-    if (mode === 'workout') {
+    if (isFlexWorkout || mode === 'workout') {
       // Add exercises to workout context
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
