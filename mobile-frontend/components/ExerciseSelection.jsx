@@ -18,6 +18,7 @@ import { ProgramContext } from '../src/context/programContext';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
+import { useExerciseCatalog } from '../src/utils/exerciseApi';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -33,7 +34,8 @@ const ExerciseSelection = ({ navigation, route }) => {
   const mode = isFlexWorkout ? 'workout' : programState.mode;
   const { programId } = route.params;
 
-  const [exercises, setExercises] = useState([]);
+  //const [exercises, setExercises] = useState([]);
+  const { data: exercises, loading, error } = useExerciseCatalog();
   const [filteredExercises, setFilteredExercises] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -54,6 +56,12 @@ const ExerciseSelection = ({ navigation, route }) => {
     workout => workout.id === activeWorkoutId
   );
 
+  useEffect(() => {
+    if (exercises && Array.isArray(exercises)) {
+      setFilteredExercises(exercises);
+    }
+  }, [exercises]);
+
   // Initialize selected exercises based on context
   useEffect(() => {
     if (isFlexWorkout && workoutState.currentWorkout) {
@@ -73,25 +81,45 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   }, [mode, isFlexWorkout, workoutState.currentWorkout, programState.workout]);
 
-  useEffect(() => {
-    fetchExercises();
-  }, []);
+  // useEffect(() => {
+  //   fetchExercises();
+  // }, []);
 
-  const fetchExercises = async () => {
-    try {
-      const response = await fetch(
-        'http://localhost:9025/api/exercise-catalog'
-      );
-      const data = await response.json();
-      setExercises(data);
-      setFilteredExercises(data);
-    } catch (error) {
-      console.error('Error fetching exercises:', error);
+  // const fetchExercises = async () => {
+  //   try {
+  //     const response = await fetch(
+  //       'http://localhost:9025/api/exercise-catalog'
+  //     );
+  //     const data = await response.json();
+  //     setExercises(data);
+  //     setFilteredExercises(data);
+  //   } catch (error) {
+  //     console.error('Error fetching exercises:', error);
+  //   }
+  // };
+
+  const filterOptions = useMemo(() => {
+    // Early return if exercises is not yet loaded
+    if (!exercises || !Array.isArray(exercises)) {
+      return [
+        { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
+        {
+          key: 'muscle',
+          label: 'Muscle',
+          type: 'picker',
+          options: [{ label: 'All', value: '' }]
+        },
+        {
+          key: 'equipment',
+          label: 'Equipment',
+          type: 'picker',
+          options: [{ label: 'All', value: '' }]
+        }
+      ];
     }
-  };
 
-  const filterOptions = useMemo(
-    () => [
+    // Once exercises are loaded, create the full options
+    return [
       { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
       {
         key: 'muscle',
@@ -100,6 +128,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         options: [
           { label: 'All', value: '' },
           ...Array.from(new Set(exercises.map(e => e.muscle)))
+            .filter(Boolean)
             .sort()
             .map(muscle => ({ label: muscle, value: muscle }))
         ]
@@ -111,15 +140,18 @@ const ExerciseSelection = ({ navigation, route }) => {
         options: [
           { label: 'All', value: '' },
           ...Array.from(new Set(exercises.map(e => e.equipment)))
+            .filter(Boolean)
             .sort()
             .map(equipment => ({ label: equipment, value: equipment }))
         ]
       }
-    ],
-    [exercises]
-  );
+    ];
+  }, [exercises]);
 
   const filterExercises = useCallback(() => {
+    // Check if exercises exists and is an array
+    if (!exercises || !Array.isArray(exercises)) return;
+
     const filtered = exercises.filter(
       exercise =>
         exercise.name
@@ -233,6 +265,38 @@ const ExerciseSelection = ({ navigation, route }) => {
       </View>
     </TouchableOpacity>
   );
+
+  // Add error handling UI
+  if (error) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
+          Error loading exercises: {error.message}
+        </Text>
+      </View>
+    );
+  }
+
+  // Add loading UI
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
+          Loading exercises...
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <View
