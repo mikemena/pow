@@ -44,18 +44,7 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.START_WORKOUT:
-      const workout = {
-        ...action.payload,
-        exercises: action.payload.exercises || []
-      };
-      return {
-        ...state,
-        currentWorkout: workout,
-        workoutDetails: {
-          ...workout,
-          exercises: workout.exercises
-        }
-      };
+      return { ...state, currentWorkout: action.payload };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
       return {
@@ -322,11 +311,10 @@ export const WorkoutProvider = ({ children }) => {
     const workout = {
       id: Crypto.randomUUID(),
       ...workoutData,
-      exercises: workoutData.exercises || [],
+      exercises: [],
       startTime: new Date(),
       isCompleted: false
     };
-
     dispatch({ type: actionTypes.START_WORKOUT, payload: workout });
   }, []);
 
