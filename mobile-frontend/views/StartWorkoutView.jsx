@@ -30,7 +30,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const StartWorkoutView = ({ route }) => {
+const StartWorkoutView = () => {
   const {
     state: workoutState,
     completeWorkout,
@@ -38,7 +38,6 @@ const StartWorkoutView = ({ route }) => {
     updateExerciseSets,
     updateWorkoutName
   } = useContext(WorkoutContext);
-  const isFlexWorkout = route.params?.isFlexWorkout;
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
     workoutState.workoutDetails?.name || ''
@@ -144,13 +143,6 @@ const StartWorkoutView = ({ route }) => {
       }))
     );
   }, [currentExerciseIndex, workoutDetails?.exercises]);
-
-  useEffect(() => {
-    if (isFlexWorkout) {
-      // Initialize an empty workout
-      startWorkout(route.params.workout, true);
-    }
-  }, [isFlexWorkout]);
 
   // For exercise info auto-hide timer
 
