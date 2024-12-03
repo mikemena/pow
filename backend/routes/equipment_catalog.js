@@ -5,9 +5,20 @@ const db = require('../config/db');
 // GET all equipment
 router.get('/equipments', async (req, res) => {
   try {
-    const { rows } = await db.query('SELECT * FROM equipment_catalog');
+    const query = `SELECT DISTINCT id, name FROM equipment_catalog ORDER BY name`;
+    const { rows } = await db.query(query);
+
+    res.set({
+      'Cache-Control': 'public, max-age=86400',
+      ETag: require('crypto')
+        .createHash('md5')
+        .update(JSON.stringify(rows))
+        .digest('hex')
+    });
+
     res.json(rows);
   } catch (error) {
+    console.error('Error fetching equipment:', error);
     res.status(500).send(error.message);
   }
 });
