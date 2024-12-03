@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, SafeAreaView, Text } from 'react-native';
 import CustomPicker from './CustomPicker';
 import PillButton from './PillButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { useExerciseData } from '../src/hooks/useExerciseData';
 import { colors } from '../src/styles/globalStyles';
 
 const Filter = ({
@@ -18,21 +19,63 @@ const Filter = ({
 }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
+  const { muscles, equipment, loading, error } = useExerciseData();
 
-  const totalMatches = getTotalMatches(filterValues);
+  const [localFilters, setLocalFilters] = useState(filterValues || {});
 
-  const getMatchesText = () => {
-    if (totalMatches === 0) return 'No Matches';
-    if (totalMatches === 1) return '1 Match';
-    return `${totalMatches} Matches`;
+  useEffect(() => {
+    setLocalFilters(filterValues || {});
+  }, [filterValues]);
+
+  const handleFilterChange = (key, value) => {
+    console.log('Filter Change:', { key, value });
+    const newFilters = { ...localFilters, [key]: value };
+    setLocalFilters(newFilters);
+    onFilterChange(key, value);
   };
 
-  if (!isVisible) {
-    return null;
-  }
+  if (!isVisible) return null;
 
-  const textInputs = filterOptions.filter(option => option.type === 'text');
-  const pickerInputs = filterOptions.filter(option => option.type === 'picker');
+  // Determine if we're using exercise filters by checking filterValues structure
+  const isExerciseFilters = 'exerciseName' in filterValues;
+
+  // Create appropriate inputs based on mode
+  const inputs = isExerciseFilters
+    ? {
+        textInputs: [
+          { key: 'exerciseName', label: 'Search exercises...', type: 'text' }
+        ],
+        pickerInputs: [
+          {
+            key: 'muscle',
+            label: 'Muscle',
+            options: [
+              { label: 'All Muscles', value: '' },
+              ...(muscles || []).map(m => ({
+                label: m.muscle,
+                value: m.muscle
+              }))
+            ]
+          },
+          {
+            key: 'equipment',
+            label: 'Equipment',
+            options: [
+              { label: 'All Equipment', value: '' },
+              ...(equipment || []).map(e => ({
+                label: e.name,
+                value: e.name
+              }))
+            ]
+          }
+        ]
+      }
+    : {
+        textInputs: filterOptions.filter(option => option.type === 'text'),
+        pickerInputs: filterOptions.filter(option => option.type === 'picker')
+      };
+
+  console.log('Using inputs:', inputs);
 
   return (
     <SafeAreaView
@@ -56,7 +99,11 @@ const Filter = ({
           />
           <View>
             <Text style={{ color: themedStyles.accentColor }}>
-              {getMatchesText()}
+              {getTotalMatches?.(localFilters) === 0
+                ? 'No Matches'
+                : getTotalMatches?.(localFilters) === 1
+                ? '1 Match'
+                : `${getTotalMatches?.(localFilters)} Matches`}
             </Text>
           </View>
           <PillButton
@@ -72,8 +119,8 @@ const Filter = ({
           />
         </View>
 
-        {textInputs.map(option => (
-          <View key={option.key} style={styles.filterItem}>
+        {inputs.textInputs.map(input => (
+          <View key={input.key} style={styles.filterItem}>
             <TextInput
               style={[
                 styles.input,
@@ -82,25 +129,27 @@ const Filter = ({
                   color: themedStyles.textColor
                 }
               ]}
-              value={filterValues[option.key]}
-              onChangeText={value => onFilterChange(option.key, value)}
-              placeholder={option.label}
+              value={localFilters[input.key] || ''}
+              onChangeText={text => handleFilterChange(input.key, text)}
+              placeholder={input.label}
               placeholderTextColor={themedStyles.textColor}
             />
           </View>
         ))}
 
         <View style={styles.pickerRow}>
-          {pickerInputs.map(option => (
-            <View key={option.key} style={styles.pickerItem}>
+          {inputs.pickerInputs.map(input => (
+            <View key={input.key} style={styles.pickerItem}>
+              <Text
+                style={[styles.pickerLabel, { color: themedStyles.textColor }]}
+              >
+                {input.label}
+              </Text>
               <CustomPicker
-                options={[
-                  { label: option.label, value: '' },
-                  ...(option.options || [])
-                ]}
-                selectedValue={filterValues[option.key]}
-                onValueChange={value => onFilterChange(option.key, value)}
-                label={option.label}
+                options={input.options}
+                selectedValue={localFilters[input.key] || ''}
+                onValueChange={value => handleFilterChange(input.key, value)}
+                placeholder={`Select ${input.label}`}
               />
             </View>
           ))}
@@ -123,6 +172,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 20
   },
   filterItem: {
@@ -131,16 +181,22 @@ const styles = StyleSheet.create({
   input: {
     height: 50,
     borderRadius: 30,
-    paddingHorizontal: 15
+    paddingHorizontal: 15,
+    fontFamily: 'Lexend'
   },
   pickerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: 10
+    marginTop: 10,
+    gap: 10
   },
   pickerItem: {
-    flex: 1,
-    marginHorizontal: 5
+    flex: 1
+  },
+  pickerLabel: {
+    fontFamily: 'Lexend',
+    marginBottom: 5,
+    fontSize: 14
   }
 });
 

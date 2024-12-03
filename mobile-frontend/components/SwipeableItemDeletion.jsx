@@ -57,8 +57,6 @@ const SwipeableItemDeletion = forwardRef(
         shouldApplySpacing && styles.deleteActionContainerSpacing
       ];
 
-      console.log('variant:', variant);
-
       return (
         <Animated.View
           style={[

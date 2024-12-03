@@ -21,7 +21,9 @@ const CustomPicker = ({
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
-  const selectedOption = options.find(option => option.value === selectedValue);
+  const selectedOption = options?.find(
+    option => option.value === selectedValue
+  );
   const displayText = selectedOption ? selectedOption.label : placeholder;
 
   return (
@@ -55,7 +57,7 @@ const CustomPicker = ({
                 ]}
               >
                 <ScrollView style={styles.scrollView}>
-                  {options.map((option, index) => (
+                  {options?.map((option, index) => (
                     <TouchableOpacity
                       key={`${option.value}-${index}`}
                       style={[
@@ -98,7 +100,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 10,
     paddingHorizontal: 15,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    borderRadius: 30
   },
   pickerButtonText: {
     fontSize: 16
