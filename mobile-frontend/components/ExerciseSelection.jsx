@@ -3,7 +3,8 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useContext
+  useContext,
+  useRef
 } from 'react';
 import {
   View,
@@ -12,10 +13,12 @@ import {
   FlatList,
   Modal,
   Image,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { ProgramContext } from '../src/context/programContext';
 import { WorkoutContext } from '../src/context/workoutContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { useTheme } from '../src/hooks/useTheme';
@@ -41,16 +44,16 @@ const ExerciseSelection = ({ navigation, route }) => {
     muscle: '',
     equipment: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const flatListRef = useRef(null);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
-  );
-
-  const activeWorkoutId = programState.workout.activeWorkout;
-  const activeWorkout = programState.workout.workouts.find(
-    workout => workout.id === activeWorkoutId
   );
 
   // Initialize selected exercises based on context
@@ -73,65 +76,114 @@ const ExerciseSelection = ({ navigation, route }) => {
     fetchExercises();
   }, []);
 
-  const fetchExercises = async () => {
+  const fetchExercises = async (page = 1, shouldAppend = false) => {
+    if (!hasMore && page > 1) return;
+
     try {
+      setIsLoading(page === 1);
+      setIsLoadingMore(page > 1);
+
+      // Add a URL with query parameters for filtering
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        name: filterValues.exerciseName || '',
+        muscle: filterValues.muscle || '',
+        equipment: filterValues.equipment || ''
+      });
+
       const response = await fetch(
-        'http://localhost:9025/api/exercise-catalog'
+        `http://localhost:9025/api/exercise-catalog?${queryParams}`
       );
       const data = await response.json();
-      setExercises(data);
-      setFilteredExercises(data);
+
+      // Ensure data has valid exercises array and pagination info
+      const exercises = data?.exercises || [];
+      const pagination = data?.pagination || { hasMore: false };
+
+      if (shouldAppend) {
+        setExercises(prev => [...(prev || []), ...exercises]);
+        setFilteredExercises(prev => [...(prev || []), ...exercises]);
+      } else {
+        setExercises(exercises);
+        setFilteredExercises(exercises);
+      }
+
+      setHasMore(pagination.hasMore);
+      setCurrentPage(page);
     } catch (error) {
       console.error('Error fetching exercises:', error);
+      setHasMore(false); // Stop pagination on error
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
     }
   };
 
-  const filterOptions = useMemo(
-    () => [
-      { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
-      {
-        key: 'muscle',
-        label: 'Muscle',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(exercises.map(e => e.muscle)))
-            .sort()
-            .map(muscle => ({ label: muscle, value: muscle }))
-        ]
-      },
-      {
-        key: 'equipment',
-        label: 'Equipment',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(exercises.map(e => e.equipment)))
-            .sort()
-            .map(equipment => ({ label: equipment, value: equipment }))
-        ]
-      }
-    ],
-    [exercises]
-  );
+  // Modify the handleLoadMore function to prevent rapid calls
+  const handleLoadMore = useCallback(() => {
+    if (!isLoadingMore && hasMore && !isLoading) {
+      fetchExercises(currentPage + 1, true);
+    }
+  }, [currentPage, hasMore, isLoadingMore, isLoading]);
 
+  // Update the filterExercises useCallback to work with pagination
   const filterExercises = useCallback(() => {
-    const filtered = exercises.filter(
-      exercise =>
-        exercise.name
-          .toLowerCase()
-          .includes(filterValues.exerciseName.toLowerCase()) &&
-        (filterValues.muscle === '' ||
-          exercise.muscle === filterValues.muscle) &&
-        (filterValues.equipment === '' ||
-          exercise.equipment === filterValues.equipment)
+    // Reset pagination when filters change
+    setCurrentPage(1);
+    fetchExercises(1, false);
+  }, [filterValues]);
+
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size='small' color={themedStyles.accentColor} />
+      </View>
     );
-    setFilteredExercises(filtered);
-  }, [exercises, filterValues]);
+  };
+
+  const CACHE_KEY = 'exercise_catalog';
+  const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+  const getCachedExercises = async page => {
+    try {
+      const cached = await AsyncStorage.getItem(`${CACHE_KEY}_${page}`);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) {
+          return data;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error reading cache:', error);
+      return null;
+    }
+  };
+
+  const setCachedExercises = async (page, data) => {
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now()
+      };
+      await AsyncStorage.setItem(
+        `${CACHE_KEY}_${page}`,
+        JSON.stringify(cacheData)
+      );
+    } catch (error) {
+      console.error('Error setting cache:', error);
+    }
+  };
 
   useEffect(() => {
-    filterExercises();
-  }, [filterExercises]);
+    if (Object.values(filterValues).some(value => value !== '')) {
+      // Reset and fetch with new filters
+      setCurrentPage(1);
+      fetchExercises(1, false);
+    }
+  }, [filterValues]);
 
   const handleFilterChange = (key, value) => {
     setFilterValues(prev => ({ ...prev, [key]: value }));
@@ -199,7 +251,7 @@ const ExerciseSelection = ({ navigation, route }) => {
 
       if (mode === 'create') {
         navigation.navigate('CreateProgram');
-      } else if (mode === 'edit') {
+      } else if (mode === 'edit' && programId) {
         navigation.navigate('EditProgram', { programId });
       }
     }
@@ -309,7 +361,6 @@ const ExerciseSelection = ({ navigation, route }) => {
         <Filter
           isVisible={isFilterVisible}
           onClose={() => setIsFilterVisible(false)}
-          filterOptions={filterOptions}
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
@@ -319,10 +370,25 @@ const ExerciseSelection = ({ navigation, route }) => {
       </Modal>
 
       <FlatList
+        ref={flatListRef}
         data={filteredExercises}
         renderItem={renderExerciseItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id.toString()}
         style={styles.exerciseList}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.25} // Trigger when 75% scrolled
+        ListFooterComponent={renderFooter}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyList}>
+            <Text style={[styles.emptyText, { color: themedStyles.textColor }]}>
+              {isLoading ? 'Loading exercises...' : 'No exercises found'}
+            </Text>
+          </View>
+        )}
       />
     </View>
   );

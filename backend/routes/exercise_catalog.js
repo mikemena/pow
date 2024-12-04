@@ -19,50 +19,74 @@ const s3 = new AWS.S3({
 
 router.get('/exercise-catalog', async (req, res) => {
   try {
-    // Query to get the metadata from PostgreSQL
-    const { rows } = await db.query(`
-      SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path
+    const { page = 1, limit = 20 } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Get total count for pagination
+    const countQuery = `
+      SELECT COUNT(*)
+      FROM exercise_catalog`;
+    const {
+      rows: [{ count }]
+    } = await db.query(countQuery);
+
+    // Main query with pagination
+    const query = `
+      SELECT
+        ec.id,
+        ec.name,
+        mg.muscle,
+        mg.muscle_group,
+        mg.subcategory,
+        eq.name as equipment,
+        im.file_path
       FROM exercise_catalog ec
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-      JOIN image_metadata im ON ec.image_id = im.id;
-    `);
+      JOIN image_metadata im ON ec.image_id = im.id
+      ORDER BY ec.id
+      LIMIT $1 OFFSET $2`;
+
+    const { rows } = await db.query(query, [limit, offset]);
 
     // Generate pre-signed URLs for each file
     const resultsWithSignedUrl = rows.map(row => {
       const params = {
         Bucket: process.env.R2_BUCKET_NAME,
         Key: row.file_path,
-        Expires: 60 * 60,
+        Expires: 60 * 60, // 1 hour
         ResponseContentType: 'image/gif',
         ResponseCacheControl:
           'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
       };
 
-      // Generate the signed URL for the image
       const signedUrl = s3.getSignedUrl('getObject', params);
-
       return {
         ...row,
         file_url: signedUrl
       };
     });
 
+    // Set cache headers
     res.set({
       'Cache-Control':
-        'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
+        'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400',
+      ETag: require('crypto')
+        .createHash('md5')
+        .update(JSON.stringify(resultsWithSignedUrl))
+        .digest('hex')
     });
 
-    // Set CORS headers
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Methods', 'GET');
-    res.setHeader(
-      'Access-Control-Allow-Headers',
-      'Content-Type, Authorization'
-    );
-    res.setHeader('Access-Control-Expose-Headers', 'ETag, Content-Length');
-
-    res.json(resultsWithSignedUrl);
+    // Return paginated results with metadata
+    res.json({
+      exercises: resultsWithSignedUrl,
+      pagination: {
+        total: parseInt(count),
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(count / limit),
+        hasMore: offset + rows.length < count
+      }
+    });
   } catch (error) {
     console.error('Error loading exercises:', error);
     res.status(500).send(error.message);
