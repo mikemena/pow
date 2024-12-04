@@ -19,7 +19,8 @@ const s3 = new AWS.S3({
 
 router.get('/exercise-catalog', async (req, res) => {
   try {
-    const { page = 1, limit = 20 } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
 
     // Get total count for pagination

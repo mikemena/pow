@@ -83,7 +83,22 @@ const ExerciseSelection = ({ navigation, route }) => {
       setIsLoading(page === 1);
       setIsLoadingMore(page > 1);
 
-      // Add a URL with query parameters for filtering
+      // Try to get cached data first
+      const cachedData = await getCachedExercises(page);
+      if (cachedData) {
+        console.log('Using cached data');
+        if (shouldAppend) {
+          setExercises(prev => [...(prev || []), ...cachedData]);
+          setFilteredExercises(prev => [...(prev || []), ...cachedData]);
+        } else {
+          setExercises(cachedData);
+          setFilteredExercises(cachedData);
+        }
+        setHasMore(true); // Or some logic to determine if there's more
+        setCurrentPage(page);
+        return;
+      }
+
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: '20',
@@ -92,28 +107,32 @@ const ExerciseSelection = ({ navigation, route }) => {
         equipment: filterValues.equipment || ''
       });
 
+      console.log('Fetching from API');
       const response = await fetch(
         `http://localhost:9025/api/exercise-catalog?${queryParams}`
       );
       const data = await response.json();
 
-      // Ensure data has valid exercises array and pagination info
-      const exercises = data?.exercises || [];
-      const pagination = data?.pagination || { hasMore: false };
+      // The data is already an array of exercises, no need to access data.exercises
+      console.log('Received exercises:', data.length);
+
+      // Cache the new data
+      await setCachedExercises(page, data);
 
       if (shouldAppend) {
-        setExercises(prev => [...(prev || []), ...exercises]);
-        setFilteredExercises(prev => [...(prev || []), ...exercises]);
+        setExercises(prev => [...(prev || []), ...data]);
+        setFilteredExercises(prev => [...(prev || []), ...data]);
       } else {
-        setExercises(exercises);
-        setFilteredExercises(exercises);
+        setExercises(data);
+        setFilteredExercises(data);
       }
 
-      setHasMore(pagination.hasMore);
+      // For now, let's assume there's more if we received a full page
+      setHasMore(data.length === 20);
       setCurrentPage(page);
     } catch (error) {
       console.error('Error fetching exercises:', error);
-      setHasMore(false); // Stop pagination on error
+      setHasMore(false);
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -372,6 +391,9 @@ const ExerciseSelection = ({ navigation, route }) => {
       <FlatList
         ref={flatListRef}
         data={filteredExercises}
+        onLayout={() =>
+          console.log('FlatList data length:', filteredExercises?.length)
+        }
         renderItem={renderExerciseItem}
         keyExtractor={item => item.id.toString()}
         style={styles.exerciseList}
