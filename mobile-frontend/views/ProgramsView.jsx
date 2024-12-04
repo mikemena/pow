@@ -322,6 +322,7 @@ const ProgramsView = () => {
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 getTotalMatches={getTotalMatches}
+                filterType='programs'
               />
             </View>
           </View>

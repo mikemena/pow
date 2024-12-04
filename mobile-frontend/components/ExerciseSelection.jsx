@@ -30,7 +30,7 @@ const ExerciseSelection = ({ navigation, route }) => {
     useContext(WorkoutContext);
 
   const { mode } = programState;
-  const { programId } = route.params;
+  const programId = route.params?.programId;
 
   const [exercises, setExercises] = useState([]);
   const [filteredExercises, setFilteredExercises] = useState([]);
@@ -314,6 +314,7 @@ const ExerciseSelection = ({ navigation, route }) => {
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
           getTotalMatches={getTotalMatches}
+          filterType='exercises'
         />
       </Modal>
 

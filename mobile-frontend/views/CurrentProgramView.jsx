@@ -139,21 +139,6 @@ const CurrentProgramView = () => {
     }
   }, [programList.programs, fetchActiveProgram]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const isActive = true;
-
-  //     if (isActive) {
-  //       fetchInitialData();
-  //     }
-
-  //     return () => {
-  //       // Cleanup when screen loses focus
-  //       isActive = false;
-  //     };
-  //   }, [fetchInitialData])
-  // );
-
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
     try {
@@ -471,6 +456,7 @@ const CurrentProgramView = () => {
                 onFilterChange={handleFilterChange}
                 onClearFilters={clearFilters}
                 getTotalMatches={getTotalMatches}
+                filterType='exercises'
               />
             </View>
           </View>

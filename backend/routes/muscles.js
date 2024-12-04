@@ -5,12 +5,23 @@ const db = require('../config/db');
 // GET all muscles
 router.get('/muscles', async (req, res) => {
   try {
-    const { rows } =
-      await db.query(`SELECT m.id, m.muscle_group, m.subcategory, m.muscle, i.file_path
-    FROM muscle_groups m
-    LEFT JOIN image_metadata i ON m.image_id = i.id;`);
+    const query = `
+      SELECT DISTINCT muscle, muscle_group, subcategory
+      FROM muscle_groups
+      ORDER BY muscle`;
+    const { rows } = await db.query(query);
+
+    res.set({
+      'Cache-Control': 'public, max-age=86400',
+      ETag: require('crypto')
+        .createHash('md5')
+        .update(JSON.stringify(rows))
+        .digest('hex')
+    });
+
     res.json(rows);
   } catch (error) {
+    console.error('Error fetching muscles:', error);
     res.status(500).send(error.message);
   }
 });
