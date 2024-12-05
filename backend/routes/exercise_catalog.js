@@ -94,26 +94,58 @@ router.get('/exercise-catalog', async (req, res) => {
   }
 });
 
-// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
-router.get('/exercise-image/:filePath', async (req, res) => {
-  const { filePath } = req.params;
-
-  const params = {
-    Bucket: process.env.R2_BUCKET_NAME,
-    Key: filePath // The file path of the image in the R2 bucket
-  };
-
+// In your backend
+router.get('/exercise-catalog/:id/image', async (req, res) => {
   try {
-    const data = await s3.getObject(params).promise();
+    const { id } = req.params;
+    const query = `
+      SELECT im.file_path
+      FROM exercise_catalog ec
+      JOIN image_metadata im ON ec.image_id = im.id
+      WHERE ec.id = $1
+    `;
 
-    // Set the content-type for GIFs
-    res.setHeader('Content-Type', 'image/gif');
-    res.send(data.Body); // Send the image data as response
+    const { rows } = await db.query(query, [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Image not found' });
+    }
+
+    const params = {
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: rows[0].file_path,
+      Expires: 3600, // 1 hour
+      ResponseContentType: 'image/gif',
+      ResponseCacheControl: 'public, max-age=86400, stale-while-revalidate=3600'
+    };
+
+    const signedUrl = s3.getSignedUrl('getObject', params);
+    res.json({ file_url: signedUrl });
   } catch (error) {
-    console.error('Error fetching image:', error);
-    res.status(500).send('Error fetching image');
+    console.error('Error generating image URL:', error);
+    res.status(500).json({ message: 'Error generating image URL' });
   }
 });
+
+// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
+// router.get('/exercise-image/:filePath', async (req, res) => {
+//   const { filePath } = req.params;
+
+//   const params = {
+//     Bucket: process.env.R2_BUCKET_NAME,
+//     Key: filePath // The file path of the image in the R2 bucket
+//   };
+
+//   try {
+//     const data = await s3.getObject(params).promise();
+
+//     // Set the content-type for GIFs
+//     res.setHeader('Content-Type', 'image/gif');
+//     res.send(data.Body); // Send the image data as response
+//   } catch (error) {
+//     console.error('Error fetching image:', error);
+//     res.status(500).send('Error fetching image');
+//   }
+// });
 
 // Endpoint to get a specific exercise from the catalog by ID
 

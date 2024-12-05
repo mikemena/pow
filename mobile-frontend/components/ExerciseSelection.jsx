@@ -27,6 +27,60 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import PillButton from './PillButton';
 import Filter from './Filter';
 
+const ExerciseImage = ({ exercise }) => {
+  const [imageUrl, setImageUrl] = useState(exercise.file_url);
+  const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const refreshImageUrl = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:9025/api/exercise-catalog/${exercise.id}/image`
+      );
+      const data = await response.json();
+      setImageUrl(data.file_url);
+      return data.file_url;
+    } catch (error) {
+      console.error('Error refreshing image URL:', error);
+      return null;
+    }
+  };
+
+  const handleImageError = async () => {
+    if (retryCount < MAX_RETRIES) {
+      setRetryCount(prev => prev + 1);
+      const newUrl = await refreshImageUrl();
+      if (newUrl) {
+        setImageUrl(newUrl);
+      }
+    }
+  };
+
+  return (
+    <View style={styles.imageContainer}>
+      {isLoading && (
+        <ActivityIndicator
+          style={styles.loadingIndicator}
+          color={themedStyles.accentColor}
+        />
+      )}
+      <Image
+        source={{ uri: imageUrl }}
+        style={[styles.exerciseImage, isLoading && styles.hiddenImage]}
+        onError={handleImageError}
+        onLoad={() => setIsLoading(false)}
+        onLoadStart={() => setIsLoading(true)}
+      />
+    </View>
+  );
+};
+
 const ExerciseSelection = ({ navigation, route }) => {
   const { updateExercise, state: programState } = useContext(ProgramContext);
   const { addExerciseToWorkout, state: workoutState } =
@@ -112,6 +166,8 @@ const ExerciseSelection = ({ navigation, route }) => {
         `http://localhost:9025/api/exercise-catalog?${queryParams}`
       );
       const data = await response.json();
+      console.log('Sample exercise data:', data[0]);
+      console.log('Sample image URL:', data[0]?.file_url);
 
       // The data is already an array of exercises, no need to access data.exercises
       console.log('Received exercises:', data.length);
@@ -276,30 +332,40 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   };
 
-  const renderExerciseItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.exerciseItem,
-        { borderBottomColor: themedStyles.secondaryBackgroundColor },
-        selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
-          backgroundColor: themedStyles.accentColor + '33'
-        }
-      ]}
-      onPress={() => toggleExerciseSelection(item)}
-    >
-      <Image source={{ uri: item.file_url }} style={styles.exerciseImage} />
-      <View style={styles.exerciseDetails}>
-        <Text
-          style={[styles.exerciseName, { color: themedStyles.accentColor }]}
-        >
-          {item.name}
-        </Text>
-        <Text
-          style={[styles.exerciseInfo, { color: themedStyles.textColor }]}
-        >{`${item.muscle} - ${item.equipment}`}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderExerciseItem = ({ item }) => {
+    console.log('Rendering exercise:', {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.file_url
+    });
+
+    return (
+      <TouchableOpacity
+        style={[
+          styles.exerciseItem,
+          { borderBottomColor: themedStyles.secondaryBackgroundColor },
+          selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
+            backgroundColor: themedStyles.accentColor + '33'
+          }
+        ]}
+        onPress={() => toggleExerciseSelection(item)}
+      >
+        <ExerciseImage exercise={item} />
+        <View style={styles.exerciseDetails}>
+          <Text
+            style={[styles.exerciseName, { color: themedStyles.accentColor }]}
+          >
+            {item.name}
+          </Text>
+          <Text
+            style={[styles.exerciseInfo, { color: themedStyles.textColor }]}
+          >
+            {`${item.muscle} - ${item.equipment}`}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View
