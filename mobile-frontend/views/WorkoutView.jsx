@@ -21,10 +21,20 @@ const WorkoutView = () => {
     themeState.accentColor
   );
 
-  const { state: workoutState } = useContext(WorkoutContext);
+  const {
+    state: workoutState,
+    clearWorkoutDetails,
+    clearCurrentWorkout
+  } = useContext(WorkoutContext);
   const activeProgram = workoutState.activeProgram;
 
+  const clearWorkoutState = () => {
+    clearWorkoutDetails();
+    clearCurrentWorkout();
+  };
+
   const handleProgramWorkoutPress = () => {
+    clearWorkoutState();
     if (activeProgram) {
       // If there's an active program, go directly to program details
       navigation.navigate('CurrentProgramDetails');
@@ -66,7 +76,10 @@ const WorkoutView = () => {
 
         <TouchableOpacity
           style={styles.imageContainer}
-          onPress={() => navigation.navigate('FlexWorkout')}
+          onPress={() => {
+            clearWorkoutState();
+            navigation.navigate('FlexWorkout');
+          }}
         >
           <ImageBackground
             source={require('../assets/images/workout-2.jpg')}

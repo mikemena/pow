@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
+import { WorkoutContext } from '../src/context/workoutContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles } from '../src/styles/globalStyles';
@@ -17,6 +18,7 @@ import Header from '../components/Header';
 const FlexWorkout = () => {
   const navigation = useNavigation();
   const { state } = useContext(ProgramContext);
+  const { clearWorkoutDetails, startWorkout } = useContext(WorkoutContext);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -25,14 +27,13 @@ const FlexWorkout = () => {
   );
 
   const handleAddExercise = () => {
-    console.log('Add Exercise');
+    startWorkout(workoutData);
     // Navigate to exercise selection screen
-    navigation.navigate('ExerciseSelection');
+    navigation.navigate('ExerciseSelection', { mode: 'workout' });
   };
 
   const handleCancel = () => {
-    console.log('Cancel');
-    // Go back to the previous screen
+    clearWorkoutDetails();
     navigation.goBack();
   };
 
@@ -43,7 +44,7 @@ const FlexWorkout = () => {
         { backgroundColor: themedStyles.primaryBackgroundColor }
       ]}
     >
-      <Header pageName='Flex Workout' />
+      <Header pageName='Workout' />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.content}>
           <Text

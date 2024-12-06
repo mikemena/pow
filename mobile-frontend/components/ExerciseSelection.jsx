@@ -21,7 +21,6 @@ import { WorkoutContext } from '../src/context/workoutContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
-import { useExerciseCatalog } from '../src/utils/exerciseApi';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -83,15 +82,20 @@ const ExerciseImage = ({ exercise }) => {
 };
 
 const ExerciseSelection = ({ navigation, route }) => {
-  const { updateExercise, state: programState } = useContext(ProgramContext);
-  const { addExerciseToWorkout, state: workoutState } =
-    useContext(WorkoutContext);
-
-  const { mode } = programState;
+  const mode = route.params?.mode || 'program';
   const programId = route.params?.programId;
 
-  //const [exercises, setExercises] = useState([]);
-  const { data: exercises, loading, error } = useExerciseCatalog();
+  const { updateExercise, state: programState } =
+    mode === 'program'
+      ? useContext(ProgramContext)
+      : { updateExercise: null, state: {} };
+
+  const { addExerciseToWorkout, state: workoutState } =
+    mode === 'workout'
+      ? useContext(WorkoutContext)
+      : { addExerciseToWorkout: null, state: {} };
+
+  const [exercises, setExercises] = useState([]);
   const [filteredExercises, setFilteredExercises] = useState([]);
   const [selectedExercises, setSelectedExercises] = useState([]);
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -115,12 +119,10 @@ const ExerciseSelection = ({ navigation, route }) => {
   // Initialize selected exercises based on context
   useEffect(() => {
     if (mode === 'workout' && workoutState.currentWorkout) {
-      // For active workouts, get exercises from workout context
       setSelectedExercises(workoutState.currentWorkout.exercises || []);
-    } else {
-      // For program creation/editing, get exercises from program context
-      const activeWorkout = programState.workout.workouts.find(
-        w => w.id === programState.workout.activeWorkout
+    } else if (mode === 'program') {
+      const activeWorkout = programState.workout?.workouts?.find(
+        w => w.id === programState.workout?.activeWorkout
       );
       if (activeWorkout) {
         setSelectedExercises(activeWorkout.exercises || []);
@@ -128,9 +130,9 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   }, [mode, workoutState.currentWorkout, programState.workout]);
 
-  // useEffect(() => {
-  //   fetchExercises();
-  // }, []);
+  useEffect(() => {
+    fetchExercises();
+  }, []);
 
   const fetchExercises = async (page = 1, shouldAppend = false) => {
     if (!hasMore && page > 1) return;
@@ -277,21 +279,20 @@ const ExerciseSelection = ({ navigation, route }) => {
   const getTotalMatches = () => filteredExercises.length;
 
   const toggleExerciseSelection = exercise => {
+    console.log('Original exercise:', exercise); // See what data we start with
     const isSelected = selectedExercises.some(
       e => e.catalog_exercise_id === exercise.id
     );
 
-    if (isSelected) {
-      setSelectedExercises(prev =>
-        prev.filter(e => e.catalog_exercise_id !== exercise.id)
-      );
-    } else {
+    if (!isSelected) {
       const newExercise = {
         ...exercise,
         id: Crypto.randomUUID(),
         catalog_exercise_id: exercise.id,
+        file_url: exercise.file_url,
         sets: [{ id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }]
       };
+      console.log('New exercise being added:', newExercise); // Check the exercise object we're creating
       setSelectedExercises(prev => [...prev, newExercise]);
     }
   };
@@ -301,24 +302,37 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   const handleAdd = () => {
-    const standardizedExercises = selectedExercises.map(exercise => ({
-      ...exercise,
-      id: exercise.id || Crypto.randomUUID(),
-      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
-      imageUrl: exercise.file_url,
-      sets: exercise.sets || [
-        { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
-      ]
-    }));
+    console.log(
+      'Selected exercises before standardization:',
+      selectedExercises
+    );
+
+    const standardizedExercises = selectedExercises.map(exercise => {
+      const standardized = {
+        ...exercise,
+        id: exercise.id || Crypto.randomUUID(),
+        catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+        imageUrl: exercise.file_url || exercise.imageUrl,
+        file_url: exercise.file_url,
+        sets: exercise.sets || [
+          { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+        ]
+      };
+      console.log('Standardized exercise:', standardized);
+      return standardized;
+    });
 
     if (mode === 'workout') {
-      // Add exercises to workout context
+      console.log('Adding exercises to workout:', standardizedExercises);
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
       });
       navigation.navigate('StartWorkout');
     } else {
       // Add exercises to program context
+      console.log('programState:', programState);
+      console.log('workoutState:', workoutState);
+      console.log('activeWorkoutId:', programState.workout.activeWorkout);
       const activeWorkoutId = programState.workout.activeWorkout;
       if (!activeWorkoutId) {
         console.error('No active workout selected.');
@@ -335,11 +349,11 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   const renderExerciseItem = ({ item }) => {
-    console.log('Rendering exercise:', {
-      id: item.id,
-      name: item.name,
-      imageUrl: item.file_url
-    });
+    // console.log('Rendering exercise:', {
+    //   id: item.id,
+    //   name: item.name,
+    //   imageUrl: item.file_url
+    // });
 
     return (
       <TouchableOpacity

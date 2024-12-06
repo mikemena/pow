@@ -51,7 +51,7 @@ const workoutReducer = (state, action) => {
         ...state,
         currentWorkout: {
           ...state.currentWorkout,
-          exercises: [...state.currentWorkout.exercises, action.payload]
+          exercises: [...state.currentWorkout?.exercises, action.payload]
         },
         workoutDetails: {
           ...state.workoutDetails,
