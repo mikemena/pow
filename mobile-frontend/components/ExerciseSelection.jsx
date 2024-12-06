@@ -3,7 +3,8 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useContext
+  useContext,
+  useRef
 } from 'react';
 import {
   View,
@@ -12,10 +13,12 @@ import {
   FlatList,
   Modal,
   Image,
-  StyleSheet
+  StyleSheet,
+  ActivityIndicator
 } from 'react-native';
 import { ProgramContext } from '../src/context/programContext';
 import { WorkoutContext } from '../src/context/workoutContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { useExerciseCatalog } from '../src/utils/exerciseApi';
@@ -25,13 +28,67 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import PillButton from './PillButton';
 import Filter from './Filter';
 
+const ExerciseImage = ({ exercise }) => {
+  const [imageUrl, setImageUrl] = useState(exercise.file_url);
+  const [isLoading, setIsLoading] = useState(true);
+  const [retryCount, setRetryCount] = useState(0);
+  const MAX_RETRIES = 2;
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  const refreshImageUrl = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:9025/api/exercise-catalog/${exercise.id}/image`
+      );
+      const data = await response.json();
+      setImageUrl(data.file_url);
+      return data.file_url;
+    } catch (error) {
+      console.error('Error refreshing image URL:', error);
+      return null;
+    }
+  };
+
+  const handleImageError = async () => {
+    if (retryCount < MAX_RETRIES) {
+      setRetryCount(prev => prev + 1);
+      const newUrl = await refreshImageUrl();
+      if (newUrl) {
+        setImageUrl(newUrl);
+      }
+    }
+  };
+
+  return (
+    <View style={styles.imageContainer}>
+      {isLoading && (
+        <ActivityIndicator
+          style={styles.loadingIndicator}
+          color={themedStyles.accentColor}
+        />
+      )}
+      <Image
+        source={{ uri: imageUrl }}
+        style={[styles.exerciseImage, isLoading && styles.hiddenImage]}
+        onError={handleImageError}
+        onLoad={() => setIsLoading(false)}
+        onLoadStart={() => setIsLoading(true)}
+      />
+    </View>
+  );
+};
+
 const ExerciseSelection = ({ navigation, route }) => {
   const { updateExercise, state: programState } = useContext(ProgramContext);
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
   const { mode } = programState;
-  const { programId } = route.params;
+  const programId = route.params?.programId;
 
   //const [exercises, setExercises] = useState([]);
   const { data: exercises, loading, error } = useExerciseCatalog();
@@ -43,23 +100,17 @@ const ExerciseSelection = ({ navigation, route }) => {
     muscle: '',
     equipment: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+  const flatListRef = useRef(null);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
-
-  const activeWorkoutId = programState.workout.activeWorkout;
-  const activeWorkout = programState.workout.workouts.find(
-    workout => workout.id === activeWorkoutId
-  );
-
-  useEffect(() => {
-    if (exercises && Array.isArray(exercises)) {
-      setFilteredExercises(exercises);
-    }
-  }, [exercises]);
 
   // Initialize selected exercises based on context
   useEffect(() => {
@@ -81,89 +132,135 @@ const ExerciseSelection = ({ navigation, route }) => {
   //   fetchExercises();
   // }, []);
 
-  // const fetchExercises = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       'http://localhost:9025/api/exercise-catalog'
-  //     );
-  //     const data = await response.json();
-  //     setExercises(data);
-  //     setFilteredExercises(data);
-  //   } catch (error) {
-  //     console.error('Error fetching exercises:', error);
-  //   }
-  // };
+  const fetchExercises = async (page = 1, shouldAppend = false) => {
+    if (!hasMore && page > 1) return;
 
-  const filterOptions = useMemo(() => {
-    // Early return if exercises is not yet loaded
-    if (!exercises || !Array.isArray(exercises)) {
-      return [
-        { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
-        {
-          key: 'muscle',
-          label: 'Muscle',
-          type: 'picker',
-          options: [{ label: 'All', value: '' }]
-        },
-        {
-          key: 'equipment',
-          label: 'Equipment',
-          type: 'picker',
-          options: [{ label: 'All', value: '' }]
+    try {
+      setIsLoading(page === 1);
+      setIsLoadingMore(page > 1);
+
+      // Try to get cached data first
+      const cachedData = await getCachedExercises(page);
+      if (cachedData) {
+        console.log('Using cached data');
+        if (shouldAppend) {
+          setExercises(prev => [...(prev || []), ...cachedData]);
+          setFilteredExercises(prev => [...(prev || []), ...cachedData]);
+        } else {
+          setExercises(cachedData);
+          setFilteredExercises(cachedData);
         }
-      ];
-    }
-
-    // Once exercises are loaded, create the full options
-    return [
-      { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
-      {
-        key: 'muscle',
-        label: 'Muscle',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(exercises.map(e => e.muscle)))
-            .filter(Boolean)
-            .sort()
-            .map(muscle => ({ label: muscle, value: muscle }))
-        ]
-      },
-      {
-        key: 'equipment',
-        label: 'Equipment',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(exercises.map(e => e.equipment)))
-            .filter(Boolean)
-            .sort()
-            .map(equipment => ({ label: equipment, value: equipment }))
-        ]
+        setHasMore(true); // Or some logic to determine if there's more
+        setCurrentPage(page);
+        return;
       }
-    ];
-  }, [exercises]);
 
+      const queryParams = new URLSearchParams({
+        page: page.toString(),
+        limit: '20',
+        name: filterValues.exerciseName || '',
+        muscle: filterValues.muscle || '',
+        equipment: filterValues.equipment || ''
+      });
+
+      console.log('Fetching from API');
+      const response = await fetch(
+        `http://localhost:9025/api/exercise-catalog?${queryParams}`
+      );
+      const data = await response.json();
+      console.log('Sample exercise data:', data[0]);
+      console.log('Sample image URL:', data[0]?.file_url);
+
+      // The data is already an array of exercises, no need to access data.exercises
+      console.log('Received exercises:', data.length);
+
+      // Cache the new data
+      await setCachedExercises(page, data);
+
+      if (shouldAppend) {
+        setExercises(prev => [...(prev || []), ...data]);
+        setFilteredExercises(prev => [...(prev || []), ...data]);
+      } else {
+        setExercises(data);
+        setFilteredExercises(data);
+      }
+
+      // For now, let's assume there's more if we received a full page
+      setHasMore(data.length === 20);
+      setCurrentPage(page);
+    } catch (error) {
+      console.error('Error fetching exercises:', error);
+      setHasMore(false);
+    } finally {
+      setIsLoading(false);
+      setIsLoadingMore(false);
+    }
+  };
+
+  // Modify the handleLoadMore function to prevent rapid calls
+  const handleLoadMore = useCallback(() => {
+    if (!isLoadingMore && hasMore && !isLoading) {
+      fetchExercises(currentPage + 1, true);
+    }
+  }, [currentPage, hasMore, isLoadingMore, isLoading]);
+
+  // Update the filterExercises useCallback to work with pagination
   const filterExercises = useCallback(() => {
-    // Check if exercises exists and is an array
-    if (!exercises || !Array.isArray(exercises)) return;
+    // Reset pagination when filters change
+    setCurrentPage(1);
+    fetchExercises(1, false);
+  }, [filterValues]);
 
-    const filtered = exercises.filter(
-      exercise =>
-        exercise.name
-          .toLowerCase()
-          .includes(filterValues.exerciseName.toLowerCase()) &&
-        (filterValues.muscle === '' ||
-          exercise.muscle === filterValues.muscle) &&
-        (filterValues.equipment === '' ||
-          exercise.equipment === filterValues.equipment)
+  const renderFooter = () => {
+    if (!isLoadingMore) return null;
+    return (
+      <View style={styles.loadingFooter}>
+        <ActivityIndicator size='small' color={themedStyles.accentColor} />
+      </View>
     );
-    setFilteredExercises(filtered);
-  }, [exercises, filterValues]);
+  };
+
+  const CACHE_KEY = 'exercise_catalog';
+  const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+
+  const getCachedExercises = async page => {
+    try {
+      const cached = await AsyncStorage.getItem(`${CACHE_KEY}_${page}`);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) {
+          return data;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error reading cache:', error);
+      return null;
+    }
+  };
+
+  const setCachedExercises = async (page, data) => {
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now()
+      };
+      await AsyncStorage.setItem(
+        `${CACHE_KEY}_${page}`,
+        JSON.stringify(cacheData)
+      );
+    } catch (error) {
+      console.error('Error setting cache:', error);
+    }
+  };
 
   useEffect(() => {
-    filterExercises();
-  }, [filterExercises]);
+    if (Object.values(filterValues).some(value => value !== '')) {
+      // Reset and fetch with new filters
+      setCurrentPage(1);
+      fetchExercises(1, false);
+    }
+  }, [filterValues]);
 
   const handleFilterChange = (key, value) => {
     setFilterValues(prev => ({ ...prev, [key]: value }));
@@ -231,68 +328,46 @@ const ExerciseSelection = ({ navigation, route }) => {
 
       if (mode === 'create') {
         navigation.navigate('CreateProgram');
-      } else if (mode === 'edit') {
+      } else if (mode === 'edit' && programId) {
         navigation.navigate('EditProgram', { programId });
       }
     }
   };
 
-  const renderExerciseItem = ({ item }) => (
-    <TouchableOpacity
-      style={[
-        styles.exerciseItem,
-        { borderBottomColor: themedStyles.secondaryBackgroundColor },
-        selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
-          backgroundColor: themedStyles.accentColor + '33'
-        }
-      ]}
-      onPress={() => toggleExerciseSelection(item)}
-    >
-      <Image source={{ uri: item.file_url }} style={styles.exerciseImage} />
-      <View style={styles.exerciseDetails}>
-        <Text
-          style={[styles.exerciseName, { color: themedStyles.accentColor }]}
-        >
-          {item.name}
-        </Text>
-        <Text
-          style={[styles.exerciseInfo, { color: themedStyles.textColor }]}
-        >{`${item.muscle} - ${item.equipment}`}</Text>
-      </View>
-    </TouchableOpacity>
-  );
+  const renderExerciseItem = ({ item }) => {
+    console.log('Rendering exercise:', {
+      id: item.id,
+      name: item.name,
+      imageUrl: item.file_url
+    });
 
-  // Add error handling UI
-  if (error) {
     return (
-      <View
+      <TouchableOpacity
         style={[
-          styles.container,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
+          styles.exerciseItem,
+          { borderBottomColor: themedStyles.secondaryBackgroundColor },
+          selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
+            backgroundColor: themedStyles.accentColor + '33'
+          }
         ]}
+        onPress={() => toggleExerciseSelection(item)}
       >
-        <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
-          Error loading exercises: {error.message}
-        </Text>
-      </View>
+        <ExerciseImage exercise={item} />
+        <View style={styles.exerciseDetails}>
+          <Text
+            style={[styles.exerciseName, { color: themedStyles.accentColor }]}
+          >
+            {item.name}
+          </Text>
+          <Text
+            style={[styles.exerciseInfo, { color: themedStyles.textColor }]}
+          >
+            {`${item.muscle} - ${item.equipment}`}
+          </Text>
+        </View>
+      </TouchableOpacity>
     );
-  }
-
-  // Add loading UI
-  if (loading) {
-    return (
-      <View
-        style={[
-          styles.container,
-          { backgroundColor: themedStyles.primaryBackgroundColor }
-        ]}
-      >
-        <Text style={[styles.exerciseName, { color: themedStyles.textColor }]}>
-          Loading exercises...
-        </Text>
-      </View>
-    );
-  }
+  };
 
   return (
     <View
@@ -373,19 +448,37 @@ const ExerciseSelection = ({ navigation, route }) => {
         <Filter
           isVisible={isFilterVisible}
           onClose={() => setIsFilterVisible(false)}
-          filterOptions={filterOptions}
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
           getTotalMatches={getTotalMatches}
+          filterType='exercises'
         />
       </Modal>
 
       <FlatList
+        ref={flatListRef}
         data={filteredExercises}
+        onLayout={() =>
+          console.log('FlatList data length:', filteredExercises?.length)
+        }
         renderItem={renderExerciseItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id.toString()}
         style={styles.exerciseList}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.25} // Trigger when 75% scrolled
+        ListFooterComponent={renderFooter}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        removeClippedSubviews={true}
+        ListEmptyComponent={() => (
+          <View style={styles.emptyList}>
+            <Text style={[styles.emptyText, { color: themedStyles.textColor }]}>
+              {isLoading ? 'Loading exercises...' : 'No exercises found'}
+            </Text>
+          </View>
+        )}
       />
     </View>
   );

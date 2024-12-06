@@ -19,41 +19,17 @@ const s3 = new AWS.S3({
 
 router.get('/exercise-catalog', async (req, res) => {
   try {
-    const { page = 1, limit = 20, muscle_group, equipment } = req.query;
-
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
-
-    // Build WHERE clause based on filters
-    let whereClause = [];
-    let queryParams = [];
-    let paramCount = 1;
-
-    if (muscle_group) {
-      whereClause.push(`mg.muscle_group = $${paramCount}`);
-      queryParams.push(muscle_group);
-      paramCount++;
-    }
-
-    if (equipment) {
-      whereClause.push(`eq.name = $${paramCount}`);
-      queryParams.push(equipment);
-      paramCount++;
-    }
-
-    const whereString =
-      whereClause.length > 0 ? 'WHERE ' + whereClause.join(' AND ') : '';
 
     // Get total count for pagination
     const countQuery = `
       SELECT COUNT(*)
-      FROM exercise_catalog ec
-      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-      ${whereString}
-    `;
-
-    const countResult = await db.query(countQuery, queryParams);
-    const totalItems = parseInt(countResult.rows[0].count);
+      FROM exercise_catalog`;
+    const {
+      rows: [{ count }]
+    } = await db.query(countQuery);
 
     // Main query with pagination
     const query = `
@@ -69,48 +45,47 @@ router.get('/exercise-catalog', async (req, res) => {
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
       JOIN image_metadata im ON ec.image_id = im.id
-      ${whereString}
       ORDER BY ec.id
-      LIMIT $${paramCount} OFFSET $${paramCount + 1}
-    `;
+      LIMIT $1 OFFSET $2`;
 
-    queryParams.push(limit, offset);
-    const { rows } = await db.query(query, queryParams);
+    const { rows } = await db.query(query, [limit, offset]);
 
     // Generate presigned URLs with longer expiration for caching
     const resultsWithSignedUrl = rows.map(row => {
       const params = {
         Bucket: process.env.R2_BUCKET_NAME,
         Key: row.file_path,
-        Expires: 24 * 60 * 60, // 24 hours
+        Expires: 60 * 60, // 1 hour
         ResponseContentType: 'image/gif',
         ResponseCacheControl:
           'public, max-age=86400, stale-while-revalidate=43200'
       };
 
       const signedUrl = s3.getSignedUrl('getObject', params);
-
       return {
         ...row,
         file_url: signedUrl
       };
     });
 
-    // Set strong caching headers
+    // Set cache headers
     res.set({
-      'Cache-Control': 'public, max-age=86400, stale-while-revalidate=43200',
+      'Cache-Control':
+        'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400',
       ETag: require('crypto')
         .createHash('md5')
-        .update(JSON.stringify(rows))
+        .update(JSON.stringify(resultsWithSignedUrl))
         .digest('hex')
     });
 
+    // Return paginated results with metadata
     res.json({
       exercises: resultsWithSignedUrl,
       pagination: {
-        total: totalItems,
-        page: parseInt(page),
-        pages: Math.ceil(totalItems / limit)
+        total: parseInt(count),
+        currentPage: parseInt(page),
+        totalPages: Math.ceil(count / limit),
+        hasMore: offset + rows.length < count
       }
     });
   } catch (error) {
@@ -119,78 +94,58 @@ router.get('/exercise-catalog', async (req, res) => {
   }
 });
 
-// router.get('/exercise-catalog', async (req, res) => {
-//   try {
-//     // Query to get the metadata from PostgreSQL
-//     const { rows } = await db.query(`
-//       SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path
-//       FROM exercise_catalog ec
-//       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-//       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-//       JOIN image_metadata im ON ec.image_id = im.id;
-//     `);
-
-//     // Generate pre-signed URLs for each file
-//     const resultsWithSignedUrl = rows.map(row => {
-//       const params = {
-//         Bucket: process.env.R2_BUCKET_NAME,
-//         Key: row.file_path,
-//         Expires: 60 * 60,
-//         ResponseContentType: 'image/gif',
-//         ResponseCacheControl:
-//           'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
-//       };
-
-//       // Generate the signed URL for the image
-//       const signedUrl = s3.getSignedUrl('getObject', params);
-
-//       return {
-//         ...row,
-//         file_url: signedUrl
-//       };
-//     });
-
-//     res.set({
-//       'Cache-Control':
-//         'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
-//     });
-
-//     // Set CORS headers
-//     res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-//     res.setHeader('Access-Control-Allow-Methods', 'GET');
-//     res.setHeader(
-//       'Access-Control-Allow-Headers',
-//       'Content-Type, Authorization'
-//     );
-//     res.setHeader('Access-Control-Expose-Headers', 'ETag, Content-Length');
-
-//     res.json(resultsWithSignedUrl);
-//   } catch (error) {
-//     console.error('Error loading exercises:', error);
-//     res.status(500).send(error.message);
-//   }
-// });
-
-// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
-router.get('/exercise-image/:filePath', async (req, res) => {
-  const { filePath } = req.params;
-
-  const params = {
-    Bucket: process.env.R2_BUCKET_NAME,
-    Key: filePath // The file path of the image in the R2 bucket
-  };
-
+// In your backend
+router.get('/exercise-catalog/:id/image', async (req, res) => {
   try {
-    const data = await s3.getObject(params).promise();
+    const { id } = req.params;
+    const query = `
+      SELECT im.file_path
+      FROM exercise_catalog ec
+      JOIN image_metadata im ON ec.image_id = im.id
+      WHERE ec.id = $1
+    `;
 
-    // Set the content-type for GIFs
-    res.setHeader('Content-Type', 'image/gif');
-    res.send(data.Body); // Send the image data as response
+    const { rows } = await db.query(query, [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ message: 'Image not found' });
+    }
+
+    const params = {
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: rows[0].file_path,
+      Expires: 3600, // 1 hour
+      ResponseContentType: 'image/gif',
+      ResponseCacheControl: 'public, max-age=86400, stale-while-revalidate=3600'
+    };
+
+    const signedUrl = s3.getSignedUrl('getObject', params);
+    res.json({ file_url: signedUrl });
   } catch (error) {
-    console.error('Error fetching image:', error);
-    res.status(500).send('Error fetching image');
+    console.error('Error generating image URL:', error);
+    res.status(500).json({ message: 'Error generating image URL' });
   }
 });
+
+// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
+// router.get('/exercise-image/:filePath', async (req, res) => {
+//   const { filePath } = req.params;
+
+//   const params = {
+//     Bucket: process.env.R2_BUCKET_NAME,
+//     Key: filePath // The file path of the image in the R2 bucket
+//   };
+
+//   try {
+//     const data = await s3.getObject(params).promise();
+
+//     // Set the content-type for GIFs
+//     res.setHeader('Content-Type', 'image/gif');
+//     res.send(data.Body); // Send the image data as response
+//   } catch (error) {
+//     console.error('Error fetching image:', error);
+//     res.status(500).send('Error fetching image');
+//   }
+// });
 
 // Endpoint to get a specific exercise from the catalog by ID
 

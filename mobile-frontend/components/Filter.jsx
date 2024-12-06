@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, TextInput, StyleSheet, SafeAreaView, Text } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomPicker from './CustomPicker';
 import PillButton from './PillButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -8,6 +9,12 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { useExerciseData } from '../src/hooks/useExerciseData';
 import { colors } from '../src/styles/globalStyles';
 
+const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+const CACHE_KEYS = {
+  MUSCLES: 'muscles_cache',
+  EQUIPMENT: 'equipment_cache'
+};
+
 const Filter = ({
   isVisible,
   onClose,
@@ -15,67 +22,131 @@ const Filter = ({
   filterValues,
   onFilterChange,
   onClearFilters,
-  getTotalMatches
+  getTotalMatches,
+  filterType // 'exercises' or 'programs'
 }) => {
   const { state } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
-  const { muscles, equipment, loading, error } = useExerciseData();
-
-  const [localFilters, setLocalFilters] = useState(filterValues || {});
+  const [muscleOptions, setMuscleOptions] = useState([]);
+  const [equipmentOptions, setEquipmentOptions] = useState([]);
 
   useEffect(() => {
-    setLocalFilters(filterValues || {});
-  }, [filterValues]);
+    if (filterType === 'exercises') {
+      loadCatalogData();
+    }
+  }, [filterType]);
 
-  const handleFilterChange = (key, value) => {
-    console.log('Filter Change:', { key, value });
-    const newFilters = { ...localFilters, [key]: value };
-    setLocalFilters(newFilters);
-    onFilterChange(key, value);
+  const getCachedData = async key => {
+    try {
+      const cached = await AsyncStorage.getItem(key);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < CACHE_EXPIRY) {
+          return data;
+        }
+      }
+      return null;
+    } catch (error) {
+      console.error('Error reading cache:', error);
+      return null;
+    }
   };
+
+  const setCachedData = async (key, data) => {
+    try {
+      const cacheData = {
+        data,
+        timestamp: Date.now()
+      };
+      await AsyncStorage.setItem(key, JSON.stringify(cacheData));
+    } catch (error) {
+      console.error('Error setting cache:', error);
+    }
+  };
+
+  const fetchMuscles = async () => {
+    try {
+      const response = await fetch('http://localhost:9025/api/muscles');
+      const data = await response.json();
+      return data.map(muscle => ({
+        label: `${muscle.muscle} (${muscle.muscle_group})`,
+        value: muscle.muscle
+      }));
+    } catch (error) {
+      console.error('Error fetching muscles:', error);
+      return [];
+    }
+  };
+
+  const fetchEquipment = async () => {
+    try {
+      const response = await fetch('http://localhost:9025/api/equipment');
+      const data = await response.json();
+      return data.map(equipment => ({
+        label: equipment.name,
+        value: equipment.name
+      }));
+    } catch (error) {
+      console.error('Error fetching equipment:', error);
+      return [];
+    }
+  };
+
+  const loadCatalogData = async () => {
+    if (filterType === 'exercises') {
+      // Load muscles
+      let muscles = await getCachedData(CACHE_KEYS.MUSCLES);
+      if (!muscles) {
+        muscles = await fetchMuscles();
+        await setCachedData(CACHE_KEYS.MUSCLES, muscles);
+      }
+      setMuscleOptions([{ label: 'All Muscles', value: '' }, ...muscles]);
+
+      // Load equipment
+      let equipment = await getCachedData(CACHE_KEYS.EQUIPMENT);
+      if (!equipment) {
+        equipment = await fetchEquipment();
+        await setCachedData(CACHE_KEYS.EQUIPMENT, equipment);
+      }
+      setEquipmentOptions([
+        { label: 'All Equipment', value: '' },
+        ...equipment
+      ]);
+    }
+  };
+
+  const getFilterOptions = () => {
+    if (filterType === 'exercises') {
+      return [
+        { key: 'exerciseName', label: 'Exercise Name', type: 'text' },
+        {
+          key: 'muscle',
+          label: 'Muscle',
+          type: 'picker',
+          options: muscleOptions
+        },
+        {
+          key: 'equipment',
+          label: 'Equipment',
+          type: 'picker',
+          options: equipmentOptions
+        }
+      ];
+    }
+    return filterOptions;
+  };
+
+  const totalMatches = getTotalMatches(filterValues);
 
   if (!isVisible) return null;
 
-  // Determine if we're using exercise filters by checking filterValues structure
-  const isExerciseFilters = 'exerciseName' in filterValues;
-
-  // Create appropriate inputs based on mode
-  const inputs = isExerciseFilters
-    ? {
-        textInputs: [
-          { key: 'exerciseName', label: 'Search exercises...', type: 'text' }
-        ],
-        pickerInputs: [
-          {
-            key: 'muscle',
-            label: 'Muscle',
-            options: [
-              { label: 'All Muscles', value: '' },
-              ...(muscles || []).map(m => ({
-                label: m.muscle,
-                value: m.muscle
-              }))
-            ]
-          },
-          {
-            key: 'equipment',
-            label: 'Equipment',
-            options: [
-              { label: 'All Equipment', value: '' },
-              ...(equipment || []).map(e => ({
-                label: e.name,
-                value: e.name
-              }))
-            ]
-          }
-        ]
-      }
-    : {
-        textInputs: filterOptions.filter(option => option.type === 'text'),
-        pickerInputs: filterOptions.filter(option => option.type === 'picker')
-      };
-
-  console.log('Using inputs:', inputs);
+  const currentFilterOptions = getFilterOptions();
+  const textInputs = currentFilterOptions.filter(
+    option => option.type === 'text'
+  );
+  const pickerInputs = currentFilterOptions.filter(
+    option => option.type === 'picker'
+  );
 
   return (
     <SafeAreaView
@@ -99,11 +170,11 @@ const Filter = ({
           />
           <View>
             <Text style={{ color: themedStyles.accentColor }}>
-              {getTotalMatches?.(localFilters) === 0
+              {totalMatches === 0
                 ? 'No Matches'
-                : getTotalMatches?.(localFilters) === 1
+                : totalMatches === 1
                 ? '1 Match'
-                : `${getTotalMatches?.(localFilters)} Matches`}
+                : `${totalMatches} Matches`}
             </Text>
           </View>
           <PillButton
@@ -146,10 +217,10 @@ const Filter = ({
                 {input.label}
               </Text>
               <CustomPicker
-                options={input.options}
-                selectedValue={localFilters[input.key] || ''}
-                onValueChange={value => handleFilterChange(input.key, value)}
-                placeholder={`Select ${input.label}`}
+                options={option.options}
+                selectedValue={filterValues[option.key]}
+                onValueChange={value => onFilterChange(option.key, value)}
+                placeholder={option.label}
               />
             </View>
           ))}
