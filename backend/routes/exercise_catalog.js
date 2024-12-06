@@ -12,7 +12,105 @@ const s3 = new AWS.S3({
   endpoint: process.env.R2_URL,
   region: 'auto',
   signatureVersion: 'v4',
-  s3ForcePathStyle: true
+  s3ForcePathStyle: true,
+  correctClockSkew: true,
+  computeChecksums: true,
+  sslEnabled: true,
+  httpOptions: {
+    timeout: 10000,
+    connectTimeout: 10000
+  }
+});
+
+const testObjectAccess = async (bucket, key) => {
+  try {
+    const params = {
+      Bucket: bucket,
+      Key: key
+    };
+
+    const metadata = await s3.headObject(params).promise();
+    console.log('Object metadata:', metadata);
+    return true;
+  } catch (error) {
+    console.error('Object access error:', {
+      bucket,
+      key,
+      error: error.message
+    });
+    return false;
+  }
+};
+
+// Add a test endpoint to verify R2 access
+router.get('/test-r2', async (req, res) => {
+  try {
+    const testKey = 'test.gif'; // Replace with a known image path in your bucket
+    const params = {
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: testKey,
+      Expires: 3600,
+      ResponseContentType: 'image/gif'
+    };
+
+    // Test bucket access
+    const connection = await checkR2Connection();
+    if (!connection) {
+      throw new Error('Could not connect to R2');
+    }
+
+    // Try to get the object metadata
+    const metadata = await s3
+      .headObject({
+        Bucket: params.Bucket,
+        Key: params.Key
+      })
+      .promise();
+
+    const signedUrl = s3.getSignedUrl('getObject', params);
+
+    res.json({
+      success: true,
+      metadata,
+      signedUrl,
+      config: {
+        bucket: process.env.R2_BUCKET_NAME,
+        endpoint: process.env.R2_URL
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+      config: {
+        bucket: process.env.R2_BUCKET_NAME,
+        endpoint: process.env.R2_URL
+      }
+    });
+  }
+});
+
+// Add a check to verify R2 connection
+const checkR2Connection = async () => {
+  try {
+    const testParams = {
+      Bucket: process.env.R2_BUCKET_NAME
+    };
+    await s3.headBucket(testParams).promise();
+    console.log('R2 Connection successful');
+    return true;
+  } catch (error) {
+    console.error('R2 Connection failed:', error);
+    return false;
+  }
+};
+
+console.log('S3 Configuration:', {
+  endpoint: process.env.R2_URL,
+  bucket: process.env.R2_BUCKET_NAME,
+  // Don't log the full keys
+  hasAccessKey: !!process.env.R2_ACCESS_KEY,
+  hasSecretKey: !!process.env.R2_SECRET_KEY
 });
 
 // Endpoint to get all exercises in the catalog
@@ -22,6 +120,49 @@ router.get('/exercise-catalog', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
+    const name = req.query.name;
+    const muscle = req.query.muscle;
+    const equipment = req.query.equipment;
+
+    // Build WHERE clause based on filters
+    let whereClause = [];
+    let params = [limit, offset];
+    let paramIndex = 3;
+
+    if (name) {
+      whereClause.push(`LOWER(ec.name) LIKE LOWER($${paramIndex})`);
+      params.push(`%${name}%`);
+      paramIndex++;
+    }
+
+    if (muscle) {
+      whereClause.push(`LOWER(mg.muscle) = LOWER($${paramIndex})`);
+      params.push(muscle);
+      paramIndex++;
+    }
+
+    if (equipment) {
+      whereClause.push(`LOWER(eq.name) = LOWER($${paramIndex})`);
+      params.push(equipment);
+      paramIndex++;
+    }
+
+    const whereString =
+      whereClause.length > 0 ? `WHERE ${whereClause.join(' AND ')}` : '';
+
+    const query = `
+       SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory,
+              eq.name as equipment, im.file_path
+       FROM exercise_catalog ec
+       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+       JOIN image_metadata im ON ec.image_id = im.id
+       ${whereString}
+       ORDER BY ec.id
+       LIMIT $1 OFFSET $2
+     `;
+
+    const { rows } = await db.query(query, params);
 
     // Get total count for pagination
     const countQuery = `
@@ -30,25 +171,6 @@ router.get('/exercise-catalog', async (req, res) => {
     const {
       rows: [{ count }]
     } = await db.query(countQuery);
-
-    // Main query with pagination
-    const query = `
-      SELECT
-        ec.id,
-        ec.name,
-        mg.muscle,
-        mg.muscle_group,
-        mg.subcategory,
-        eq.name as equipment,
-        im.file_path
-      FROM exercise_catalog ec
-      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-      JOIN image_metadata im ON ec.image_id = im.id
-      ORDER BY ec.id
-      LIMIT $1 OFFSET $2`;
-
-    const { rows } = await db.query(query, [limit, offset]);
 
     // Generate pre-signed URLs for each file
     const resultsWithSignedUrl = rows.map(row => {
@@ -61,6 +183,12 @@ router.get('/exercise-catalog', async (req, res) => {
           'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400'
       };
 
+      // Log the params for debugging
+      console.log('Generating signed URL for:', {
+        bucket: process.env.R2_BUCKET_NAME,
+        key: row.file_path
+      });
+
       const signedUrl = s3.getSignedUrl('getObject', params);
       return {
         ...row,
@@ -70,6 +198,9 @@ router.get('/exercise-catalog', async (req, res) => {
 
     // Set cache headers
     res.set({
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
       'Cache-Control':
         'public, max-age=86400, stale-while-revalidate=3600, stale-if-error=86400',
       ETag: require('crypto')
@@ -94,7 +225,7 @@ router.get('/exercise-catalog', async (req, res) => {
   }
 });
 
-// In your backend
+// Get image URL for a specific exercise by ID
 router.get('/exercise-catalog/:id/image', async (req, res) => {
   try {
     const { id } = req.params;
