@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   StyleSheet,
   SafeAreaView,
@@ -8,7 +8,6 @@ import {
   ScrollView
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { ProgramContext } from '../src/context/programContext';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
@@ -17,8 +16,7 @@ import Header from '../components/Header';
 
 const FlexWorkout = () => {
   const navigation = useNavigation();
-  const { state } = useContext(ProgramContext);
-  const { clearWorkoutDetails, startWorkout } = useContext(WorkoutContext);
+  const { startWorkout, clearWorkoutDetails } = useContext(WorkoutContext);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -26,10 +24,19 @@ const FlexWorkout = () => {
     themeState.accentColor
   );
 
+  // Initialize flex workout when component mounts
+  useEffect(() => {
+    startWorkout({
+      name: 'Flex Workout',
+      exercises: []
+    });
+  }, [startWorkout]);
+
   const handleAddExercise = () => {
-    startWorkout(workoutData);
-    // Navigate to exercise selection screen
-    navigation.navigate('ExerciseSelection', { mode: 'workout' });
+    navigation.navigate('ExerciseSelection', {
+      mode: 'workout',
+      isNewProgram: false
+    });
   };
 
   const handleCancel = () => {

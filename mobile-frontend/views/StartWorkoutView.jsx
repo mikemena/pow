@@ -38,6 +38,7 @@ const StartWorkoutView = () => {
     updateExerciseSets,
     updateWorkoutName
   } = useContext(WorkoutContext);
+  console.log('Initial state from Start Workout View:', workoutState);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
     workoutState.workoutDetails?.name || ''

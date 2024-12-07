@@ -309,13 +309,17 @@ export const WorkoutProvider = ({ children }) => {
 
   const startWorkout = useCallback(workoutData => {
     const workout = {
-      id: Crypto.randomUUID(),
-      ...workoutData,
-      exercises: [],
+      id: workoutData?.id || Crypto.randomUUID(),
+      name: workoutData?.name || 'Flex Workout',
+      exercises: workoutData?.exercises || [],
       startTime: new Date(),
       isCompleted: false
     };
     dispatch({ type: actionTypes.START_WORKOUT, payload: workout });
+    dispatch({
+      type: actionTypes.SET_WORKOUT_DETAILS,
+      payload: workout
+    });
   }, []);
 
   const addExerciseToWorkout = useCallback(exercise => {
