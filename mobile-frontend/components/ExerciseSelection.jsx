@@ -36,8 +36,8 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
-  // const { mode } = programState;
-  const mode = route.params?.mode;
+  const programAction = programState.mode;
+  const contextType = route.params?.contextType;
   const programId = route.params?.programId;
 
   // Refs
@@ -199,10 +199,13 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   // Effects
   useEffect(() => {
-    console.log('Route params:', route.params);
-    console.log('Mode:', route.params?.mode);
-  }, [route]);
-
+    console.log('ExerciseSelection Mount:', {
+      contextType,
+      programAction,
+      programId,
+      hasActiveWorkout: !!programState.workout.activeWorkout
+    });
+  }, []);
   useEffect(() => {
     // Initial load
     fetchExercises(1, false);
@@ -226,7 +229,7 @@ const ExerciseSelection = ({ navigation, route }) => {
   }, [filterValues]);
 
   useEffect(() => {
-    if (mode === 'workout' && workoutState.currentWorkout) {
+    if (contextType === 'workout' && workoutState.currentWorkout) {
       setSelectedExercises(workoutState.currentWorkout.exercises || []);
     } else {
       const activeWorkout = programState.workout.workouts.find(
@@ -236,7 +239,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         setSelectedExercises(activeWorkout.exercises || []);
       }
     }
-  }, [mode, workoutState.currentWorkout, programState.workout]);
+  }, [contextType, workoutState.currentWorkout, programState.workout]);
 
   // Handlers
   const handleFilterChange = (key, value) => {
@@ -302,20 +305,35 @@ const ExerciseSelection = ({ navigation, route }) => {
     }));
 
     console.log('Handling add with:', {
-      mode: route.params?.mode,
+      contextType: contextType,
+      programAction: programAction,
       exerciseCount: standardizedExercises.length
     });
 
-    if (route.params?.mode === 'workout') {
-      // Be explicit about checking route.params
-      console.log('Adding exercises to workout');
+    if (contextType === 'workout') {
+      console.log('Adding exercises to workout context');
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
       });
-      console.log('Navigating to StartWorkout');
       navigation.navigate('StartWorkout');
-    } else {
-      // ... rest of your code
+    } else if (contextType === 'program') {
+      console.log('Adding exercises to program context');
+      const activeWorkoutId = programState.workout.activeWorkout;
+      if (!activeWorkoutId) {
+        console.error(
+          'ExerciseSelection: No active workout selected in program context'
+        );
+        return;
+      }
+      // Update program context
+      updateExercise(activeWorkoutId, standardizedExercises);
+
+      // Use programAction for navigation
+      if (programAction === 'create') {
+        navigation.navigate('CreateProgram');
+      } else if (programAction === 'edit' && programId) {
+        navigation.navigate('EditProgram', { programId });
+      }
     }
   };
 

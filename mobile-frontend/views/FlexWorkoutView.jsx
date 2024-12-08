@@ -42,7 +42,7 @@ const FlexWorkout = () => {
 
   const handleAddExercise = () => {
     navigation.navigate('ExerciseSelection', {
-      mode: 'workout',
+      contextType: 'workout',
       isNewProgram: false
     });
   };

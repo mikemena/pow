@@ -111,7 +111,7 @@ const Workout = ({
     setActiveWorkout(workoutId);
 
     navigation.navigate('ExerciseSelection', {
-      mode: 'program',
+      contextType: 'program',
       isNewProgram: true
       // programId: 'your-program-id'
     });
