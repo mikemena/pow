@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import {
   View,
   Text,
@@ -24,27 +24,45 @@ const WorkoutView = () => {
   const {
     state: workoutState,
     clearWorkoutDetails,
-    clearCurrentWorkout
+    clearCurrentWorkout,
+    fetchActiveProgramDetails
   } = useContext(WorkoutContext);
-  const activeProgram = workoutState.activeProgram;
 
-  const clearWorkoutState = () => {
-    clearWorkoutDetails();
-    clearCurrentWorkout();
-  };
+  const navigation = useNavigation();
 
-  const handleProgramWorkoutPress = () => {
-    clearWorkoutState();
-    if (activeProgram) {
-      // If there's an active program, go directly to program details
+  // When component mounts, fetch active program details
+  useEffect(() => {
+    const loadActiveProgram = async () => {
+      try {
+        await fetchActiveProgramDetails();
+      } catch (error) {
+        console.error('Error loading active program:', error);
+        // You might want to show an error message to the user here
+      }
+    };
+
+    loadActiveProgram();
+  }, []); // Empty dependency array means this runs once when component mounts
+
+  const handleProgramWorkoutPress = async () => {
+    // Let's log the current state to understand what we're working with
+    console.log(
+      'Program workout pressed. Active program:',
+      workoutState.activeProgram
+    );
+    console.log('Full workout state:', workoutState);
+
+    if (workoutState.activeProgram) {
+      console.log('Attempting to navigate to CurrentProgramDetails');
       navigation.navigate('CurrentProgramDetails');
+      console.log('Navigation called');
     } else {
-      // If no active program, go to program selection
+      console.log('No active program, navigating to program selection');
+      clearWorkoutDetails();
+      clearCurrentWorkout();
       navigation.navigate('CurrentProgram');
     }
   };
-
-  const navigation = useNavigation();
 
   return (
     <SafeAreaView
@@ -66,7 +84,7 @@ const WorkoutView = () => {
             <View style={styles.lightenOverlay} />
             <View style={styles.textOverlay}>
               <Text style={[styles.imageText, { color: colors.offWhite }]}>
-                {activeProgram
+                {workoutState.activeProgram
                   ? 'Continue Current Program'
                   : 'Start Workout Using a Program'}
               </Text>
@@ -77,7 +95,6 @@ const WorkoutView = () => {
         <TouchableOpacity
           style={styles.imageContainer}
           onPress={() => {
-            clearWorkoutState();
             navigation.navigate('FlexWorkout');
           }}
         >

@@ -19,8 +19,11 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   const {
     state: workoutState,
     fetchWorkoutDetails,
-    startWorkout
+    startWorkout,
+    initializeProgramWorkout,
+    fetchActiveProgramDetails
   } = useContext(WorkoutContext);
+
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -28,12 +31,57 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   );
 
   const program = workoutState.activeProgramDetails;
-
-  // Get all workouts from the program
   const workouts = program?.workouts || [];
-  const totalWorkouts = workouts.length;
+
+  // Log program details
+  console.log('Program:', {
+    exists: !!program,
+    programId: program?.id,
+    workouts: program?.workouts?.length
+  });
+
+  useEffect(() => {
+    // If we don't have program details, fetch them
+    if (!workoutState.activeProgramDetails) {
+      console.log('No program details, fetching...');
+      fetchActiveProgramDetails();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (workoutState.activeProgramDetails && workouts[currentWorkoutIndex]) {
+      console.log('Initializing program workout with:', {
+        program_id: program?.id,
+        workout_name: workouts[currentWorkoutIndex]?.name,
+        workout_id: workouts[currentWorkoutIndex]?.id
+      });
+
+      initializeProgramWorkout({
+        program_id: program.id,
+        workout_name: workouts[currentWorkoutIndex].name,
+        workout_id: workouts[currentWorkoutIndex].id
+      });
+    }
+  }, [workoutState.activeProgramDetails, currentWorkoutIndex]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    if (workoutState.activeProgramDetails) {
+      setIsLoading(false);
+    }
+  }, [workoutState.activeProgramDetails]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', e => {
+      // console.log('Navigation State:', e.data);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   // Get current workout
+  const totalWorkouts = workouts.length;
   const currentWorkout = useMemo(() => {
     if (!workouts.length) return null;
 
@@ -103,12 +151,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     }
   };
 
-  useEffect(() => {
-    if (!program) {
-      navigation.goBack();
-    }
-  }, [program, navigation]);
-
   if (!program) {
     return (
       <SafeAreaView
@@ -130,13 +172,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   if (!currentWorkout) {
     return <Text>Loading...</Text>;
   }
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('state', e => {
-      // console.log('Navigation State:', e.data);
-    });
-
-    return unsubscribe;
-  }, [navigation]);
 
   return (
     <SafeAreaView

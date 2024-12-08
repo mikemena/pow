@@ -5,9 +5,15 @@ import { API_URL_MOBILE } from '@env';
 
 // Initial state
 const initialState = {
-  activeProgram: null,
-  currentWorkout: null,
-  workoutDetails: null
+  user_id: 2,
+  program_id: null,
+  workout_name: '',
+  duration: null,
+  is_completed: false,
+  date: null,
+  workout_id: null,
+  exercises: [],
+  sets: []
 };
 
 // Reducer function
@@ -20,6 +26,26 @@ const workoutReducer = (state, action) => {
       return {
         ...state,
         activeProgramDetails: action.payload
+      };
+
+    case actionTypes.INITIALIZE_FLEX_WORKOUT:
+      return {
+        ...initialState,
+        workout_name: 'Flex Workout',
+        date: new Date(),
+        workout_id: Crypto.randomUUID()
+      };
+
+    case actionTypes.INITIALIZE_PROGRAM_WORKOUT:
+      const { program_id, workout_name, workout_id } = action.payload;
+      return {
+        ...initialState,
+        program_id,
+        workout_name,
+        workout_id,
+        date: new Date(),
+        activeProgram: state.activeProgram,
+        activeProgramDetails: state.activeProgramDetails
       };
 
     case actionTypes.SET_WORKOUT_DETAILS:
@@ -235,6 +261,23 @@ export const WorkoutProvider = ({ children }) => {
     });
   }, []);
 
+  // Initialize a new flex workout
+  const initializeFlexWorkout = () => {
+    dispatch({ type: actionTypes.INITIALIZE_FLEX_WORKOUT });
+  };
+
+  // Initialize a new program workout
+  const initializeProgramWorkout = useCallback(programData => {
+    dispatch({
+      type: actionTypes.INITIALIZE_PROGRAM_WORKOUT,
+      payload: {
+        program_id: programData.program_id,
+        workout_name: programData.workout_name,
+        workout_id: programData.workout_id
+      }
+    });
+  }, []);
+
   // Update workout name
   const updateWorkoutName = useCallback(name => {
     dispatch({
@@ -250,10 +293,8 @@ export const WorkoutProvider = ({ children }) => {
         throw new Error('Workout ID is required');
       }
 
-      // Log the full URL being called
       const url = `${API_URL_MOBILE}/api/workout/${workoutId}`;
 
-      // Add explicit headers and log them
       const response = await fetch(url, {
         method: 'GET',
         headers: {
@@ -474,6 +515,8 @@ export const WorkoutProvider = ({ children }) => {
         setActiveProgram,
         setActiveProgramDetails,
         setActiveProgramWithDetails,
+        initializeFlexWorkout,
+        initializeProgramWorkout,
         fetchWorkoutDetails,
         clearWorkoutDetails,
         startWorkout,

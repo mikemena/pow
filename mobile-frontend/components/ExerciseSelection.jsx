@@ -294,6 +294,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
       ]
     }));
+    console.log('mode:', mode);
 
     if (mode === 'workout') {
       // Add exercises to workout context
@@ -305,7 +306,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       // Add exercises to program context
       const activeWorkoutId = programState.workout.activeWorkout;
       if (!activeWorkoutId) {
-        console.error('No active workout selected.');
+        console.error('ExerciseSelection[308]: No active workout selected.');
         return;
       }
       updateExercise(activeWorkoutId, standardizedExercises);

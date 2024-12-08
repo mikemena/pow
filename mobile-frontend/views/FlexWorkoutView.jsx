@@ -16,7 +16,12 @@ import Header from '../components/Header';
 
 const FlexWorkout = () => {
   const navigation = useNavigation();
-  const { startWorkout, clearWorkoutDetails } = useContext(WorkoutContext);
+  const {
+    state: workoutState,
+    initializeFlexWorkout,
+    clearWorkoutDetails
+  } = useContext(WorkoutContext);
+  console.log('Component render state:', workoutState);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -24,13 +29,16 @@ const FlexWorkout = () => {
     themeState.accentColor
   );
 
-  // Initialize flex workout when component mounts
   useEffect(() => {
-    startWorkout({
-      name: 'Flex Workout',
-      exercises: []
-    });
-  }, [startWorkout]);
+    console.log('Before initialization:', workoutState);
+    initializeFlexWorkout();
+    console.log('After initialization call:', workoutState);
+    // Note: This last log won't show the updated state yet because state updates are asynchronous
+  }, []);
+
+  useEffect(() => {
+    console.log('State after update:', workoutState);
+  }, [workoutState]);
 
   const handleAddExercise = () => {
     navigation.navigate('ExerciseSelection', {
