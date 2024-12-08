@@ -190,7 +190,7 @@ const Filter = ({
           />
         </View>
 
-        {inputs.textInputs.map(input => (
+        {textInputs.map(input => (
           <View key={input.key} style={styles.filterItem}>
             <TextInput
               style={[
@@ -209,7 +209,7 @@ const Filter = ({
         ))}
 
         <View style={styles.pickerRow}>
-          {inputs.pickerInputs.map(input => (
+          {pickerInputs.map(input => (
             <View key={input.key} style={styles.pickerItem}>
               <Text
                 style={[styles.pickerLabel, { color: themedStyles.textColor }]}

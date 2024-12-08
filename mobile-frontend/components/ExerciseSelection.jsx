@@ -203,6 +203,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       contextType,
       programAction,
       programId,
+      routeParams: route.params,
       hasActiveWorkout: !!programState.workout.activeWorkout
     });
   }, []);

@@ -23,7 +23,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
-import Filter from '../components/Filter';
+import ProgramFilter from '../components/ProgramFilter';
 
 const ProgramsView = () => {
   const navigation = useNavigation();
@@ -306,26 +306,17 @@ const ProgramsView = () => {
           visible={isFilterVisible}
           animationType='slide'
           transparent={true}
-          onRequestClose={() => {
-            setIsFilterVisible(false);
-          }}
+          onRequestClose={() => setIsFilterVisible(false)}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Filter
-                isVisible={isFilterVisible}
-                onClose={() => {
-                  setIsFilterVisible(false);
-                }}
-                filterOptions={filterOptions}
-                filterValues={filters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={clearFilters}
-                getTotalMatches={getTotalMatches}
-                filterType='programs'
-              />
-            </View>
-          </View>
+          <ProgramFilter
+            isVisible={isFilterVisible}
+            onClose={() => setIsFilterVisible(false)}
+            programs={programList.programs}
+            filterValues={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={clearFilters}
+            totalMatches={filteredPrograms.length}
+          />
         </Modal>
 
         {filteredPrograms.length > 0 ? (
