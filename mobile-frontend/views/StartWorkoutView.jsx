@@ -171,7 +171,6 @@ const StartWorkoutView = () => {
     }
   }, [workoutTitle, workoutState.workoutDetails?.name, updateWorkoutName]);
 
-  const workoutDetails = workoutState.workoutDetails;
   const [sets, setSets] = useState(() => {
     const initialSets =
       workoutState.exercises[currentExerciseIndex]?.sets || [];
@@ -530,29 +529,34 @@ const StartWorkoutView = () => {
         >
           <View style={styles.swipeableContainer}>
             {/* Previous Navigation Button */}
-            {!showExerciseInfo && !isSwipeOpen && (
-              <View
-                style={[styles.navigationWrapper, styles.topNavigationWrapper]}
-              >
-                <TouchableOpacity
-                  onPress={handlePreviousExercise}
-                  disabled={currentExerciseIndex === 0}
+            {!showExerciseInfo &&
+              !isSwipeOpen &&
+              workoutState.exercises.length > 1 && (
+                <View
                   style={[
-                    styles.navigationButton,
-                    currentExerciseIndex === 0 && styles.disabledButton
+                    styles.navigationWrapper,
+                    styles.topNavigationWrapper
                   ]}
                 >
-                  <Ionicons
-                    name='chevron-up-outline'
-                    size={24}
-                    style={{
-                      color: themeState.accentColor,
-                      opacity: currentExerciseIndex === 0 ? 0.3 : 1
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
+                  <TouchableOpacity
+                    onPress={handlePreviousExercise}
+                    disabled={currentExerciseIndex === 0}
+                    style={[
+                      styles.navigationButton,
+                      currentExerciseIndex === 0 && styles.disabledButton
+                    ]}
+                  >
+                    <Ionicons
+                      name='chevron-up-outline'
+                      size={24}
+                      style={{
+                        color: themeState.accentColor,
+                        opacity: currentExerciseIndex === 0 ? 0.3 : 1
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
 
             {/* Swipeable Content */}
             <SwipeableItemDeletion
@@ -650,7 +654,7 @@ const StartWorkoutView = () => {
             </SwipeableItemDeletion>
 
             {/* Next Navigation Button */}
-            {workoutDetails?.exercises?.length > 0 && !isSwipeOpen && (
+            {workoutState.exercises.length > 0 && !isSwipeOpen && (
               <View
                 style={[
                   styles.navigationWrapper,
@@ -660,14 +664,12 @@ const StartWorkoutView = () => {
                 <TouchableOpacity
                   onPress={handleNextExercise}
                   disabled={
-                    currentExerciseIndex ===
-                    workoutDetails?.exercises.length - 1
+                    currentExerciseIndex === workoutState.exercises.length - 1
                   }
                   style={[
                     styles.navigationButton,
                     currentExerciseIndex ===
-                      workoutDetails?.exercises.length - 1 &&
-                      styles.disabledButton
+                      workoutState.exercises.length - 1 && styles.disabledButton
                   ]}
                 >
                   <Ionicons
@@ -677,7 +679,7 @@ const StartWorkoutView = () => {
                       color: themeState.accentColor,
                       opacity:
                         currentExerciseIndex ===
-                        workoutDetails?.exercises.length - 1
+                        workoutState.exercises.length - 1
                           ? 0.3
                           : 1
                     }}
@@ -688,7 +690,7 @@ const StartWorkoutView = () => {
           </View>
         </SafeAreaView>
         {/* exercise end */}
-        {workoutDetails?.exercises?.length > 0 && (
+        {workoutState.exercises?.length > 0 && (
           <View style={styles.setControls}>
             {/* setHeader */}
             <View
@@ -780,7 +782,7 @@ const StartWorkoutView = () => {
               styles.bottomButton,
               { backgroundColor: themedStyles.secondaryBackgroundColor }
             ]}
-            onPress={() => handleAddExercises(workoutDetails.id)}
+            onPress={() => handleAddExercises(workoutState.workout_id)}
           >
             <Text
               style={[

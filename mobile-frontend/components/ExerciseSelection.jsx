@@ -230,9 +230,11 @@ const ExerciseSelection = ({ navigation, route }) => {
   }, [filterValues]);
 
   useEffect(() => {
-    if (contextType === 'workout' && workoutState.currentWorkout) {
-      setSelectedExercises(workoutState.currentWorkout.exercises || []);
-    } else {
+    if (contextType === 'workout') {
+      // For workout context, use the exercises from workoutState
+      setSelectedExercises(workoutState.exercises || []);
+    } else if (contextType === 'program') {
+      // For program context, use the exercises from active workout
       const activeWorkout = programState.workout.workouts.find(
         w => w.id === programState.workout.activeWorkout
       );
@@ -240,7 +242,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         setSelectedExercises(activeWorkout.exercises || []);
       }
     }
-  }, [contextType, workoutState.currentWorkout, programState.workout]);
+  }, [contextType, workoutState.exercises, programState.workout]);
 
   // Handlers
   const handleFilterChange = (key, value) => {

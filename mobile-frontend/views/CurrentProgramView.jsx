@@ -15,7 +15,7 @@ import {
   Modal,
   Alert
 } from 'react-native';
-import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
@@ -25,7 +25,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
-import Filter from '../components/Filter';
+import ProgramFilter from '../components/ProgramFilter';
 
 const CurrentProgramView = () => {
   const navigation = useNavigation();
@@ -191,44 +191,14 @@ const CurrentProgramView = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  useFocusEffect(
-    useCallback(() => {
-      fetchInitialData();
-      return () => {
-        // Cleanup if needed
-      };
-    }, [fetchInitialData])
-  );
-
-  const getTotalMatches = useCallback(
-    currentFilters => {
-      return programList.programs.filter(program => {
-        const matchesName =
-          !currentFilters.programName ||
-          program.name
-            .toLowerCase()
-            .includes(currentFilters.programName.toLowerCase());
-        const matchesGoal =
-          !currentFilters.selectedGoal ||
-          program.main_goal === currentFilters.selectedGoal;
-        const matchesDurationUnit =
-          !currentFilters.durationType ||
-          program.duration_unit.toLowerCase() ===
-            currentFilters.durationType.toLowerCase();
-        const matchesDaysPerWeek =
-          !currentFilters.daysPerWeek ||
-          program.days_per_week === parseInt(currentFilters.daysPerWeek);
-
-        return (
-          matchesName &&
-          matchesGoal &&
-          matchesDurationUnit &&
-          matchesDaysPerWeek
-        );
-      }).length;
-    },
-    [programList.programs]
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     fetchInitialData();
+  //     return () => {
+  //       // Cleanup if needed
+  //     };
+  //   }, [fetchInitialData])
+  // );
 
   const filteredPrograms = useMemo(() => {
     return programList.programs.filter(program => {
@@ -250,52 +220,6 @@ const CurrentProgramView = () => {
       );
     });
   }, [programList.programs, filters]);
-
-  const filterOptions = useMemo(
-    () => [
-      { key: 'programName', label: 'Program Name', type: 'text' },
-      {
-        key: 'selectedGoal',
-        label: 'Goal',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(programList.programs.map(p => p.main_goal)))
-            .sort()
-            .map(goal => ({
-              label: goal.charAt(0).toUpperCase() + goal.slice(1),
-              value: goal
-            }))
-        ]
-      },
-      {
-        key: 'durationType',
-        label: 'Duration',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(programList.programs.map(p => p.duration_unit)))
-            .sort()
-            .map(unit => ({
-              label: unit.charAt(0).toUpperCase() + unit.slice(1),
-              value: unit
-            }))
-        ]
-      },
-      {
-        key: 'daysPerWeek',
-        label: 'Days Per Week',
-        type: 'picker',
-        options: [
-          { label: 'All', value: '' },
-          ...Array.from(new Set(programList.programs.map(p => p.days_per_week)))
-            .sort((a, b) => a - b)
-            .map(days => ({ label: days.toString(), value: days.toString() }))
-        ]
-      }
-    ],
-    [programList.programs]
-  );
 
   const handleFilterChange = (key, value) => {
     setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
@@ -440,26 +364,17 @@ const CurrentProgramView = () => {
           visible={isFilterVisible}
           animationType='slide'
           transparent={true}
-          onRequestClose={() => {
-            setIsFilterVisible(false);
-          }}
+          onRequestClose={() => setIsFilterVisible(false)}
         >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
-              <Filter
-                isVisible={isFilterVisible}
-                onClose={() => {
-                  setIsFilterVisible(false);
-                }}
-                filterOptions={filterOptions}
-                filterValues={filters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={clearFilters}
-                getTotalMatches={getTotalMatches}
-                filterType='exercises'
-              />
-            </View>
-          </View>
+          <ProgramFilter
+            isVisible={isFilterVisible}
+            onClose={() => setIsFilterVisible(false)}
+            programs={programList.programs}
+            filterValues={filters}
+            onFilterChange={handleFilterChange}
+            onClearFilters={clearFilters}
+            totalMatches={filteredPrograms.length}
+          />
         </Modal>
 
         {isLoading ? (
