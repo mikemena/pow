@@ -36,7 +36,8 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
-  const { mode } = programState;
+  // const { mode } = programState;
+  const mode = route.params?.mode;
   const programId = route.params?.programId;
 
   // Refs
@@ -198,6 +199,11 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   // Effects
   useEffect(() => {
+    console.log('Route params:', route.params);
+    console.log('Mode:', route.params?.mode);
+  }, [route]);
+
+  useEffect(() => {
     // Initial load
     fetchExercises(1, false);
 
@@ -289,33 +295,27 @@ const ExerciseSelection = ({ navigation, route }) => {
       ...exercise,
       id: exercise.id || Crypto.randomUUID(),
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
-      imageUrl: exercise.file_url,
+      imageUrl: exercise.file_url || exercise.imageUrl,
       sets: exercise.sets || [
         { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
       ]
     }));
-    console.log('mode:', mode);
 
-    if (mode === 'workout') {
-      // Add exercises to workout context
+    console.log('Handling add with:', {
+      mode: route.params?.mode,
+      exerciseCount: standardizedExercises.length
+    });
+
+    if (route.params?.mode === 'workout') {
+      // Be explicit about checking route.params
+      console.log('Adding exercises to workout');
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
       });
+      console.log('Navigating to StartWorkout');
       navigation.navigate('StartWorkout');
     } else {
-      // Add exercises to program context
-      const activeWorkoutId = programState.workout.activeWorkout;
-      if (!activeWorkoutId) {
-        console.error('ExerciseSelection[308]: No active workout selected.');
-        return;
-      }
-      updateExercise(activeWorkoutId, standardizedExercises);
-
-      if (mode === 'create') {
-        navigation.navigate('CreateProgram');
-      } else if (mode === 'edit' && programId) {
-        navigation.navigate('EditProgram', { programId });
-      }
+      // ... rest of your code
     }
   };
 

@@ -19,7 +19,7 @@ import {
   Alert
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import PillButton from '../components/PillButton';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
@@ -36,12 +36,13 @@ const StartWorkoutView = () => {
     completeWorkout,
     removeExerciseFromWorkout,
     updateExerciseSets,
-    updateWorkoutName
+    updateWorkoutName,
+    startWorkout
   } = useContext(WorkoutContext);
   console.log('Initial state from Start Workout View:', workoutState);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
-    workoutState.workoutDetails?.name || ''
+    workoutState.workout_name || ''
   );
   const inputRef = useRef(null);
   const swipeableRef = useRef(null);
@@ -55,12 +56,95 @@ const StartWorkoutView = () => {
   const timerRef = useRef(null);
 
   const navigation = useNavigation();
+  const route = useRoute();
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
     themeState.accentColor
   );
+
+  const logWorkoutState = (source, state) => {
+    console.log('\n=== Workout State Analysis ===');
+    console.log(`Source: ${source}`);
+    console.log('State Structure:');
+
+    // Core state fields
+    console.log('Core Fields:', {
+      user_id: state.user_id,
+      program_id: state.program_id,
+      workout_name: state.workout_name,
+      workout_id: state.workout_id,
+      duration: state.duration,
+      is_completed: state.is_completed,
+      date: state.date
+    });
+
+    // Exercises analysis
+    console.log('Exercises:', {
+      count: state.exercises?.length || 0,
+      hasValidStructure: state.exercises?.every(
+        ex =>
+          ex.id &&
+          ex.exercise_id &&
+          ex.catalog_exercise_id &&
+          ex.name &&
+          ex.sets
+      ),
+      firstExercise: state.exercises?.[0]
+        ? {
+            id: state.exercises[0].id,
+            exercise_id: state.exercises[0].exercise_id,
+            catalog_exercise_id: state.exercises[0].catalog_exercise_id,
+            name: state.exercises[0].name,
+            setsCount: state.exercises[0].sets?.length
+          }
+        : 'No exercises'
+    });
+
+    // Additional state properties
+    console.log('Additional Properties:', {
+      hasCurrentWorkout: !!state.currentWorkout,
+      hasWorkoutDetails: !!state.workoutDetails,
+      activeProgram: state.activeProgram,
+      hasActiveProgramDetails: !!state.activeProgramDetails
+    });
+
+    console.log('===========================\n');
+  };
+  useEffect(() => {
+    logWorkoutState('Component Mount', workoutState);
+  }, []);
+
+  useEffect(() => {
+    console.log('StartWorkoutView mounting with:', {
+      hasCurrentWorkout: !!workoutState.currentWorkout,
+      routeParams: route?.params,
+      workoutFromRoute: route?.params?.workout
+    });
+
+    if (!workoutState.currentWorkout && route?.params?.workout) {
+      console.log('Initializing workout with:', route.params.workout);
+      startWorkout(route.params.workout);
+      // Log after startWorkout
+      logWorkoutState('After startWorkout', workoutState);
+    }
+  }, [route, workoutState.currentWorkout, startWorkout]);
+
+  // Add logging when exercises change
+  useEffect(() => {
+    logWorkoutState('Exercises Updated', workoutState);
+  }, [workoutState.exercises]);
+
+  // Add logging for important state changes
+  useEffect(() => {
+    if (workoutState.exercises.length === 0) {
+      logWorkoutState('No Exercises Check', workoutState);
+      console.log('No exercises available');
+      navigation.goBack();
+      return;
+    }
+  }, [workoutState.exercises, navigation]);
 
   // Dismiss keyboard when tapping outside
   const dismissKeyboard = () => {
@@ -90,7 +174,7 @@ const StartWorkoutView = () => {
   const workoutDetails = workoutState.workoutDetails;
   const [sets, setSets] = useState(() => {
     const initialSets =
-      workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
+      workoutState.exercises[currentExerciseIndex]?.sets || [];
     return initialSets.map((set, idx) => ({
       ...set,
       id: set.id || Math.random().toString(36).substr(2, 9),
@@ -123,6 +207,20 @@ const StartWorkoutView = () => {
     borderBottomRightRadius: 10
   };
 
+  useEffect(() => {
+    // Add debug logging
+    console.log('StartWorkoutView mounting with:', {
+      hasCurrentWorkout: !!workoutState.currentWorkout,
+      routeParams: route?.params,
+      workoutFromRoute: route?.params?.workout
+    });
+
+    if (!workoutState.currentWorkout && route?.params?.workout) {
+      console.log('Initializing workout with:', route.params.workout);
+      startWorkout(route.params.workout);
+    }
+  }, [route, workoutState.currentWorkout, startWorkout]);
+
   // Effect to animate image opacity when showing exercise info
   useEffect(() => {
     Animated.timing(imageOpacity, {
@@ -135,7 +233,7 @@ const StartWorkoutView = () => {
   // Effect to update sets when exercise changes
   useEffect(() => {
     const currentSets =
-      workoutDetails?.exercises[currentExerciseIndex]?.sets || [];
+      workoutState?.exercises[currentExerciseIndex]?.sets || [];
     setSets(
       currentSets.map((set, idx) => ({
         ...set,
@@ -143,7 +241,7 @@ const StartWorkoutView = () => {
         order: idx + 1
       }))
     );
-  }, [currentExerciseIndex, workoutDetails?.exercises]);
+  }, [currentExerciseIndex, workoutState?.exercises]);
 
   // For exercise info auto-hide timer
 
@@ -163,14 +261,14 @@ const StartWorkoutView = () => {
   }, []);
 
   useEffect(() => {
-    if (!workoutDetails) {
-      console.error('No workout details available in context');
+    if (workoutState.exercises.length === 0) {
+      console.log('No exercises available');
       navigation.goBack();
       return;
     }
-  }, [workoutDetails, navigation]);
+  }, [workoutState.exercises, navigation]);
 
-  const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+  const currentExercise = workoutState.exercises[currentExerciseIndex];
 
   const handleCancel = () => navigation.goBack();
 
@@ -249,7 +347,7 @@ const StartWorkoutView = () => {
 
     removeExerciseFromWorkout(exerciseId);
 
-    if (currentExerciseIndex >= workoutDetails.exercises.length - 1) {
+    if (currentExerciseIndex >= workoutState.exercises.length - 1) {
       setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
     }
   };
@@ -258,12 +356,12 @@ const StartWorkoutView = () => {
     console.log('Next button pressed');
     console.log(
       'Can go next:',
-      currentExerciseIndex < workoutDetails?.exercises?.length - 1
+      currentExerciseIndex < workoutState?.exercises?.length - 1
     );
-    if (currentExerciseIndex < workoutDetails.exercises.length - 1) {
+    if (currentExerciseIndex < workoutState.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
       const nextSets =
-        workoutDetails.exercises[currentExerciseIndex + 1]?.sets || [];
+        workoutState.exercises[currentExerciseIndex + 1]?.sets || [];
       setSets(
         nextSets.map((set, idx) => ({
           ...set,
@@ -280,7 +378,7 @@ const StartWorkoutView = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
       const prevSets =
-        workoutDetails.exercises[currentExerciseIndex - 1]?.sets || [];
+        workoutState.exercises[currentExerciseIndex - 1]?.sets || [];
       setSets(
         prevSets.map((set, idx) => ({
           ...set,
@@ -303,7 +401,7 @@ const StartWorkoutView = () => {
       const newSets = [...currentSets, newSet];
 
       // Sync with context
-      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      const currentExercise = workoutState?.exercises[currentExerciseIndex];
       if (currentExercise) {
         updateExerciseSets(currentExercise.id, newSets);
       }
@@ -322,7 +420,7 @@ const StartWorkoutView = () => {
       });
 
       // Sync with context
-      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      const currentExercise = workoutState?.exercises[currentExerciseIndex];
       if (currentExercise) {
         updateExerciseSets(currentExercise.id, newSets);
       }
@@ -341,7 +439,7 @@ const StartWorkoutView = () => {
         }));
 
       // Sync with context
-      const currentExercise = workoutDetails?.exercises[currentExerciseIndex];
+      const currentExercise = workoutState?.exercises[currentExerciseIndex];
       if (currentExercise) {
         updateExerciseSets(currentExercise.id, newSets);
       }
@@ -386,7 +484,7 @@ const StartWorkoutView = () => {
           </Animated.View>
           {/* workout title ends here */}
         </View>
-        {workoutDetails?.exercises?.length > 0 && (
+        {workoutState.exercises.length > 0 && (
           <View style={styles.mainControls}>
             <TouchableOpacity
               style={[
@@ -463,7 +561,7 @@ const StartWorkoutView = () => {
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
               onSwipeChange={setIsSwipeOpen}
             >
-              {workoutDetails?.exercises?.length === 0 ? (
+              {workoutState.exercises.length === 0 ? (
                 <View
                   style={[
                     styles.exerciseContainer,

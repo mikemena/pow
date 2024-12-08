@@ -86,6 +86,7 @@ router.get('/workout/:workout_id', async (req, res) => {
         // Create new exercise entry
         exercisesMap.set(row.exercise_id, {
           id: row.exercise_id,
+          catalog_exercise_id: row.catalog_exercise_id,
           name: row.exercise_name,
           order: row.exercise_order,
           muscle: row.muscle,

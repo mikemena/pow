@@ -70,22 +70,28 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.START_WORKOUT:
-      return { ...state, currentWorkout: action.payload };
+      return {
+        ...state,
+        currentWorkout: action.payload,
+        workoutDetails: action.payload,
+        exercises: action.payload.exercises,
+        workout_name: action.payload.name
+      };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
-          exercises: [...state.currentWorkout?.exercises, action.payload]
-        },
-        workoutDetails: {
-          ...state.workoutDetails,
-          exercises: [
-            ...(state.workoutDetails?.exercises || []),
-            action.payload
-          ]
-        }
+        // Update exercises array at the root level
+        exercises: [
+          ...state.exercises,
+          {
+            ...action.payload,
+            // Ensure exercise has required fields
+            exercise_id: action.payload.id,
+            catalog_exercise_id: action.payload.catalog_exercise_id,
+            order: state.exercises.length + 1
+          }
+        ]
       };
 
     case actionTypes.REMOVE_EXERCISE_FROM_WORKOUT:
@@ -349,24 +355,43 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const startWorkout = useCallback(workoutData => {
-    const workout = {
-      id: workoutData?.id || Crypto.randomUUID(),
-      name: workoutData?.name || 'Flex Workout',
-      exercises: workoutData?.exercises || [],
-      startTime: new Date(),
-      isCompleted: false
-    };
-    dispatch({ type: actionTypes.START_WORKOUT, payload: workout });
+    // First, standardize the exercises from the workout data
+    const standardizedExercises = workoutData.exercises.map(exercise => ({
+      id: exercise.id || Crypto.randomUUID(),
+      exercise_id: exercise.id,
+      catalog_exercise_id: exercise.catalog_exercise_id,
+      name: exercise.name,
+      muscle: exercise.muscle,
+      equipment: exercise.equipment,
+      imageUrl: exercise.file_url || exercise.imageUrl,
+      sets: exercise.sets || []
+    }));
+
     dispatch({
-      type: actionTypes.SET_WORKOUT_DETAILS,
-      payload: workout
+      type: actionTypes.START_WORKOUT,
+      payload: {
+        ...workoutData,
+        exercises: standardizedExercises,
+        id: workoutData.programWorkoutId || Crypto.randomUUID(),
+        startTime: new Date(),
+        isCompleted: false
+      }
     });
   }, []);
 
   const addExerciseToWorkout = useCallback(exercise => {
     const newExercise = {
+      // Map incoming exercise to match our state structure
       id: Crypto.randomUUID(),
-      ...exercise,
+      exercise_id: exercise.id || Crypto.randomUUID(),
+      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+      order: exercise.order || 0,
+      // Include other exercise properties
+      name: exercise.name,
+      muscle: exercise.muscle,
+      equipment: exercise.equipment,
+      imageUrl: exercise.file_url || exercise.imageUrl,
+      // Initialize empty sets array (sets will be managed separately)
       sets: exercise.sets || []
     };
 
