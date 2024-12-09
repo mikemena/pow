@@ -22,16 +22,64 @@ router.get('/exercise-catalog', async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 20;
     const offset = (page - 1) * limit;
+    const name = req.query.name;
+    const muscle = req.query.muscle;
+    const equipment = req.query.equipment;
 
-    // Get total count for pagination
+    console.log('Received filter params:', { name, muscle, equipment });
+
+    // Build WHERE clause dynamically
+    let whereConditions = [];
+    let queryParams = [];
+    let paramIndex = 1;
+
+    if (name) {
+      whereConditions.push(`LOWER(ec.name) LIKE $${paramIndex}`);
+      queryParams.push(`%${name.toLowerCase()}%`);
+      paramIndex++;
+    }
+
+    if (muscle) {
+      // Make sure we're exactly matching the muscle name
+      whereConditions.push(`LOWER(mg.muscle) = LOWER($${paramIndex})`);
+      queryParams.push(muscle);
+      paramIndex++;
+    }
+
+    if (equipment) {
+      whereConditions.push(`LOWER(eq.name) = LOWER($${paramIndex})`);
+      queryParams.push(equipment);
+      paramIndex++;
+    }
+
+    const whereClause =
+      whereConditions.length > 0
+        ? 'WHERE ' + whereConditions.join(' AND ')
+        : '';
+
+    // Debug log the constructed WHERE clause
+    console.log('Where clause:', whereClause);
+    console.log('Query params:', queryParams);
+
+    // Get filtered count
     const countQuery = `
-      SELECT COUNT(*)
-      FROM exercise_catalog`;
+    SELECT COUNT(*)
+    FROM exercise_catalog ec
+    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+    ${whereClause}`;
+
+    console.log('Count query:', {
+      sql: countQuery,
+      params: queryParams
+    });
+
     const {
       rows: [{ count }]
-    } = await db.query(countQuery);
+    } = await db.query(countQuery, queryParams);
+    console.log('Count result:', count);
 
-    // Main query with pagination
+    // Main query with filters
     const query = `
       SELECT
         ec.id,
@@ -45,10 +93,23 @@ router.get('/exercise-catalog', async (req, res) => {
       JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
       JOIN equipment_catalog eq ON ec.equipment_id = eq.id
       JOIN image_metadata im ON ec.image_id = im.id
+      ${whereClause}
       ORDER BY ec.id
-      LIMIT $1 OFFSET $2`;
+      LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
 
-    const { rows } = await db.query(query, [limit, offset]);
+    console.log('Main query:', {
+      sql: query,
+      params: [...queryParams, limit, offset]
+    });
+
+    const { rows } = await db.query(query, [...queryParams, limit, offset]);
+    console.log('First result:', rows[0]);
+
+    console.log('Query results:', {
+      totalCount: count,
+      returnedCount: rows.length,
+      firstRecord: rows[0]
+    });
 
     // Generate presigned URLs with longer expiration for caching
     const resultsWithSignedUrl = rows.map(row => {
@@ -80,10 +141,10 @@ router.get('/exercise-catalog', async (req, res) => {
 
     // Return paginated results with metadata
     res.json({
-      exercises: resultsWithSignedUrl,
+      exercises: rows,
       pagination: {
         total: parseInt(count),
-        currentPage: parseInt(page),
+        currentPage: page,
         totalPages: Math.ceil(count / limit),
         hasMore: offset + rows.length < count
       }
@@ -94,7 +155,7 @@ router.get('/exercise-catalog', async (req, res) => {
   }
 });
 
-// In your backend
+// Get image URL for an exercise by ID
 router.get('/exercise-catalog/:id/image', async (req, res) => {
   try {
     const { id } = req.params;

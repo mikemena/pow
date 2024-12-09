@@ -219,7 +219,6 @@ export const WorkoutProvider = ({ children }) => {
         `${API_URL_MOBILE}/api/active-programs/user/2`
       );
       const data = await response.json();
-      console.log('Active program data:', data);
 
       if (data.activeProgram) {
         // Fetch the full program details

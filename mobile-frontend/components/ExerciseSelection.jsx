@@ -24,7 +24,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import PillButton from './PillButton';
-import Filter from './Filter';
+import ExerciseFilter from './ExerciseFilter';
 import ExerciseImage from './ExerciseImage';
 
 // Constants moved outside component
@@ -102,14 +102,6 @@ const ExerciseSelection = ({ navigation, route }) => {
   const fetchExercises = async (page = 1, shouldAppend = false) => {
     if (!hasMore && page > 1) return;
 
-    // Don't abort initial load
-    if (!initialLoadRef.current) {
-      if (abortController.current) {
-        abortController.current.abort();
-      }
-      abortController.current = new AbortController();
-    }
-
     try {
       setIsLoading(page === 1);
       setIsLoadingMore(page > 1);
@@ -117,22 +109,20 @@ const ExerciseSelection = ({ navigation, route }) => {
       const queryParams = new URLSearchParams({
         page: page.toString(),
         limit: '20',
-        name: filterValues.exerciseName || '',
-        muscle: filterValues.muscle || '',
-        equipment: filterValues.equipment || ''
+        name: filterValues.exerciseName?.trim() || '',
+        muscle: filterValues.muscle?.trim() || '',
+        equipment: filterValues.equipment?.trim() || ''
       });
+
+      console.log('Fetching exercises with params:', queryParams.toString());
 
       const response = await fetch(
         `http://localhost:9025/api/exercise-catalog?${queryParams}`,
         {
-          method: 'GET',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
-          },
-          signal: initialLoadRef.current
-            ? undefined
-            : abortController.current?.signal
+          }
         }
       );
 
@@ -141,46 +131,26 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       const data = await response.json();
-      const exercises = data.exercises || [];
+      console.log('Received data:', data);
 
-      if (shouldAppend) {
-        setExercises(prev => [...prev, ...exercises]);
-        setFilteredExercises(prev => [...prev, ...exercises]);
+      // Reset data when applying new filters
+      if (!shouldAppend) {
+        setExercises(data.exercises);
+        setFilteredExercises(data.exercises);
+        flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       } else {
-        setExercises(exercises);
-        setFilteredExercises(exercises);
+        setExercises(prev => [...prev, ...data.exercises]);
+        setFilteredExercises(prev => [...prev, ...data.exercises]);
       }
 
-      setHasMore(exercises.length === 20);
+      setHasMore(data.pagination.hasMore);
       setCurrentPage(page);
-
-      if (exercises.length > 0) {
-        await setCachedExercises(page, exercises);
-      }
     } catch (error) {
-      if (error.name === 'AbortError') {
-        return;
-      }
       console.error('Fetch error:', error);
-
-      // Try to use cached data as fallback
-      const cachedData = await getCachedExercises(page);
-      if (cachedData?.length > 0) {
-        if (shouldAppend) {
-          setExercises(prev => [...prev, ...cachedData]);
-          setFilteredExercises(prev => [...prev, ...cachedData]);
-        } else {
-          setExercises(cachedData);
-          setFilteredExercises(cachedData);
-        }
-        setHasMore(cachedData.length === 20);
-        setCurrentPage(page);
-      } else {
-        setHasMore(false);
-        if (!shouldAppend) {
-          setExercises([]);
-          setFilteredExercises([]);
-        }
+      setHasMore(false);
+      if (!shouldAppend) {
+        setExercises([]);
+        setFilteredExercises([]);
       }
     } finally {
       setIsLoading(false);
@@ -192,12 +162,41 @@ const ExerciseSelection = ({ navigation, route }) => {
   const debouncedFilterChange = useMemo(
     () =>
       debounce((key, value) => {
-        setFilterValues(prev => ({ ...prev, [key]: value }));
+        console.log('Debounced filter executing:', { key, value });
+        setFilterValues(prev => {
+          const newValues = { ...prev, [key]: value };
+          console.log('New filter values:', newValues);
+          return newValues;
+        });
       }, 300),
     []
   );
 
   // Effects
+
+  // testing...
+  useEffect(() => {
+    console.log('Filter values changed:', filterValues);
+    if (
+      !initialLoadRef.current &&
+      Object.values(filterValues).some(value => value !== '')
+    ) {
+      console.log('Triggering new fetch with filters');
+      setCurrentPage(1);
+      fetchExercises(1, false);
+    }
+  }, [filterValues]);
+
+  useEffect(() => {
+    if (Object.values(filterValues).some(value => value !== '')) {
+      // Reset pagination when filters change
+      setCurrentPage(1);
+      setHasMore(true);
+      // Fetch with new filters
+      fetchExercises(1, false);
+    }
+  }, [filterValues]);
+
   useEffect(() => {
     console.log('ExerciseSelection Mount:', {
       contextType,
@@ -445,33 +444,28 @@ const ExerciseSelection = ({ navigation, route }) => {
         transparent={true}
         onRequestClose={() => setIsFilterVisible(false)}
       >
-        <Filter
+        <ExerciseFilter
           isVisible={isFilterVisible}
           onClose={() => setIsFilterVisible(false)}
           filterValues={filterValues}
           onFilterChange={handleFilterChange}
           onClearFilters={clearFilters}
-          getTotalMatches={getTotalMatches}
-          filterType='exercises'
+          totalMatches={filteredExercises.length}
         />
       </Modal>
-
       <FlatList
         ref={flatListRef}
         data={filteredExercises}
-        // onLayout={() =>
-        //   console.log('FlatList data length:', filteredExercises?.length)
-        // }
         renderItem={renderExerciseItem}
         keyExtractor={item => item.id.toString()}
         style={styles.exerciseList}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0.25} // Trigger when 75% scrolled
-        // ListFooterComponent={renderFooter}
+        onEndReachedThreshold={0.25}
         initialNumToRender={10}
         maxToRenderPerBatch={10}
         windowSize={5}
         removeClippedSubviews={true}
+        key={JSON.stringify(filterValues)}
         ListEmptyComponent={() => (
           <View style={styles.emptyList}>
             <Text style={[styles.emptyText, { color: themedStyles.textColor }]}>
