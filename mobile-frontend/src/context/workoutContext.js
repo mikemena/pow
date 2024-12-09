@@ -81,15 +81,16 @@ const workoutReducer = (state, action) => {
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
       return {
         ...state,
-        // Update exercises array at the root level
         exercises: [
           ...state.exercises,
           {
             ...action.payload,
-            // Ensure exercise has required fields
-            exercise_id: action.payload.id,
-            catalog_exercise_id: action.payload.catalog_exercise_id,
-            order: state.exercises.length + 1
+            id: action.payload.id || Crypto.randomUUID(),
+            catalog_exercise_id:
+              action.payload.catalog_exercise_id || action.payload.id,
+            sets: action.payload.sets || [
+              { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+            ]
           }
         ]
       };

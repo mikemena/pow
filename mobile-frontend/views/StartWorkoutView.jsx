@@ -112,6 +112,17 @@ const StartWorkoutView = () => {
 
     console.log('===========================\n');
   };
+
+  useEffect(() => {
+    const addedExerciseIds = route.params?.addedExerciseIds;
+    if (addedExerciseIds) {
+      console.log(
+        'Added exercises found:',
+        workoutState.exercises.filter(ex => addedExerciseIds.includes(ex.id))
+      );
+    }
+  }, []);
+
   useEffect(() => {
     logWorkoutState('Component Mount', workoutState);
   }, []);
@@ -331,7 +342,7 @@ const StartWorkoutView = () => {
 
   const handleAddExercises = () => {
     navigation.navigate('ExerciseSelection', {
-      mode: 'workout',
+      contextType: 'workout',
       isNewProgram: false,
       programId: workoutState.currentWorkout?.id
     });
