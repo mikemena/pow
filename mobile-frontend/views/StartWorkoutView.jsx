@@ -421,23 +421,23 @@ const StartWorkoutView = () => {
   };
 
   const handleSetChange = (index, field, value) => {
-    setSets(currentSets => {
-      const newSets = currentSets.map(set => {
-        if (set.order === index + 1) {
-          return { ...set, [field]: value };
-        }
-        return set;
-      });
-
-      // Sync with context
-      const currentExercise = workoutState?.exercises[currentExerciseIndex];
-      if (currentExercise) {
-        updateExerciseSets(currentExercise.id, newSets);
-      }
-
-      return newSets;
-    });
+    setSets(currentSets =>
+      currentSets.map(set =>
+        set.order === index + 1 ? { ...set, [field]: value } : set
+      )
+    );
   };
+
+  useEffect(() => {
+    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    // Only update if we have an exercise and if the sets have actually changed
+    if (
+      currentExercise &&
+      JSON.stringify(currentExercise.sets) !== JSON.stringify(sets)
+    ) {
+      updateExerciseSets(currentExercise.id, sets);
+    }
+  }, [sets]);
 
   const handleDeleteSet = setId => {
     setSets(currentSets => {
