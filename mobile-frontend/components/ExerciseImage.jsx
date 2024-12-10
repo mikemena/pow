@@ -6,6 +6,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 const ExerciseImage = ({ exercise }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
+  const [imageUrl, setImageUrl] = useState(exercise.file_url);
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -13,36 +14,60 @@ const ExerciseImage = ({ exercise }) => {
   );
   const isMounted = useRef(true);
 
-  useEffect(() => {
-    isMounted.current = true;
-    setIsLoading(true);
-    setImageError(false);
-
-    return () => {
-      isMounted.current = false;
-    };
-  }, [exercise]);
-
   const refreshImageUrl = async () => {
     try {
+      console.log('Refreshing image URL for:', exercise.name);
       const response = await fetch(
         `http://localhost:9025/api/exercise-catalog/${exercise.id}/image`
       );
       const data = await response.json();
-      return data.file_url;
+      console.log('Refreshed URL response:', data);
+      if (data.file_url && isMounted.current) {
+        setImageUrl(data.file_url);
+        return data.file_url;
+      }
+      return null;
     } catch (error) {
       console.error('URL refresh error:', error);
       return null;
     }
   };
 
+  useEffect(() => {
+    isMounted.current = true;
+    console.log('ExerciseImage mounted/updated for:', exercise.name, {
+      fileUrl: exercise.file_url,
+      exerciseId: exercise.id,
+      filePath: exercise.file_path
+    });
+
+    if (!exercise.file_url && exercise.file_path) {
+      refreshImageUrl();
+    } else {
+      setImageUrl(exercise.file_url);
+    }
+
+    return () => {
+      isMounted.current = false;
+    };
+  }, [exercise]);
+
   const handleImageError = useCallback(async () => {
     if (!isMounted.current) return;
 
+    console.log('Image error occurred for:', exercise.name, {
+      currentUrl: imageUrl
+    });
+
     try {
       const newUrl = await refreshImageUrl();
-      if (newUrl) {
-        exercise.file_url = newUrl;
+      console.log('Refreshed URL result:', {
+        exercise: exercise.name,
+        newUrl
+      });
+
+      if (newUrl && isMounted.current) {
+        setImageUrl(newUrl);
         setIsLoading(true);
         setImageError(false);
         return;
@@ -51,9 +76,11 @@ const ExerciseImage = ({ exercise }) => {
       console.error('Refresh attempt failed:', error);
     }
 
-    setImageError(true);
-    setIsLoading(false);
-  }, [exercise]);
+    if (isMounted.current) {
+      setImageError(true);
+      setIsLoading(false);
+    }
+  }, [exercise, imageUrl]);
 
   const handleLoadStart = () => {
     console.log('Image load starting:', exercise.name);
@@ -86,20 +113,15 @@ const ExerciseImage = ({ exercise }) => {
             Unable to load image
           </Text>
         </View>
-      ) : exercise.file_url ? (
+      ) : imageUrl ? (
         <Image
           source={{
-            uri: exercise.file_url,
+            uri: imageUrl,
             cache: 'default'
           }}
           style={styles.exerciseImage}
-          onLoadStart={() => setIsLoading(true)}
-          onLoad={() => {
-            if (isMounted.current) {
-              setIsLoading(false);
-              setImageError(false);
-            }
-          }}
+          onLoadStart={handleLoadStart}
+          onLoad={handleLoadSuccess}
           onError={handleImageError}
           resizeMode='cover'
         />
@@ -115,7 +137,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
-    backgroundColor: '#2A2A2A', // Dark background for loading state
+    backgroundColor: '#2A2A2A',
     borderTopLeftRadius: 10,
     borderBottomLeftRadius: 10,
     overflow: 'hidden'

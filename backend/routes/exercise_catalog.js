@@ -111,6 +111,8 @@ router.get('/exercise-catalog', async (req, res) => {
       firstRecord: rows[0]
     });
 
+    console.log('Before generating signed URLs:', rows[0]);
+
     // Generate presigned URLs with longer expiration for caching
     const resultsWithSignedUrl = rows.map(row => {
       const params = {
@@ -123,11 +125,14 @@ router.get('/exercise-catalog', async (req, res) => {
       };
 
       const signedUrl = s3.getSignedUrl('getObject', params);
+      console.log('Generated signed URL for:', row.file_path, signedUrl);
       return {
         ...row,
         file_url: signedUrl
       };
     });
+
+    console.log('After adding signed URLs:', resultsWithSignedUrl[0]);
 
     // Set cache headers
     res.set({
@@ -141,7 +146,7 @@ router.get('/exercise-catalog', async (req, res) => {
 
     // Return paginated results with metadata
     res.json({
-      exercises: rows,
+      exercises: resultsWithSignedUrl,
       pagination: {
         total: parseInt(count),
         currentPage: page,

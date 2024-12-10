@@ -131,14 +131,22 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       const data = await response.json();
-      console.log('Received data:', data);
+      console.log('Received exercise data first item:', data.exercises[0]);
 
       // Reset data when applying new filters
       if (!shouldAppend) {
+        console.log(
+          'Setting new exercises state with first item:',
+          data.exercises[0]
+        );
         setExercises(data.exercises);
         setFilteredExercises(data.exercises);
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       } else {
+        console.log(
+          'Appending exercises with first new item:',
+          data.exercises[0]
+        );
         setExercises(prev => [...prev, ...data.exercises]);
         setFilteredExercises(prev => [...prev, ...data.exercises]);
       }
