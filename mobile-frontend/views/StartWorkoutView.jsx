@@ -408,17 +408,17 @@ const StartWorkoutView = () => {
         order: currentSets.length + 1
       };
 
-      const newSets = [...currentSets, newSet];
-
-      // Sync with context
-      const currentExercise = workoutState?.exercises[currentExerciseIndex];
-      if (currentExercise) {
-        updateExerciseSets(currentExercise.id, newSets);
-      }
-
-      return newSets;
+      // Just return the updated sets without calling updateExerciseSets here
+      return [...currentSets, newSet];
     });
   };
+
+  useEffect(() => {
+    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    if (currentExercise) {
+      updateExerciseSets(currentExercise.id, sets);
+    }
+  }, [sets]);
 
   const handleSetChange = (index, field, value) => {
     setSets(currentSets =>
@@ -440,23 +440,19 @@ const StartWorkoutView = () => {
   }, [sets]);
 
   const handleDeleteSet = setId => {
-    setSets(currentSets => {
-      const newSets = currentSets
+    setSets(currentSets =>
+      currentSets
         .filter(s => String(s.id) !== String(setId))
-        .map((s, idx) => ({
-          ...s,
-          order: idx + 1
-        }));
-
-      // Sync with context
-      const currentExercise = workoutState?.exercises[currentExerciseIndex];
-      if (currentExercise) {
-        updateExerciseSets(currentExercise.id, newSets);
-      }
-
-      return newSets;
-    });
+        .map((s, idx) => ({ ...s, order: idx + 1 }))
+    );
   };
+
+  useEffect(() => {
+    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    if (currentExercise) {
+      updateExerciseSets(currentExercise.id, sets);
+    }
+  }, [sets]);
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
