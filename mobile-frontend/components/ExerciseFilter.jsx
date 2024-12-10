@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, TextInput, StyleSheet, SafeAreaView, Text } from 'react-native';
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  SafeAreaView,
+  Text,
+  TouchableWithoutFeedback
+} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomPicker from './CustomPicker';
 import PillButton from './PillButton';
@@ -145,101 +152,128 @@ const ExerciseFilter = ({
   if (!isVisible) return null;
 
   return (
-    <SafeAreaView
-      style={[
-        styles.safeArea,
-        { backgroundColor: themedStyles.primaryBackgroundColor }
-      ]}
-    >
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <PillButton
-            label='Close'
-            icon={
-              <Ionicons
-                name='close-outline'
-                size={16}
-                color={colors.eggShell}
-              />
-            }
-            onPress={onClose}
-          />
-          <View>
-            <Text style={{ color: themedStyles.accentColor }}>
-              {totalMatches === 0
-                ? 'No Matches'
-                : totalMatches === 1
-                ? '1 Match'
-                : `${totalMatches} Matches`}
-            </Text>
-          </View>
-          <PillButton
-            label='Clear'
-            icon={
-              <Ionicons
-                name='refresh-outline'
-                size={16}
-                color={colors.eggShell}
-              />
-            }
-            onPress={onClearFilters}
-          />
-        </View>
-
-        {/* Exercise Name Input */}
-        <View style={styles.filterItem}>
-          <TextInput
+    // This outer TouchableWithoutFeedback captures taps outside the filter
+    <TouchableWithoutFeedback onPress={onClose}>
+      <View style={styles.overlay}>
+        {/* This inner TouchableWithoutFeedback prevents taps on the filter from bubbling up */}
+        <TouchableWithoutFeedback onPress={e => e.stopPropagation()}>
+          <SafeAreaView
             style={[
-              styles.input,
-              {
-                backgroundColor: themedStyles.secondaryBackgroundColor,
-                color: themedStyles.textColor
-              }
+              styles.safeArea,
+              { backgroundColor: themedStyles.primaryBackgroundColor }
             ]}
-            value={filterValues.exerciseName}
-            onChangeText={text => onFilterChange('exerciseName', text)}
-            placeholder='Exercise Name'
-            placeholderTextColor={themedStyles.textColor}
-          />
-        </View>
+          >
+            <View style={styles.container}>
+              <View style={styles.header}>
+                <PillButton
+                  label='Close'
+                  icon={
+                    <Ionicons
+                      name='close-outline'
+                      size={16}
+                      color={colors.eggShell}
+                    />
+                  }
+                  onPress={onClose}
+                />
+                <View>
+                  <Text style={{ color: themedStyles.accentColor }}>
+                    {totalMatches === 0
+                      ? 'No Matches'
+                      : totalMatches === 1
+                      ? '1 Match'
+                      : `${totalMatches} Matches`}
+                  </Text>
+                </View>
+                <PillButton
+                  label='Clear'
+                  icon={
+                    <Ionicons
+                      name='refresh-outline'
+                      size={16}
+                      color={colors.eggShell}
+                    />
+                  }
+                  onPress={onClearFilters}
+                />
+              </View>
 
-        <View style={styles.pickerRow}>
-          {/* Muscle Picker */}
-          <View style={styles.pickerItem}>
-            <Text
-              style={[styles.pickerLabel, { color: themedStyles.textColor }]}
-            >
-              Muscle
-            </Text>
-            <CustomPicker
-              options={muscleOptions}
-              selectedValue={filterValues.muscle}
-              onValueChange={value => onFilterChange('muscle', value)}
-              placeholder='Select Muscle'
-            />
-          </View>
+              {/* Exercise Name Input */}
+              <View style={styles.filterItem}>
+                <TextInput
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: themedStyles.secondaryBackgroundColor,
+                      color: themedStyles.textColor
+                    }
+                  ]}
+                  value={filterValues.exerciseName}
+                  onChangeText={text => onFilterChange('exerciseName', text)}
+                  placeholder='Exercise Name'
+                  placeholderTextColor={themedStyles.textColor}
+                />
+              </View>
 
-          {/* Equipment Picker */}
-          <View style={styles.pickerItem}>
-            <Text
-              style={[styles.pickerLabel, { color: themedStyles.textColor }]}
-            >
-              Equipment
-            </Text>
-            <CustomPicker
-              options={equipmentOptions}
-              selectedValue={filterValues.equipment}
-              onValueChange={value => onFilterChange('equipment', value)}
-              placeholder='Select Equipment'
-            />
-          </View>
-        </View>
+              <View style={styles.pickerRow}>
+                {/* Muscle Picker */}
+                <View style={styles.pickerItem}>
+                  <Text
+                    style={[
+                      styles.pickerLabel,
+                      { color: themedStyles.textColor }
+                    ]}
+                  >
+                    Muscle
+                  </Text>
+                  <CustomPicker
+                    options={muscleOptions}
+                    selectedValue={filterValues.muscle}
+                    onValueChange={value => onFilterChange('muscle', value)}
+                    placeholder='Select Muscle'
+                  />
+                </View>
+
+                {/* Equipment Picker */}
+                <View style={styles.pickerItem}>
+                  <Text
+                    style={[
+                      styles.pickerLabel,
+                      { color: themedStyles.textColor }
+                    ]}
+                  >
+                    Equipment
+                  </Text>
+                  <CustomPicker
+                    options={equipmentOptions}
+                    selectedValue={filterValues.equipment}
+                    onValueChange={value => onFilterChange('equipment', value)}
+                    placeholder='Select Equipment'
+                  />
+                </View>
+              </View>
+            </View>
+          </SafeAreaView>
+        </TouchableWithoutFeedback>
       </View>
-    </SafeAreaView>
+    </TouchableWithoutFeedback>
   );
 };
 
 const styles = StyleSheet.create({
+  overlay: {
+    // This ensures the overlay covers the full screen
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    // Semi-transparent background
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    // Center filter vertically if needed
+    justifyContent: 'flex-start',
+    paddingTop: 100
+  },
   safeArea: {
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
