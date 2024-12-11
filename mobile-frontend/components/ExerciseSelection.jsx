@@ -276,10 +276,14 @@ const ExerciseSelection = ({ navigation, route }) => {
       ]
     }));
 
+    console.log('Exercise Selection - Current workout state:', workoutState);
+    console.log('Standardized exercises to add:', standardizedExercises);
+
     if (contextType === 'workout') {
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
       });
+      console.log('After adding exercises - workout state:', workoutState);
       navigation.navigate('StartWorkout');
     } else if (contextType === 'program') {
       const activeWorkoutId = programState.workout.activeWorkout;

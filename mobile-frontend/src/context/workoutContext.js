@@ -79,20 +79,41 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
+      console.log('Adding exercise - Current state:', state);
+      console.log('Exercise payload:', action.payload);
+      const newExercise = {
+        ...action.payload,
+        id: action.payload.id || Crypto.randomUUID(),
+        catalog_exercise_id:
+          action.payload.catalog_exercise_id || action.payload.id,
+        sets: action.payload.sets || [
+          { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+        ]
+      };
+
+      // Create workoutDetails if it doesn't exist
+      const updatedWorkoutDetails = state.workoutDetails || {
+        id: state.workout_id,
+        name: state.workout_name,
+        exercises: []
+      };
+
       return {
         ...state,
-        exercises: [
-          ...state.exercises,
-          {
-            ...action.payload,
-            id: action.payload.id || Crypto.randomUUID(),
-            catalog_exercise_id:
-              action.payload.catalog_exercise_id || action.payload.id,
-            sets: action.payload.sets || [
-              { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
-            ]
-          }
-        ]
+        exercises: [...state.exercises, newExercise],
+        workoutDetails: {
+          ...updatedWorkoutDetails,
+          exercises: [...(updatedWorkoutDetails.exercises || []), newExercise]
+        },
+        currentWorkout: {
+          ...(state.currentWorkout || {
+            id: state.workout_id,
+            name: state.workout_name,
+            startTime: new Date(),
+            isCompleted: false
+          }),
+          exercises: [...(state.currentWorkout?.exercises || []), newExercise]
+        }
       };
 
     case actionTypes.REMOVE_EXERCISE_FROM_WORKOUT:
@@ -150,8 +171,8 @@ const workoutReducer = (state, action) => {
         ...state,
         workoutDetails: {
           ...state.workoutDetails,
-          exercises: state.workoutDetails.exercises.map(exercise =>
-            exercise.id === action.payload.exerciseId
+          exercises: state.workoutDetails.exercises?.map(exercise =>
+            exercise?.id === action.payload.exerciseId
               ? { ...exercise, sets: action.payload.sets }
               : exercise
           )
@@ -425,6 +446,7 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const updateExerciseSets = useCallback((exerciseId, sets) => {
+    console.log('Updating exercise sets:', exerciseId, sets);
     dispatch({
       type: actionTypes.UPDATE_EXERCISE_SETS,
       payload: { exerciseId, sets }
