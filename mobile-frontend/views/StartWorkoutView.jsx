@@ -199,6 +199,12 @@ const StartWorkoutView = () => {
   }, [workoutState.exercises, navigation]);
 
   const currentExercise = workoutState.exercises[currentExerciseIndex];
+  console.log('Current exercise in StartWorkoutView:', {
+    id: currentExercise?.id,
+    imageUrl: currentExercise?.imageUrl,
+    index: currentExerciseIndex,
+    totalExercises: workoutState.exercises?.length
+  });
 
   const handleCancel = () => navigation.goBack();
 
@@ -522,7 +528,7 @@ const StartWorkoutView = () => {
                 >
                   <View style={styles.exerciseImage}>
                     <View style={imageOverlayStyle} />
-                    {currentExercise?.imageUrl || currentExercise?.imageUrl ? (
+                    {currentExercise?.imageUrl ? (
                       <Animated.Image
                         source={{
                           uri:

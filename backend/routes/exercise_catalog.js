@@ -99,8 +99,14 @@ router.get('/exercise-catalog', async (req, res) => {
       };
 
       const signedUrl = s3.getSignedUrl('getObject', params);
+
       return {
-        ...row,
+        id: row.id,
+        name: row.name,
+        muscle: row.muscle,
+        muscle_group: row.muscle_group,
+        subcategory: row.subcategory,
+        equipment: row.equipment,
         imageUrl: signedUrl
       };
     });
@@ -163,53 +169,57 @@ router.get('/exercise-catalog/:id/image', async (req, res) => {
   }
 });
 
-// Endpoint to fetch an image directly from Cloudflare R2 using S3 getObject
-// router.get('/exercise-image/:filePath', async (req, res) => {
-//   const { filePath } = req.params;
-
-//   const params = {
-//     Bucket: process.env.R2_BUCKET_NAME,
-//     Key: filePath // The file path of the image in the R2 bucket
-//   };
-
-//   try {
-//     const data = await s3.getObject(params).promise();
-
-//     // Set the content-type for GIFs
-//     res.setHeader('Content-Type', 'image/gif');
-//     res.send(data.Body); // Send the image data as response
-//   } catch (error) {
-//     console.error('Error fetching image:', error);
-//     res.status(500).send('Error fetching image');
-//   }
-// });
-
 // Endpoint to get a specific exercise from the catalog by ID
 
 router.get('/exercise-catalog/:id', async (req, res) => {
-  const { id } = req.params; // Extract the ID from the route parameters
+  const { id } = req.params;
 
   try {
-    // Query to fetch the exercise with the specified ID
-    const exerciseQuery = `SELECT ec.id, ec.name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path
-    FROM exercise_catalog ec
-    JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
-    JOIN equipment_catalog eq ON ec.equipment_id = eq.id
-    JOIN image_metadata im ON ec.image_id = im.id
-    WHERE ec.id = $1`;
+    const exerciseQuery = `
+      SELECT
+        ec.id,
+        ec.name,
+        mg.muscle,
+        mg.muscle_group,
+        mg.subcategory,
+        eq.name as equipment,
+        im.file_path
+      FROM exercise_catalog ec
+      JOIN muscle_groups mg ON ec.muscle_group_id = mg.id
+      JOIN equipment_catalog eq ON ec.equipment_id = eq.id
+      JOIN image_metadata im ON ec.image_id = im.id
+      WHERE ec.id = $1`;
 
     const { rows } = await db.query(exerciseQuery, [parseInt(id)]);
 
     if (rows.length === 0) {
-      // If no exercise is found with the given ID, return a 404 Not Found response
-
       return res.status(404).json({ message: 'Exercise not found' });
     }
 
-    // If a exercise is found, return it in the response
-    res.json(rows[0]);
+    // Add signed URL
+    const params = {
+      Bucket: process.env.R2_BUCKET_NAME,
+      Key: rows[0].file_path,
+      Expires: 3600,
+      ResponseContentType: 'image/gif',
+      ResponseCacheControl: 'public, max-age=86400, stale-while-revalidate=3600'
+    };
+
+    const signedUrl = s3.getSignedUrl('getObject', params);
+
+    // Return cleaned up object without file_path
+    const result = {
+      id: rows[0].id,
+      name: rows[0].name,
+      muscle: rows[0].muscle,
+      muscle_group: rows[0].muscle_group,
+      subcategory: rows[0].subcategory,
+      equipment: rows[0].equipment,
+      imageUrl: signedUrl
+    };
+
+    res.json(result);
   } catch (error) {
-    // Log the error and return a 500 Internal Server Error response if an error occurs
     console.error('Error fetching exercise:', error);
     res.status(500).json({ message: 'Error fetching exercise' });
   }

@@ -267,27 +267,27 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   const handleAdd = () => {
     console.log(
-      'Selected exercise image details:',
-      selectedExercises.map(ex => ({
-        id: ex.id,
-        imageUrl: ex.imageUrl
-      }))
+      'Selected exercises before standardization:',
+      selectedExercises
     );
-    const standardizedExercises = selectedExercises.map(exercise => ({
-      ...exercise,
-      id: exercise.id || Crypto.randomUUID(),
-      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
-      imageUrl: exercise.imageUrl,
-      sets: exercise.sets || [
-        { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
-      ]
-    }));
 
-    console.log('Exercise Selection - Current workout state:', workoutState);
-    console.log('Standardized exercises to add:', standardizedExercises);
+    const standardizedExercises = selectedExercises.map(exercise => {
+      const standardized = {
+        ...exercise,
+        id: exercise.id || Crypto.randomUUID(),
+        catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+        imageUrl: exercise.imageUrl,
+        sets: exercise.sets || [
+          { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+        ]
+      };
+      console.log('Standardized exercise:', standardized);
+      return standardized;
+    });
 
     if (contextType === 'workout') {
       standardizedExercises.forEach(exercise => {
+        console.log('Adding exercise to workout:', exercise);
         addExerciseToWorkout(exercise);
       });
       console.log('After adding exercises - workout state:', workoutState);
