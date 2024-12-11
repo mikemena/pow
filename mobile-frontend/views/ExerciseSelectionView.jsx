@@ -12,7 +12,6 @@ const ExerciseSelectionView = ({ route, navigation }) => {
     themeState.theme,
     themeState.accentColor
   );
-  console.log('ExerciseSelectionView route params:', route.params);
 
   return (
     <SafeAreaView

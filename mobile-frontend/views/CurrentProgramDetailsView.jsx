@@ -33,29 +33,15 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   const program = workoutState.activeProgramDetails;
   const workouts = program?.workouts || [];
 
-  // Log program details
-  console.log('Program:', {
-    exists: !!program,
-    programId: program?.id,
-    workouts: program?.workouts?.length
-  });
-
   useEffect(() => {
     // If we don't have program details, fetch them
     if (!workoutState.activeProgramDetails) {
-      console.log('No program details, fetching...');
       fetchActiveProgramDetails();
     }
   }, []);
 
   useEffect(() => {
     if (workoutState.activeProgramDetails && workouts[currentWorkoutIndex]) {
-      console.log('Initializing program workout with:', {
-        program_id: program?.id,
-        workout_name: workouts[currentWorkoutIndex]?.name,
-        workout_id: workouts[currentWorkoutIndex]?.id
-      });
-
       initializeProgramWorkout({
         program_id: program.id,
         workout_name: workouts[currentWorkoutIndex].name,
@@ -73,9 +59,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   }, [workoutState.activeProgramDetails]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('state', e => {
-      // console.log('Navigation State:', e.data);
-    });
+    const unsubscribe = navigation.addListener('state', e => {});
 
     return unsubscribe;
   }, [navigation]);

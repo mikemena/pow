@@ -8,21 +8,14 @@ export function useExerciseData(baseUrl = 'http://localhost:9025/api') {
   const [error, setError] = useState(null);
 
   const fetchMetadata = useCallback(async () => {
-    console.log('Fetching metadata...');
     try {
-      const musclesUrl = `${baseUrl}/muscles`;
-      const equipmentUrl = `${baseUrl}/equipments`;
+      // const musclesUrl = `${baseUrl}/muscles`;
+      // const equipmentUrl = `${baseUrl}/equipments`;
 
-      console.log('Fetching from URLs:', { musclesUrl, equipmentUrl });
       const [musclesRes, equipmentRes] = await Promise.all([
         fetch(`${baseUrl}/muscles`),
         fetch(`${baseUrl}/equipments`)
       ]);
-
-      console.log('Response status:', {
-        muscles: musclesRes.status,
-        equipment: equipmentRes.status
-      });
 
       if (!musclesRes.ok || !equipmentRes.ok) {
         throw new Error('Failed to fetch metadata');
@@ -32,11 +25,6 @@ export function useExerciseData(baseUrl = 'http://localhost:9025/api') {
         musclesRes.json(),
         equipmentRes.json()
       ]);
-
-      console.log('Fetched data:', {
-        muscles: musclesData?.length || 0,
-        equipment: equipmentData?.length || 0
-      });
 
       setMuscles(musclesData);
       setEquipment(equipmentData);
@@ -67,10 +55,8 @@ export function useExerciseData(baseUrl = 'http://localhost:9025/api') {
   );
 
   useEffect(() => {
-    console.log('Initial hook mount, starting data fetch');
     setLoading(true);
     Promise.all([fetchMetadata(), fetchExercises()]).finally(() => {
-      console.log('All data fetched, setting loading to false');
       setLoading(false);
     });
   }, [fetchMetadata, fetchExercises]);

@@ -46,18 +46,10 @@ const WorkoutView = () => {
 
   const handleProgramWorkoutPress = async () => {
     // Let's log the current state to understand what we're working with
-    console.log(
-      'Program workout pressed. Active program:',
-      workoutState.activeProgram
-    );
-    console.log('Full workout state:', workoutState);
 
     if (workoutState.activeProgram) {
-      console.log('Attempting to navigate to CurrentProgramDetails');
       navigation.navigate('CurrentProgramDetails');
-      console.log('Navigation called');
     } else {
-      console.log('No active program, navigating to program selection');
       clearWorkoutDetails();
       clearCurrentWorkout();
       navigation.navigate('CurrentProgram');

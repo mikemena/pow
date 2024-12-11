@@ -26,8 +26,6 @@ router.get('/exercise-catalog', async (req, res) => {
     const muscle = req.query.muscle;
     const equipment = req.query.equipment;
 
-    console.log('Received filter params:', { name, muscle, equipment });
-
     // Build WHERE clause dynamically
     let whereConditions = [];
     let queryParams = [];
@@ -57,10 +55,6 @@ router.get('/exercise-catalog', async (req, res) => {
         ? 'WHERE ' + whereConditions.join(' AND ')
         : '';
 
-    // Debug log the constructed WHERE clause
-    console.log('Where clause:', whereClause);
-    console.log('Query params:', queryParams);
-
     // Get filtered count
     const countQuery = `
     SELECT COUNT(*)
@@ -69,15 +63,9 @@ router.get('/exercise-catalog', async (req, res) => {
     JOIN equipment_catalog eq ON ec.equipment_id = eq.id
     ${whereClause}`;
 
-    console.log('Count query:', {
-      sql: countQuery,
-      params: queryParams
-    });
-
     const {
       rows: [{ count }]
     } = await db.query(countQuery, queryParams);
-    console.log('Count result:', count);
 
     // Main query with filters
     const query = `
@@ -97,21 +85,7 @@ router.get('/exercise-catalog', async (req, res) => {
       ORDER BY ec.id
       LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`;
 
-    console.log('Main query:', {
-      sql: query,
-      params: [...queryParams, limit, offset]
-    });
-
     const { rows } = await db.query(query, [...queryParams, limit, offset]);
-    console.log('First result:', rows[0]);
-
-    console.log('Query results:', {
-      totalCount: count,
-      returnedCount: rows.length,
-      firstRecord: rows[0]
-    });
-
-    console.log('Before generating signed URLs:', rows[0]);
 
     // Generate presigned URLs with longer expiration for caching
     const resultsWithSignedUrl = rows.map(row => {
@@ -125,14 +99,11 @@ router.get('/exercise-catalog', async (req, res) => {
       };
 
       const signedUrl = s3.getSignedUrl('getObject', params);
-      console.log('Generated signed URL for:', row.file_path, signedUrl);
       return {
         ...row,
         file_url: signedUrl
       };
     });
-
-    console.log('After adding signed URLs:', resultsWithSignedUrl[0]);
 
     // Set cache headers
     res.set({

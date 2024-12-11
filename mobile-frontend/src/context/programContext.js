@@ -124,11 +124,6 @@ export const ProgramProvider = ({ children }) => {
       }))
     };
 
-    console.log(
-      'Program data being sent to backend:',
-      JSON.stringify(newProgram, null, 2)
-    );
-
     try {
       validateProgramData(newProgram); // Validate data before sending
       const response = await fetch('http://localhost:9025/api/programs', {

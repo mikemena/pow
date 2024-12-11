@@ -114,8 +114,6 @@ const ExerciseSelection = ({ navigation, route }) => {
         equipment: filterValues.equipment?.trim() || ''
       });
 
-      console.log('Fetching exercises with params:', queryParams.toString());
-
       const response = await fetch(
         `http://localhost:9025/api/exercise-catalog?${queryParams}`,
         {
@@ -131,22 +129,13 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       const data = await response.json();
-      console.log('Received exercise data first item:', data.exercises[0]);
 
       // Reset data when applying new filters
       if (!shouldAppend) {
-        console.log(
-          'Setting new exercises state with first item:',
-          data.exercises[0]
-        );
         setExercises(data.exercises);
         setFilteredExercises(data.exercises);
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       } else {
-        console.log(
-          'Appending exercises with first new item:',
-          data.exercises[0]
-        );
         setExercises(prev => [...prev, ...data.exercises]);
         setFilteredExercises(prev => [...prev, ...data.exercises]);
       }
@@ -170,30 +159,14 @@ const ExerciseSelection = ({ navigation, route }) => {
   const debouncedFilterChange = useMemo(
     () =>
       debounce((key, value) => {
-        console.log('Debounced filter executing:', { key, value });
         setFilterValues(prev => {
           const newValues = { ...prev, [key]: value };
-          console.log('New filter values:', newValues);
+
           return newValues;
         });
       }, 300),
     []
   );
-
-  // Effects
-
-  // testing...
-  useEffect(() => {
-    console.log('Filter values changed:', filterValues);
-    if (
-      !initialLoadRef.current &&
-      Object.values(filterValues).some(value => value !== '')
-    ) {
-      console.log('Triggering new fetch with filters');
-      setCurrentPage(1);
-      fetchExercises(1, false);
-    }
-  }, [filterValues]);
 
   useEffect(() => {
     if (Object.values(filterValues).some(value => value !== '')) {
@@ -205,15 +178,6 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   }, [filterValues]);
 
-  useEffect(() => {
-    console.log('ExerciseSelection Mount:', {
-      contextType,
-      programAction,
-      programId,
-      routeParams: route.params,
-      hasActiveWorkout: !!programState.workout.activeWorkout
-    });
-  }, []);
   useEffect(() => {
     // Initial load
     fetchExercises(1, false);
@@ -277,8 +241,6 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   }, [currentPage, hasMore, isLoadingMore, isLoading]);
 
-  const getTotalMatches = () => filteredExercises.length;
-
   const toggleExerciseSelection = exercise => {
     const isSelected = selectedExercises.some(
       e => e.catalog_exercise_id === exercise.id
@@ -314,20 +276,12 @@ const ExerciseSelection = ({ navigation, route }) => {
       ]
     }));
 
-    console.log('Handling add with:', {
-      contextType: contextType,
-      programAction: programAction,
-      exerciseCount: standardizedExercises.length
-    });
-
     if (contextType === 'workout') {
-      console.log('Adding exercises to workout context');
       standardizedExercises.forEach(exercise => {
         addExerciseToWorkout(exercise);
       });
       navigation.navigate('StartWorkout');
     } else if (contextType === 'program') {
-      console.log('Adding exercises to program context');
       const activeWorkoutId = programState.workout.activeWorkout;
       if (!activeWorkoutId) {
         console.error(

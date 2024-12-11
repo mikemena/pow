@@ -125,7 +125,6 @@ const StartWorkoutView = () => {
 
       // Calculate duration in minutes
       const durationInMinutes = Math.floor(time / 60);
-      console.log('Completing workout with duration:', durationInMinutes);
 
       // Complete workout with duration directly
       await completeWorkout(durationInMinutes);

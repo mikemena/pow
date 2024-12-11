@@ -57,12 +57,10 @@ const Exercise = ({
   }, [workout]);
 
   const handleDeleteExercise = () => {
-    // console.log('Deleting exercise:', exercise.id);
     removeExercise(workout.id, exercise.id);
   };
 
   const handleAddSet = () => {
-    // console.log('handleAddSet called');
     if (!workout || !workout.id) {
       console.error('No active workout found.');
       return;
@@ -74,7 +72,6 @@ const Exercise = ({
       weight: null,
       reps: null
     };
-    // console.log('New set to be added:', newSet);
     addSet(workout.id, exercise.id, newSet);
   };
 

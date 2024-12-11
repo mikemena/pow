@@ -13,19 +13,10 @@ const s3 = new AWS.S3({
   s3ForcePathStyle: true
 });
 
-// Logging utility
-// const logQuery = (query, params) => {
-//   console.log('\nExecuting Query:');
-//   console.log('SQL:', query.replace(/\s+/g, ' ').trim());
-//   console.log('Parameters:', params);
-// };
-
 // Endpoint to get a workout by ID
 router.get('/workout/:workout_id', async (req, res) => {
   const startTime = Date.now();
   const { workout_id } = req.params;
-
-  // console.log(`\n[${new Date().toISOString()}] Fetching workout ${workout_id}`);
 
   try {
     // Validate workout_id
@@ -61,13 +52,9 @@ router.get('/workout/:workout_id', async (req, res) => {
       WHERE w.id = $1
       ORDER BY e.order, s.order`;
 
-    // logQuery(query, [parsedId]);
-
     const workoutResult = await pool.query(query, [parsedId]);
-    // console.log(`Query returned ${workoutResult.rows.length} rows`);
 
     if (workoutResult.rows.length === 0) {
-      console.log(`No workout found with ID ${workout_id}`);
       return res.status(404).json({ message: 'Workout not found' });
     }
 
@@ -95,9 +82,6 @@ router.get('/workout/:workout_id', async (req, res) => {
           imageUrl: row.image_url,
           sets: []
         });
-        // console.log(
-        //   `Added exercise: ${row.exercise_name} (ID: ${row.exercise_id})`
-        // );
       }
 
       // Add set to exercise if it exists

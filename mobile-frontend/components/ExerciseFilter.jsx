@@ -38,10 +38,6 @@ const ExerciseFilter = ({
     loadCatalogData();
   }, []);
 
-  //   useEffect(() => {
-  //     console.log('Equipment options updated:', equipmentOptions);
-  //   }, [equipmentOptions]);
-
   const getCachedData = async key => {
     try {
       const cached = await AsyncStorage.getItem(key);
@@ -87,11 +83,9 @@ const ExerciseFilter = ({
   const fetchEquipment = async () => {
     try {
       const apiUrl = 'http://localhost:9025/api/equipments';
-      console.log('Fetching equipment from:', apiUrl);
       const response = await fetch(apiUrl);
 
       if (!response.ok) {
-        console.log('Equipment response not ok:', response.status);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 

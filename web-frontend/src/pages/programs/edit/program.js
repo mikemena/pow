@@ -105,11 +105,6 @@ const EditProgram = () => {
         })
       };
 
-      console.log(
-        'Updated program being sent:',
-        JSON.stringify(updatedProgram, null, 2)
-      );
-
       await updateProgram(updatedProgram);
 
       navigate('/programs');

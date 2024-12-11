@@ -177,7 +177,6 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.UPDATE_WORKOUT_DURATION:
-      console.log('Reducer updating duration:', action.payload);
       return {
         ...state,
         workoutDetails: {
@@ -206,7 +205,6 @@ export const WorkoutProvider = ({ children }) => {
   const [state, dispatch] = useReducer(workoutReducer, initialState);
 
   const updateWorkoutDuration = useCallback(minutes => {
-    console.log('Updating workout duration:', minutes);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT_DURATION,
       payload: minutes
@@ -466,13 +464,6 @@ export const WorkoutProvider = ({ children }) => {
           workoutData.programId = state.workoutDetails.programId;
         }
 
-        console.log('Preparing workout data:', {
-          ...workoutData,
-          duration: workoutData.duration,
-          durationType: typeof workoutData.duration,
-          programId: workoutData.programId || 'not included'
-        });
-
         // Validate required fields (notice programId is not checked)
         if (
           !workoutData.userId ||
@@ -501,7 +492,6 @@ export const WorkoutProvider = ({ children }) => {
         });
 
         const responseText = await response.text();
-        console.log('Response from server:', responseText);
 
         if (!response.ok) {
           let errorMessage = 'Failed to save workout';

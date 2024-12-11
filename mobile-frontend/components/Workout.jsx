@@ -36,7 +36,6 @@ const Workout = ({
     useContext(ProgramContext);
 
   const workouts = state.workout.workouts;
-  console.log('state', state);
 
   // Get the most up-to-date workout data from the state
   const workout = useMemo(() => {

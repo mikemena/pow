@@ -32,7 +32,6 @@ const CurrentProgramView = () => {
   const {
     state: { programs }
   } = useContext(ProgramContext);
-  // console.log('Programs in current programs view:', programs);
   const {
     state: workoutState,
     setActiveProgram,
@@ -96,11 +95,6 @@ const CurrentProgramView = () => {
   // Remove fetchActiveProgram from fetchPrograms dependencies
   const fetchPrograms = useCallback(async () => {
     try {
-      // console.log(
-      //   'Fetching programs from:',
-      //   `${API_URL_MOBILE}/api/users/2/programs`
-      // );
-
       const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
         headers: {
           Accept: 'application/json',
@@ -113,7 +107,6 @@ const CurrentProgramView = () => {
       }
 
       const data = await response.json();
-      // console.log('Programs fetched:', data);
 
       // Always set program list, even if there's no active program
       setProgramList({

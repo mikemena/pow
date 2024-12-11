@@ -32,10 +32,6 @@ const FlexWorkout = () => {
     initializeFlexWorkout();
   }, []);
 
-  // useEffect(() => {
-  //   console.log('State after update:', workoutState);
-  // }, [workoutState]);
-
   const handleAddExercise = () => {
     navigation.navigate('ExerciseSelection', {
       contextType: 'workout',

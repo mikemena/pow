@@ -87,11 +87,6 @@ const EditProgram = () => {
         }))
       };
 
-      console.log(
-        'Updated program being sent:',
-        JSON.stringify(updatedProgram, null, 2)
-      );
-
       await updateProgram(updatedProgram);
       // Reset the navigation stack to ProgramsList
       navigation.reset({

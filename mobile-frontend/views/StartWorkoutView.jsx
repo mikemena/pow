@@ -39,7 +39,6 @@ const StartWorkoutView = () => {
     updateWorkoutName,
     startWorkout
   } = useContext(WorkoutContext);
-  console.log('Initial state from Start Workout View:', workoutState);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
     workoutState.workout_name || ''
@@ -64,94 +63,24 @@ const StartWorkoutView = () => {
     themeState.accentColor
   );
 
-  const logWorkoutState = (source, state) => {
-    console.log('\n=== Workout State Analysis ===');
-    console.log(`Source: ${source}`);
-    console.log('State Structure:');
-
-    // Core state fields
-    console.log('Core Fields:', {
-      user_id: state.user_id,
-      program_id: state.program_id,
-      workout_name: state.workout_name,
-      workout_id: state.workout_id,
-      duration: state.duration,
-      is_completed: state.is_completed,
-      date: state.date
-    });
-
-    // Exercises analysis
-    console.log('Exercises:', {
-      count: state.exercises?.length || 0,
-      hasValidStructure: state.exercises?.every(
-        ex =>
-          ex.id &&
-          ex.exercise_id &&
-          ex.catalog_exercise_id &&
-          ex.name &&
-          ex.sets
-      ),
-      firstExercise: state.exercises?.[0]
-        ? {
-            id: state.exercises[0].id,
-            exercise_id: state.exercises[0].exercise_id,
-            catalog_exercise_id: state.exercises[0].catalog_exercise_id,
-            name: state.exercises[0].name,
-            setsCount: state.exercises[0].sets?.length
-          }
-        : 'No exercises'
-    });
-
-    // Additional state properties
-    console.log('Additional Properties:', {
-      hasCurrentWorkout: !!state.currentWorkout,
-      hasWorkoutDetails: !!state.workoutDetails,
-      activeProgram: state.activeProgram,
-      hasActiveProgramDetails: !!state.activeProgramDetails
-    });
-
-    console.log('===========================\n');
-  };
-
   useEffect(() => {
     const addedExerciseIds = route.params?.addedExerciseIds;
     if (addedExerciseIds) {
-      console.log(
-        'Added exercises found:',
-        workoutState.exercises.filter(ex => addedExerciseIds.includes(ex.id))
-      );
     }
   }, []);
 
   useEffect(() => {
-    logWorkoutState('Component Mount', workoutState);
-  }, []);
-
-  useEffect(() => {
-    console.log('StartWorkoutView mounting with:', {
-      hasCurrentWorkout: !!workoutState.currentWorkout,
-      routeParams: route?.params,
-      workoutFromRoute: route?.params?.workout
-    });
-
     if (!workoutState.currentWorkout && route?.params?.workout) {
-      console.log('Initializing workout with:', route.params.workout);
       startWorkout(route.params.workout);
-      // Log after startWorkout
-      logWorkoutState('After startWorkout', workoutState);
     }
   }, [route, workoutState.currentWorkout, startWorkout]);
 
   // Add logging when exercises change
-  useEffect(() => {
-    logWorkoutState('Exercises Updated', workoutState);
-  }, [workoutState.exercises]);
+  useEffect(() => {}, [workoutState.exercises]);
 
   // Add logging for important state changes
   useEffect(() => {
     if (workoutState.exercises.length === 0) {
-      logWorkoutState('No Exercises Check', workoutState);
-      console.log('No exercises available');
       navigation.goBack();
       return;
     }
@@ -218,15 +147,7 @@ const StartWorkoutView = () => {
   };
 
   useEffect(() => {
-    // Add debug logging
-    console.log('StartWorkoutView mounting with:', {
-      hasCurrentWorkout: !!workoutState.currentWorkout,
-      routeParams: route?.params,
-      workoutFromRoute: route?.params?.workout
-    });
-
     if (!workoutState.currentWorkout && route?.params?.workout) {
-      console.log('Initializing workout with:', route.params.workout);
       startWorkout(route.params.workout);
     }
   }, [route, workoutState.currentWorkout, startWorkout]);
@@ -272,7 +193,6 @@ const StartWorkoutView = () => {
 
   useEffect(() => {
     if (workoutState.exercises.length === 0) {
-      console.log('No exercises available');
       navigation.goBack();
       return;
     }
@@ -312,7 +232,6 @@ const StartWorkoutView = () => {
 
       // Calculate duration in minutes
       const durationInMinutes = Math.floor(time / 60);
-      console.log('Completing workout with duration:', durationInMinutes);
 
       // Complete workout with duration directly
       await completeWorkout(durationInMinutes);
@@ -363,11 +282,6 @@ const StartWorkoutView = () => {
   };
 
   const handleNextExercise = () => {
-    console.log('Next button pressed');
-    console.log(
-      'Can go next:',
-      currentExerciseIndex < workoutState?.exercises?.length - 1
-    );
     if (currentExerciseIndex < workoutState.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
       const nextSets =
@@ -383,8 +297,6 @@ const StartWorkoutView = () => {
   };
 
   const handlePreviousExercise = () => {
-    console.log('Previous button pressed');
-    console.log('Can go previous:', currentExerciseIndex > 0);
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
       const prevSets =

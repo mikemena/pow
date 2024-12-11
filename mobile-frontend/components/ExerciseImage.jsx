@@ -16,12 +16,11 @@ const ExerciseImage = ({ exercise }) => {
 
   const refreshImageUrl = async () => {
     try {
-      console.log('Refreshing image URL for:', exercise.name);
       const response = await fetch(
         `http://localhost:9025/api/exercise-catalog/${exercise.id}/image`
       );
       const data = await response.json();
-      console.log('Refreshed URL response:', data);
+
       if (data.file_url && isMounted.current) {
         setImageUrl(data.file_url);
         return data.file_url;
@@ -35,11 +34,6 @@ const ExerciseImage = ({ exercise }) => {
 
   useEffect(() => {
     isMounted.current = true;
-    console.log('ExerciseImage mounted/updated for:', exercise.name, {
-      fileUrl: exercise.file_url,
-      exerciseId: exercise.id,
-      filePath: exercise.file_path
-    });
 
     if (!exercise.file_url && exercise.file_path) {
       refreshImageUrl();
@@ -55,16 +49,8 @@ const ExerciseImage = ({ exercise }) => {
   const handleImageError = useCallback(async () => {
     if (!isMounted.current) return;
 
-    console.log('Image error occurred for:', exercise.name, {
-      currentUrl: imageUrl
-    });
-
     try {
       const newUrl = await refreshImageUrl();
-      console.log('Refreshed URL result:', {
-        exercise: exercise.name,
-        newUrl
-      });
 
       if (newUrl && isMounted.current) {
         setImageUrl(newUrl);
@@ -83,7 +69,6 @@ const ExerciseImage = ({ exercise }) => {
   }, [exercise, imageUrl]);
 
   const handleLoadStart = () => {
-    console.log('Image load starting:', exercise.name);
     if (isMounted.current) {
       setIsLoading(true);
       setImageError(false);
@@ -91,7 +76,6 @@ const ExerciseImage = ({ exercise }) => {
   };
 
   const handleLoadSuccess = () => {
-    console.log('Image loaded successfully:', exercise.name);
     if (isMounted.current) {
       setIsLoading(false);
       setImageError(false);

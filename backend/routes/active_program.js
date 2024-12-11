@@ -18,14 +18,9 @@ router.get('/active-programs/user/:userId', async (req, res) => {
     );
 
     if (!result?.rows || result.rows.length === 0) {
-      console.log('No active program found for user:', userId);
       return res.status(200).json({ activeProgram: null });
     }
 
-    // Log the response being sent
-    // console.log('Sending active program response:', {
-    //   activeProgram: result.rows[0]
-    // });
     res.json({ activeProgram: result.rows[0] });
   } catch (error) {
     console.error('Error fetching active program:', error);
@@ -44,11 +39,10 @@ router.post('/active-programs', async (req, res) => {
     await pool.query('BEGIN');
 
     // Deactivate any currently active programs for the user
-    const deactivateResult = await pool.query(
-      'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE',
-      [userId]
-    );
-    console.log('Deactivation result:', deactivateResult);
+    // const deactivateResult = await pool.query(
+    //   'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE',
+    //   [userId]
+    // );
 
     // Fetch program details
     const programResult = await pool.query(
@@ -61,7 +55,6 @@ router.post('/active-programs', async (req, res) => {
     }
 
     const { program_duration, duration_unit } = programResult.rows[0];
-    console.log('Program details:', { program_duration, duration_unit });
 
     let endDate;
     const startDate = new Date();
@@ -79,8 +72,6 @@ router.post('/active-programs', async (req, res) => {
       );
     }
 
-    console.log('Calculated dates:', { startDate, endDate });
-
     // Insert the new active program
     const result = await pool.query(
       `INSERT INTO active_programs
@@ -93,8 +84,6 @@ router.post('/active-programs', async (req, res) => {
        RETURNING *`,
       [userId, programId, startDate, endDate]
     );
-
-    console.log('Insertion result:', result.rows[0]);
 
     // Commit the transaction
     await pool.query('COMMIT');
@@ -117,43 +106,28 @@ router.post('/active-programs', async (req, res) => {
 // delete active program for a user
 router.delete('/active-programs/user/:userId', async (req, res) => {
   const { userId } = req.params;
-  console.log('Received DELETE request for user:', userId);
 
   try {
-    console.log('Starting transaction');
     await pool.query('BEGIN');
-
-    console.log('Executing deactivation query');
     const result = await pool.query(
       'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE RETURNING *',
       [userId]
     );
-    console.log('Deactivation query result:', result.rows);
 
-    console.log('Committing transaction');
     await pool.query('COMMIT');
 
     if (result.rows.length === 0) {
-      console.log('No active program found to deactivate');
       return res.status(200).json({
         message: 'No active program to deactivate',
         deactivatedProgram: null
       });
     }
 
-    console.log('Successfully deactivated program');
     res.json({
       message: 'Program deactivated successfully',
       deactivatedProgram: result.rows[0]
     });
   } catch (error) {
-    console.error('Detailed deactivation error:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      userId: userId
-    });
-
     await pool.query('ROLLBACK');
     res.status(500).json({
       error: 'Failed to deactivate program',
