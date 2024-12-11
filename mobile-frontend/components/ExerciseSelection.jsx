@@ -266,11 +266,18 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   const handleAdd = () => {
+    console.log(
+      'Selected exercise image details:',
+      selectedExercises.map(ex => ({
+        id: ex.id,
+        imageUrl: ex.imageUrl
+      }))
+    );
     const standardizedExercises = selectedExercises.map(exercise => ({
       ...exercise,
       id: exercise.id || Crypto.randomUUID(),
       catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
-      imageUrl: exercise.file_url || exercise.imageUrl,
+      imageUrl: exercise.imageUrl,
       sets: exercise.sets || [
         { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
       ]

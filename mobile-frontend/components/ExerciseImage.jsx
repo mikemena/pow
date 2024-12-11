@@ -3,10 +3,18 @@ import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 
+const IMAGE_CACHE = new Map();
+
 const ExerciseImage = ({ exercise }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
-  const [imageUrl, setImageUrl] = useState(exercise.file_url);
+  const [imageUrl, setImageUrl] = useState(() => {
+    const cachedUrl = IMAGE_CACHE.get(exercise.id);
+    if (cachedUrl) {
+      return cachedUrl;
+    }
+    return exercise.imageUrl;
+  });
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -21,9 +29,11 @@ const ExerciseImage = ({ exercise }) => {
       );
       const data = await response.json();
 
-      if (data.file_url && isMounted.current) {
-        setImageUrl(data.file_url);
-        return data.file_url;
+      if (data.imageUrl && isMounted.current) {
+        const newUrl = data.imageUrl;
+        IMAGE_CACHE.set(exercise.id, newUrl);
+        setImageUrl(newUrl);
+        return newUrl;
       }
       return null;
     } catch (error) {
@@ -32,13 +42,26 @@ const ExerciseImage = ({ exercise }) => {
     }
   };
 
+  console.log('ExerciseImage component received:', {
+    id: exercise?.id,
+    imageUrl: exercise?.imageUrl
+  });
+
   useEffect(() => {
     isMounted.current = true;
 
-    if (!exercise.file_url && exercise.file_path) {
-      refreshImageUrl();
+    const cachedUrl = IMAGE_CACHE.get(exercise.id);
+    if (cachedUrl) {
+      setImageUrl(cachedUrl);
+      setIsLoading(false);
     } else {
-      setImageUrl(exercise.file_url);
+      const url = exercise.imageUrl;
+      if (url) {
+        IMAGE_CACHE.set(exercise.id, url);
+        setImageUrl(url);
+      } else if (exercise.file_path) {
+        refreshImageUrl();
+      }
     }
 
     return () => {

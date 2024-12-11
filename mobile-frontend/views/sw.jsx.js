@@ -418,10 +418,10 @@ const StartWorkoutView = () => {
 
             <View style={styles.imageNavigationContainer}>
               <View style={styles.exerciseImage}>
-                {exercise?.imageUrl || exercise?.file_url ? (
+                {exercise?.imageUrl ? (
                   <Image
                     source={{
-                      uri: exercise.imageUrl || exercise.file_url
+                      uri: exercise.imageUrl
                     }}
                     style={styles.exerciseGif}
                     resizeMode='contain'

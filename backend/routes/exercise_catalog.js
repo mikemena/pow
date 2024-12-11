@@ -101,7 +101,7 @@ router.get('/exercise-catalog', async (req, res) => {
       const signedUrl = s3.getSignedUrl('getObject', params);
       return {
         ...row,
-        file_url: signedUrl
+        imageUrl: signedUrl
       };
     });
 
@@ -156,7 +156,7 @@ router.get('/exercise-catalog/:id/image', async (req, res) => {
     };
 
     const signedUrl = s3.getSignedUrl('getObject', params);
-    res.json({ file_url: signedUrl });
+    res.json({ imageUrl: signedUrl });
   } catch (error) {
     console.error('Error generating image URL:', error);
     res.status(500).json({ message: 'Error generating image URL' });

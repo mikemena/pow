@@ -522,11 +522,11 @@ const StartWorkoutView = () => {
                 >
                   <View style={styles.exerciseImage}>
                     <View style={imageOverlayStyle} />
-                    {currentExercise?.imageUrl || currentExercise?.file_url ? (
+                    {currentExercise?.imageUrl || currentExercise?.imageUrl ? (
                       <Animated.Image
                         source={{
                           uri:
-                            currentExercise.imageUrl || currentExercise.file_url
+                            currentExercise.imageUrl || currentExercise.imageUrl
                         }}
                         style={[styles.exerciseGif, { opacity: imageOpacity }]}
                         resizeMode='contain'

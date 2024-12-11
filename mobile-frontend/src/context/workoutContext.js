@@ -86,6 +86,7 @@ const workoutReducer = (state, action) => {
         id: action.payload.id || Crypto.randomUUID(),
         catalog_exercise_id:
           action.payload.catalog_exercise_id || action.payload.id,
+        imageUrl: action.payload.imageUrl,
         sets: action.payload.sets || [
           { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
         ]
@@ -382,7 +383,7 @@ export const WorkoutProvider = ({ children }) => {
       name: exercise.name,
       muscle: exercise.muscle,
       equipment: exercise.equipment,
-      imageUrl: exercise.file_url || exercise.imageUrl,
+      imageUrl: exercise.imageUrl,
       sets: exercise.sets || []
     }));
 
@@ -409,7 +410,7 @@ export const WorkoutProvider = ({ children }) => {
       name: exercise.name,
       muscle: exercise.muscle,
       equipment: exercise.equipment,
-      imageUrl: exercise.file_url || exercise.imageUrl,
+      imageUrl: exercise.imageUrl,
       // Initialize empty sets array (sets will be managed separately)
       sets: exercise.sets || []
     };
