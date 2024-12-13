@@ -73,13 +73,13 @@ const CurrentProgramView = () => {
 
       const data = await response.json();
 
-      if (data?.activeProgram?.program_id) {
+      if (data?.activeProgram?.programId) {
         const programDetails = programs.find(
-          p => p.id === data.activeProgram.program_id
+          p => p.id === data.activeProgram.programId
         );
 
         if (programDetails) {
-          setActiveProgram(data.activeProgram.program_id);
+          setActiveProgram(data.activeProgram.programId);
           setActiveProgramWithDetails(programDetails);
         }
       }
@@ -199,14 +199,14 @@ const CurrentProgramView = () => {
         !filters.programName ||
         program.name.toLowerCase().includes(filters.programName.toLowerCase());
       const matchesGoal =
-        !filters.selectedGoal || program.main_goal === filters.selectedGoal;
+        !filters.selectedGoal || program.mainGoal === filters.selectedGoal;
       const matchesDurationUnit =
         !filters.durationType ||
-        program.duration_unit.toLowerCase() ===
+        program.durationUnit.toLowerCase() ===
           filters.durationType.toLowerCase();
       const matchesDaysPerWeek =
         !filters.daysPerWeek ||
-        program.days_per_week === parseInt(filters.daysPerWeek);
+        program.daysPerWeek === parseInt(filters.daysPerWeek);
 
       return (
         matchesName && matchesGoal && matchesDurationUnit && matchesDaysPerWeek
@@ -265,7 +265,7 @@ const CurrentProgramView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {item.main_goal.charAt(0).toUpperCase() + item.main_goal.slice(1)}
+              {item.mainGoal.charAt(0).toUpperCase() + item.mainGoal.slice(1)}
             </Text>
           </View>
           <View style={styles.detailRow}>
@@ -277,7 +277,7 @@ const CurrentProgramView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {formatDuration(item.program_duration, item.duration_unit)}
+              {formatDuration(item.programDuration, item.durationUnit)}
             </Text>
           </View>
           <View style={styles.detailRow}>
@@ -289,7 +289,7 @@ const CurrentProgramView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {item.days_per_week}
+              {item.daysPerWeek}
             </Text>
           </View>
         </View>

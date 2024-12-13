@@ -79,20 +79,20 @@ const ProgramPage = () => {
       const matchesMainGoal =
         !selectedMainGoal ||
         selectedMainGoal === 'All' ||
-        program.main_goal === selectedMainGoal;
+        program.mainGoal === selectedMainGoal;
       const matchesDuration =
         !selectedDuration ||
         selectedDuration === 'All' ||
-        program.program_duration === parseInt(selectedDuration);
+        program.programDuration === parseInt(selectedDuration);
       const matchesDurationUnit =
         !selectedDurationUnit ||
         selectedDurationUnit === 'All' ||
-        program.duration_unit.toLowerCase() ===
+        program.durationUnit.toLowerCase() ===
           selectedDurationUnit.toLowerCase();
       const matchesDaysPerWeek =
         !selectedDaysPerWeek ||
         selectedDaysPerWeek === 'All' ||
-        program.days_per_week === parseInt(selectedDaysPerWeek);
+        program.daysPerWeek === parseInt(selectedDaysPerWeek);
       const matchesSearchTerm =
         !searchTerm ||
         program.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -270,7 +270,7 @@ const ProgramPage = () => {
                       Main Goal
                     </p>
                     <p className='view-prog-page__program-details-value'>
-                      {toProperCase(program.main_goal)}
+                      {toProperCase(program.mainGoal)}
                     </p>
                   </div>
                   <div className='view-prog-page__program-details-section'>
@@ -278,8 +278,8 @@ const ProgramPage = () => {
                       Duration
                     </p>
                     <p className='view-prog-page__program-details-value'>
-                      {program.program_duration}{' '}
-                      {toProperCase(program.duration_unit)}
+                      {program.programDuration}{' '}
+                      {toProperCase(program.durationUnit)}
                     </p>
                   </div>
                   <div className='view-prog-page__program-details-section'>
@@ -287,7 +287,7 @@ const ProgramPage = () => {
                       Days Per Week
                     </p>
                     <p className='view-prog-page__program-details-value'>
-                      {program.days_per_week}
+                      {program.daysPerWeek}
                     </p>
                   </div>
                 </div>

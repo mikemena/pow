@@ -120,8 +120,8 @@ const ProgramDetails = () => {
                     { color: themedStyles.textColor }
                   ]}
                 >
-                  {program.main_goal.charAt(0).toUpperCase() +
-                    program.main_goal.slice(1)}
+                  {program.mainGoal.charAt(0).toUpperCase() +
+                    program.mainGoal.slice(1)}
                 </Text>
               </View>
               <View style={styles.detailRow}>
@@ -140,8 +140,8 @@ const ProgramDetails = () => {
                   ]}
                 >
                   {formatDuration(
-                    program.program_duration,
-                    program.duration_unit
+                    program.programDuration,
+                    program.durationUnit
                   )}
                 </Text>
               </View>
@@ -160,7 +160,7 @@ const ProgramDetails = () => {
                     { color: themedStyles.textColor }
                   ]}
                 >
-                  {program.days_per_week}
+                  {program.daysPerWeek}
                 </Text>
               </View>
             </View>

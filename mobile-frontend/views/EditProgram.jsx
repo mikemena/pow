@@ -24,7 +24,7 @@ import useExpandedItems from '../src/hooks/useExpandedItems';
 const EditProgram = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const { program: initialProgram } = route.params;
+  const { program: initialProgram } = route.params || {};
 
   const {
     state,
@@ -51,6 +51,28 @@ const EditProgram = () => {
     themeState.theme,
     themeState.accentColor
   );
+
+  useEffect(() => {
+    const refresh = route.params?.shouldRefresh;
+    const programId = route.params?.programId;
+
+    if (refresh && programId) {
+      console.log('EditProgram - Refreshing program data', { programId });
+
+      const program = state.programs.find(p => p.id === programId);
+      if (program) {
+        console.log('Found program to refresh:', {
+          program,
+          workouts: program.workouts,
+          workoutExercises: program.workouts.map(w => ({
+            workoutId: w.id,
+            exercises: w.exercises
+          }))
+        });
+        initializeEditProgramState(program, program.workouts);
+      }
+    }
+  }, [route.params?.shouldRefresh, route.params?.programId]);
 
   useEffect(() => {
     setMode('edit');

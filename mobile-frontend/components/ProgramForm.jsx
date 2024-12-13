@@ -33,13 +33,13 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
 
   const [formValues, setFormValues] = useState({
     name: program?.name || '',
-    main_goal: program?.main_goal || '',
-    program_duration: program?.program_duration || '',
-    duration_unit: program?.duration_unit || '',
-    days_per_week: program?.days_per_week || '',
+    mainGoal: program?.mainGoal || '',
+    programDuration: program?.programDuration || '',
+    durationUnit: program?.durationUnit || '',
+    daysPerWeek: program?.daysPerWeek || '',
     workouts: program?.workouts || [],
-    programDurationDisplay: `${program?.program_duration || ''} ${
-      toUpperCase(program?.duration_unit) || ''
+    programDurationDisplay: `${program?.programDuration || ''} ${
+      toUpperCase(program?.durationUnit) || ''
     }`
   });
 
@@ -58,13 +58,13 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
     if (program) {
       setFormValues({
         name: program.name || '',
-        main_goal: program.main_goal || '',
-        program_duration: program.program_duration || '',
-        duration_unit: program.duration_unit || '',
-        days_per_week: program.days_per_week || '',
+        mainGoal: program.mainGoal || '',
+        programDuration: program.programDuration || '',
+        durationUnit: program.durationUnit || '',
+        daysPerWeek: program.daysPerWeek || '',
         workouts: program.workouts || [],
-        programDurationDisplay: `${program.program_duration || ''} ${
-          toUpperCase(program.duration_unit) || ''
+        programDurationDisplay: `${program.programDuration || ''} ${
+          toUpperCase(program.durationUnit) || ''
         }`
       });
     }
@@ -149,9 +149,9 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
             </Text>
             <CustomPicker
               options={GOAL_TYPES}
-              selectedValue={formValues.main_goal}
+              selectedValue={formValues.mainGoal}
               onValueChange={value => {
-                handleChange('main_goal', value);
+                handleChange('mainGoal', value);
               }}
               label='Main Goal'
               placeholder='Main Goal'
@@ -173,16 +173,16 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
                     color: themedStyles.textColor
                   }
                 ]}
-                value={formValues.program_duration.toString()}
-                onChangeText={text => handleChange('program_duration', text)}
+                value={formValues.programDuration.toString()}
+                onChangeText={text => handleChange('programDuration', text)}
                 placeholder='Duration'
                 keyboardType='numeric'
               />
               <CustomPicker
                 options={DURATION_TYPES}
-                selectedValue={formValues.duration_unit}
+                selectedValue={formValues.durationUnit}
                 onValueChange={value => {
-                  handleChange('duration_unit', value);
+                  handleChange('durationUnit', value);
                 }}
                 label='Duration Unit'
                 placeholder='Duration Unit'
@@ -197,9 +197,9 @@ const ProgramForm = ({ program, isExpanded, onToggleExpand }) => {
             </Text>
             <CustomPicker
               options={DAYS_PER_WEEK}
-              selectedValue={formValues.days_per_week}
+              selectedValue={formValues.daysPerWeek}
               onValueChange={value => {
-                handleChange('days_per_week', value);
+                handleChange('daysPerWeek', value);
               }}
               label='Days Per Week'
               placeholder='Select days per week'

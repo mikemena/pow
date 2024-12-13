@@ -28,7 +28,7 @@ const ProgramFilter = ({
 
   const goalOptions = [
     { label: 'All', value: '' },
-    ...Array.from(new Set(programs.map(p => p.main_goal)))
+    ...Array.from(new Set(programs.map(p => p.mainGoal)))
       .sort()
       .map(goal => ({
         label: goal.charAt(0).toUpperCase() + goal.slice(1),
@@ -38,7 +38,7 @@ const ProgramFilter = ({
 
   const durationOptions = [
     { label: 'All', value: '' },
-    ...Array.from(new Set(programs.map(p => p.duration_unit)))
+    ...Array.from(new Set(programs.map(p => p.durationUnit)))
       .sort()
       .map(unit => ({
         label: unit.charAt(0).toUpperCase() + unit.slice(1),
@@ -48,7 +48,7 @@ const ProgramFilter = ({
 
   const daysPerWeekOptions = [
     { label: 'All', value: '' },
-    ...Array.from(new Set(programs.map(p => p.days_per_week)))
+    ...Array.from(new Set(programs.map(p => p.daysPerWeek)))
       .sort((a, b) => a - b)
       .map(days => ({
         label: days.toString(),

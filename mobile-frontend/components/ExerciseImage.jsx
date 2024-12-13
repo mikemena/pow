@@ -42,11 +42,6 @@ const ExerciseImage = ({ exercise }) => {
     }
   };
 
-  console.log('ExerciseImage component received:', {
-    id: exercise?.id,
-    imageUrl: exercise?.imageUrl
-  });
-
   useEffect(() => {
     isMounted.current = true;
 

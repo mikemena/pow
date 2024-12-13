@@ -54,6 +54,31 @@ function programReducer(state = currentProgram, action) {
         ...currentProgram
       };
 
+    case actionTypes.DELETE_PROGRAM: {
+      // Your existing success case
+      return {
+        ...state,
+        programs: state.programs.filter(
+          program => program.id !== action.payload.programId
+        ),
+        error: null // Clear any previous errors
+      };
+    }
+
+    case actionTypes.DELETE_PROGRAM_FAILURE: {
+      // New failure case
+      return {
+        ...state,
+        error: {
+          type: 'delete', // Helps identify where the error occurred
+          message: action.payload, // The error message from the catch block
+          timestamp: new Date().toISOString() // Useful for debugging
+        },
+        // Optionally maintain a loading state
+        isLoading: false
+      };
+    }
+
     // Workout-related actions
 
     case actionTypes.SET_ACTIVE_WORKOUT: {
@@ -133,59 +158,58 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
 
-      // Ensure the active workout ID is available and matches the workoutId
-      if (state.workout.activeWorkout !== workoutId) {
-        console.error('Workout ID does not match the active workout.');
-        return state;
-      }
-
-      // Check if exercises is defined and an array
-      if (!Array.isArray(exercises)) {
-        console.error('Exercises payload is not an array or is undefined.');
-        return state;
-      }
-
+      // 1. Update workout.workouts array
       const updatedWorkouts = state.workout.workouts.map(workout => {
         if (workout.id === workoutId) {
-          // Create a Set of existing catalog_exercise_ids to prevent duplicates
-          const existingExerciseIds = new Set(
-            workout.exercises.map(ex => ex.catalog_exercise_id)
-          );
-
-          // Filter out exercises that already exist in the workout
-          const newExercises = exercises.filter(
-            ex => !existingExerciseIds.has(ex.catalog_exercise_id)
-          );
-
-          // Combine the existing exercises with the new ones
-
-          const currentExerciseCount = workout.exercises.length;
-
           return {
             ...workout,
-            exercises: [
-              ...workout.exercises,
-              ...newExercises.map((ex, index) => ({
-                ...ex,
-                catalog_exercise_id: ex.catalog_exercise_id,
-                id: ex.id || Crypto.randomUUID(),
-                order: currentExerciseCount + index + 1,
-                sets: ex.sets || [
-                  { id: Crypto.randomUUID(), weight: '', reps: '', order: 1 }
-                ]
-              }))
-            ]
+            exercises: [...(workout.exercises || []), ...exercises]
           };
         }
         return workout;
       });
 
+      // 2. Update program.workouts array
+      const updatedProgram = {
+        ...state.program,
+        workouts: state.program.workouts.map(workout => {
+          if (workout.id === workoutId) {
+            return {
+              ...workout,
+              exercises: [...(workout.exercises || []), ...exercises]
+            };
+          }
+          return workout;
+        })
+      };
+
+      // 3. Update the program in programs array
+      const updatedPrograms = state.programs.map(program => {
+        if (program.id === state.program.id) {
+          return {
+            ...program,
+            workouts: program.workouts.map(workout => {
+              if (workout.id === workoutId) {
+                return {
+                  ...workout,
+                  exercises: [...(workout.exercises || []), ...exercises]
+                };
+              }
+              return workout;
+            })
+          };
+        }
+        return program;
+      });
+
       return {
         ...state,
+        program: updatedProgram,
         workout: {
           ...state.workout,
           workouts: updatedWorkouts
-        }
+        },
+        programs: updatedPrograms
       };
     }
 

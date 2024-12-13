@@ -107,12 +107,19 @@ const Workout = ({
   }, [onToggleExpand, workout.id]);
 
   const handleAddExercises = workoutId => {
+    console.log('Workout - Adding exercises to workout:', workoutId);
+    console.log('Current Program State:', state);
     setActiveWorkout(workoutId);
+    // console.log('After setActiveWorkout - Program State:', state);
+    console.log(
+      'After setActiveWorkout - Program State:',
+      JSON.stringify(state, null, 2)
+    );
 
     navigation.navigate('ExerciseSelection', {
       contextType: 'program',
-      isNewProgram: true
-      // programId: 'your-program-id'
+      isNewProgram: true,
+      programId: workout.programId
     });
   };
 

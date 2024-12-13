@@ -1,5 +1,6 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import * as Crypto from 'expo-crypto';
+import { programService } from '../services/programService';
 import { actionTypes } from '../actions/actionTypes';
 import { programReducer } from '../reducers/programReducer.js';
 import { currentProgram } from '../reducers/initialState.js';
@@ -33,13 +34,13 @@ export const ProgramProvider = ({ children }) => {
     const newWorkoutId = Crypto.randomUUID();
 
     const newProgram = {
-      user_id: 2,
+      userId: 2,
       id: newProgramId,
       name: 'Program 1',
-      program_duration: 0,
-      duration_unit: 'Days',
-      days_per_week: 0,
-      main_goal: 'Strength'
+      programDuration: 0,
+      durationUnit: 'Days',
+      daysPerWeek: 0,
+      mainGoal: 'Strength'
     };
 
     const newWorkout = {
@@ -93,9 +94,31 @@ export const ProgramProvider = ({ children }) => {
     });
   }, []);
 
-  // Save new program to backend
+  // Validate program data structure
 
-  const saveProgram = async () => {
+  const validateProgramData = programData => {
+    if (!programData.workouts || !Array.isArray(programData.workouts)) {
+      console.error('Validation failed: Workouts should be an array.');
+      throw new Error('Workouts should be an array.');
+    }
+
+    programData.workouts.forEach(workout => {
+      if (!workout.exercises || !Array.isArray(workout.exercises)) {
+        console.error('Validation failed: Exercises should be an array.');
+        throw new Error('Exercises should be an array.');
+      }
+
+      workout.exercises.forEach(exercise => {
+        if (!exercise.sets || !Array.isArray(exercise.sets)) {
+          console.error('Validation failed: Sets should be an array.');
+          throw new Error('Sets should be an array.');
+        }
+      });
+    });
+  };
+
+  // Add the formatting function in the same file
+  const formatProgramData = (program, workouts) => {
     const formatValue = value => {
       if (value === '' || value === null || value === undefined) {
         return null;
@@ -104,16 +127,16 @@ export const ProgramProvider = ({ children }) => {
       return isNaN(num) ? value : num;
     };
 
-    const newProgram = {
-      ...state.program,
-      program_duration: formatValue(state.program.program_duration),
-      days_per_week: formatValue(state.program.days_per_week),
-      workouts: state.workout.workouts.map(workout => ({
+    return {
+      ...program,
+      programDuration: formatValue(program.programDuration),
+      daysPerWeek: formatValue(program.daysPerWeek),
+      workouts: workouts.map(workout => ({
         id: workout.id,
         name: workout.name,
         order: workout.order || 1,
         exercises: workout.exercises.map(exercise => ({
-          catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+          catalogExerciseId: exercise.catalogExerciseId || exercise.id,
           order: exercise.order || 1,
           sets: exercise.sets.map((set, index) => ({
             reps: formatValue(set.reps),
@@ -123,22 +146,19 @@ export const ProgramProvider = ({ children }) => {
         }))
       }))
     };
+  };
 
+  // Save new program to backend
+
+  const saveProgram = async () => {
     try {
-      validateProgramData(newProgram); // Validate data before sending
-      const response = await fetch('http://localhost:9025/api/programs', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newProgram)
-      });
+      const formattedProgram = formatProgramData(
+        state.program,
+        state.workout.workouts
+      );
+      validateProgramData(formattedProgram);
+      const savedProgram = await programService.createProgram(formattedProgram);
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error saving program:', errorText);
-        throw new Error('Network response was not ok');
-      }
-
-      const savedProgram = await response.json();
       dispatch({
         type: actionTypes.SAVE_PROGRAM_SUCCESS,
         payload: savedProgram
@@ -165,28 +185,21 @@ export const ProgramProvider = ({ children }) => {
         Number.isInteger(workout.id)
       );
 
-      const response = await fetch(
-        `http://localhost:9025/api/programs/${updatedProgram.id}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            ...updatedProgram,
-            workoutsToInsert, // Send separately to handle inserts
-            workoutsToUpdate // Send to handle updates
-          })
-        }
-      );
+      const programData = {
+        ...updatedProgram,
+        workoutsToInsert,
+        workoutsToUpdate
+      };
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error updating program:', errorText);
-        throw new Error('Network response was not ok');
-      }
+      // Use programService instead of direct fetch
+      const updatedProgramData = await programService.updateProgram(
+        updatedProgram.id,
+        programData
+      );
 
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_DATABASE,
-        payload: updatedProgram
+        payload: updatedProgramData
       });
     } catch (error) {
       console.error('Failed to update program:', error);
@@ -195,30 +208,6 @@ export const ProgramProvider = ({ children }) => {
         payload: error.message
       });
     }
-  };
-
-  // Validate program data structure
-
-  const validateProgramData = programData => {
-    if (!programData.workouts || !Array.isArray(programData.workouts)) {
-      console.error('Validation failed: Workouts should be an array.');
-      throw new Error('Workouts should be an array.');
-    }
-
-    programData.workouts.forEach(workout => {
-      if (!workout.exercises || !Array.isArray(workout.exercises)) {
-        console.error('Validation failed: Exercises should be an array.');
-
-        throw new Error('Exercises should be an array.');
-      }
-
-      workout.exercises.forEach(exercise => {
-        if (!exercise.sets || !Array.isArray(exercise.sets)) {
-          console.error('Validation failed: Sets should be an array.');
-          throw new Error('Sets should be an array.');
-        }
-      });
-    });
   };
 
   // Add new program details
@@ -234,18 +223,7 @@ export const ProgramProvider = ({ children }) => {
 
   const deleteProgram = async programId => {
     try {
-      const response = await fetch(
-        `http://localhost:9025/api/programs/${programId}`,
-        {
-          method: 'DELETE'
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error('Error deleting program:', errorText);
-        throw new Error('Failed to delete program');
-      }
+      await programService.deleteProgram(programId);
 
       dispatch({
         type: actionTypes.DELETE_PROGRAM,
@@ -253,6 +231,10 @@ export const ProgramProvider = ({ children }) => {
       });
     } catch (error) {
       console.error('Failed to delete program:', error);
+      dispatch({
+        type: actionTypes.DELETE_PROGRAM_FAILURE,
+        payload: error.message
+      });
     }
   };
 
@@ -315,10 +297,17 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
+    console.log('ProgramContext - ADD_EXERCISE started:', {
+      workoutId,
+      exercisesToAdd: exercises,
+      currentWorkoutExercises: state.workout.workouts.find(
+        w => w.id === workoutId
+      )?.exercises
+    });
     const standardizedExercises = exercises.map(ex => ({
       ...ex,
       id: Crypto.randomUUID(),
-      catalog_exercise_id: ex.catalog_exercise_id || ex.id,
+      catalogExerciseId: ex.catalogExerciseId || ex.id,
       muscle: ex.muscle,
       equipment: ex.equipment,
       order: ex.order || 1,
@@ -328,12 +317,20 @@ export const ProgramProvider = ({ children }) => {
           : [{ id: Crypto.randomUUID(), weight: '', reps: '', order: 1 }]
     }));
 
+    console.log(
+      'ProgramContext - Standardized exercises:',
+      standardizedExercises
+    );
+
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises: standardizedExercises }
     });
-    // update the program in the backend
-    // updateProgram(state.program);
+    console.log('ProgramContext - After dispatch:', {
+      updatedWorkoutExercises: state.workout.workouts.find(
+        w => w.id === workoutId
+      )?.exercises
+    });
   };
 
   // Update an exercise

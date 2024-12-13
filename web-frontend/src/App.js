@@ -31,13 +31,10 @@ const App = () => {
           <Route path='/exercises' element={<ExercisesListPage />} />
           <Route path='/select-exercises' element={<SelectExercisesPage />} />
           <Route path='/programs' element={<ProgramPage />} />
-          <Route
-            path='/programs/:program_id'
-            element={<ProgramDetailsPage />}
-          />
+          <Route path='/programs/:programId' element={<ProgramDetailsPage />} />
           <Route path='/create-program' element={<CreateProgramPage />} />
           <Route
-            path='/programs/:program_id/edit'
+            path='/programs/:programId/edit'
             element={<EditProgramPage />}
           />
           <Route path='/progress' element={<ProgressPage />} />

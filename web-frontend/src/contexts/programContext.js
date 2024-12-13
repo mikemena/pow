@@ -26,13 +26,13 @@ export const ProgramProvider = ({ children }) => {
 
     const newProgram = {
       ...currentProgram.program,
-      user_id: 2,
+      userId: 2,
       id: newProgramId,
       name: 'Program 1',
-      program_duration: 0,
-      duration_unit: 'Days',
-      days_per_week: 0,
-      main_goal: 'Strength'
+      programDuration: 0,
+      durationUnit: 'Days',
+      daysPerWeek: 0,
+      mainGoal: 'Strength'
     };
 
     const newWorkout = {

@@ -69,7 +69,7 @@ const ProgramDetailsPage = () => {
                   Main Goal
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {toProperCase(program.main_goal)}
+                  {toProperCase(program.mainGoal)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -77,8 +77,7 @@ const ProgramDetailsPage = () => {
                   Duration
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {program.program_duration}{' '}
-                  {toProperCase(program.duration_unit)}
+                  {program.programDuration} {toProperCase(program.durationUnit)}
                 </p>
               </div>
               <div className='prog-details-page__program-details-section'>
@@ -86,7 +85,7 @@ const ProgramDetailsPage = () => {
                   Days Per Week
                 </p>
                 <p className='prog-details-page__program-details-value'>
-                  {program.days_per_week}
+                  {program.daysPerWeek}
                 </p>
               </div>
             </div>

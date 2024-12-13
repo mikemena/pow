@@ -5,11 +5,11 @@ import { API_URL_MOBILE } from '@env';
 
 // Initial state
 const initialState = {
-  user_id: 2,
-  program_id: null,
-  workout_name: '',
+  userId: 2,
+  programId: null,
+  workoutName: '',
   duration: null,
-  is_completed: false,
+  isCompleted: false,
   date: null,
   workout_id: null,
   exercises: [],
@@ -31,17 +31,17 @@ const workoutReducer = (state, action) => {
     case actionTypes.INITIALIZE_FLEX_WORKOUT:
       return {
         ...initialState,
-        workout_name: 'Flex Workout',
+        workoutName: 'Flex Workout',
         date: new Date(),
         workout_id: Crypto.randomUUID()
       };
 
     case actionTypes.INITIALIZE_PROGRAM_WORKOUT:
-      const { program_id, workout_name, workout_id } = action.payload;
+      const { programId, workoutName, workout_id } = action.payload;
       return {
         ...initialState,
-        program_id,
-        workout_name,
+        programId,
+        workoutName,
         workout_id,
         date: new Date(),
         activeProgram: state.activeProgram,
@@ -75,7 +75,7 @@ const workoutReducer = (state, action) => {
         currentWorkout: action.payload,
         workoutDetails: action.payload,
         exercises: action.payload.exercises,
-        workout_name: action.payload.name
+        workoutName: action.payload.name
       };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
@@ -95,7 +95,7 @@ const workoutReducer = (state, action) => {
       // Create workoutDetails if it doesn't exist
       const updatedWorkoutDetails = state.workoutDetails || {
         id: state.workout_id,
-        name: state.workout_name,
+        name: state.workoutName,
         exercises: []
       };
 
@@ -109,7 +109,7 @@ const workoutReducer = (state, action) => {
         currentWorkout: {
           ...(state.currentWorkout || {
             id: state.workout_id,
-            name: state.workout_name,
+            name: state.workoutName,
             startTime: new Date(),
             isCompleted: false
           }),
@@ -243,14 +243,14 @@ export const WorkoutProvider = ({ children }) => {
       if (data.activeProgram) {
         // Fetch the full program details
         const programResponse = await fetch(
-          `${API_URL_MOBILE}/api/programs/${data.activeProgram.program_id}`
+          `${API_URL_MOBILE}/api/programs/${data.activeProgram.programId}`
         );
         const programDetails = await programResponse.json();
 
         // Set both the active program ID and its details
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM,
-          payload: data.activeProgram.program_id
+          payload: data.activeProgram.programId
         });
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM_DETAILS,
@@ -297,8 +297,8 @@ export const WorkoutProvider = ({ children }) => {
     dispatch({
       type: actionTypes.INITIALIZE_PROGRAM_WORKOUT,
       payload: {
-        program_id: programData.program_id,
-        workout_name: programData.workout_name,
+        programId: programData.programId,
+        workoutName: programData.workoutName,
         workout_id: programData.workout_id
       }
     });

@@ -43,8 +43,8 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   useEffect(() => {
     if (workoutState.activeProgramDetails && workouts[currentWorkoutIndex]) {
       initializeProgramWorkout({
-        program_id: program.id,
-        workout_name: workouts[currentWorkoutIndex].name,
+        programId: program.id,
+        workoutName: workouts[currentWorkoutIndex].name,
         workout_id: workouts[currentWorkoutIndex].id
       });
     }

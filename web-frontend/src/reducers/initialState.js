@@ -1,12 +1,12 @@
 export const currentProgram = {
   program: {
-    user_id: null,
+    userId: null,
     id: null,
     name: '',
-    program_duration: 0,
-    duration_unit: '',
-    days_per_week: 0,
-    main_goal: ''
+    programDuration: 0,
+    durationUnit: '',
+    daysPerWeek: 0,
+    mainGoal: ''
   },
   workout: {
     workouts: [],

@@ -17,6 +17,7 @@ import {
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
+import { apiService } from '../src/services/api';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
@@ -65,12 +66,14 @@ const ProgramsView = () => {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+
+      const programs = await apiService.getPrograms();
+
       setProgramList({
-        programs: data,
+        programs: programs,
         workouts: []
       });
-      setPrograms(data);
+      setPrograms(programs);
     } catch (error) {
       console.error('Detailed fetch error:', {
         message: error.message,
@@ -98,14 +101,14 @@ const ProgramsView = () => {
         !filters.programName ||
         program.name.toLowerCase().includes(filters.programName.toLowerCase());
       const matchesGoal =
-        !filters.selectedGoal || program.main_goal === filters.selectedGoal;
+        !filters.selectedGoal || program.mainGoal === filters.selectedGoal;
       const matchesDurationUnit =
         !filters.durationType ||
-        program.duration_unit.toLowerCase() ===
+        program.durationUnit.toLowerCase() ===
           filters.durationType.toLowerCase();
       const matchesDaysPerWeek =
         !filters.daysPerWeek ||
-        program.days_per_week === parseInt(filters.daysPerWeek);
+        program.daysPerWeek === parseInt(filters.daysPerWeek);
 
       return (
         matchesName && matchesGoal && matchesDurationUnit && matchesDaysPerWeek
@@ -163,7 +166,7 @@ const ProgramsView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {item.main_goal.charAt(0).toUpperCase() + item.main_goal.slice(1)}
+              {item.mainGoal.charAt(0).toUpperCase() + item.mainGoal.slice(1)}
             </Text>
           </View>
           <View style={styles.detailRow}>
@@ -175,7 +178,7 @@ const ProgramsView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {formatDuration(item.program_duration, item.duration_unit)}
+              {formatDuration(item.programDuration, item.durationUnit)}
             </Text>
           </View>
           <View style={styles.detailRow}>
@@ -187,7 +190,7 @@ const ProgramsView = () => {
             <Text
               style={[styles.detailValue, { color: themedStyles.textColor }]}
             >
-              {item.days_per_week}
+              {item.daysPerWeek}
             </Text>
           </View>
         </View>

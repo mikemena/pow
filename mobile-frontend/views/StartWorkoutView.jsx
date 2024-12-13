@@ -41,7 +41,7 @@ const StartWorkoutView = () => {
   } = useContext(WorkoutContext);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
-    workoutState.workout_name || ''
+    workoutState.workoutName || ''
   );
   const inputRef = useRef(null);
   const swipeableRef = useRef(null);

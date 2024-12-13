@@ -9,13 +9,13 @@ export const standardizePrograms = fetchedPrograms => {
 
     // Standardize program data (each program object)
     standardizedState.programs[programId] = {
-      user_id: program.user_id || null,
+      userId: program.userId || null,
       id: programId,
       name: program.name || '',
-      program_duration: program.program_duration || 0,
-      duration_unit: program.duration_unit || 'Days',
-      days_per_week: program.days_per_week || 0,
-      main_goal: program.main_goal || ''
+      programDuration: program.programDuration || 0,
+      durationUnit: program.durationUnit || 'Days',
+      daysPerWeek: program.daysPerWeek || 0,
+      mainGoal: program.mainGoal || ''
     };
 
     // Standardize workouts, grouping them by programId

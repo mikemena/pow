@@ -7,7 +7,7 @@ const WorkoutTemplate = ({
   onEdit,
   workout_id,
   name,
-  duration_unit,
+  durationUnit,
   plan_type,
   difficulty_level,
   exercises
@@ -21,7 +21,7 @@ const WorkoutTemplate = ({
         </div>
         <div className='template-section'>
           <p className='template-section-title'>Duration Unit</p>
-          <p className='template-section-text'>{duration_unit}</p>
+          <p className='template-section-text'>{durationUnit}</p>
         </div>
         <div className='template-section'>
           <p className='template-section-title'>Plan Type</p>
@@ -48,7 +48,7 @@ const WorkoutTemplate = ({
               const workout = {
                 workout_id,
                 name,
-                duration_unit,
+                durationUnit,
                 plan_type,
                 difficulty_level,
                 exercises

@@ -18,13 +18,13 @@ const ProgramForm = ({
 
   const [formValues, setFormValues] = useState({
     name: program?.name || '',
-    main_goal: program?.main_goal || '',
-    program_duration: program?.program_duration || '',
-    duration_unit: program?.duration_unit || '',
-    days_per_week: program?.days_per_week || '',
+    mainGoal: program?.mainGoal || '',
+    programDuration: program?.programDuration || '',
+    durationUnit: program?.durationUnit || '',
+    daysPerWeek: program?.daysPerWeek || '',
     workouts: program?.workouts || [],
-    programDurationDisplay: `${program?.program_duration || ''} ${
-      toUpperCase(program?.duration_unit) || ''
+    programDurationDisplay: `${program?.programDuration || ''} ${
+      toUpperCase(program?.durationUnit) || ''
     }`
   });
 
@@ -32,13 +32,13 @@ const ProgramForm = ({
     if (program) {
       setFormValues({
         name: program.name || '',
-        main_goal: program.main_goal || '',
-        program_duration: program.program_duration || '',
-        duration_unit: program.duration_unit || '',
-        days_per_week: program.days_per_week || '',
+        mainGoal: program.mainGoal || '',
+        programDuration: program.programDuration || '',
+        durationUnit: program.durationUnit || '',
+        daysPerWeek: program.daysPerWeek || '',
         workouts: program.workouts || [],
-        programDurationDisplay: `${program.program_duration || ''} ${
-          toUpperCase(program.duration_unit) || ''
+        programDurationDisplay: `${program.programDuration || ''} ${
+          toUpperCase(program.durationUnit) || ''
         }`
       });
     }
@@ -56,22 +56,6 @@ const ProgramForm = ({
     const { name, value } = e.target;
     updateProgramField(name, value);
   };
-
-  // const handleSubmit = e => {
-  //   const action = isNewProgram ? 'ADD_PROGRAM' : 'UPDATE_PROGRAM';
-  //   e.preventDefault();
-  //   dispatch({
-  //     type: action,
-  //     payload: {
-  //       ...program,
-  //       name: formValues.programName,
-  //       main_goal: formValues.mainGoal,
-  //       program_duration: formValues.programDuration,
-  //       duration_unit: formValues.durationUnit,
-  //       days_per_week: formValues.daysPerWeek
-  //     }
-  //   });
-  // };
 
   const handleProgramExpand = () => {
     onToggleExpand(program);
@@ -118,15 +102,15 @@ const ProgramForm = ({
           </div>
           <div className='program__section'>
             <label
-              htmlFor='main_goal'
+              htmlFor='mainGoal'
               className={`program__section-title ${theme}`}
             >
               Main Goal
             </label>
             <select
               className={`mainGoal ${theme}`}
-              name='main_goal'
-              value={formValues.main_goal}
+              name='mainGoal'
+              value={formValues.mainGoal}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={!isEditing}
@@ -140,7 +124,7 @@ const ProgramForm = ({
           </div>
           <div className='program__section' id='program-duration-section'>
             <label
-              htmlFor='program_duration'
+              htmlFor='programDuration'
               className={`program__section-title ${theme}`}
             >
               Duration
@@ -149,16 +133,16 @@ const ProgramForm = ({
               <input
                 type='number'
                 className={`programDuration ${theme}`}
-                name='program_duration'
-                value={formValues.program_duration}
+                name='programDuration'
+                value={formValues.programDuration}
                 onChange={handleChange}
                 onBlur={handleBlur}
                 min={1}
               />
               <select
                 className={`durationUnit ${theme}`}
-                name='duration_unit'
-                value={formValues.duration_unit}
+                name='durationUnit'
+                value={formValues.durationUnit}
                 onChange={handleChange}
                 onBlur={handleBlur}
               >
@@ -172,7 +156,7 @@ const ProgramForm = ({
           </div>
           <div className='program__section'>
             <label
-              htmlFor='days_per_week'
+              htmlFor='daysPerWeek'
               className={`program__section-title ${theme}`}
             >
               Days Per Week
@@ -180,8 +164,8 @@ const ProgramForm = ({
             <input
               type='number'
               className={`daysPerWeek  ${theme}`}
-              name='days_per_week'
-              value={formValues.days_per_week}
+              name='daysPerWeek'
+              value={formValues.daysPerWeek}
               onChange={handleChange}
               onBlur={handleBlur}
               disabled={!isEditing}

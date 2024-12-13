@@ -32,7 +32,7 @@ const CACHE_KEY = 'exercise_catalog';
 const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
 
 const ExerciseSelection = ({ navigation, route }) => {
-  const { updateExercise, state: programState } = useContext(ProgramContext);
+  const { addExercise, state: programState } = useContext(ProgramContext);
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
@@ -265,50 +265,116 @@ const ExerciseSelection = ({ navigation, route }) => {
     navigation.goBack();
   };
 
-  const handleAdd = () => {
-    console.log(
-      'Selected exercises before standardization:',
-      selectedExercises
-    );
+  // Utility function to compare exercises for equality
+  const areExercisesEqual = (exercise1, exercise2) => {
+    // Check for undefined or null exercises
+    if (!exercise1 || !exercise2) {
+      return false;
+    }
 
-    const standardizedExercises = selectedExercises.map(exercise => {
-      const standardized = {
+    // Primary comparison using catalog_exercise_id
+    if (exercise1.catalog_exercise_id && exercise2.catalog_exercise_id) {
+      return exercise1.catalog_exercise_id === exercise2.catalog_exercise_id;
+    }
+
+    // If either exercise is missing catalog_exercise_id, use multiple criteria
+    const nameMatch = exercise1.name === exercise2.name;
+    const muscleMatch = exercise1.muscle === exercise2.muscle;
+    const equipmentMatch = exercise1.equipment === exercise2.equipment;
+
+    // Consider exercises equal if they match on all three criteria
+    return nameMatch && muscleMatch && equipmentMatch;
+  };
+
+  const handleAdd = async () => {
+    console.log('Starting handleAdd in ExerciseSelection');
+
+    try {
+      if (!selectedExercises?.length) {
+        console.warn('No exercises selected for addition');
+        return;
+      }
+
+      // Get the active workout ID
+      const activeWorkoutId = programState.workout.activeWorkout;
+      if (!activeWorkoutId) {
+        console.error('No active workout selected');
+        return;
+      }
+
+      // Get current exercises from the program context instead of workoutState
+      const currentWorkout = programState.workout.workouts.find(
+        w => w.id === activeWorkoutId
+      );
+      const currentExercises = currentWorkout?.exercises || [];
+
+      console.log(
+        'Current exercises in workout:',
+        currentExercises.map(e => e.name)
+      );
+
+      // Enhanced duplicate detection
+      const newExercises = selectedExercises.filter(newExercise => {
+        const isDuplicate = currentExercises.some(
+          existingExercise =>
+            // Primary check using catalog_exercise_id
+            existingExercise.catalog_exercise_id ===
+              newExercise.catalog_exercise_id ||
+            // Backup check using name and muscle group
+            (existingExercise.name === newExercise.name &&
+              existingExercise.muscle_group === newExercise.muscle_group)
+        );
+
+        if (isDuplicate) {
+          console.log(`Filtered out duplicate exercise: ${newExercise.name}`);
+        }
+        return !isDuplicate;
+      });
+
+      console.log(
+        'Exercises after duplicate filtering:',
+        newExercises.map(e => e.name)
+      );
+
+      if (newExercises.length === 0) {
+        console.log('No new exercises to add - all selections were duplicates');
+        return;
+      }
+
+      const standardizedExercises = newExercises.map(exercise => ({
         ...exercise,
-        id: exercise.id || Crypto.randomUUID(),
+        id: exercise.id || crypto.randomUUID(),
         catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
         imageUrl: exercise.imageUrl,
         sets: exercise.sets || [
-          { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
+          {
+            id: crypto.randomUUID(),
+            weight: '0',
+            reps: '0',
+            order: 1
+          }
         ]
-      };
-      console.log('Standardized exercise:', standardized);
-      return standardized;
-    });
+      }));
 
-    if (contextType === 'workout') {
-      standardizedExercises.forEach(exercise => {
-        console.log('Adding exercise to workout:', exercise);
-        addExerciseToWorkout(exercise);
-      });
-      console.log('After adding exercises - workout state:', workoutState);
-      navigation.navigate('StartWorkout');
-    } else if (contextType === 'program') {
-      const activeWorkoutId = programState.workout.activeWorkout;
-      if (!activeWorkoutId) {
-        console.error(
-          'ExerciseSelection: No active workout selected in program context'
-        );
+      const programId = currentWorkout?.programId;
+      if (!programId) {
+        console.error('Could not determine program ID');
         return;
       }
-      // Update program context
-      updateExercise(activeWorkoutId, standardizedExercises);
 
-      // Use programAction for navigation
+      // Add exercises and navigate
+      await addExercise(activeWorkoutId, standardizedExercises);
+
       if (programAction === 'create') {
         navigation.navigate('CreateProgram');
-      } else if (programAction === 'edit' && programId) {
-        navigation.navigate('EditProgram', { programId });
+      } else if (programAction === 'edit') {
+        navigation.navigate('EditProgram', {
+          programId,
+          shouldRefresh: true
+        });
       }
+    } catch (error) {
+      console.error('Error in handleAdd:', error);
     }
   };
 
