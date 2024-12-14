@@ -12,6 +12,7 @@ import { ProgramContext } from '../src/context/programContext';
 import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { programService } from '../src/services/programService';
 import { globalStyles } from '../src/styles/globalStyles';
 import Header from '../components/Header';
 import Workout from '../components/Workout';
@@ -41,7 +42,7 @@ const ProgramDetails = () => {
   };
 
   const handleDeleteProgram = async programId => {
-    await deleteProgram(programId);
+    await programService.deleteProgram(programId);
     navigation.goBack();
   };
 

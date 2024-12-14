@@ -123,6 +123,7 @@ router.get('/programs/:program_id', async (req, res) => {
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
+  console.log('Received by backend:', JSON.stringify(req.body, null, 2));
   const {
     user_id,
     name,
@@ -412,48 +413,77 @@ router.put('/programs/:program_id', async (req, res) => {
 
 router.delete('/programs/:program_id', async (req, res) => {
   const { program_id } = req.params;
-
   const client = await pool.connect();
 
   try {
     // Begin transaction
     await client.query('BEGIN');
 
-    // Delete sets associated with the exercises in the workouts of the program
+    // First, check if the program exists
+    const programExists = await client.query(
+      'SELECT id FROM programs WHERE id = $1',
+      [program_id]
+    );
 
+    if (programExists.rows.length === 0) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ message: 'Program not found' });
+    }
+
+    // First, remove references from active_programs
+    await client.query('DELETE FROM active_programs WHERE program_id = $1', [
+      program_id
+    ]);
+
+    // Then delete the program's components in the correct order
+    // 1. Delete sets
     await client.query(
       'DELETE FROM sets WHERE exercise_id IN (SELECT id FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1))',
       [program_id]
     );
 
-    // Delete exercises associated with the workouts of the program
-
+    // 2. Delete exercises
     await client.query(
       'DELETE FROM exercises WHERE workout_id IN (SELECT id FROM workouts WHERE program_id = $1)',
       [program_id]
     );
 
-    // Delete workouts associated with the program
-
+    // 3. Delete workouts
     await client.query('DELETE FROM workouts WHERE program_id = $1', [
       program_id
     ]);
 
-    // Finally, delete the program itself
-
+    // 4. Finally, delete the program
     await client.query('DELETE FROM programs WHERE id = $1', [program_id]);
 
-    // If everything is fine, commit the transaction
+    // If everything succeeds, commit the transaction
     await client.query('COMMIT');
 
     res.json({
-      message: 'Program and all associated data deleted successfully'
+      message: 'Program and all associated data deleted successfully',
+      deletedProgramId: program_id
     });
   } catch (err) {
-    // If there is an error, rollback the transaction
     await client.query('ROLLBACK');
-    console.error('Error during transaction:', err);
-    res.status(500).send('Server error');
+
+    // Provide more specific error messages based on the error type
+    let errorMessage = 'Server error';
+    if (err.code === '23503') {
+      // Foreign key violation
+      errorMessage = 'Cannot delete program: it is currently in use';
+    }
+
+    console.error('Error during transaction:', {
+      error: err,
+      programId: program_id,
+      errorCode: err.code,
+      errorDetail: err.detail
+    });
+
+    res.status(500).json({
+      error: errorMessage,
+      details: err.detail
+    });
   } finally {
     client.release();
   }

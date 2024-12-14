@@ -84,8 +84,8 @@ const workoutReducer = (state, action) => {
       const newExercise = {
         ...action.payload,
         id: action.payload.id || Crypto.randomUUID(),
-        catalog_exercise_id:
-          action.payload.catalog_exercise_id || action.payload.id,
+        catalogExerciseId:
+          action.payload.catalogExerciseId || action.payload.id,
         imageUrl: action.payload.imageUrl,
         sets: action.payload.sets || [
           { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
@@ -379,7 +379,7 @@ export const WorkoutProvider = ({ children }) => {
     const standardizedExercises = workoutData.exercises.map(exercise => ({
       id: exercise.id || Crypto.randomUUID(),
       exercise_id: exercise.id,
-      catalog_exercise_id: exercise.catalog_exercise_id,
+      catalogExerciseId: exercise.catalogExerciseId,
       name: exercise.name,
       muscle: exercise.muscle,
       equipment: exercise.equipment,
@@ -404,7 +404,7 @@ export const WorkoutProvider = ({ children }) => {
       // Map incoming exercise to match our state structure
       id: Crypto.randomUUID(),
       exercise_id: exercise.id || Crypto.randomUUID(),
-      catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+      catalogExerciseId: exercise.catalogExerciseId || exercise.id,
       order: exercise.order || 0,
       // Include other exercise properties
       name: exercise.name,

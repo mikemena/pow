@@ -297,39 +297,41 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
-    console.log('ProgramContext - ADD_EXERCISE started:', {
-      workoutId,
-      exercisesToAdd: exercises,
-      currentWorkoutExercises: state.workout.workouts.find(
-        w => w.id === workoutId
-      )?.exercises
+    console.log('1. Exercise at start of action creator:', {
+      exercise: exercises[0],
+      has_catalog_id: 'catalogExerciseId' in exercises[0]
     });
-    const standardizedExercises = exercises.map(ex => ({
-      ...ex,
-      id: Crypto.randomUUID(),
-      catalogExerciseId: ex.catalogExerciseId || ex.id,
-      muscle: ex.muscle,
-      equipment: ex.equipment,
-      order: ex.order || 1,
-      sets:
-        ex.sets?.length > 0
-          ? ex.sets
-          : [{ id: Crypto.randomUUID(), weight: '', reps: '', order: 1 }]
-    }));
+    const standardizedExercises = exercises.map(exercise => {
+      console.log('2. Exercise during standardization:', {
+        before: exercise,
+        has_catalog_id: 'catalogExerciseId' in exercise
+      });
 
-    console.log(
-      'ProgramContext - Standardized exercises:',
-      standardizedExercises
-    );
+      const standardized = {
+        ...exercise,
+        // Ensure we preserve the catalogExerciseId
+        catalogExerciseId: exercise.catalogExerciseId,
+        order: 1,
+        sets: exercise.sets || [{ weight: '', reps: '', order: 1 }]
+      };
+
+      console.log('3. After standardization:', {
+        exercise: standardized,
+        has_catalog_id: 'catalogExerciseId' in standardized
+      });
+
+      return standardized;
+    });
+
+    console.log('4. Before dispatch:', {
+      exercises: standardizedExercises,
+      first_exercise_has_catalog_id:
+        'catalogExerciseId' in standardizedExercises[0]
+    });
 
     dispatch({
       type: actionTypes.ADD_EXERCISE,
       payload: { workoutId, exercises: standardizedExercises }
-    });
-    console.log('ProgramContext - After dispatch:', {
-      updatedWorkoutExercises: state.workout.workouts.find(
-        w => w.id === workoutId
-      )?.exercises
     });
   };
 
@@ -338,7 +340,7 @@ export const ProgramProvider = ({ children }) => {
     const standardizedExercises = updatedExercises.map((ex, index) => ({
       ...ex,
       id: ex.id || Crypto.randomUUID(),
-      catalog_exercise_id: ex.catalog_exercise_id || ex.id,
+      catalogExerciseId: ex.catalogExerciseId || ex.id,
       muscle: ex.muscle,
       equipment: ex.equipment,
       order: index + 1,

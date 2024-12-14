@@ -27,7 +27,7 @@ export const standardizePrograms = fetchedPrograms => {
         name: workout.name || '',
         exercises: (workout.exercises || []).map(exercise => ({
           id: exercise.id,
-          catalog_exercise_id: exercise.catalog_exercise_id || null,
+          catalogExerciseId: exercise.catalogExerciseId || null,
           equipment: exercise.equipment || '',
           muscle: exercise.muscle || '',
           name: exercise.name || '',

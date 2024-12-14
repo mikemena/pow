@@ -158,58 +158,38 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
 
-      // 1. Update workout.workouts array
+      console.log('5. Exercise in reducer before spread:', {
+        exercises,
+        first_exercise_has_catalog_id: exercises[0]
+          ? 'catalogExerciseId' in exercises[0]
+          : 'no exercises'
+      });
+
       const updatedWorkouts = state.workout.workouts.map(workout => {
         if (workout.id === workoutId) {
+          const newExercises = [...(workout.exercises || []), ...exercises];
+
+          console.log('6. After spread in reducer:', {
+            exercises: newExercises,
+            first_exercise_has_catalog_id: newExercises[0]
+              ? 'catalogExerciseId' in newExercises[0]
+              : 'no exercises'
+          });
+
           return {
             ...workout,
-            exercises: [...(workout.exercises || []), ...exercises]
+            exercises: newExercises
           };
         }
         return workout;
       });
 
-      // 2. Update program.workouts array
-      const updatedProgram = {
-        ...state.program,
-        workouts: state.program.workouts.map(workout => {
-          if (workout.id === workoutId) {
-            return {
-              ...workout,
-              exercises: [...(workout.exercises || []), ...exercises]
-            };
-          }
-          return workout;
-        })
-      };
-
-      // 3. Update the program in programs array
-      const updatedPrograms = state.programs.map(program => {
-        if (program.id === state.program.id) {
-          return {
-            ...program,
-            workouts: program.workouts.map(workout => {
-              if (workout.id === workoutId) {
-                return {
-                  ...workout,
-                  exercises: [...(workout.exercises || []), ...exercises]
-                };
-              }
-              return workout;
-            })
-          };
-        }
-        return program;
-      });
-
       return {
         ...state,
-        program: updatedProgram,
         workout: {
           ...state.workout,
           workouts: updatedWorkouts
-        },
-        programs: updatedPrograms
+        }
       };
     }
 
@@ -339,7 +319,7 @@ function programReducer(state = currentProgram, action) {
           return {
             ...workout,
             exercises: workout.exercises.map(exercise => {
-              if (exercise.catalog_exercise_id === exerciseId) {
+              if (exercise.catalogExerciseId === exerciseId) {
                 const updatedSets = exercise.sets.filter(
                   set => set.id !== setId
                 );

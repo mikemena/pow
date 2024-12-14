@@ -22,6 +22,7 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Crypto from 'expo-crypto';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
+import { transformResponseData } from '../src/utils/apiTransformers';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import PillButton from './PillButton';
 import ExerciseFilter from './ExerciseFilter';
@@ -128,19 +129,22 @@ const ExerciseSelection = ({ navigation, route }) => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data = await response.json();
+      const rawData = await response.json();
+
+      // Transform the data right after receiving it from the API
+      const transformedData = transformResponseData(rawData);
 
       // Reset data when applying new filters
       if (!shouldAppend) {
-        setExercises(data.exercises);
-        setFilteredExercises(data.exercises);
+        setExercises(transformedData.exercises);
+        setFilteredExercises(transformedData.exercises);
         flatListRef.current?.scrollToOffset({ offset: 0, animated: true });
       } else {
-        setExercises(prev => [...prev, ...data.exercises]);
-        setFilteredExercises(prev => [...prev, ...data.exercises]);
+        setExercises(prev => [...prev, ...transformedData.exercises]);
+        setFilteredExercises(prev => [...prev, ...transformedData.exercises]);
       }
 
-      setHasMore(data.pagination.hasMore);
+      setHasMore(transformedData.pagination.hasMore);
       setCurrentPage(page);
     } catch (error) {
       console.error('Fetch error:', error);
@@ -243,18 +247,18 @@ const ExerciseSelection = ({ navigation, route }) => {
 
   const toggleExerciseSelection = exercise => {
     const isSelected = selectedExercises.some(
-      e => e.catalog_exercise_id === exercise.id
+      e => e.catalogExerciseId === exercise.id
     );
 
     if (isSelected) {
       setSelectedExercises(prev =>
-        prev.filter(e => e.catalog_exercise_id !== exercise.id)
+        prev.filter(e => e.catalogExerciseId !== exercise.id)
       );
     } else {
       const newExercise = {
         ...exercise,
         id: Crypto.randomUUID(),
-        catalog_exercise_id: exercise.id,
+        catalogExerciseId: exercise.id,
         sets: [{ id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }]
       };
       setSelectedExercises(prev => [...prev, newExercise]);
@@ -272,12 +276,12 @@ const ExerciseSelection = ({ navigation, route }) => {
       return false;
     }
 
-    // Primary comparison using catalog_exercise_id
-    if (exercise1.catalog_exercise_id && exercise2.catalog_exercise_id) {
-      return exercise1.catalog_exercise_id === exercise2.catalog_exercise_id;
+    // Primary comparison using catalogExerciseId
+    if (exercise1.catalogExerciseId && exercise2.catalogExerciseId) {
+      return exercise1.catalogExerciseId === exercise2.catalogExerciseId;
     }
 
-    // If either exercise is missing catalog_exercise_id, use multiple criteria
+    // If either exercise is missing catalogExerciseId, use multiple criteria
     const nameMatch = exercise1.name === exercise2.name;
     const muscleMatch = exercise1.muscle === exercise2.muscle;
     const equipmentMatch = exercise1.equipment === exercise2.equipment;
@@ -317,9 +321,9 @@ const ExerciseSelection = ({ navigation, route }) => {
       const newExercises = selectedExercises.filter(newExercise => {
         const isDuplicate = currentExercises.some(
           existingExercise =>
-            // Primary check using catalog_exercise_id
-            existingExercise.catalog_exercise_id ===
-              newExercise.catalog_exercise_id ||
+            // Primary check using catalogExerciseId
+            existingExercise.catalogExerciseId ===
+              newExercise.catalogExerciseId ||
             // Backup check using name and muscle group
             (existingExercise.name === newExercise.name &&
               existingExercise.muscle_group === newExercise.muscle_group)
@@ -344,7 +348,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       const standardizedExercises = newExercises.map(exercise => ({
         ...exercise,
         id: exercise.id || crypto.randomUUID(),
-        catalog_exercise_id: exercise.catalog_exercise_id || exercise.id,
+        catalogExerciseId: exercise.catalogExerciseId || exercise.id,
         imageUrl: exercise.imageUrl,
         sets: exercise.sets || [
           {
@@ -384,7 +388,7 @@ const ExerciseSelection = ({ navigation, route }) => {
         style={[
           styles.exerciseItem,
           { borderBottomColor: themedStyles.secondaryBackgroundColor },
-          selectedExercises.some(e => e.catalog_exercise_id === item.id) && {
+          selectedExercises.some(e => e.catalogExerciseId === item.id) && {
             backgroundColor: themedStyles.accentColor + '33'
           }
         ]}
