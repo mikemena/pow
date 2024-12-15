@@ -39,13 +39,11 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.UPDATE_PROGRAM_DATABASE: // For full database updates
       return {
         ...state,
-        program: {
-          ...state.program,
-          ...action.payload.program // Merge full program updates from database response
-        },
+        program: action.payload.program || state.program,
         workout: {
-          workouts: action.payload.workouts, // Update workouts from database response
-          activeWorkout: action.payload.activeWorkout
+          workouts: action.payload.workouts || state.workout.workouts,
+          activeWorkout:
+            action.payload.activeWorkout || state.workout.activeWorkout
         }
       };
 
@@ -186,6 +184,10 @@ function programReducer(state = currentProgram, action) {
 
       return {
         ...state,
+        program: {
+          ...state.program,
+          workouts: updatedWorkouts
+        },
         workout: {
           ...state.workout,
           workouts: updatedWorkouts

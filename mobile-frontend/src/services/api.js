@@ -49,6 +49,58 @@ class ApiService {
     }
   }
 
+  // Edit a program
+
+  async updateProgram(programData) {
+    try {
+      // Transform to snake_case for backend
+      const backendData = transformRequestData(programData);
+
+      console.log(
+        'After API transformer updateProgram:',
+        JSON.stringify(programData, null, 2)
+      );
+
+      console.log(
+        'After API transformer updateProgram:',
+        JSON.stringify(backendData, null, 2)
+      );
+
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/programs/${programData.id}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          },
+          body: JSON.stringify(backendData)
+        }
+      );
+
+      // Handle non-200 responses
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+
+      // If it's just a success message, return it directly
+      if (data.message) {
+        return data;
+      }
+
+      // Otherwise, transform the response data
+      return transformResponseData(data);
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  }
+
   // DELETE program
   async deleteProgram(programId) {
     try {

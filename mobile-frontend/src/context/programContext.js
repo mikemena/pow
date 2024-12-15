@@ -69,7 +69,10 @@ export const ProgramProvider = ({ children }) => {
       dispatch({
         type: actionTypes.INITIALIZE_EDIT_PROGRAM_STATE,
         payload: {
-          program,
+          program: {
+            ...program,
+            workouts
+          },
           workouts,
           activeWorkout: workouts.length > 0 ? workouts[0].id : null
         }
@@ -176,37 +179,29 @@ export const ProgramProvider = ({ children }) => {
 
   const updateProgram = async updatedProgram => {
     try {
-      // validateProgramData(updatedProgram);
+      console.log('1. Context updateProgram - Before service call:', {
+        programId: updatedProgram.id,
+        name: updatedProgram.name,
+        workoutCount: updatedProgram.workouts.length
+      });
 
-      const workoutsToInsert = updatedProgram.workouts.filter(
-        workout => !Number.isInteger(workout.id)
-      );
-      const workoutsToUpdate = updatedProgram.workouts.filter(workout =>
-        Number.isInteger(workout.id)
-      );
-
-      const programData = {
-        ...updatedProgram,
-        workoutsToInsert,
-        workoutsToUpdate
-      };
-
-      // Use programService instead of direct fetch
       const updatedProgramData = await programService.updateProgram(
-        updatedProgram.id,
-        programData
+        updatedProgram
       );
 
       dispatch({
         type: actionTypes.UPDATE_PROGRAM_DATABASE,
         payload: updatedProgramData
       });
+
+      return updatedProgramData;
     } catch (error) {
       console.error('Failed to update program:', error);
       dispatch({
         type: actionTypes.SAVE_PROGRAM_FAILURE,
         payload: error.message
       });
+      throw error;
     }
   };
 

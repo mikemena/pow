@@ -59,20 +59,28 @@ const EditProgram = () => {
     if (refresh && programId) {
       console.log('EditProgram - Refreshing program data', { programId });
 
-      const program = state.programs.find(p => p.id === programId);
-      if (program) {
-        console.log('Found program to refresh:', {
-          program,
-          workouts: program.workouts,
-          workoutExercises: program.workouts.map(w => ({
+      // Instead of searching through state.programs, use the current program state
+      if (state.program && state.program.id === programId) {
+        console.log('Refreshing with current program state:', {
+          program: state.program,
+          workouts: state.workout.workouts,
+          workoutExercises: state.workout.workouts.map(w => ({
             workoutId: w.id,
             exercises: w.exercises
           }))
         });
-        initializeEditProgramState(program, program.workouts);
+
+        initializeEditProgramState(state.program, state.workout.workouts);
+      } else {
+        console.warn('Program not found in current state:', programId);
       }
     }
-  }, [route.params?.shouldRefresh, route.params?.programId]);
+  }, [
+    route.params?.shouldRefresh,
+    route.params?.programId,
+    // state.program
+    state.workout.workouts
+  ]);
 
   useEffect(() => {
     setMode('edit');
@@ -108,6 +116,10 @@ const EditProgram = () => {
           }))
         }))
       };
+      console.log(
+        'Updated program in handleUpdateProgram:',
+        JSON.stringify(updatedProgram, null, 2)
+      );
 
       await updateProgram(updatedProgram);
       // Reset the navigation stack to ProgramsList

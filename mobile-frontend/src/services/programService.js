@@ -26,21 +26,21 @@ export const programService = {
           order: workoutIndex + 1,
           exercises: (workout.exercises || []).map((exercise, index) => {
             // First, try to get the catalog ID from various possible sources
-            const catalogId =
-              exercise.catalogExerciseId ||
-              exercise.catalogExerciseId ||
-              exercise.id; // As a last resort
+            // const catalogId =
+            //   exercise.catalogExerciseId ||
+            //   exercise.catalogExerciseId ||
+            //   exercise.id; // As a last resort
 
-            // Log what we found
-            console.log('Exercise catalog ID sources:', {
-              catalogExerciseId: exercise.catalogExerciseId,
-              catalogExerciseId: exercise.catalogExerciseId,
-              id: exercise.id,
-              chosen: catalogId
-            });
+            // // Log what we found
+            // console.log('Exercise catalog ID sources:', {
+            //   catalogExerciseId: exercise.catalogExerciseId,
+            //   catalogExerciseId: exercise.catalogExerciseId,
+            //   id: exercise.id,
+            //   chosen: catalogId
+            // });
 
             return {
-              catalogExerciseId: Number(catalogId), // Ensure it's a number
+              catalogExerciseId: Number(exercise.catalogExerciseId),
               order: index + 1,
               sets: (exercise.sets || []).map((set, setIndex) => ({
                 order: setIndex + 1,
@@ -68,6 +68,63 @@ export const programService = {
       throw enhancedError;
     }
   },
+
+  async updateProgram(programData) {
+    try {
+      if (!programData) {
+        throw new Error('Program data is missing');
+      }
+
+      if (!programData.id) {
+        throw new Error('Program ID is required for update');
+      }
+
+      if (!Array.isArray(programData.workouts)) {
+        throw new Error('Workouts must be an array');
+      }
+
+      const validatedData = {
+        id: Number(programData.id),
+        userId: programData.userId,
+        name: programData.name,
+        programDuration: Number(programData.programDuration) || 0,
+        daysPerWeek: Number(programData.daysPerWeek) || 0,
+        mainGoal: (programData.mainGoal || 'general').toLowerCase(),
+        durationUnit: programData.durationUnit,
+        workouts: programData.workouts.map(workout => ({
+          id: workout.id ? Number(workout.id) : undefined,
+          name: workout.name,
+          order: workout.order || 1,
+          exercises: (workout.exercises || []).map((exercise, index) => ({
+            id: exercise.id ? Number(exercise.id) : undefined,
+            catalogExerciseId: Number(exercise.catalogExerciseId),
+            order: exercise.order || index + 1,
+            sets: (exercise.sets || []).map((set, setIndex) => ({
+              id: set.id ? Number(set.id) : undefined,
+              weight: set.weight === '' ? null : Number(set.weight),
+              reps: set.reps === '' ? null : Number(set.reps),
+              order: set.order || setIndex + 1
+            }))
+          }))
+        }))
+      };
+
+      const response = await apiService.updateProgram(validatedData);
+      // If we get a success response, return a properly structured response
+      if (response.success) {
+        return {
+          success: true,
+          program: validatedData,
+          workouts: validatedData.workouts,
+          activeWorkout: validatedData.workouts[0]?.id || null
+        };
+      }
+      return response;
+    } catch (error) {
+      throw new Error(`Failed to update program: ${error.message}`);
+    }
+  },
+
   // Delete method
   async deleteProgram(programId) {
     try {
