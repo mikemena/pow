@@ -22,6 +22,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
+import { apiService } from '../src/services/api';
 import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
@@ -95,18 +96,19 @@ const CurrentProgramView = () => {
   // Remove fetchActiveProgram from fetchPrograms dependencies
   const fetchPrograms = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
+      // const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
+      //   headers: {
+      //     Accept: 'application/json',
+      //     'Content-Type': 'application/json'
+      //   }
+      // });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
 
-      const data = await response.json();
+      // const data = await response.json();
+      const data = await apiService.getPrograms();
 
       // Always set program list, even if there's no active program
       setProgramList({
@@ -137,6 +139,7 @@ const CurrentProgramView = () => {
     try {
       setIsLoading(true);
       await fetchPrograms();
+      console.log('Fetched Programs:', programList.programs);
     } catch (error) {
       console.error('Error fetching initial data:', error);
     } finally {
@@ -184,15 +187,6 @@ const CurrentProgramView = () => {
     fetchInitialData();
   }, [fetchInitialData]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     fetchInitialData();
-  //     return () => {
-  //       // Cleanup if needed
-  //     };
-  //   }, [fetchInitialData])
-  // );
-
   const filteredPrograms = useMemo(() => {
     return programList.programs.filter(program => {
       const matchesName =
@@ -238,75 +232,85 @@ const CurrentProgramView = () => {
     return `${duration} ${formattedUnit}`;
   };
 
-  const renderProgramItem = ({ item }) => (
-    <TouchableOpacity onPress={() => handleSetActiveProgram(item)}>
-      <View
-        style={[
-          styles.programItem,
-          { backgroundColor: themedStyles.secondaryBackgroundColor },
-          activeProgram === item.id && styles.activeProgramBorder,
-          activeProgram === item.id && {
-            borderColor: themedStyles.accentColor
-          }
-        ]}
-      >
-        <Text
-          style={[styles.programTitle, { color: themedStyles.accentColor }]}
+  const renderProgramItem = ({ item }) => {
+    console.log('Program Item:', {
+      id: item.id,
+      name: item.name,
+      mainGoal: item.mainGoal,
+      programDuration: item.programDuration,
+      durationUnit: item.durationUnit,
+      daysPerWeek: item.daysPerWeek
+    });
+    return (
+      <TouchableOpacity onPress={() => handleSetActiveProgram(item)}>
+        <View
+          style={[
+            styles.programItem,
+            { backgroundColor: themedStyles.secondaryBackgroundColor },
+            activeProgram === item.id && styles.activeProgramBorder,
+            activeProgram === item.id && {
+              borderColor: themedStyles.accentColor
+            }
+          ]}
         >
-          {item.name}
-        </Text>
-        <View style={styles.programDetails}>
-          <View style={styles.detailRow}>
-            <Text
-              style={[styles.detailLabel, { color: themedStyles.textColor }]}
-            >
-              Main Goal
-            </Text>
-            <Text
-              style={[styles.detailValue, { color: themedStyles.textColor }]}
-            >
-              {item.mainGoal.charAt(0).toUpperCase() + item.mainGoal.slice(1)}
-            </Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text
-              style={[styles.detailLabel, { color: themedStyles.textColor }]}
-            >
-              Duration
-            </Text>
-            <Text
-              style={[styles.detailValue, { color: themedStyles.textColor }]}
-            >
-              {formatDuration(item.programDuration, item.durationUnit)}
-            </Text>
-          </View>
-          <View style={styles.detailRow}>
-            <Text
-              style={[styles.detailLabel, { color: themedStyles.textColor }]}
-            >
-              Days Per Week
-            </Text>
-            <Text
-              style={[styles.detailValue, { color: themedStyles.textColor }]}
-            >
-              {item.daysPerWeek}
-            </Text>
-          </View>
-        </View>
-        {activeProgram === item.id && (
           <Text
-            style={[
-              styles.currentProgramText,
-              { color: themedStyles.accentColor }
-            ]}
+            style={[styles.programTitle, { color: themedStyles.accentColor }]}
           >
-            CURRENT PROGRAM
+            {item.name}
           </Text>
-        )}
-        <View style={globalStyles.iconContainer}></View>
-      </View>
-    </TouchableOpacity>
-  );
+          <View style={styles.programDetails}>
+            <View style={styles.detailRow}>
+              <Text
+                style={[styles.detailLabel, { color: themedStyles.textColor }]}
+              >
+                Main Goal
+              </Text>
+              <Text
+                style={[styles.detailValue, { color: themedStyles.textColor }]}
+              >
+                {item.mainGoal.charAt(0).toUpperCase() + item.mainGoal.slice(1)}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text
+                style={[styles.detailLabel, { color: themedStyles.textColor }]}
+              >
+                Duration
+              </Text>
+              <Text
+                style={[styles.detailValue, { color: themedStyles.textColor }]}
+              >
+                {formatDuration(item.programDuration, item.durationUnit)}
+              </Text>
+            </View>
+            <View style={styles.detailRow}>
+              <Text
+                style={[styles.detailLabel, { color: themedStyles.textColor }]}
+              >
+                Days Per Week
+              </Text>
+              <Text
+                style={[styles.detailValue, { color: themedStyles.textColor }]}
+              >
+                {item.daysPerWeek}
+              </Text>
+            </View>
+          </View>
+          {activeProgram === item.id && (
+            <Text
+              style={[
+                styles.currentProgramText,
+                { color: themedStyles.accentColor }
+              ]}
+            >
+              CURRENT PROGRAM
+            </Text>
+          )}
+          <View style={globalStyles.iconContainer}></View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <SafeAreaView

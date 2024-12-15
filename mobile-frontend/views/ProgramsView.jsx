@@ -50,22 +50,22 @@ const ProgramsView = () => {
   const fetchPrograms = useCallback(async () => {
     try {
       // Add timeout and more detailed error logging
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      // const controller = new AbortController();
+      // const timeoutId = setTimeout(() => controller.abort(), 5000);
 
-      const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
-        signal: controller.signal,
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
+      // const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
+      //   signal: controller.signal,
+      //   headers: {
+      //     Accept: 'application/json',
+      //     'Content-Type': 'application/json'
+      //   }
+      // });
 
-      clearTimeout(timeoutId);
+      // clearTimeout(timeoutId);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      // if (!response.ok) {
+      //   throw new Error(`HTTP error! status: ${response.status}`);
+      // }
 
       const programs = await apiService.getPrograms();
 
