@@ -7,12 +7,6 @@ export const programService = {
         throw new Error('Invalid program data structure');
       }
 
-      // Log the incoming exercise data
-      console.log(
-        'Raw exercise data:',
-        JSON.stringify(programData.workouts[0].exercises[0], null, 2)
-      );
-
       const validatedData = {
         userId: programData.userId,
         name: programData.name,
@@ -25,20 +19,6 @@ export const programService = {
           name: workout.name,
           order: workoutIndex + 1,
           exercises: (workout.exercises || []).map((exercise, index) => {
-            // First, try to get the catalog ID from various possible sources
-            // const catalogId =
-            //   exercise.catalogExerciseId ||
-            //   exercise.catalogExerciseId ||
-            //   exercise.id; // As a last resort
-
-            // // Log what we found
-            // console.log('Exercise catalog ID sources:', {
-            //   catalogExerciseId: exercise.catalogExerciseId,
-            //   catalogExerciseId: exercise.catalogExerciseId,
-            //   id: exercise.id,
-            //   chosen: catalogId
-            // });
-
             return {
               catalogExerciseId: Number(exercise.catalogExerciseId),
               order: index + 1,
@@ -51,13 +31,6 @@ export const programService = {
           })
         }))
       };
-
-      // Log the final transformed data
-      console.log(
-        'Transformed exercise data:',
-        JSON.stringify(validatedData.workouts[0].exercises[0], null, 2)
-      );
-
       const response = await apiService.createProgram(validatedData);
       return response;
     } catch (error) {
@@ -140,9 +113,6 @@ export const programService = {
           `Invalid program ID format: ${programId}. Expected a number.`
         );
       }
-
-      // Log the validated program ID
-      console.log('Validated program ID for deletion:', parsedId);
 
       const response = await apiService.deleteProgram(parsedId);
       return response;

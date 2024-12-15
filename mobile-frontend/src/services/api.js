@@ -19,11 +19,6 @@ class ApiService {
       // Transform to snake_case for backend
       const backendData = transformRequestData(programData);
 
-      console.log(
-        'After API transformer:',
-        JSON.stringify(backendData, null, 2)
-      );
-
       const response = await fetch(`${API_URL_MOBILE}/api/programs`, {
         method: 'POST',
         headers: {
@@ -55,16 +50,6 @@ class ApiService {
     try {
       // Transform to snake_case for backend
       const backendData = transformRequestData(programData);
-
-      console.log(
-        'After API transformer updateProgram:',
-        JSON.stringify(programData, null, 2)
-      );
-
-      console.log(
-        'After API transformer updateProgram:',
-        JSON.stringify(backendData, null, 2)
-      );
 
       const response = await fetch(
         `${API_URL_MOBILE}/api/programs/${programData.id}`,
@@ -108,13 +93,6 @@ class ApiService {
         throw new Error('Program ID is required for deletion');
       }
 
-      // Log the request details
-      console.log('Attempting to delete program:', {
-        programId,
-        url: `${API_URL_MOBILE}/api/programs/${programId}`,
-        method: 'DELETE'
-      });
-
       const response = await fetch(
         `${API_URL_MOBILE}/api/programs/${programId}`,
         {
@@ -125,7 +103,6 @@ class ApiService {
           }
         }
       );
-      console.log('Delete response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -142,8 +119,6 @@ class ApiService {
         return transformResponseData(data);
       }
 
-      // If no content is returned, just return a success indicator
-      console.log('Program deleted successfully:', programId);
       return { success: true };
     } catch (error) {
       console.error('Delete API Error:', error);

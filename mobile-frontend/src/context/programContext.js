@@ -179,12 +179,6 @@ export const ProgramProvider = ({ children }) => {
 
   const updateProgram = async updatedProgram => {
     try {
-      console.log('1. Context updateProgram - Before service call:', {
-        programId: updatedProgram.id,
-        name: updatedProgram.name,
-        workoutCount: updatedProgram.workouts.length
-      });
-
       const updatedProgramData = await programService.updateProgram(
         updatedProgram
       );
@@ -292,36 +286,16 @@ export const ProgramProvider = ({ children }) => {
 
   // Add exercises to a workout
   const addExercise = (workoutId, exercises) => {
-    console.log('1. Exercise at start of action creator:', {
-      exercise: exercises[0],
-      has_catalog_id: 'catalogExerciseId' in exercises[0]
-    });
     const standardizedExercises = exercises.map(exercise => {
-      console.log('2. Exercise during standardization:', {
-        before: exercise,
-        has_catalog_id: 'catalogExerciseId' in exercise
-      });
-
       const standardized = {
         ...exercise,
-        // Ensure we preserve the catalogExerciseId
+
         catalogExerciseId: exercise.catalogExerciseId,
         order: 1,
         sets: exercise.sets || [{ weight: '', reps: '', order: 1 }]
       };
 
-      console.log('3. After standardization:', {
-        exercise: standardized,
-        has_catalog_id: 'catalogExerciseId' in standardized
-      });
-
       return standardized;
-    });
-
-    console.log('4. Before dispatch:', {
-      exercises: standardizedExercises,
-      first_exercise_has_catalog_id:
-        'catalogExerciseId' in standardizedExercises[0]
     });
 
     dispatch({

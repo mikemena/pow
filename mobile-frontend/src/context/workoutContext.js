@@ -79,8 +79,6 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
-      console.log('Adding exercise - Current state:', state);
-      console.log('Exercise payload:', action.payload);
       const newExercise = {
         ...action.payload,
         id: action.payload.id || Crypto.randomUUID(),
@@ -447,7 +445,6 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const updateExerciseSets = useCallback((exerciseId, sets) => {
-    console.log('Updating exercise sets:', exerciseId, sets);
     dispatch({
       type: actionTypes.UPDATE_EXERCISE_SETS,
       payload: { exerciseId, sets }

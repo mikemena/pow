@@ -57,19 +57,8 @@ const EditProgram = () => {
     const programId = route.params?.programId;
 
     if (refresh && programId) {
-      console.log('EditProgram - Refreshing program data', { programId });
-
       // Instead of searching through state.programs, use the current program state
       if (state.program && state.program.id === programId) {
-        console.log('Refreshing with current program state:', {
-          program: state.program,
-          workouts: state.workout.workouts,
-          workoutExercises: state.workout.workouts.map(w => ({
-            workoutId: w.id,
-            exercises: w.exercises
-          }))
-        });
-
         initializeEditProgramState(state.program, state.workout.workouts);
       } else {
         console.warn('Program not found in current state:', programId);
@@ -116,10 +105,6 @@ const EditProgram = () => {
           }))
         }))
       };
-      console.log(
-        'Updated program in handleUpdateProgram:',
-        JSON.stringify(updatedProgram, null, 2)
-      );
 
       await updateProgram(updatedProgram);
       // Reset the navigation stack to ProgramsList

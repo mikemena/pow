@@ -156,23 +156,9 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.ADD_EXERCISE: {
       const { workoutId, exercises } = action.payload;
 
-      console.log('5. Exercise in reducer before spread:', {
-        exercises,
-        first_exercise_has_catalog_id: exercises[0]
-          ? 'catalogExerciseId' in exercises[0]
-          : 'no exercises'
-      });
-
       const updatedWorkouts = state.workout.workouts.map(workout => {
         if (workout.id === workoutId) {
           const newExercises = [...(workout.exercises || []), ...exercises];
-
-          console.log('6. After spread in reducer:', {
-            exercises: newExercises,
-            first_exercise_has_catalog_id: newExercises[0]
-              ? 'catalogExerciseId' in newExercises[0]
-              : 'no exercises'
-          });
 
           return {
             ...workout,
