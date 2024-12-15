@@ -57,6 +57,8 @@ const StartWorkoutView = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
+  console.log('workoutState', workoutState);
+
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,
@@ -258,6 +260,12 @@ const StartWorkoutView = () => {
   };
 
   const handlePause = () => pauseTimer();
+
+  console.log('Pre-Add Exercise State:', {
+    activeProgram: workoutState.activeProgram,
+    currentWorkout: workoutState.currentWorkout,
+    workoutId: workoutState?.currentWorkout?.id
+  });
 
   const handleAddExercises = () => {
     navigation.navigate('ExerciseSelection', {

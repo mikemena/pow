@@ -237,6 +237,7 @@ export const WorkoutProvider = ({ children }) => {
         `${API_URL_MOBILE}/api/active-programs/user/2`
       );
       const data = await response.json();
+      console.log('Active program data:', data);
 
       if (data.activeProgram) {
         // Fetch the full program details
@@ -398,6 +399,11 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const addExerciseToWorkout = useCallback(exercise => {
+    console.log('HandleAddExercises Check:', {
+      hasActiveWorkout: !!workoutState.currentWorkout,
+      workoutId: workoutState?.currentWorkout?.id,
+      isWorkoutStarted: workoutState?.currentWorkout?.startTime ? true : false
+    });
     const newExercise = {
       // Map incoming exercise to match our state structure
       id: Crypto.randomUUID(),

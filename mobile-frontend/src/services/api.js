@@ -6,8 +6,20 @@ import { API_URL_MOBILE } from '@env';
 
 class ApiService {
   // The transformation happens behind the scenes in the service layer
+
+  // GET all programs for a user
   async getPrograms() {
     const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
+    const data = await response.json();
+    // Data transformation happens here, hidden from components
+    return transformResponseData(data);
+  }
+
+  // Get active program
+  async getActiveProgram() {
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/active-programs/user/2`
+    );
     const data = await response.json();
     // Data transformation happens here, hidden from components
     return transformResponseData(data);

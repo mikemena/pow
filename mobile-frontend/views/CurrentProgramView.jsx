@@ -61,18 +61,8 @@ const CurrentProgramView = () => {
 
   // Fetch active program
   const fetchActiveProgram = useCallback(async () => {
-    if (!programs || programs.length === 0) return;
-
     try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/active-programs/user/2`
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await apiService.getActiveProgram();
 
       if (data?.activeProgram?.programId) {
         const programDetails = programs.find(
@@ -93,30 +83,17 @@ const CurrentProgramView = () => {
     fetchActiveProgram();
   }, [fetchActiveProgram]);
 
-  // Remove fetchActiveProgram from fetchPrograms dependencies
+  // Fetch users programs
   const fetchPrograms = useCallback(async () => {
     try {
-      // const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
-      //   headers: {
-      //     Accept: 'application/json',
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-
-      // if (!response.ok) {
-      //   throw new Error(`HTTP error! status: ${response.status}`);
-      // }
-
-      // const data = await response.json();
       const data = await apiService.getPrograms();
+      console.log('All Programs in Current Program View:', data);
 
-      // Always set program list, even if there's no active program
       setProgramList({
         programs: data || [],
         workouts: []
       });
 
-      // Fetch active program separately
       await fetchActiveProgram(data);
     } catch (error) {
       console.error('Detailed fetch error:', error);
@@ -147,6 +124,10 @@ const CurrentProgramView = () => {
     }
   }, [fetchPrograms]);
 
+  useEffect(() => {
+    fetchInitialData();
+  }, [fetchInitialData]);
+
   const handleSetActiveProgram = useCallback(
     async program => {
       try {
@@ -159,16 +140,10 @@ const CurrentProgramView = () => {
         }
 
         // Set new active program
-        const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            userId: 2,
-            programId: program.id
-          })
+        const response = await apiService.createProgram({
+          userId: 2,
+          programId: program.id
         });
-
-        if (!response.ok) throw new Error('Failed to set active program');
 
         setActiveProgram(program.id);
         setActiveProgramWithDetails(program);
@@ -180,12 +155,8 @@ const CurrentProgramView = () => {
         setIsLoading(false);
       }
     },
-    [activeProgram, navigation]
+    [activeProgram, navigation, setActiveProgram, setActiveProgramWithDetails]
   );
-
-  useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
 
   const filteredPrograms = useMemo(() => {
     return programList.programs.filter(program => {
