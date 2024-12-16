@@ -55,7 +55,10 @@ const WorkoutStackScreen = () => (
 );
 
 const TabNavigator = () => (
-  <Tab.Navigator tabBar={props => <Navigation {...props} />}>
+  <Tab.Navigator
+    tabBar={props => <Navigation {...props} />}
+    initialRouteName='Workout'
+  >
     <Tab.Screen
       name='Programs'
       component={ProgramsStackScreen}
