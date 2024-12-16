@@ -20,8 +20,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     state: workoutState,
     fetchWorkoutDetails,
     startWorkout,
-    initializeProgramWorkout,
-    fetchActiveProgramDetails
+    initializeProgramWorkout
   } = useContext(WorkoutContext);
 
   const { state: themeState } = useTheme();
@@ -36,7 +35,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   useEffect(() => {
     // If we don't have program details, fetch them
     if (!workoutState.activeProgramDetails) {
-      fetchActiveProgramDetails();
     }
   }, []);
 
