@@ -54,6 +54,7 @@ export const transformRequestData = data => {
       letter => `_${letter.toLowerCase()}`
     );
     snake_case[snakeKey] = transformRequestData(data[camelCase]);
+    console.log('transformRequestData output:', snake_case);
     return snake_case;
   }, {});
 };

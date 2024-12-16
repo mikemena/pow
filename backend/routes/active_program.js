@@ -33,10 +33,10 @@ router.get('/active-programs/user/:userId', async (req, res) => {
 
 // Backend: active_program.js
 router.post('/active-programs', async (req, res) => {
-  const { userId, programId } = req.body;
+  const { user_id, program_id } = req.body;
 
   // Validate required fields
-  if (!userId || !programId) {
+  if (!user_id || !program_id) {
     return res.status(400).json({
       error: 'Missing required fields',
       details: 'Both userId and programId are required'
@@ -50,14 +50,14 @@ router.post('/active-programs', async (req, res) => {
     // First check if program exists
     const programExists = await pool.query(
       'SELECT id, program_duration, duration_unit FROM programs WHERE id = $1',
-      [programId]
+      [program_id]
     );
 
     if (programExists.rows.length === 0) {
       await pool.query('ROLLBACK');
       return res.status(404).json({
         error: 'Program not found',
-        details: `Program with id ${programId} not found`
+        details: `Program with id ${program_id} not found`
       });
     }
 
@@ -81,7 +81,7 @@ router.post('/active-programs', async (req, res) => {
     // Deactivate current active program if exists
     await pool.query(
       'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE',
-      [userId]
+      [user_id]
     );
 
     // Insert new active program
@@ -90,7 +90,7 @@ router.post('/active-programs', async (req, res) => {
        (user_id, program_id, start_date, end_date, is_active)
        VALUES ($1, $2, $3, $4, TRUE)
        RETURNING *`,
-      [userId, programId, startDate, endDate]
+      [user_id, program_id, startDate, endDate]
     );
 
     await pool.query('COMMIT');
