@@ -233,11 +233,13 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const fetchActiveProgramDetails = useCallback(async () => {
+    console.log('FetchActiveProgramDetails Check:');
     try {
-      const response = await apiService.getActiveProgram();
+      const data = await apiService.getActiveProgram();
+      console.log('FetchActiveProgramDetails Response:', data);
 
-      const data = await response.json();
-      console.log('Active program data:', data);
+      // const data = await response.json();
+      // console.log('FetchActiveProgramDetails Data:', data);
 
       if (data.activeProgram) {
         // Fetch the full program details

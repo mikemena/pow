@@ -18,11 +18,9 @@ class ApiService {
   // Get active program
   async getActiveProgram() {
     try {
-      console.log('Getting active program for user 2');
       const response = await fetch(
         `${API_URL_MOBILE}/api/active-programs/user/2`
       );
-      console.log('Active program response status:', response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
@@ -33,10 +31,10 @@ class ApiService {
       }
 
       const rawData = await response.json();
-      console.log('Raw response data:', rawData);
+      console.log('Raw data:', rawData);
 
       const transformedData = transformResponseData(rawData);
-      console.log('Transformed response data:', transformedData);
+      console.log('Transformed data:', transformedData);
       return transformedData;
     } catch (error) {
       console.error('Error fetching active program:', error);
@@ -47,7 +45,6 @@ class ApiService {
   // POST new active program
   async createActiveProgram(programData) {
     try {
-      console.log('createActiveProgram received:', programData);
       // Validate using camelCase (frontend convention)
       if (!programData?.userId || !programData?.programId) {
         console.error('Validation failed:', {
@@ -64,11 +61,8 @@ class ApiService {
         programId: programData.programId
       };
 
-      console.log('Frontend data before transform:', frontendData);
-
       // Transform to snake_case for backend
       const backendData = transformRequestData(frontendData);
-      console.log('Backend data after transform:', backendData);
 
       const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
         method: 'POST',
@@ -79,8 +73,6 @@ class ApiService {
         body: JSON.stringify(backendData)
       });
 
-      console.log('Response status:', response.status);
-
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
@@ -89,10 +81,8 @@ class ApiService {
       }
 
       const responseData = await response.json();
-      console.log('Raw response data:', responseData);
 
       const transformedResponse = transformResponseData(responseData);
-      console.log('Transformed response data:', transformedResponse);
 
       return transformedResponse;
     } catch (error) {

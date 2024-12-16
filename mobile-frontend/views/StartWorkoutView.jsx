@@ -57,8 +57,6 @@ const StartWorkoutView = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  console.log('workoutState', workoutState);
-
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
     themeState.theme,

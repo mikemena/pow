@@ -127,9 +127,7 @@ const CurrentProgramView = () => {
 
   const handleSetActiveProgram = useCallback(
     async program => {
-      console.log('handleSetActiveProgram called with:', program);
       if (!program?.id) {
-        console.error('Program validation failed:', program);
         console.error('Invalid program object:', program);
         Alert.alert('Error', 'Invalid program data. Please try again.');
         return;
@@ -139,7 +137,6 @@ const CurrentProgramView = () => {
         setIsLoading(true);
 
         if (activeProgram === program.id) {
-          console.log('Navigating to details - same program');
           navigation.navigate('CurrentProgramDetails');
           return;
         }
@@ -149,10 +146,7 @@ const CurrentProgramView = () => {
           programId: program.id
         };
 
-        console.log('Sending to API:', payload);
-
         const data = await apiService.createActiveProgram(payload);
-        console.log('Received from API:', data);
 
         if (data?.activeProgram) {
           setActiveProgram(program.id);
