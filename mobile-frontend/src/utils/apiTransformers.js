@@ -29,6 +29,7 @@ export const transformResponseData = data => {
 
 // This function converts camelCase frontend data to snake_case for backend requests
 export const transformRequestData = data => {
+  console.log('transformRequestData input:', data);
   // Handle arrays
   if (Array.isArray(data)) {
     return data.map(item => transformRequestData(item));

@@ -31,61 +31,68 @@ router.get('/active-programs/user/:userId', async (req, res) => {
   }
 });
 
+// Backend: active_program.js
 router.post('/active-programs', async (req, res) => {
   const { userId, programId } = req.body;
+
+  // Validate required fields
+  if (!userId || !programId) {
+    return res.status(400).json({
+      error: 'Missing required fields',
+      details: 'Both userId and programId are required'
+    });
+  }
 
   try {
     // Start a transaction
     await pool.query('BEGIN');
 
-    // Deactivate any currently active programs for the user
-    // const deactivateResult = await pool.query(
-    //   'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE',
-    //   [userId]
-    // );
-
-    // Fetch program details
-    const programResult = await pool.query(
-      'SELECT program_duration, duration_unit FROM programs WHERE id = $1',
+    // First check if program exists
+    const programExists = await pool.query(
+      'SELECT id, program_duration, duration_unit FROM programs WHERE id = $1',
       [programId]
     );
 
-    if (programResult.rows.length === 0) {
-      throw new Error(`Program with id ${programId} not found`);
+    if (programExists.rows.length === 0) {
+      await pool.query('ROLLBACK');
+      return res.status(404).json({
+        error: 'Program not found',
+        details: `Program with id ${programId} not found`
+      });
     }
 
-    const { program_duration, duration_unit } = programResult.rows[0];
+    const { program_duration, duration_unit } = programExists.rows[0];
 
-    let endDate;
+    // Calculate dates
     const startDate = new Date();
-    if (duration_unit === 'weeks') {
-      endDate = new Date(
-        startDate.getTime() + program_duration * 7 * 24 * 60 * 60 * 1000
-      );
-    } else if (duration_unit === 'months') {
-      endDate = new Date(
-        startDate.setMonth(startDate.getMonth() + program_duration)
-      );
-    } else {
-      endDate = new Date(
-        startDate.getTime() + program_duration * 24 * 60 * 60 * 1000
-      );
+    let endDate = new Date(startDate);
+
+    switch (duration_unit) {
+      case 'weeks':
+        endDate.setDate(endDate.getDate() + program_duration * 7);
+        break;
+      case 'months':
+        endDate.setMonth(endDate.getMonth() + program_duration);
+        break;
+      default: // days
+        endDate.setDate(endDate.getDate() + program_duration);
     }
 
-    // Insert the new active program
+    // Deactivate current active program if exists
+    await pool.query(
+      'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE',
+      [userId]
+    );
+
+    // Insert new active program
     const result = await pool.query(
       `INSERT INTO active_programs
        (user_id, program_id, start_date, end_date, is_active)
        VALUES ($1, $2, $3, $4, TRUE)
-       ON CONFLICT (user_id, program_id, start_date)
-       DO UPDATE SET
-         is_active = TRUE,
-         end_date = EXCLUDED.end_date
        RETURNING *`,
       [userId, programId, startDate, endDate]
     );
 
-    // Commit the transaction
     await pool.query('COMMIT');
 
     res.status(201).json({
@@ -93,7 +100,6 @@ router.post('/active-programs', async (req, res) => {
       activeProgram: result.rows[0]
     });
   } catch (error) {
-    // Rollback in case of error
     await pool.query('ROLLBACK');
     console.error('Error activating program:', error);
     res.status(500).json({

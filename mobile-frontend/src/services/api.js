@@ -17,12 +17,93 @@ class ApiService {
 
   // Get active program
   async getActiveProgram() {
-    const response = await fetch(
-      `${API_URL_MOBILE}/api/active-programs/user/2`
-    );
-    const data = await response.json();
-    // Data transformation happens here, hidden from components
-    return transformResponseData(data);
+    try {
+      console.log('Getting active program for user 2');
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/active-programs/user/2`
+      );
+      console.log('Active program response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      const rawData = await response.json();
+      console.log('Raw response data:', rawData);
+
+      const transformedData = transformResponseData(rawData);
+      console.log('Transformed response data:', transformedData);
+      return transformedData;
+    } catch (error) {
+      console.error('Error fetching active program:', error);
+      throw error;
+    }
+  }
+
+  // POST new active program
+  async createActiveProgram(programData) {
+    try {
+      console.log('createActiveProgram received:', programData);
+      // Validate using camelCase (frontend convention)
+      if (!programData?.userId || !programData?.programId) {
+        console.error('Validation failed:', {
+          hasUserId: !!programData?.userId,
+          hasProgramId: !!programData?.programId,
+          programData
+        });
+        throw new Error('Both userId and programId are required');
+      }
+
+      // Create a clean object with just the required fields
+      const frontendData = {
+        userId: programData.userId,
+        programId: programData.programId
+      };
+
+      console.log('Frontend data before transform:', frontendData);
+
+      // Transform to snake_case for backend
+      const backendData = transformRequestData(frontendData);
+      console.log('Backend data after transform:', backendData);
+
+      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(backendData)
+      });
+
+      console.log('Response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      const responseData = await response.json();
+      console.log('Raw response data:', responseData);
+
+      const transformedResponse = transformResponseData(responseData);
+      console.log('Transformed response data:', transformedResponse);
+
+      return transformedResponse;
+    } catch (error) {
+      console.error('Detailed error in createActiveProgram:', {
+        error,
+        originalData: programData,
+        message: error.message,
+        stack: error.stack
+      });
+      throw error;
+    }
   }
 
   // POST new program
@@ -32,6 +113,37 @@ class ApiService {
       const backendData = transformRequestData(programData);
 
       const response = await fetch(`${API_URL_MOBILE}/api/programs`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        },
+        body: JSON.stringify(backendData)
+      });
+
+      // Handle non-200 responses
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      const data = await response.json();
+      return transformResponseData(data);
+    } catch (error) {
+      console.error('API Error:', error);
+      throw error;
+    }
+  }
+
+  // POST new active program
+  async createActiveProgram(programData) {
+    try {
+      // Transform to snake_case for backend
+      const backendData = transformRequestData(programData);
+
+      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

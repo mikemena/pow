@@ -1,6 +1,7 @@
 import React, { createContext, useReducer, useCallback } from 'react';
 import * as Crypto from 'expo-crypto';
 import { actionTypes } from '../actions/actionTypes';
+import { apiService } from '../services/api';
 import { API_URL_MOBILE } from '@env';
 
 // Initial state
@@ -233,9 +234,8 @@ export const WorkoutProvider = ({ children }) => {
 
   const fetchActiveProgramDetails = useCallback(async () => {
     try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/active-programs/user/2`
-      );
+      const response = await apiService.getActiveProgram();
+
       const data = await response.json();
       console.log('Active program data:', data);
 

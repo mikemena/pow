@@ -23,7 +23,6 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { apiService } from '../src/services/api';
-import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
 import ProgramFilter from '../components/ProgramFilter';
@@ -87,7 +86,6 @@ const CurrentProgramView = () => {
   const fetchPrograms = useCallback(async () => {
     try {
       const data = await apiService.getPrograms();
-      console.log('All Programs in Current Program View:', data);
 
       setProgramList({
         programs: data || [],
@@ -116,7 +114,6 @@ const CurrentProgramView = () => {
     try {
       setIsLoading(true);
       await fetchPrograms();
-      console.log('Fetched Programs:', programList.programs);
     } catch (error) {
       console.error('Error fetching initial data:', error);
     } finally {
@@ -130,27 +127,47 @@ const CurrentProgramView = () => {
 
   const handleSetActiveProgram = useCallback(
     async program => {
+      console.log('handleSetActiveProgram called with:', program);
+      if (!program?.id) {
+        console.error('Program validation failed:', program);
+        console.error('Invalid program object:', program);
+        Alert.alert('Error', 'Invalid program data. Please try again.');
+        return;
+      }
+
       try {
         setIsLoading(true);
 
         if (activeProgram === program.id) {
-          // Navigate to details if clicking active program
+          console.log('Navigating to details - same program');
           navigation.navigate('CurrentProgramDetails');
           return;
         }
 
-        // Set new active program
-        const response = await apiService.createProgram({
+        const payload = {
           userId: 2,
           programId: program.id
-        });
+        };
 
-        setActiveProgram(program.id);
-        setActiveProgramWithDetails(program);
-        navigation.navigate('CurrentProgramDetails');
+        console.log('Sending to API:', payload);
+
+        const data = await apiService.createActiveProgram(payload);
+        console.log('Received from API:', data);
+
+        if (data?.activeProgram) {
+          setActiveProgram(program.id);
+          setActiveProgramWithDetails(program);
+          navigation.navigate('CurrentProgramDetails');
+        } else {
+          console.error('Invalid response data:', data);
+          throw new Error('No active program data received from server');
+        }
       } catch (error) {
-        console.error('Error:', error);
-        Alert.alert('Error', 'Failed to update program status.');
+        console.error('Error setting active program:', error);
+        Alert.alert(
+          'Error',
+          `Failed to update program status: ${error.message}`
+        );
       } finally {
         setIsLoading(false);
       }
@@ -204,14 +221,6 @@ const CurrentProgramView = () => {
   };
 
   const renderProgramItem = ({ item }) => {
-    console.log('Program Item:', {
-      id: item.id,
-      name: item.name,
-      mainGoal: item.mainGoal,
-      programDuration: item.programDuration,
-      durationUnit: item.durationUnit,
-      daysPerWeek: item.daysPerWeek
-    });
     return (
       <TouchableOpacity onPress={() => handleSetActiveProgram(item)}>
         <View
