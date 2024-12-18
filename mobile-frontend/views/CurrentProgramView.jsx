@@ -38,7 +38,7 @@ const CurrentProgramView = () => {
   } = useContext(WorkoutContext);
 
   const programs = programState.programs;
-  console.log('Programs:', programs);
+
   const activeProgram = workoutState.activeProgram;
 
   const [isFilterVisible, setIsFilterVisible] = useState(false);
@@ -130,9 +130,20 @@ const CurrentProgramView = () => {
           return;
         }
 
+        // First, try to delete any existing active program
+        try {
+          // You'll need to add this endpoint to your API service
+          await apiService.deleteActiveProgram(2);
+        } catch (deleteeError) {
+          // Log but don't throw - we still want to try creating the new active program
+          console.log('Error deleting active program:', deleteError);
+        }
+
+        // Now create the new active program
         const payload = {
           userId: 2,
-          programId: program.id
+          programId: program.id,
+          startDate: new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
         };
 
         const data = await apiService.createActiveProgram(payload);

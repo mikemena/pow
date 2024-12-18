@@ -19,7 +19,7 @@ class ApiService {
   async getActiveProgram() {
     try {
       const response = await fetch(
-        `${API_URL_MOBILE}/api/active-programs/user/2`
+        `${API_URL_MOBILE}/api/active-program/user/2`
       );
 
       if (!response.ok) {
@@ -97,7 +97,7 @@ class ApiService {
       // Transform to snake_case for backend
       const backendData = transformRequestData(frontendData);
 
-      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
+      const response = await fetch(`${API_URL_MOBILE}/api/active-program`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,6 +125,42 @@ class ApiService {
         message: error.message,
         stack: error.stack
       });
+      throw error;
+    }
+  }
+
+  // delete active program
+  async deleteActiveProgram(userId) {
+    try {
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/active-program/${userId}`,
+        {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json'
+          }
+        }
+      );
+
+      // First check if the response is ok
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      // For successful responses, handle both 204 and 200
+      if (response.status === 204) {
+        return { message: 'Active program deleted successfully' };
+      }
+
+      const data = await response.json();
+      return data; // Return the raw response data
+    } catch (error) {
+      console.error('API Error:', error);
+      // Make sure we're throwing the actual error object
       throw error;
     }
   }
@@ -166,7 +202,7 @@ class ApiService {
       // Transform to snake_case for backend
       const backendData = transformRequestData(programData);
 
-      const response = await fetch(`${API_URL_MOBILE}/api/active-programs`, {
+      const response = await fetch(`${API_URL_MOBILE}/api/active-program`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

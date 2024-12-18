@@ -3,7 +3,7 @@ const router = express.Router();
 const { pool } = require('../config/db');
 
 // Get active program for a user
-router.get('/active-programs/user/:userId', async (req, res) => {
+router.get('/active-program/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
@@ -35,7 +35,7 @@ router.get('/active-programs/user/:userId', async (req, res) => {
 });
 
 // Backend: active_program.js
-router.post('/active-programs', async (req, res) => {
+router.post('/active-program', async (req, res) => {
   const { user_id, program_id } = req.body;
 
   // Validate required fields
@@ -66,7 +66,6 @@ router.post('/active-programs', async (req, res) => {
 
     const { program_duration, duration_unit } = programExists.rows[0];
 
-    // Calculate dates
     const startDate = new Date();
     let endDate = new Date(startDate);
 
@@ -113,30 +112,45 @@ router.post('/active-programs', async (req, res) => {
 });
 
 // delete active program for a user
-router.delete('/active-programs/user/:userId', async (req, res) => {
+router.delete('/active-program/:userId', async (req, res) => {
   const { userId } = req.params;
+  console.log('Received DELETE request for user:', userId);
 
   try {
+    console.log('Starting transaction');
     await pool.query('BEGIN');
+
+    console.log('Executing deactivation query');
     const result = await pool.query(
-      'UPDATE active_programs SET is_active = FALSE WHERE user_id = $1 AND is_active = TRUE RETURNING *',
+      'DELETE FROM active_programs WHERE user_id = $1 AND is_active = TRUE RETURNING *',
       [userId]
     );
+    console.log('Deactivation query result:', result.rows);
 
+    console.log('Committing transaction');
     await pool.query('COMMIT');
 
     if (result.rows.length === 0) {
+      console.log('No active program found to delete');
       return res.status(200).json({
-        message: 'No active program to deactivate',
+        message: 'No active program to delete',
         deactivatedProgram: null
       });
     }
 
+    console.log('Successfully deleted active program');
     res.json({
-      message: 'Program deactivated successfully',
+      message: 'Active program deleted successfully',
       deactivatedProgram: result.rows[0]
     });
   } catch (error) {
+    console.error('Detailed deletion error:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+      userId: userId
+    });
+
     await pool.query('ROLLBACK');
     res.status(500).json({
       error: 'Failed to deactivate program',
