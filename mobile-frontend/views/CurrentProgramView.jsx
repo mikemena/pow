@@ -29,20 +29,18 @@ import ProgramFilter from '../components/ProgramFilter';
 
 const CurrentProgramView = () => {
   const navigation = useNavigation();
-  const {
-    state: { programs }
-  } = useContext(ProgramContext);
+  const { state: programState, setPrograms } = useContext(ProgramContext);
+  // console.log('Program state:', programState);
   const {
     state: workoutState,
     setActiveProgram,
     setActiveProgramWithDetails
   } = useContext(WorkoutContext);
+
+  const programs = programState.programs;
+  console.log('Programs:', programs);
   const activeProgram = workoutState.activeProgram;
 
-  const [programList, setProgramList] = useState({
-    programs: [],
-    workouts: []
-  });
   const [isFilterVisible, setIsFilterVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({
@@ -63,7 +61,7 @@ const CurrentProgramView = () => {
     try {
       const data = await apiService.getActiveProgram();
 
-      if (data?.activeProgram?.programId) {
+      if (data?.activeProgram?.programId && programs?.length) {
         const programDetails = programs.find(
           p => p.id === data.activeProgram.programId
         );
@@ -78,36 +76,27 @@ const CurrentProgramView = () => {
     }
   }, [programs, setActiveProgram, setActiveProgramWithDetails]);
 
-  useEffect(() => {
-    fetchActiveProgram();
-  }, [fetchActiveProgram]);
-
   // Fetch users programs
   const fetchPrograms = useCallback(async () => {
     try {
       const data = await apiService.getPrograms();
-
-      setProgramList({
-        programs: data || [],
-        workouts: []
-      });
-
-      await fetchActiveProgram(data);
+      setPrograms(data); // Update ProgramContext
     } catch (error) {
-      console.error('Detailed fetch error:', error);
-      setProgramList({
-        programs: [],
-        workouts: []
-      });
+      console.error('Error fetching programs:', error);
     }
-  }, [fetchActiveProgram]);
+  }, [setPrograms]);
 
-  // Add a useEffect to handle re-fetching on program list changes
+  // First, ensure we have programs
   useEffect(() => {
-    if (programList.programs.length > 0) {
-      fetchActiveProgram(programList.programs);
+    fetchPrograms();
+  }, [fetchPrograms]);
+
+  // Then, fetch active program whenever programs changes
+  useEffect(() => {
+    if (programs?.length > 0) {
+      fetchActiveProgram();
     }
-  }, [programList.programs, fetchActiveProgram]);
+  }, [programs, fetchActiveProgram]);
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
@@ -170,7 +159,7 @@ const CurrentProgramView = () => {
   );
 
   const filteredPrograms = useMemo(() => {
-    return programList.programs.filter(program => {
+    return (programs || []).filter(program => {
       const matchesName =
         !filters.programName ||
         program.name.toLowerCase().includes(filters.programName.toLowerCase());
@@ -188,7 +177,7 @@ const CurrentProgramView = () => {
         matchesName && matchesGoal && matchesDurationUnit && matchesDaysPerWeek
       );
     });
-  }, [programList.programs, filters]);
+  }, [programs, filters]);
 
   const handleFilterChange = (key, value) => {
     setFilters(prevFilters => ({ ...prevFilters, [key]: value }));
@@ -310,7 +299,7 @@ const CurrentProgramView = () => {
               size={24}
             />
           </TouchableOpacity>
-          {programList.programs.length > 0 && (
+          {programs?.length > 0 && (
             <PillButton
               label='Filter'
               icon={
@@ -340,7 +329,7 @@ const CurrentProgramView = () => {
           <ProgramFilter
             isVisible={isFilterVisible}
             onClose={() => setIsFilterVisible(false)}
-            programs={programList.programs}
+            programs={programs}
             filterValues={filters}
             onFilterChange={handleFilterChange}
             onClearFilters={clearFilters}
@@ -359,7 +348,7 @@ const CurrentProgramView = () => {
               Loading programs...
             </Text>
           </View>
-        ) : programList.programs.length > 0 ? (
+        ) : programs?.length > 0 ? (
           // Show program list if programs exist
           <View style={globalStyles.container}>
             <FlatList

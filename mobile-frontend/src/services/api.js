@@ -31,13 +31,46 @@ class ApiService {
       }
 
       const rawData = await response.json();
-      console.log('Raw data:', rawData);
+      // console.log('Raw data:', rawData);
 
       const transformedData = transformResponseData(rawData);
-      console.log('Transformed data:', transformedData);
+      // console.log('Transformed data:', transformedData);
+
       return transformedData;
     } catch (error) {
-      console.error('Error fetching active program:', error);
+      console.error(
+        'api.js getActiveProgram Error fetching active program:',
+        error
+      );
+      throw error;
+    }
+  }
+
+  // Get one program by program IDr
+
+  async getProgram(programId) {
+    try {
+      const response = await fetch(
+        `${API_URL_MOBILE}/api/programs/${programId}`
+      );
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('Error response:', errorText);
+        throw new Error(
+          `Server responded with ${response.status}: ${errorText}`
+        );
+      }
+
+      const rawData = await response.json();
+      // console.log('Raw data:', rawData);
+
+      const transformedData = transformResponseData(rawData);
+      // console.log('Transformed data:', transformedData);
+
+      return transformedData;
+    } catch (error) {
+      console.error('Error api.js getProgram fetching active program:', error);
       throw error;
     }
   }

@@ -1,0 +1,92 @@
+{
+    "activeProgram": 316,
+    "activeProgramDetails": {
+        "daysPerWeek": 5,
+        "durationUnit": "months",
+        "id": 316,
+        "mainGoal": "endurance",
+        "name": "Cuco el Cojo",
+        "programDuration": 4,
+        "userId": 2,
+        "workouts": [
+            [Object
+            ],
+            [Object
+            ]
+        ]
+    },
+    "activeWorkout": 396,
+    "currentWorkout": {
+        "exercises": [
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        ],
+        "id": 396,
+        "isCompleted": false,
+        "name": "Cuco el Cojo",
+        "programWorkoutId": 396,
+        "startTime": 2024-12-17T19: 51: 04.194Z
+    },
+    "date": 2024-12-17T19: 51: 02.054Z,
+    "duration": null,
+    "exercises": [
+        {
+            "catalogExerciseId": undefined,
+            "equipment": "Barbell",
+            "exercise_id": 471,
+            "id": 471,
+            "imageUrl": "https://39dd81ac8e96c60dc845b6b4fd1f3bf9.r2.cloudflarestorage.com/pow/barbell-deadlift.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=140c882768e81c08c6afd2d1004ab296%2F20241217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20241217T195104Z&X-Amz-Expires=3600&X-Amz-Signature=84edfed26e99eacc27ac7333abd52a5dfe0c2afd773f8f140f849243d1735e15&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400&response-content-type=image%2Fgif",
+            "muscle": "Lower Back",
+            "name": "Barbell Deadlift",
+            "sets": [Array
+            ]
+        },
+        {
+            "catalogExerciseId": undefined,
+            "equipment": "Barbell",
+            "exercise_id": 472,
+            "id": 472,
+            "imageUrl": "https://39dd81ac8e96c60dc845b6b4fd1f3bf9.r2.cloudflarestorage.com/pow/block-pull-deadlift.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=140c882768e81c08c6afd2d1004ab296%2F20241217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20241217T195104Z&X-Amz-Expires=3600&X-Amz-Signature=802ef0d56c6883b0ef85721f348983dd39a4e5a7eb675b961f20d4454b27e997&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400&response-content-type=image%2Fgif",
+            "muscle": "Lower Back",
+            "name": "Block Pull Deadlift",
+            "sets": [Array
+            ]
+        },
+        {
+            "catalogExerciseId": undefined,
+            "equipment": "Barbell",
+            "exercise_id": 473,
+            "id": 473,
+            "imageUrl": "https://39dd81ac8e96c60dc845b6b4fd1f3bf9.r2.cloudflarestorage.com/pow/barbell-rack-pull.gif?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=140c882768e81c08c6afd2d1004ab296%2F20241217%2Fauto%2Fs3%2Faws4_request&X-Amz-Date=20241217T195104Z&X-Amz-Expires=3600&X-Amz-Signature=00a8f7a4a9182d1ca9b61390e8c82afca76f4ba1cf242da269d4639babe34e39&X-Amz-SignedHeaders=host&response-cache-control=public%2C%20max-age%3D86400&response-content-type=image%2Fgif",
+            "muscle": "Lower Back",
+            "name": "Barbell Rack Pull",
+            "sets": [Array
+            ]
+        }
+    ],
+    "isCompleted": false,
+    "programId": 316,
+    "sets": [],
+    "userId": 2,
+    "workoutDetails": {
+        "exercises": [
+            [Object
+            ],
+            [Object
+            ],
+            [Object
+            ]
+        ],
+        "id": 396,
+        "isCompleted": false,
+        "name": "Cuco el Cojo",
+        "programWorkoutId": 396,
+        "startTime": 2024-12-17T19: 51: 04.194Z
+    },
+    "workoutName": "Cuco el Cojo",
+    "workout_id": 396
+}

@@ -37,6 +37,9 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
+  //console.log('programState:', programState);
+  console.log('workoutState:', workoutState);
+
   const programAction = programState.mode;
   const contextType = route.params?.contextType;
   const programId = route.params?.programId;
@@ -300,7 +303,10 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       // Get the active workout ID
-      const activeWorkoutId = programState.workout.activeWorkout;
+      console.log('Program state:', programState);
+      console.log('Workout state:', workoutState);
+      const activeWorkoutId =
+        programState.workout.activeWorkout || workoutState.activeWorkout;
       if (!activeWorkoutId) {
         console.error('No active workout selected');
         return;
@@ -362,7 +368,7 @@ const ExerciseSelection = ({ navigation, route }) => {
 
       const programId = currentWorkout?.programId;
       if (!programId) {
-        console.error('Could not determine program ID');
+        console.error('ExerciseSelection.js - Could not determine program ID');
         return;
       }
 

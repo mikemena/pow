@@ -18,6 +18,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
   const {
     state: workoutState,
+    setActiveWorkout,
     fetchWorkoutDetails,
     startWorkout,
     initializeProgramWorkout
@@ -31,6 +32,8 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const program = workoutState.activeProgramDetails;
   const workouts = program?.workouts || [];
+
+  useEffect(() => {}, [workoutState]);
 
   useEffect(() => {
     // If we don't have program details, fetch them
@@ -98,6 +101,8 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
       // Only proceed if we got the details
       if (workoutDetails) {
+        setActiveWorkout(workouts[currentWorkoutIndex].id);
+
         // Start the workout with both the current workout data and fetched details
         startWorkout({
           name: currentWorkout.name,

@@ -79,6 +79,12 @@ const workoutReducer = (state, action) => {
         workoutName: action.payload.name
       };
 
+    case actionTypes.SET_ACTIVE_WORKOUT:
+      return {
+        ...state,
+        activeWorkout: action.payload
+      };
+
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
       const newExercise = {
         ...action.payload,
@@ -233,20 +239,15 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const fetchActiveProgramDetails = useCallback(async () => {
-    console.log('FetchActiveProgramDetails Check:');
     try {
       const data = await apiService.getActiveProgram();
-      console.log('FetchActiveProgramDetails Response:', data);
-
-      // const data = await response.json();
-      // console.log('FetchActiveProgramDetails Data:', data);
 
       if (data.activeProgram) {
         // Fetch the full program details
-        const programResponse = await fetch(
-          `${API_URL_MOBILE}/api/programs/${data.activeProgram.programId}`
+
+        const programDetails = await apiService.getProgram(
+          data.activeProgram.programId
         );
-        const programDetails = await programResponse.json();
 
         // Set both the active program ID and its details
         dispatch({
@@ -287,6 +288,13 @@ export const WorkoutProvider = ({ children }) => {
       payload: program
     });
   }, []);
+
+  const setActiveWorkout = workoutId => {
+    dispatch({
+      type: actionTypes.SET_ACTIVE_WORKOUT,
+      payload: workoutId
+    });
+  };
 
   // Initialize a new flex workout
   const initializeFlexWorkout = () => {
@@ -558,6 +566,7 @@ export const WorkoutProvider = ({ children }) => {
         setActiveProgram,
         setActiveProgramDetails,
         setActiveProgramWithDetails,
+        setActiveWorkout,
         initializeFlexWorkout,
         initializeProgramWorkout,
         fetchWorkoutDetails,

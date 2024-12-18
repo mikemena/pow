@@ -23,7 +23,10 @@ router.get('/active-programs/user/:userId', async (req, res) => {
 
     res.json({ activeProgram: result.rows[0] });
   } catch (error) {
-    console.error('Error fetching active program:', error);
+    console.error(
+      'Backend active_programs.js Error fetching active program:',
+      error
+    );
     res.status(500).json({
       error: 'Failed to fetch active program',
       details: error.message
