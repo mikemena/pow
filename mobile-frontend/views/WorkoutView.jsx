@@ -54,6 +54,7 @@ const WorkoutView = () => {
     // Let's log the current state to understand what we're working with
 
     if (activeProgram) {
+      fetchActiveProgramDetails();
       navigation.navigate('CurrentProgramDetails');
     } else {
       clearWorkoutDetails();

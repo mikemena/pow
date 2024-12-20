@@ -26,6 +26,7 @@ export const WorkoutContext = createContext();
 // Create the provider component
 export const WorkoutProvider = ({ children }) => {
   const [state, dispatch] = useReducer(workoutReducer, initialState);
+  console.log('WorkoutProvider state:', state);
 
   const updateWorkoutDuration = useCallback(minutes => {
     dispatch({
@@ -50,7 +51,7 @@ export const WorkoutProvider = ({ children }) => {
         // Set both the active program ID and its details
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM,
-          payload: data.activeProgram.programId
+          payload: data.activeProgram.program
         });
 
         return true; // Program exists

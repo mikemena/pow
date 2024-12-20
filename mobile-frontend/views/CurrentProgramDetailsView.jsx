@@ -30,8 +30,10 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     themeState.accentColor
   );
 
-  const program = workoutState.activeProgramDetails;
-  const workouts = program?.workouts || [];
+  const activeProgram = workoutState.activeProgram;
+  const workouts = activeProgram?.workouts || [];
+
+  console.log('activeProgram:', activeProgram);
 
   useEffect(() => {}, [workoutState]);
 
@@ -90,7 +92,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
       typicalDuration: program.estimated_duration || 0,
       lastCompleted: program.last_completed || 'Never'
     };
-  }, [program, workouts, currentWorkoutIndex]);
+  }, [activeProgram, workouts, currentWorkoutIndex]);
 
   const handleStartWorkout = async () => {
     try {
@@ -138,7 +140,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     }
   };
 
-  if (!program) {
+  if (!activeProgram) {
     return (
       <SafeAreaView
         style={[

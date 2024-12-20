@@ -20,8 +20,49 @@ router.get('/active-program/user/:userId', async (req, res) => {
     if (!result?.rows || result.rows.length === 0) {
       return res.status(200).json({ activeProgram: null });
     }
+    console.log('result.rows[0]:', result.rows[0]);
 
-    res.json({ activeProgram: result.rows[0] });
+    const activeProgram = result.rows[0];
+    console.log('activeProgram:', activeProgram);
+
+    const programId = activeProgram.program_id;
+    console.log('activeProgramId:', programId);
+
+    const workoutsResult = await pool.query(
+      'SELECT * FROM workouts WHERE program_id = $1',
+      [programId]
+    );
+
+    //Add workouts to active program
+    activeProgram.workouts = workoutsResult.rows;
+
+    for (const workout of workoutsResult.rows) {
+      const exercisesResult = await pool.query(
+        'SELECT e.*, ex.name as name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment ' +
+          'FROM exercises e ' +
+          'JOIN exercise_catalog ex ON e.catalog_exercise_id = ex.id ' +
+          'JOIN muscle_groups mg ON ex.muscle_group_id = mg.id ' +
+          'JOIN equipment_catalog eq ON ex.equipment_id = eq.id ' +
+          'WHERE e.workout_id = $1',
+        [workout.id]
+      );
+
+      workout.exercises = [];
+
+      for (const exercise of exercisesResult.rows) {
+        const setsResult = await pool.query(
+          'SELECT * FROM sets WHERE exercise_id = $1',
+          [exercise.id]
+        );
+
+        workout.exercises.push({
+          ...exercise,
+          sets: setsResult.rows
+        });
+      }
+    }
+
+    res.json({ activeProgram });
   } catch (error) {
     console.error(
       'Backend active_programs.js Error fetching active program:',
