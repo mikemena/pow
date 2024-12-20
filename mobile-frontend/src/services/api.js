@@ -31,10 +31,8 @@ class ApiService {
       }
 
       const rawData = await response.json();
-      // console.log('Raw data:', rawData);
 
       const transformedData = transformResponseData(rawData);
-      // console.log('Transformed data:', transformedData);
 
       return transformedData;
     } catch (error) {
@@ -63,10 +61,8 @@ class ApiService {
       }
 
       const rawData = await response.json();
-      // console.log('Raw data:', rawData);
 
       const transformedData = transformResponseData(rawData);
-      // console.log('Transformed data:', transformedData);
 
       return transformedData;
     } catch (error) {

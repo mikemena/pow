@@ -3,7 +3,8 @@ import * as Crypto from 'expo-crypto';
 import { programService } from '../services/programService';
 import { actionTypes } from '../actions/actionTypes';
 import { programReducer } from '../reducers/programReducer.js';
-import { currentProgram } from '../reducers/initialState.js';
+import { apiService } from '../services/api';
+import { currentProgram } from '../reducers/programInitialState.js';
 
 export const ProgramContext = createContext();
 

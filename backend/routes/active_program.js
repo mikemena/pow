@@ -114,20 +114,15 @@ router.post('/active-program', async (req, res) => {
 // delete active program for a user
 router.delete('/active-program/:userId', async (req, res) => {
   const { userId } = req.params;
-  console.log('Received DELETE request for user:', userId);
 
   try {
-    console.log('Starting transaction');
     await pool.query('BEGIN');
 
-    console.log('Executing deactivation query');
     const result = await pool.query(
       'DELETE FROM active_programs WHERE user_id = $1 AND is_active = TRUE RETURNING *',
       [userId]
     );
-    console.log('Deactivation query result:', result.rows);
 
-    console.log('Committing transaction');
     await pool.query('COMMIT');
 
     if (result.rows.length === 0) {
@@ -138,7 +133,6 @@ router.delete('/active-program/:userId', async (req, res) => {
       });
     }
 
-    console.log('Successfully deleted active program');
     res.json({
       message: 'Active program deleted successfully',
       deactivatedProgram: result.rows[0]

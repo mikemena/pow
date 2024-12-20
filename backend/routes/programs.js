@@ -123,7 +123,6 @@ router.get('/programs/:program_id', async (req, res) => {
 // Endpoint to create a new program with workouts, exercises, and sets for a given user
 
 router.post('/programs', async (req, res) => {
-  console.log('Received by backend:', JSON.stringify(req.body, null, 2));
   const {
     user_id,
     name,

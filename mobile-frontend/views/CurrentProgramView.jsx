@@ -30,12 +30,8 @@ import ProgramFilter from '../components/ProgramFilter';
 const CurrentProgramView = () => {
   const navigation = useNavigation();
   const { state: programState, setPrograms } = useContext(ProgramContext);
-  // console.log('Program state:', programState);
-  const {
-    state: workoutState,
-    setActiveProgram,
-    setActiveProgramWithDetails
-  } = useContext(WorkoutContext);
+
+  const { state: workoutState, setActiveProgram } = useContext(WorkoutContext);
 
   const programs = programState.programs;
 
@@ -61,20 +57,19 @@ const CurrentProgramView = () => {
     try {
       const data = await apiService.getActiveProgram();
 
-      if (data?.activeProgram?.programId && programs?.length) {
+      if (data?.activeProgram?.programId) {
         const programDetails = programs.find(
           p => p.id === data.activeProgram.programId
         );
 
         if (programDetails) {
-          setActiveProgram(data.activeProgram.programId);
-          setActiveProgramWithDetails(programDetails);
+          setActiveProgram(data.activeProgram);
         }
       }
     } catch (error) {
       console.error('Error fetching active program:', error);
     }
-  }, [programs, setActiveProgram, setActiveProgramWithDetails]);
+  }, [programs, setActiveProgram]);
 
   // Fetch users programs
   const fetchPrograms = useCallback(async () => {
@@ -149,8 +144,7 @@ const CurrentProgramView = () => {
         const data = await apiService.createActiveProgram(payload);
 
         if (data?.activeProgram) {
-          setActiveProgram(program.id);
-          setActiveProgramWithDetails(program);
+          setActiveProgram(program);
           navigation.navigate('CurrentProgramDetails');
         } else {
           console.error('Invalid response data:', data);
@@ -166,7 +160,7 @@ const CurrentProgramView = () => {
         setIsLoading(false);
       }
     },
-    [activeProgram, navigation, setActiveProgram, setActiveProgramWithDetails]
+    [activeProgram, navigation, setActiveProgram]
   );
 
   const filteredPrograms = useMemo(() => {

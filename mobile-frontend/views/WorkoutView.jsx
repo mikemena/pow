@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import { ProgramContext } from '../src/context/programContext';
 import Header from '../components/Header';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { useTheme } from '../src/hooks/useTheme';
@@ -23,12 +24,17 @@ const WorkoutView = () => {
 
   const {
     state: workoutState,
+    fetchActiveProgramDetails,
     clearWorkoutDetails,
-    clearCurrentWorkout,
-    fetchActiveProgramDetails
+    clearCurrentWorkout
   } = useContext(WorkoutContext);
 
+  const { state: programState } = useContext(ProgramContext);
+
   const navigation = useNavigation();
+
+  const activeProgram = workoutState.activeProgram;
+  console.log('activeProgram:', activeProgram);
 
   // When component mounts, fetch active program details
   useEffect(() => {
@@ -47,7 +53,7 @@ const WorkoutView = () => {
   const handleProgramWorkoutPress = async () => {
     // Let's log the current state to understand what we're working with
 
-    if (workoutState.activeProgram) {
+    if (activeProgram) {
       navigation.navigate('CurrentProgramDetails');
     } else {
       clearWorkoutDetails();
@@ -76,7 +82,7 @@ const WorkoutView = () => {
             <View style={styles.lightenOverlay} />
             <View style={styles.textOverlay}>
               <Text style={[styles.imageText, { color: colors.offWhite }]}>
-                {workoutState.activeProgram
+                {activeProgram
                   ? 'Continue Current Program'
                   : 'Start Workout Using a Program'}
               </Text>

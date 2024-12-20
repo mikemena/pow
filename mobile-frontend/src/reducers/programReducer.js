@@ -1,5 +1,5 @@
 import { actionTypes } from '../actions/actionTypes';
-import { currentProgram } from './initialState';
+import { currentProgram } from './programInitialState';
 import * as Crypto from 'expo-crypto';
 
 function programReducer(state = currentProgram, action) {

@@ -37,9 +37,6 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
-  //console.log('programState:', programState);
-  console.log('workoutState:', workoutState);
-
   const programAction = programState.mode;
   const contextType = route.params?.contextType;
   const programId = route.params?.programId;
@@ -294,8 +291,6 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   const handleAdd = async () => {
-    console.log('Starting handleAdd in ExerciseSelection');
-
     try {
       if (!selectedExercises?.length) {
         console.warn('No exercises selected for addition');
@@ -303,8 +298,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       // Get the active workout ID
-      console.log('Program state:', programState);
-      console.log('Workout state:', workoutState);
+
       const activeWorkoutId =
         programState.workout.activeWorkout || workoutState.activeWorkout;
       if (!activeWorkoutId) {
@@ -341,11 +335,6 @@ const ExerciseSelection = ({ navigation, route }) => {
         return !isDuplicate;
       });
 
-      console.log(
-        'Exercises after duplicate filtering:',
-        newExercises.map(e => e.name)
-      );
-
       if (newExercises.length === 0) {
         console.log('No new exercises to add - all selections were duplicates');
         return;
@@ -366,7 +355,8 @@ const ExerciseSelection = ({ navigation, route }) => {
         ]
       }));
 
-      const programId = currentWorkout?.programId;
+      // const programId = currentWorkout?.programId;
+      console.log('Program ID:', programId);
       if (!programId) {
         console.error('ExerciseSelection.js - Could not determine program ID');
         return;
