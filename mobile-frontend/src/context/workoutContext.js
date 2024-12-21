@@ -157,24 +157,12 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const startWorkout = useCallback(workoutData => {
-    // First, standardize the exercises from the workout data
-    const standardizedExercises = workoutData.exercises.map(exercise => ({
-      id: exercise.id || Crypto.randomUUID(),
-      exercise_id: exercise.id,
-      catalogExerciseId: exercise.catalogExerciseId,
-      name: exercise.name,
-      muscle: exercise.muscle,
-      equipment: exercise.equipment,
-      imageUrl: exercise.imageUrl,
-      sets: exercise.sets || []
-    }));
-
+    console.log('Starting workout in context with:', workoutData);
     dispatch({
       type: actionTypes.START_WORKOUT,
       payload: {
         ...workoutData,
-        exercises: standardizedExercises,
-        id: workoutData.programWorkoutId || Crypto.randomUUID(),
+        id: workoutData.id,
         startTime: new Date(),
         isCompleted: false
       }

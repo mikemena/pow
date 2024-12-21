@@ -62,6 +62,15 @@ const workoutReducer = (state, action) => {
         }
       };
 
+    case actionTypes.START_WORKOUT:
+      return {
+        ...state,
+        currentWorkout: {
+          ...action.payload
+        },
+        exercises: action.payload.exercises || [] // Ensure exercises are set in state
+      };
+
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
       const newExercise = {
         ...action.payload,

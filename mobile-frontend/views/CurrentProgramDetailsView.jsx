@@ -38,31 +38,32 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const currentWorkout = workouts[currentWorkoutIndex] || null;
 
-  const handleStartWorkout = async () => {
+  const handleStartWorkout = () => {
     if (currentWorkout) {
-      try {
-        console.log('Setting active workout...');
-        await setActiveWorkout(currentWorkout.id);
-        console.log('Active workout set, navigating...');
+      console.log('Starting workout with data:', {
+        currentWorkout,
+        program
+      });
 
-        const workoutData = {
-          id: currentWorkout.id,
-          name: currentWorkout.name,
-          exercises: currentWorkout.exercises.map(ex => ({
-            ...ex,
-            name: ex.name,
-            equipment: ex.equipment,
-            sets: ex.sets || []
-          })),
-          programId: currentWorkout.programId
-        };
+      setActiveWorkout(currentWorkout.id);
 
-        navigation.navigate('StartWorkout', {
-          workout: workoutData
-        });
-      } catch (error) {
-        console.error('Error starting workout:', error);
-      }
+      const workoutData = {
+        id: currentWorkout.id,
+        name: currentWorkout.name,
+        exercises: currentWorkout.exercises.map(ex => ({
+          ...ex,
+          name: ex.name,
+          equipment: ex.equipment,
+          sets: ex.sets || []
+        })),
+        programId: currentWorkout.programId
+      };
+
+      console.log('Navigation workout data:', workoutData);
+
+      navigation.navigate('StartWorkout', {
+        workout: workoutData
+      });
     }
   };
 

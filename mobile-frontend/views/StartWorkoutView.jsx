@@ -65,6 +65,16 @@ const StartWorkoutView = () => {
   );
 
   useEffect(() => {
+    console.log('StartWorkoutView mounted with route params:', route?.params);
+    console.log('Current workout state:', workoutState.currentWorkout);
+
+    if (!workoutState.currentWorkout && route?.params?.workout) {
+      console.log('Starting workout with data:', route.params.workout);
+      startWorkout(route.params.workout);
+    }
+  }, [route, workoutState.currentWorkout, startWorkout]);
+
+  useEffect(() => {
     const addedExerciseIds = route.params?.addedExerciseIds;
     if (addedExerciseIds) {
     }
