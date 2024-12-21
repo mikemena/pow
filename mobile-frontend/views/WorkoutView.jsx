@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
-import { ProgramContext } from '../src/context/programContext';
 import Header from '../components/Header';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { useTheme } from '../src/hooks/useTheme';
@@ -24,23 +23,20 @@ const WorkoutView = () => {
 
   const {
     state: workoutState,
-    fetchActiveProgramDetails,
+    fetchActiveProgram,
     clearWorkoutDetails,
     clearCurrentWorkout
   } = useContext(WorkoutContext);
 
-  const { state: programState } = useContext(ProgramContext);
-
   const navigation = useNavigation();
 
   const activeProgram = workoutState.activeProgram;
-  console.log('activeProgram:', activeProgram);
 
   // When component mounts, fetch active program details
   useEffect(() => {
     const loadActiveProgram = async () => {
       try {
-        await fetchActiveProgramDetails();
+        await fetchActiveProgram();
       } catch (error) {
         console.error('Error loading active program:', error);
         // You might want to show an error message to the user here
@@ -54,7 +50,7 @@ const WorkoutView = () => {
     // Let's log the current state to understand what we're working with
 
     if (activeProgram) {
-      fetchActiveProgramDetails();
+      fetchActiveProgram();
       navigation.navigate('CurrentProgramDetails');
     } else {
       clearWorkoutDetails();

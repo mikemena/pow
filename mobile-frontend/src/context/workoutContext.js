@@ -26,7 +26,6 @@ export const WorkoutContext = createContext();
 // Create the provider component
 export const WorkoutProvider = ({ children }) => {
   const [state, dispatch] = useReducer(workoutReducer, initialState);
-  console.log('WorkoutProvider state:', state);
 
   const updateWorkoutDuration = useCallback(minutes => {
     dispatch({
@@ -37,21 +36,14 @@ export const WorkoutProvider = ({ children }) => {
 
   // Action creators
 
-  const fetchActiveProgramDetails = useCallback(async () => {
+  const fetchActiveProgram = useCallback(async () => {
     try {
       const data = await apiService.getActiveProgram();
 
       if (data.activeProgram) {
-        // Fetch the full program details
-
-        // const programDetails = await apiService.getProgram(
-        //   data.activeProgram.programId
-        // );
-
-        // Set both the active program ID and its details
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM,
-          payload: data.activeProgram.program
+          payload: data.activeProgram
         });
 
         return true; // Program exists
@@ -67,12 +59,15 @@ export const WorkoutProvider = ({ children }) => {
     dispatch({ type: actionTypes.SET_ACTIVE_PROGRAM, payload: activeProgram });
   }, []);
 
-  const setActiveWorkout = workoutId => {
-    dispatch({
-      type: actionTypes.SET_ACTIVE_WORKOUT,
-      payload: workoutId
+  const setActiveWorkout = useCallback(workoutId => {
+    return new Promise(resolve => {
+      dispatch({
+        type: actionTypes.SET_ACTIVE_WORKOUT,
+        payload: workoutId
+      });
+      resolve();
     });
-  };
+  }, []);
 
   // Initialize a new flex workout
   const initializeFlexWorkout = () => {
@@ -335,7 +330,7 @@ export const WorkoutProvider = ({ children }) => {
     <WorkoutContext.Provider
       value={{
         state,
-        fetchActiveProgramDetails,
+        fetchActiveProgram,
         setActiveProgram,
         setActiveWorkout,
         initializeFlexWorkout,

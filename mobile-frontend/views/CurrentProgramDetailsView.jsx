@@ -16,13 +16,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 
 const CurrentProgramDetailsView = ({ navigation }) => {
   const [currentWorkoutIndex, setCurrentWorkoutIndex] = useState(0);
-  const {
-    state: workoutState,
-    setActiveWorkout,
-    fetchWorkoutDetails,
-    startWorkout,
-    initializeProgramWorkout
-  } = useContext(WorkoutContext);
+  const { state: workoutState, setActiveWorkout } = useContext(WorkoutContext);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -30,97 +24,45 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     themeState.accentColor
   );
 
-  const activeProgram = workoutState.activeProgram;
-  const workouts = activeProgram?.workouts || [];
-
-  console.log('activeProgram:', activeProgram);
-
-  useEffect(() => {}, [workoutState]);
+  const program = workoutState.activeProgram;
+  const workouts = program?.workouts || [];
+  const totalWorkouts = workouts.length;
 
   useEffect(() => {
-    // If we don't have program details, fetch them
-    if (!workoutState.activeProgramDetails) {
-    }
-  }, []);
-
-  useEffect(() => {
-    if (workoutState.activeProgramDetails && workouts[currentWorkoutIndex]) {
-      initializeProgramWorkout({
-        programId: program.id,
-        workoutName: workouts[currentWorkoutIndex].name,
-        workout_id: workouts[currentWorkoutIndex].id
-      });
-    }
-  }, [workoutState.activeProgramDetails, currentWorkoutIndex]);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    if (workoutState.activeProgramDetails) {
-      setIsLoading(false);
-    }
-  }, [workoutState.activeProgramDetails]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('state', e => {});
+    const unsubscribe = navigation.addListener('state', e => {
+      console.log('Navigation state changed:', e.data);
+    });
 
     return unsubscribe;
   }, [navigation]);
 
-  // Get current workout
-  const totalWorkouts = workouts.length;
-  const currentWorkout = useMemo(() => {
-    if (!workouts.length) return null;
-
-    return {
-      id: workouts[currentWorkoutIndex]?.id, // Add the ID here
-      name: program.name,
-      progress: program.progress || 0,
-      currentWorkout: {
-        id: workouts[currentWorkoutIndex]?.id, // Also include it here if needed
-        number: currentWorkoutIndex + 1,
-        total: totalWorkouts,
-        name: workouts[currentWorkoutIndex]?.name || ''
-      },
-      exercises:
-        workouts[currentWorkoutIndex]?.exercises?.map(ex => ex.name) || [],
-      equipment: [
-        ...new Set(
-          workouts[currentWorkoutIndex]?.exercises?.map(ex => ex.equipment)
-        )
-      ],
-      typicalDuration: program.estimated_duration || 0,
-      lastCompleted: program.last_completed || 'Never'
-    };
-  }, [activeProgram, workouts, currentWorkoutIndex]);
+  const currentWorkout = workouts[currentWorkoutIndex] || null;
 
   const handleStartWorkout = async () => {
-    try {
-      // First fetch the workout details
-      const workoutDetails = await fetchWorkoutDetails(
-        workouts[currentWorkoutIndex].id
-      );
+    if (currentWorkout) {
+      try {
+        console.log('Setting active workout...');
+        await setActiveWorkout(currentWorkout.id);
+        console.log('Active workout set, navigating...');
 
-      // Only proceed if we got the details
-      if (workoutDetails) {
-        setActiveWorkout(workouts[currentWorkoutIndex].id);
-
-        // Start the workout with both the current workout data and fetched details
-        startWorkout({
+        const workoutData = {
+          id: currentWorkout.id,
           name: currentWorkout.name,
-          programWorkoutId: workouts[currentWorkoutIndex].id,
-          exercises: workoutDetails.exercises || []
-        });
+          exercises: currentWorkout.exercises.map(ex => ({
+            ...ex,
+            name: ex.name,
+            equipment: ex.equipment,
+            sets: ex.sets || []
+          })),
+          programId: currentWorkout.programId
+        };
 
         navigation.navigate('StartWorkout', {
-          workout: currentWorkout
+          workout: workoutData
         });
-      } else {
-        console.error('No workout details available');
+      } catch (error) {
+        console.error('Error starting workout:', error);
       }
-    } catch (error) {
-      console.error('Error starting workout:', error);
-      // Optionally show an error message to the user
     }
   };
 
@@ -140,7 +82,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
     }
   };
 
-  if (!activeProgram) {
+  if (!program) {
     return (
       <SafeAreaView
         style={[
@@ -172,7 +114,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
       <Header pageName='WORKOUT' />
       <ScrollView style={globalStyles.container}>
         <Text style={[styles.title, { color: themedStyles.textColor }]}>
-          {currentWorkout.name}
+          {program.name}
         </Text>
         <View style={styles.progressContainer}>
           <TouchableOpacity
@@ -225,13 +167,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
                 { color: themedStyles.accentColor }
               ]}
             >
-              WORKOUT {currentWorkout.currentWorkout.number} of{' '}
-              {currentWorkout.currentWorkout.total}
+              WORKOUT {currentWorkoutIndex + 1} of {totalWorkouts}
             </Text>
             <Text
               style={[styles.workoutName, { color: themedStyles.textColor }]}
             >
-              {currentWorkout.currentWorkout.name}
+              {currentWorkout?.name}
             </Text>
           </View>
           <TouchableOpacity
@@ -264,7 +205,7 @@ const CurrentProgramDetailsView = ({ navigation }) => {
               key={index}
               style={[styles.exerciseName, { color: themedStyles.textColor }]}
             >
-              {exercise}
+              {exercise.name}
             </Text>
           ))}
         </View>
@@ -280,14 +221,20 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           >
             EQUIPMENT NEEDED
           </Text>
-          {currentWorkout.equipment.map((item, index) => (
-            <Text
-              key={index}
-              style={[styles.equipmentItem, { color: themedStyles.textColor }]}
-            >
-              {item}
-            </Text>
-          ))}
+          {/* Get unique equipment from exercises */}
+          {[...new Set(currentWorkout.exercises.map(ex => ex.equipment))].map(
+            (item, index) => (
+              <Text
+                key={index}
+                style={[
+                  styles.equipmentItem,
+                  { color: themedStyles.textColor }
+                ]}
+              >
+                {item}
+              </Text>
+            )
+          )}
         </View>
 
         <View

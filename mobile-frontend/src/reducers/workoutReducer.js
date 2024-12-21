@@ -50,19 +50,16 @@ const workoutReducer = (state, action) => {
         }
       };
 
-    case actionTypes.START_WORKOUT:
-      return {
-        ...state,
-        currentWorkout: action.payload,
-        workoutDetails: action.payload,
-        exercises: action.payload.exercises,
-        workoutName: action.payload.name
-      };
-
     case actionTypes.SET_ACTIVE_WORKOUT:
       return {
         ...state,
-        activeWorkout: action.payload
+        activeProgram: {
+          ...state.activeProgram,
+          workouts: state.activeProgram.workouts.map(workout => ({
+            ...workout,
+            selected: workout.id === action.payload
+          }))
+        }
       };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:

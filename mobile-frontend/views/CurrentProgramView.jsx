@@ -53,29 +53,29 @@ const CurrentProgramView = () => {
   );
 
   // Fetch active program
-  const fetchActiveProgram = useCallback(async () => {
-    try {
-      const data = await apiService.getActiveProgram();
+  // const fetchActiveProgram = useCallback(async () => {
+  //   try {
+  //     const data = await apiService.getActiveProgram();
 
-      if (data?.activeProgram?.programId) {
-        const programDetails = programs.find(
-          p => p.id === data.activeProgram.programId
-        );
+  //     if (data?.activeProgram?.programId) {
+  //       const programDetails = programs.find(
+  //         p => p.id === data.activeProgram.programId
+  //       );
 
-        if (programDetails) {
-          setActiveProgram(data.activeProgram);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching active program:', error);
-    }
-  }, [programs, setActiveProgram]);
+  //       if (programDetails) {
+  //         setActiveProgram(data.activeProgram);
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching active program:', error);
+  //   }
+  // }, [programs, setActiveProgram]);
 
   // Fetch users programs
   const fetchPrograms = useCallback(async () => {
     try {
       const data = await apiService.getPrograms();
-      setPrograms(data); // Update ProgramContext
+      setPrograms(data);
     } catch (error) {
       console.error('Error fetching programs:', error);
     }
@@ -87,11 +87,11 @@ const CurrentProgramView = () => {
   }, [fetchPrograms]);
 
   // Then, fetch active program whenever programs changes
-  useEffect(() => {
-    if (programs?.length > 0) {
-      fetchActiveProgram();
-    }
-  }, [programs, fetchActiveProgram]);
+  // useEffect(() => {
+  //   if (programs?.length > 0) {
+  //     fetchActiveProgram();
+  //   }
+  // }, [programs, fetchActiveProgram]);
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
@@ -120,31 +120,40 @@ const CurrentProgramView = () => {
       try {
         setIsLoading(true);
 
-        if (activeProgram === program.id) {
+        if (activeProgram?.programId === program.id) {
           navigation.navigate('CurrentProgramDetails');
           return;
         }
 
-        // First, try to delete any existing active program
+        // Delete existing active program
         try {
-          // You'll need to add this endpoint to your API service
           await apiService.deleteActiveProgram(2);
-        } catch (deleteeError) {
-          // Log but don't throw - we still want to try creating the new active program
+        } catch (deleteError) {
           console.log('Error deleting active program:', deleteError);
         }
 
-        // Now create the new active program
+        // Create new active program
         const payload = {
           userId: 2,
           programId: program.id,
-          startDate: new Date().toISOString().split('T')[0] // Format: YYYY-MM-DD
+          startDate: new Date().toISOString().split('T')[0]
         };
 
         const data = await apiService.createActiveProgram(payload);
 
         if (data?.activeProgram) {
-          setActiveProgram(program);
+          // Combine the API response with the full program details
+          const fullActiveProgram = {
+            ...data.activeProgram,
+            name: program.name,
+            workouts: program.workouts,
+            main_goal: program.mainGoal,
+            program_duration: program.programDuration,
+            duration_unit: program.durationUnit,
+            days_per_week: program.daysPerWeek
+          };
+
+          setActiveProgram(fullActiveProgram);
           navigation.navigate('CurrentProgramDetails');
         } else {
           console.error('Invalid response data:', data);
@@ -215,8 +224,8 @@ const CurrentProgramView = () => {
           style={[
             styles.programItem,
             { backgroundColor: themedStyles.secondaryBackgroundColor },
-            activeProgram === item.id && styles.activeProgramBorder,
-            activeProgram === item.id && {
+            activeProgram?.programId === item.id && styles.activeProgramBorder,
+            activeProgram?.programId === item.id && {
               borderColor: themedStyles.accentColor
             }
           ]}
@@ -264,7 +273,7 @@ const CurrentProgramView = () => {
               </Text>
             </View>
           </View>
-          {activeProgram === item.id && (
+          {activeProgram?.programId === item.id && (
             <Text
               style={[
                 styles.currentProgramText,
@@ -354,7 +363,6 @@ const CurrentProgramView = () => {
             </Text>
           </View>
         ) : programs?.length > 0 ? (
-          // Show program list if programs exist
           <View style={globalStyles.container}>
             <FlatList
               data={filteredPrograms}
