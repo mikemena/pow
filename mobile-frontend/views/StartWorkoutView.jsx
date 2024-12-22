@@ -63,18 +63,20 @@ const StartWorkoutView = () => {
     themeState.accentColor
   );
 
-  // useEffect(() => {
-  //   console.log({
-  //     currentWorkoutIndex,
-  //     totalWorkouts,
-  //     isPrevDisabled: currentWorkoutIndex === 0,
-  //     isNextDisabled: currentWorkoutIndex === totalWorkouts - 1
-  //   });
-  // }, [currentWorkoutIndex, totalWorkouts]);
+  useEffect(() => {
+    const totalExercises = activeWorkout.exercises.length;
+    console.log({
+      currentExerciseIndex,
+      totalExercises,
+      isPrevDisabled: currentExerciseIndex === 0,
+      isNextDisabled: currentExerciseIndex === totalExercises - 1
+    });
+  }, [currentExerciseIndex]);
 
   // Add logging for important state changes
   useEffect(() => {
     if (activeWorkout.exercises.length === 0) {
+      r;
       navigation.goBack();
       return;
     }
@@ -429,29 +431,34 @@ const StartWorkoutView = () => {
         >
           <View style={styles.swipeableContainer}>
             {/* Previous Navigation Button */}
-            {!showExerciseInfo && !isSwipeOpen && activeWorkout.length > 1 && (
-              <View
-                style={[styles.navigationWrapper, styles.topNavigationWrapper]}
-              >
-                <TouchableOpacity
-                  onPress={handlePreviousExercise}
-                  disabled={currentExerciseIndex === 0}
+            {!showExerciseInfo &&
+              !isSwipeOpen &&
+              activeWorkout.exercises.length > 1 && (
+                <View
                   style={[
-                    styles.navigationButton,
-                    currentExerciseIndex === 0 && styles.disabledButton
+                    styles.navigationWrapper,
+                    styles.topNavigationWrapper
                   ]}
                 >
-                  <Ionicons
-                    name='chevron-up-outline'
-                    size={24}
-                    style={{
-                      color: themeState.accentColor,
-                      opacity: currentExerciseIndex === 0 ? 0.3 : 1
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
+                  <TouchableOpacity
+                    onPress={handlePreviousExercise}
+                    disabled={currentExerciseIndex === 0}
+                    style={[
+                      styles.navigationButton,
+                      currentExerciseIndex === 0 && styles.disabledButton
+                    ]}
+                  >
+                    <Ionicons
+                      name='chevron-up-outline'
+                      size={24}
+                      style={{
+                        color: themeState.accentColor,
+                        opacity: currentExerciseIndex === 0 ? 0.3 : 1
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
 
             {/* Swipeable Content */}
             <SwipeableItemDeletion
