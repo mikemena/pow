@@ -65,16 +65,16 @@ const StartWorkoutView = () => {
   );
 
   //log workout state
-  useEffect(() => {
-    console.log('workout state:', workoutState);
-  }, [workoutState]);
+  // useEffect(() => {
+  //   console.log('workout state:', workoutState);
+  // }, [workoutState]);
 
   useEffect(() => {
-    console.log('StartWorkoutView mounted with route params:', route?.params);
-    console.log('Current workout state:', workoutState.currentWorkout);
+    // console.log('StartWorkoutView mounted with route params:', route?.params);
+    // console.log('Current workout state:', workoutState.currentWorkout);
 
     if (!workoutState.currentWorkout && route?.params?.workout) {
-      console.log('Starting workout with data:', route.params.workout);
+      // console.log('Starting workout with data:', route.params.workout);
       startWorkout(route.params.workout);
     }
   }, [route, workoutState.currentWorkout, startWorkout]);
@@ -130,6 +130,7 @@ const StartWorkoutView = () => {
         workoutState.activeProgram.current_workout_index
       ];
     const currentExercise = currentWorkout?.exercises[currentExerciseIndex];
+    console.log('current exercise', currentExercise);
     const initialSets = currentExercise?.sets || [];
 
     return initialSets.map((set, idx) => ({
@@ -558,8 +559,8 @@ const StartWorkoutView = () => {
                     {currentExercise?.imageUrl ? (
                       <Animated.Image
                         source={{
-                          uri:
-                            currentExercise.imageUrl || currentExercise.imageUrl
+                          // NOTE: CHECK IF API RETURNS IMAGEURL
+                          uri: currentExercise.imageUrl
                         }}
                         style={[styles.exerciseGif, { opacity: imageOpacity }]}
                         resizeMode='contain'

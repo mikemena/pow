@@ -2,11 +2,24 @@ const express = require('express');
 const router = express.Router();
 const { pool } = require('../config/db');
 
+const AWS = require('aws-sdk');
+require('dotenv').config();
+
+const s3 = new AWS.S3({
+  accessKeyId: process.env.R2_ACCESS_KEY,
+  secretAccessKey: process.env.R2_SECRET_KEY,
+  endpoint: process.env.R2_URL,
+  region: 'auto',
+  signatureVersion: 'v4',
+  s3ForcePathStyle: true
+});
+
 // Get active program for a user
 router.get('/active-program/user/:userId', async (req, res) => {
   const { userId } = req.params;
 
   try {
+    // The initial program query remains the same
     const result = await pool.query(
       `SELECT ap.*, p.name, p.main_goal, p.program_duration, p.duration_unit, p.days_per_week
        FROM active_programs ap
@@ -22,42 +35,70 @@ router.get('/active-program/user/:userId', async (req, res) => {
     }
 
     const activeProgram = result.rows[0];
-
     const programId = activeProgram.program_id;
 
+    // Workouts query remains the same
     const workoutsResult = await pool.query(
       'SELECT * FROM workouts WHERE program_id = $1',
       [programId]
     );
 
-    //Add workouts to active program
     activeProgram.workouts = workoutsResult.rows;
 
+    // Process each workout and its exercises
     for (const workout of workoutsResult.rows) {
+      // Fixed the SQL query by adding a space before WHERE
       const exercisesResult = await pool.query(
-        'SELECT e.*, ex.name as name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment ' +
+        'SELECT e.*, ex.name as name, mg.muscle, mg.muscle_group, mg.subcategory, eq.name as equipment, im.file_path ' +
           'FROM exercises e ' +
           'JOIN exercise_catalog ex ON e.catalog_exercise_id = ex.id ' +
           'JOIN muscle_groups mg ON ex.muscle_group_id = mg.id ' +
           'JOIN equipment_catalog eq ON ex.equipment_id = eq.id ' +
+          'JOIN image_metadata im ON ex.image_id = im.id ' +
           'WHERE e.workout_id = $1',
         [workout.id]
       );
 
       workout.exercises = [];
 
+      // Process each exercise and generate signed URLs for images
       for (const exercise of exercisesResult.rows) {
         const setsResult = await pool.query(
           'SELECT * FROM sets WHERE exercise_id = $1',
           [exercise.id]
         );
 
+        // Generate signed URL for the exercise image
+        const params = {
+          Bucket: process.env.R2_BUCKET_NAME,
+          Key: exercise.file_path,
+          Expires: 3600, // 1 hour expiration
+          ResponseContentType: 'image/gif',
+          ResponseCacheControl:
+            'public, max-age=86400, stale-while-revalidate=3600'
+        };
+
+        const imageUrl = s3.getSignedUrl('getObject', params);
+
+        // Add the exercise to the workout with the signed URL
         workout.exercises.push({
           ...exercise,
-          sets: setsResult.rows
+          sets: setsResult.rows,
+          imageUrl: imageUrl,
+          // Remove the raw file_path as it's not needed in the response
+          file_path: undefined
         });
       }
     }
+
+    // Set cache headers for the response
+    res.set({
+      'Cache-Control': 'public, max-age=3600, stale-while-revalidate=1800',
+      ETag: require('crypto')
+        .createHash('md5')
+        .update(JSON.stringify(activeProgram))
+        .digest('hex')
+    });
 
     res.json({ activeProgram });
   } catch (error) {

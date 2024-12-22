@@ -26,17 +26,17 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const program = workoutState.activeProgram;
   const workouts = program?.workouts || [];
-  console.log('workouts', workouts);
+
   const totalWorkouts = workouts.length;
 
-  useEffect(() => {
-    console.log({
-      currentWorkoutIndex,
-      totalWorkouts,
-      isPrevDisabled: currentWorkoutIndex === 0,
-      isNextDisabled: currentWorkoutIndex === totalWorkouts - 1
-    });
-  }, [currentWorkoutIndex, totalWorkouts]);
+  // useEffect(() => {
+  //   console.log({
+  //     currentWorkoutIndex,
+  //     totalWorkouts,
+  //     isPrevDisabled: currentWorkoutIndex === 0,
+  //     isNextDisabled: currentWorkoutIndex === totalWorkouts - 1
+  //   });
+  // }, [currentWorkoutIndex, totalWorkouts]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', e => {});
