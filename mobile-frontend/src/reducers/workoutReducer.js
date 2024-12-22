@@ -66,24 +66,13 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.ADD_EXERCISE_TO_WORKOUT:
-      const newExercise = {
-        ...action.payload,
-        id: action.payload.id || Crypto.randomUUID(),
-        catalogExerciseId:
-          action.payload.catalogExerciseId || action.payload.id,
-        sets: action.payload.sets || [
-          { id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }
-        ]
-      };
+      if (!state.activeWorkout) return state;
 
       return {
         ...state,
         activeWorkout: {
-          ...state.activeProgram.workouts[0],
-          exercises: [
-            ...(state.activeProgram.workouts[0].exercises || []),
-            newExercise
-          ]
+          ...state.activeWorkout,
+          exercises: [...(state.activeWorkout.exercises || []), action.payload]
         }
       };
 

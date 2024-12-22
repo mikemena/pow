@@ -100,7 +100,14 @@ export const WorkoutProvider = ({ children }) => {
       subcategory: exercise.subcategory,
       equipment: exercise.equipment,
       imageUrl: exercise.imageUrl,
-      sets: exercise.sets || []
+      sets: exercise.sets || [
+        {
+          id: Crypto.randomUUID(),
+          weight: '',
+          reps: '',
+          order: 1
+        }
+      ]
     };
 
     dispatch({

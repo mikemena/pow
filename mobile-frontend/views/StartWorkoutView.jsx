@@ -65,18 +65,17 @@ const StartWorkoutView = () => {
 
   useEffect(() => {
     const totalExercises = activeWorkout.exercises.length;
-    console.log({
-      currentExerciseIndex,
-      totalExercises,
-      isPrevDisabled: currentExerciseIndex === 0,
-      isNextDisabled: currentExerciseIndex === totalExercises - 1
-    });
+    // console.log({
+    //   currentExerciseIndex,
+    //   totalExercises,
+    //   isPrevDisabled: currentExerciseIndex === 0,
+    //   isNextDisabled: currentExerciseIndex === totalExercises - 1
+    // });
   }, [currentExerciseIndex]);
 
   // Add logging for important state changes
   useEffect(() => {
     if (activeWorkout.exercises.length === 0) {
-      r;
       navigation.goBack();
       return;
     }
@@ -149,7 +148,7 @@ const StartWorkoutView = () => {
   const [sets, setSets] = useState(() => {
     const currentExercise = activeWorkout.exercises[currentExerciseIndex];
 
-    console.log('current exercise', currentExercise);
+    // console.log('current exercise', currentExercise);
     const initialSets = currentExercise?.sets || [];
 
     return initialSets.map((set, idx) => ({

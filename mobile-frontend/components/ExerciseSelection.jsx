@@ -207,7 +207,7 @@ const ExerciseSelection = ({ navigation, route }) => {
   useEffect(() => {
     if (contextType === 'workout') {
       // For workout context, use the exercises from workoutState
-      setSelectedExercises(workoutState.exercises || []);
+      setSelectedExercises(workoutState.activeWorkout.exercises || []);
     } else if (contextType === 'program') {
       // For program context, use the exercises from active workout
       const activeWorkout = programState.workout.workouts.find(
@@ -298,33 +298,22 @@ const ExerciseSelection = ({ navigation, route }) => {
       }
 
       // Get the active workout ID
+      const activeWorkoutId = workoutState.activeWorkout?.id; // Simplified this
 
-      const activeWorkoutId =
-        programState.workout.activeWorkout || workoutState.activeWorkout;
       if (!activeWorkoutId) {
         console.error('No active workout selected');
         return;
       }
 
-      // Get current exercises from the program context instead of workoutState
-      const currentWorkout = programState.workout.workouts.find(
-        w => w.id === activeWorkoutId
-      );
-      const currentExercises = currentWorkout?.exercises || [];
-
-      console.log(
-        'Current exercises in workout:',
-        currentExercises.map(e => e.name)
-      );
+      // Get current exercises directly from activeWorkout
+      const currentExercises = workoutState.activeWorkout?.exercises || [];
 
       // Enhanced duplicate detection
       const newExercises = selectedExercises.filter(newExercise => {
         const isDuplicate = currentExercises.some(
           existingExercise =>
-            // Primary check using catalogExerciseId
             existingExercise.catalogExerciseId ===
               newExercise.catalogExerciseId ||
-            // Backup check using name and muscle group
             (existingExercise.name === newExercise.name &&
               existingExercise.muscle_group === newExercise.muscle_group)
         );
@@ -342,12 +331,12 @@ const ExerciseSelection = ({ navigation, route }) => {
 
       const standardizedExercises = newExercises.map(exercise => ({
         ...exercise,
-        id: exercise.id || crypto.randomUUID(),
+        id: exercise.id || Crypto.randomUUID(),
         catalogExerciseId: exercise.catalogExerciseId || exercise.id,
         imageUrl: exercise.imageUrl,
         sets: exercise.sets || [
           {
-            id: crypto.randomUUID(),
+            id: Crypto.randomUUID(),
             weight: '0',
             reps: '0',
             order: 1
@@ -355,23 +344,30 @@ const ExerciseSelection = ({ navigation, route }) => {
         ]
       }));
 
-      // const programId = currentWorkout?.programId;
-      console.log('Program ID:', programId);
-      if (!programId) {
-        console.error('ExerciseSelection.js - Could not determine program ID');
-        return;
-      }
-
-      // Add exercises and navigate
-      await addExercise(activeWorkoutId, standardizedExercises);
-
-      if (programAction === 'create') {
-        navigation.navigate('CreateProgram');
-      } else if (programAction === 'edit') {
-        navigation.navigate('EditProgram', {
-          programId,
-          shouldRefresh: true
+      if (contextType === 'workout') {
+        // Only add exercises to workout context
+        standardizedExercises.forEach(exercise => {
+          addExerciseToWorkout(exercise);
         });
+        navigation.navigate('StartWorkout');
+      } else if (contextType === 'program') {
+        // Only use addExercise for program context
+        if (!programId) {
+          console.error(
+            'ExerciseSelection.js - Could not determine program ID'
+          );
+          return;
+        }
+        await addExercise(activeWorkoutId, standardizedExercises);
+
+        if (programAction === 'create') {
+          navigation.navigate('CreateProgram');
+        } else if (programAction === 'edit') {
+          navigation.navigate('EditProgram', {
+            programId,
+            shouldRefresh: true
+          });
+        }
       }
     } catch (error) {
       console.error('Error in handleAdd:', error);
