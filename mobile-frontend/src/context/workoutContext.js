@@ -2,22 +2,14 @@ import React, { createContext, useReducer, useCallback } from 'react';
 import * as Crypto from 'expo-crypto';
 import { actionTypes } from '../actions/actionTypes';
 import { workoutReducer } from '../reducers/workoutReducer';
-import { currentWorkout } from '../reducers/workoutInitialState.js';
 import { apiService } from '../services/api';
 import { API_URL_MOBILE } from '@env';
 
 // Initial state
 const initialState = {
-  program: null,
+  activeProgram: null,
   userId: 2,
-  programId: null,
-  workoutName: '',
-  duration: null,
-  isCompleted: false,
-  date: null,
-  workout_id: null,
-  exercises: [],
-  sets: []
+  currentWorkout: null
 };
 
 // Create the context
@@ -74,81 +66,12 @@ export const WorkoutProvider = ({ children }) => {
     dispatch({ type: actionTypes.INITIALIZE_FLEX_WORKOUT });
   };
 
-  // Initialize a new program workout
-  const initializeProgramWorkout = useCallback(programData => {
-    dispatch({
-      type: actionTypes.INITIALIZE_PROGRAM_WORKOUT,
-      payload: {
-        programId: programData.programId,
-        workoutName: programData.workoutName,
-        workout_id: programData.workout_id
-      }
-    });
-  }, []);
-
   // Update workout name
   const updateWorkoutName = useCallback(name => {
     dispatch({
       type: actionTypes.UPDATE_WORKOUT_NAME,
       payload: name
     });
-  }, []);
-
-  // Fetch workout details
-  const fetchWorkoutDetails = useCallback(async workoutId => {
-    try {
-      if (!workoutId) {
-        throw new Error('Workout ID is required');
-      }
-
-      const url = `${API_URL_MOBILE}/api/workout/${workoutId}`;
-
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
-        }
-      });
-
-      // Get response text first to see what we're dealing with
-      const responseText = await response.text();
-
-      // Try to parse as JSON if possible
-      let workoutDetails;
-      try {
-        workoutDetails = JSON.parse(responseText);
-      } catch (parseError) {
-        console.error('Failed to parse response as JSON:', parseError);
-        throw new Error('Invalid JSON response from server');
-      }
-
-      if (!response.ok) {
-        throw new Error(
-          `HTTP error! status: ${response.status}, body: ${responseText}`
-        );
-      }
-
-      if (!workoutDetails || !workoutDetails.id) {
-        throw new Error('Invalid workout details received');
-      }
-
-      dispatch({
-        type: actionTypes.SET_WORKOUT_DETAILS,
-        payload: workoutDetails
-      });
-
-      return workoutDetails;
-    } catch (error) {
-      console.error('Error in fetchWorkoutDetails:', {
-        error: error.message,
-        workoutId,
-        stack: error.stack,
-        apiUrl: API_URL_MOBILE
-      });
-
-      throw error;
-    }
   }, []);
 
   // Clear workout details when done
@@ -237,7 +160,7 @@ export const WorkoutProvider = ({ children }) => {
         // Create workout data without program ID by default
         const workoutData = {
           userId: 2,
-          name: state.workoutDetails.name,
+          name: state.activeProgram.name,
           duration: duration,
           exercises: state.workoutDetails.exercises.map(exercise => ({
             id: exercise.id,
@@ -322,8 +245,6 @@ export const WorkoutProvider = ({ children }) => {
         setActiveProgram,
         setActiveWorkout,
         initializeFlexWorkout,
-        initializeProgramWorkout,
-        fetchWorkoutDetails,
         clearWorkoutDetails,
         startWorkout,
         addExerciseToWorkout,

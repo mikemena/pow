@@ -26,12 +26,20 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const program = workoutState.activeProgram;
   const workouts = program?.workouts || [];
+  console.log('workouts', workouts);
   const totalWorkouts = workouts.length;
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('state', e => {
-      console.log('Navigation state changed:', e.data);
+    console.log({
+      currentWorkoutIndex,
+      totalWorkouts,
+      isPrevDisabled: currentWorkoutIndex === 0,
+      isNextDisabled: currentWorkoutIndex === totalWorkouts - 1
     });
+  }, [currentWorkoutIndex, totalWorkouts]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('state', e => {});
 
     return unsubscribe;
   }, [navigation]);
@@ -40,11 +48,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   const handleStartWorkout = () => {
     if (currentWorkout) {
-      console.log('Starting workout with data:', {
-        currentWorkout,
-        program
-      });
-
       setActiveWorkout(currentWorkout.id);
 
       const workoutData = {
@@ -152,6 +155,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           <TouchableOpacity
             onPress={handlePreviousWorkout}
             disabled={currentWorkoutIndex === 0}
+            style={[
+              styles.navigationButton,
+              currentWorkoutIndex === 0
+                ? styles.navigationButtonDisabled
+                : styles.navigationButtonEnabled
+            ]}
           >
             <Ionicons
               name='chevron-back-outline'
@@ -179,6 +188,12 @@ const CurrentProgramDetailsView = ({ navigation }) => {
           <TouchableOpacity
             onPress={handleNextWorkout}
             disabled={currentWorkoutIndex === totalWorkouts - 1}
+            style={[
+              styles.navigationButton,
+              currentWorkoutIndex === totalWorkouts - 1
+                ? styles.navigationButtonDisabled
+                : styles.navigationButtonEnabled
+            ]}
           >
             <Ionicons
               name='chevron-forward-outline'
@@ -384,6 +399,21 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: 16,
     fontWeight: 'bold'
+  },
+  navigationButton: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  navigationButtonEnabled: {
+    opacity: 1
+  },
+  navigationButtonDisabled: {
+    opacity: 0.2
+  },
+  navigationIcon: {
+    width: 24,
+    height: 24
   }
 });
 

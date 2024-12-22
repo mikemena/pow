@@ -20,13 +20,10 @@ router.get('/active-program/user/:userId', async (req, res) => {
     if (!result?.rows || result.rows.length === 0) {
       return res.status(200).json({ activeProgram: null });
     }
-    console.log('result.rows[0]:', result.rows[0]);
 
     const activeProgram = result.rows[0];
-    console.log('activeProgram:', activeProgram);
 
     const programId = activeProgram.program_id;
-    console.log('activeProgramId:', programId);
 
     const workoutsResult = await pool.query(
       'SELECT * FROM workouts WHERE program_id = $1',

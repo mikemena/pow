@@ -64,6 +64,11 @@ const StartWorkoutView = () => {
     themeState.accentColor
   );
 
+  //log workout state
+  useEffect(() => {
+    console.log('workout state:', workoutState);
+  }, [workoutState]);
+
   useEffect(() => {
     console.log('StartWorkoutView mounted with route params:', route?.params);
     console.log('Current workout state:', workoutState.currentWorkout);
@@ -86,16 +91,13 @@ const StartWorkoutView = () => {
     }
   }, [route, workoutState.currentWorkout, startWorkout]);
 
-  // Add logging when exercises change
-  useEffect(() => {}, [workoutState.exercises]);
-
   // Add logging for important state changes
   useEffect(() => {
-    if (workoutState.exercises.length === 0) {
+    if (workoutState.activeProgram.workouts[0].exercises.length === 0) {
       navigation.goBack();
       return;
     }
-  }, [workoutState.exercises, navigation]);
+  }, [workoutState.activeProgram.workouts[0].exercises, navigation]);
 
   // Dismiss keyboard when tapping outside
   const dismissKeyboard = () => {
@@ -123,8 +125,13 @@ const StartWorkoutView = () => {
   }, [workoutTitle, workoutState.workoutDetails?.name, updateWorkoutName]);
 
   const [sets, setSets] = useState(() => {
-    const initialSets =
-      workoutState.exercises[currentExerciseIndex]?.sets || [];
+    const currentWorkout =
+      workoutState.activeProgram?.workouts[
+        workoutState.activeProgram.current_workout_index
+      ];
+    const currentExercise = currentWorkout?.exercises[currentExerciseIndex];
+    const initialSets = currentExercise?.sets || [];
+
     return initialSets.map((set, idx) => ({
       ...set,
       id: set.id || Math.random().toString(36).substr(2, 9),
@@ -175,7 +182,8 @@ const StartWorkoutView = () => {
   // Effect to update sets when exercise changes
   useEffect(() => {
     const currentSets =
-      workoutState?.exercises[currentExerciseIndex]?.sets || [];
+      workoutState.activeProgram.workouts[0].exercises[currentExerciseIndex]
+        ?.sets || [];
     setSets(
       currentSets.map((set, idx) => ({
         ...set,
@@ -203,13 +211,14 @@ const StartWorkoutView = () => {
   }, []);
 
   useEffect(() => {
-    if (workoutState.exercises.length === 0) {
+    if (workoutState.activeProgram.workouts[0].exercises.length === 0) {
       navigation.goBack();
       return;
     }
-  }, [workoutState.exercises, navigation]);
+  }, [workoutState.activeProgram.workouts[0].exercises, navigation]);
 
-  const currentExercise = workoutState.exercises[currentExerciseIndex];
+  const currentExercise =
+    workoutState.activeProgram.workouts[0].exercises[currentExerciseIndex];
 
   const handleCancel = () => navigation.goBack();
 
@@ -287,16 +296,24 @@ const StartWorkoutView = () => {
 
     removeExerciseFromWorkout(exerciseId);
 
-    if (currentExerciseIndex >= workoutState.exercises.length - 1) {
+    if (
+      currentExerciseIndex >=
+      workoutState.activeProgram.workouts[0].exercises.length - 1
+    ) {
       setCurrentExerciseIndex(Math.max(0, currentExerciseIndex - 1));
     }
   };
 
   const handleNextExercise = () => {
-    if (currentExerciseIndex < workoutState.exercises.length - 1) {
+    if (
+      currentExerciseIndex <
+      workoutState.activeProgram.workouts[0].exercises.length - 1
+    ) {
       setCurrentExerciseIndex(prev => prev + 1);
       const nextSets =
-        workoutState.exercises[currentExerciseIndex + 1]?.sets || [];
+        workoutState.activeProgram.workouts[0].exercises[
+          currentExerciseIndex + 1
+        ]?.sets || [];
       setSets(
         nextSets.map((set, idx) => ({
           ...set,
@@ -311,7 +328,9 @@ const StartWorkoutView = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
       const prevSets =
-        workoutState.exercises[currentExerciseIndex - 1]?.sets || [];
+        workoutState.activeProgram.workouts[0].exercises[
+          currentExerciseIndex - 1
+        ]?.sets || [];
       setSets(
         prevSets.map((set, idx) => ({
           ...set,
@@ -337,7 +356,8 @@ const StartWorkoutView = () => {
   };
 
   useEffect(() => {
-    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    const currentExercise =
+      workoutState.activeProgram.workouts[0].exercises[currentExerciseIndex];
     if (currentExercise) {
       updateExerciseSets(currentExercise.id, sets);
     }
@@ -352,7 +372,8 @@ const StartWorkoutView = () => {
   };
 
   useEffect(() => {
-    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    const currentExercise =
+      workoutState.activeProgram.workouts[0].exercises[currentExerciseIndex];
     // Only update if we have an exercise and if the sets have actually changed
     if (
       currentExercise &&
@@ -371,7 +392,8 @@ const StartWorkoutView = () => {
   };
 
   useEffect(() => {
-    const currentExercise = workoutState?.exercises[currentExerciseIndex];
+    const currentExercise =
+      workoutState.activeProgram.workouts[0].exercises[currentExerciseIndex];
     if (currentExercise) {
       updateExerciseSets(currentExercise.id, sets);
     }
@@ -413,7 +435,7 @@ const StartWorkoutView = () => {
           </Animated.View>
           {/* workout title ends here */}
         </View>
-        {workoutState.exercises.length > 0 && (
+        {workoutState.activeProgram.workouts[0].exercises.length > 0 && (
           <View style={styles.mainControls}>
             <TouchableOpacity
               style={[
@@ -461,7 +483,7 @@ const StartWorkoutView = () => {
             {/* Previous Navigation Button */}
             {!showExerciseInfo &&
               !isSwipeOpen &&
-              workoutState.exercises.length > 1 && (
+              workoutState.activeProgram.workouts[0].length > 1 && (
                 <View
                   style={[
                     styles.navigationWrapper,
@@ -495,7 +517,7 @@ const StartWorkoutView = () => {
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
               onSwipeChange={setIsSwipeOpen}
             >
-              {workoutState.exercises.length === 0 ? (
+              {workoutState.activeProgram.workouts[0].length === 0 ? (
                 <View
                   style={[
                     styles.exerciseContainer,
@@ -584,43 +606,50 @@ const StartWorkoutView = () => {
             </SwipeableItemDeletion>
 
             {/* Next Navigation Button */}
-            {workoutState.exercises.length > 0 && !isSwipeOpen && (
-              <View
-                style={[
-                  styles.navigationWrapper,
-                  styles.bottomNavigationWrapper
-                ]}
-              >
-                <TouchableOpacity
-                  onPress={handleNextExercise}
-                  disabled={
-                    currentExerciseIndex === workoutState.exercises.length - 1
-                  }
+            {workoutState.activeProgram.workouts[0].exercises.length > 0 &&
+              !isSwipeOpen && (
+                <View
                   style={[
-                    styles.navigationButton,
-                    currentExerciseIndex ===
-                      workoutState.exercises.length - 1 && styles.disabledButton
+                    styles.navigationWrapper,
+                    styles.bottomNavigationWrapper
                   ]}
                 >
-                  <Ionicons
-                    name='chevron-down-outline'
-                    size={24}
-                    style={{
-                      color: themeState.accentColor,
-                      opacity:
-                        currentExerciseIndex ===
-                        workoutState.exercises.length - 1
-                          ? 0.3
-                          : 1
-                    }}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
+                  <TouchableOpacity
+                    onPress={handleNextExercise}
+                    disabled={
+                      currentExerciseIndex ===
+                      workoutState.activeProgram.workouts[0].exercises.length -
+                        1
+                    }
+                    style={[
+                      styles.navigationButton,
+                      currentExerciseIndex ===
+                        workoutState.activeProgram.workouts[0].exercises
+                          .length -
+                          1 && styles.disabledButton
+                    ]}
+                  >
+                    <Ionicons
+                      name='chevron-down-outline'
+                      size={24}
+                      style={{
+                        color: themeState.accentColor,
+                        opacity:
+                          currentExerciseIndex ===
+                          workoutState.activeProgram.workouts[0].exercises
+                            .length -
+                            1
+                            ? 0.3
+                            : 1
+                      }}
+                    />
+                  </TouchableOpacity>
+                </View>
+              )}
           </View>
         </SafeAreaView>
         {/* exercise end */}
-        {workoutState.exercises?.length > 0 && (
+        {workoutState.activeProgram.workouts[0].exercises?.length > 0 && (
           <View style={styles.setControls}>
             {/* setHeader */}
             <View
