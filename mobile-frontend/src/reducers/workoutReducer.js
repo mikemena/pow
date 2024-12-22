@@ -36,24 +36,31 @@ const workoutReducer = (state, action) => {
         }
       };
 
-    case actionTypes.SET_ACTIVE_WORKOUT:
+    case actionTypes.SET_ACTIVE_WORKOUT: {
+      const selectedWorkout = state.activeProgram.workouts.find(
+        workout => workout.id === action.payload
+      );
+
       return {
         ...state,
-        activeProgram: {
-          ...state.activeProgram,
-          workouts: state.activeProgram.workouts.map(workout => ({
-            ...workout,
-            selected: workout.id === action.payload
-          }))
-        }
+        activeWorkout: selectedWorkout
+          ? {
+              ...selectedWorkout,
+              isStarted: false,
+              isCompleted: false
+            }
+          : null
       };
+    }
 
     case actionTypes.START_WORKOUT:
       return {
         ...state,
-        currentWorkout: {
+        activeWorkout: {
+          ...state.activeWorkout,
           ...action.payload,
           startTime: new Date(),
+          isStarted: true,
           isCompleted: false
         }
       };
@@ -71,7 +78,7 @@ const workoutReducer = (state, action) => {
 
       return {
         ...state,
-        currentWorkout: {
+        activeWorkout: {
           ...state.activeProgram.workouts[0],
           exercises: [
             ...(state.activeProgram.workouts[0].exercises || []),
@@ -83,9 +90,9 @@ const workoutReducer = (state, action) => {
     case actionTypes.REMOVE_EXERCISE_FROM_WORKOUT:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
-          exercises: state.currentWorkout.exercises.filter(
+        activeWorkout: {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.filter(
             exercise => exercise.id !== action.payload
           )
         },
@@ -100,9 +107,9 @@ const workoutReducer = (state, action) => {
     case actionTypes.ADD_SET:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
-          exercises: state.currentWorkout.exercises.map(exercise =>
+        activeWorkout: {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.map(exercise =>
             exercise.id === action.payload.exerciseId
               ? { ...exercise, sets: [...exercise.sets, action.payload.set] }
               : exercise
@@ -113,9 +120,9 @@ const workoutReducer = (state, action) => {
     case actionTypes.UPDATE_SET:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
-          exercises: state.currentWorkout.exercises.map(exercise =>
+        activeWorkout: {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.map(exercise =>
             exercise.id === action.payload.exerciseId
               ? {
                   ...exercise,
@@ -153,9 +160,9 @@ const workoutReducer = (state, action) => {
     case actionTypes.REMOVE_SET:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
-          exercises: state.currentWorkout.exercises.map(exercise =>
+        activeWorkout: {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.map(exercise =>
             exercise.id === action.payload.exerciseId
               ? {
                   ...exercise,
@@ -171,8 +178,8 @@ const workoutReducer = (state, action) => {
     case actionTypes.UPDATE_WORKOUT_DURATION:
       return {
         ...state,
-        currentWorkout: {
-          ...state.currentWorkout,
+        activeWorkout: {
+          ...state.activeWorkout,
           duration: action.payload
         }
       };
@@ -180,10 +187,13 @@ const workoutReducer = (state, action) => {
     case actionTypes.COMPLETE_WORKOUT:
       return {
         ...state,
-        currentWorkout: { ...state.currentWorkout, isCompleted: true }
+        ...state.activeWorkout,
+        isComplete: true,
+        endTime: new Date()
       };
+
     case actionTypes.CLEAR_CURRENT_WORKOUT:
-      return { ...state, currentWorkout: null };
+      return { ...state, activeWorkout: null };
     default:
       return state;
   }

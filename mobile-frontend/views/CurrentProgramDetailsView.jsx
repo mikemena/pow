@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useMemo } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -40,7 +40,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('state', e => {});
-
     return unsubscribe;
   }, [navigation]);
 
@@ -61,8 +60,6 @@ const CurrentProgramDetailsView = ({ navigation }) => {
         })),
         programId: currentWorkout.programId
       };
-
-      console.log('Navigation workout data:', workoutData);
 
       navigation.navigate('StartWorkout', {
         workout: workoutData

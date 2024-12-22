@@ -9,7 +9,7 @@ import { API_URL_MOBILE } from '@env';
 const initialState = {
   activeProgram: null,
   userId: 2,
-  currentWorkout: null
+  activeWorkout: null
 };
 
 // Create the context
@@ -52,12 +52,9 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const setActiveWorkout = useCallback(workoutId => {
-    return new Promise(resolve => {
-      dispatch({
-        type: actionTypes.SET_ACTIVE_WORKOUT,
-        payload: workoutId
-      });
-      resolve();
+    dispatch({
+      type: actionTypes.SET_ACTIVE_WORKOUT,
+      payload: workoutId
     });
   }, []);
 
@@ -80,7 +77,6 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   const startWorkout = useCallback(workoutData => {
-    console.log('Starting workout in context with:', workoutData);
     dispatch({
       type: actionTypes.START_WORKOUT,
       payload: {
@@ -94,17 +90,16 @@ export const WorkoutProvider = ({ children }) => {
 
   const addExerciseToWorkout = useCallback(exercise => {
     const newExercise = {
-      // Map incoming exercise to match our state structure
-      id: Crypto.randomUUID(),
-      exercise_id: exercise.id || Crypto.randomUUID(),
+      id: exercise.id || Crypto.randomUUID(),
+      workoutId: exercise.workoutId,
       catalogExerciseId: exercise.catalogExerciseId || exercise.id,
       order: exercise.order || 0,
-      // Include other exercise properties
       name: exercise.name,
       muscle: exercise.muscle,
+      muscleGroup: exercise.muscleGroup,
+      subcategory: exercise.subcategory,
       equipment: exercise.equipment,
       imageUrl: exercise.imageUrl,
-      // Initialize empty sets array (sets will be managed separately)
       sets: exercise.sets || []
     };
 
@@ -153,7 +148,7 @@ export const WorkoutProvider = ({ children }) => {
   const completeWorkout = useCallback(
     async duration => {
       try {
-        if (!state.currentWorkout) {
+        if (!state.activeWorkout) {
           throw new Error('No active workout to complete');
         }
 
@@ -230,7 +225,7 @@ export const WorkoutProvider = ({ children }) => {
         throw error;
       }
     },
-    [state.currentWorkout, state.workoutDetails]
+    [state.activeWorkout, state.workoutDetails]
   );
 
   const clearCurrentWorkout = useCallback(() => {
