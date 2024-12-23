@@ -186,12 +186,14 @@ const StartWorkoutView = () => {
   const handleCancel = () => navigation.goBack();
 
   const startTimer = () => {
+    const workoutId = workoutState.activeWorkout.id;
     if (!isStarted) {
       setIsStarted(true);
       setIsPaused(false);
       timerRef.current = setInterval(() => {
         setTime(prevTime => prevTime + 1);
       }, 1000);
+      startWorkout(workoutId);
     }
   };
 
@@ -295,15 +297,20 @@ const StartWorkoutView = () => {
   };
 
   const handleAddSet = () => {
-    setSets(currentSets => {
-      const newSet = {
-        id: Math.random().toString(36).substr(2, 9),
-        weight: '0',
-        reps: '0',
-        order: currentSets.length + 1
-      };
-      return [...currentSets, newSet];
-    });
+    const newSet = {
+      id: Math.random().toString(36).substr(2, 9),
+      weight: '0',
+      reps: '0',
+      order: sets.length + 1
+    };
+
+    const updatedSets = [...sets, newSet];
+    setSets(updatedSets);
+
+    // Immediately update exercise sets in context
+    if (currentExercise) {
+      updateExerciseSets(currentExercise.id, updatedSets);
+    }
   };
 
   useEffect(() => {
@@ -314,11 +321,15 @@ const StartWorkoutView = () => {
   }, [sets]);
 
   const handleSetChange = (index, field, value) => {
-    setSets(currentSets =>
-      currentSets.map(set =>
-        set.order === index + 1 ? { ...set, [field]: value } : set
-      )
+    const updatedSets = sets.map(set =>
+      set.order === index + 1 ? { ...set, [field]: value } : set
     );
+    setSets(updatedSets);
+
+    // Immediately update exercise sets in context
+    if (currentExercise) {
+      updateExerciseSets(currentExercise.id, updatedSets);
+    }
   };
 
   useEffect(() => {
@@ -332,11 +343,16 @@ const StartWorkoutView = () => {
   }, [sets]);
 
   const handleDeleteSet = setId => {
-    setSets(currentSets =>
-      currentSets
-        .filter(s => String(s.id) !== String(setId))
-        .map((s, idx) => ({ ...s, order: idx + 1 }))
-    );
+    const updatedSets = sets
+      .filter(s => String(s.id) !== String(setId))
+      .map((s, idx) => ({ ...s, order: idx + 1 }));
+
+    setSets(updatedSets);
+
+    // Immediately update exercise sets in context
+    if (currentExercise) {
+      updateExerciseSets(currentExercise.id, updatedSets);
+    }
   };
 
   useEffect(() => {

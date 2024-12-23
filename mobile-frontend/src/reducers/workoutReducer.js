@@ -129,19 +129,12 @@ const workoutReducer = (state, action) => {
     case actionTypes.UPDATE_EXERCISE_SETS:
       return {
         ...state,
-        activeProgram: {
-          ...state.activeProgram,
-          workouts: state.activeProgram.workouts.map((workout, index) =>
-            index === 0 // Assuming we're updating the first workout
-              ? {
-                  ...workout,
-                  exercises: workout.exercises?.map(exercise =>
-                    exercise?.id === action.payload.exerciseId
-                      ? { ...exercise, sets: action.payload.sets }
-                      : exercise
-                  )
-                }
-              : workout
+        activeWorkout: {
+          ...state.activeWorkout,
+          exercises: state.activeWorkout.exercises.map(exercise =>
+            exercise.id === action.payload.exerciseId
+              ? { ...exercise, sets: action.payload.sets }
+              : exercise
           )
         }
       };

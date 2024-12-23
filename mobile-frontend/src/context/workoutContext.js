@@ -141,12 +141,20 @@ export const WorkoutProvider = ({ children }) => {
     });
   }, []);
 
-  const updateExerciseSets = useCallback((exerciseId, sets) => {
+  const updateExerciseSets = (exerciseId, newSets) => {
     dispatch({
       type: actionTypes.UPDATE_EXERCISE_SETS,
-      payload: { exerciseId, sets }
+      payload: {
+        exerciseId,
+        sets: newSets.map(set => ({
+          id: set.id,
+          weight: set.weight,
+          reps: set.reps,
+          order: set.order
+        }))
+      }
     });
-  }, []);
+  };
 
   const removeSet = useCallback((exerciseId, setId) => {
     dispatch({ type: actionTypes.REMOVE_SET, payload: { exerciseId, setId } });
@@ -162,41 +170,104 @@ export const WorkoutProvider = ({ children }) => {
         // Create workout data without program ID by default
         const workoutData = {
           userId: 2,
-          name: state.activeProgram.name,
+          name: state.activeWorkout.name,
           duration: duration,
-          exercises: state.workoutDetails.exercises.map(exercise => ({
-            id: exercise.id,
-            sets: Array.isArray(exercise.sets)
-              ? exercise.sets.map(set => ({
-                  weight: parseInt(set.weight) || 0,
-                  reps: parseInt(set.reps) || 0,
-                  order: set.order
-                }))
-              : []
-          }))
+          exercises: state.activeWorkout.exercises
+            .map(exercise => ({
+              id: exercise.id,
+              sets: Array.isArray(exercise.sets)
+                ? exercise.sets
+                    .filter(set => set && (set.weight || set.reps))
+                    .map(set => ({
+                      weight: parseInt(set.weight) || 0,
+                      reps: parseInt(set.reps) || 0,
+                      order: set.order || 1
+                    }))
+                : []
+            }))
+            .filter(exercise => exercise.sets.length > 0)
         };
 
         // Only add programId if it's from a program workout
-        if (state.workoutDetails.programId) {
-          workoutData.programId = state.workoutDetails.programId;
+        if (state.activeWorkout.programId) {
+          workoutData.programId = state.activeWorkout.programId;
         }
 
-        // Validate required fields (notice programId is not checked)
+        // Log raw data before validation
+        console.log('Raw workout data:', {
+          userId: workoutData.userId,
+          name: workoutData.name,
+          duration: workoutData.duration,
+          exerciseCount: workoutData.exercises?.length,
+          exercises: workoutData.exercises?.map(ex => ({
+            id: ex.id,
+            sets: ex.sets?.length,
+            setDetails: ex.sets
+          }))
+        });
+
+        // Detailed validation logging
+        const validationChecks = {
+          userId: {
+            value: workoutData.userId,
+            valid: !!workoutData.userId,
+            type: typeof workoutData.userId
+          },
+          name: {
+            value: workoutData.name,
+            valid: !!workoutData.name,
+            type: typeof workoutData.name,
+            length: workoutData.name?.length
+          },
+          hasExercises: {
+            valid:
+              Array.isArray(workoutData.exercises) &&
+              workoutData.exercises.length > 0,
+            isArray: Array.isArray(workoutData.exercises),
+            length: workoutData.exercises?.length
+          },
+          duration: {
+            value: workoutData.duration,
+            valid:
+              typeof workoutData.duration === 'number' &&
+              !isNaN(workoutData.duration),
+            type: typeof workoutData.duration
+          },
+          exerciseDetails: workoutData.exercises?.map(ex => ({
+            id: ex.id,
+            setCount: ex.sets?.length,
+            firstSet: ex.sets?.[0]
+          }))
+        };
+
+        console.log(
+          'Detailed validation checks:',
+          JSON.stringify(validationChecks, null, 2)
+        );
+
+        // Separate validation checks for clearer debugging
+        const isUserIdValid = !!workoutData.userId;
+        const isNameValid = !!workoutData.name;
+        const isExercisesValid =
+          Array.isArray(workoutData.exercises) &&
+          workoutData.exercises.length > 0;
+        const isDurationValid =
+          typeof workoutData.duration === 'number' &&
+          !isNaN(workoutData.duration);
+
         if (
-          !workoutData.userId ||
-          !workoutData.name ||
-          !workoutData.exercises ||
-          typeof workoutData.duration !== 'number'
+          !isUserIdValid ||
+          !isNameValid ||
+          !isExercisesValid ||
+          !isDurationValid
         ) {
-          console.error('Missing or invalid required fields:', {
-            hasUserId: !!workoutData.userId,
-            hasName: !!workoutData.name,
-            hasExercises: !!workoutData.exercises,
-            exercisesLength: workoutData.exercises?.length,
-            duration: workoutData.duration,
-            durationType: typeof workoutData.duration
+          console.error('Validation failed:', {
+            isUserIdValid,
+            isNameValid,
+            isExercisesValid,
+            isDurationValid
           });
-          throw new Error('Missing required workout data');
+          throw new Error('Missing or invalid required fields');
         }
 
         const response = await fetch(`${API_URL_MOBILE}/api/workout/complete`, {
