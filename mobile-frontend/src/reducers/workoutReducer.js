@@ -87,7 +87,7 @@ const workoutReducer = (state, action) => {
         },
         workoutDetails: {
           ...state.workoutDetails,
-          exercises: state.workoutDetails.exercises.filter(
+          exercises: state.activeWorkout.exercises.filter(
             exercise => exercise.id !== action.payload
           )
         }

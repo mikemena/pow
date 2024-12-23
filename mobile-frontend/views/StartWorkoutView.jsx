@@ -63,15 +63,15 @@ const StartWorkoutView = () => {
     themeState.accentColor
   );
 
-  useEffect(() => {
-    const totalExercises = activeWorkout.exercises.length;
-    // console.log({
-    //   currentExerciseIndex,
-    //   totalExercises,
-    //   isPrevDisabled: currentExerciseIndex === 0,
-    //   isNextDisabled: currentExerciseIndex === totalExercises - 1
-    // });
-  }, [currentExerciseIndex]);
+  // useEffect(() => {
+  //   const totalExercises = activeWorkout.exercises.length;
+  //   // console.log({
+  //   //   currentExerciseIndex,
+  //   //   totalExercises,
+  //   //   isPrevDisabled: currentExerciseIndex === 0,
+  //   //   isNextDisabled: currentExerciseIndex === totalExercises - 1
+  //   // });
+  // }, [currentExerciseIndex]);
 
   // Add logging for important state changes
   useEffect(() => {
