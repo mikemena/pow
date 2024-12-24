@@ -2,6 +2,10 @@ import { actionTypes } from '../actions/actionTypes';
 import * as Crypto from 'expo-crypto';
 
 const workoutReducer = (state, action) => {
+  console.log('Reducer called with action:', action.type, {
+    payload: action.payload,
+    currentState: JSON.stringify(state.activeWorkout?.exercises, null, 2)
+  });
   switch (action.type) {
     case actionTypes.SET_ACTIVE_PROGRAM:
       return {
@@ -24,7 +28,6 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.UPDATE_WORKOUT_NAME:
-      console.info('Workout Name in reducer', action.payload);
       return {
         ...state,
         activeProgram: {
@@ -99,13 +102,24 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.ADD_SET:
+      if (
+        !state.activeWorkout ||
+        !action.payload.exerciseId ||
+        !action.payload.set
+      ) {
+        console.log('Missing required data for ADD_SET:', action.payload);
+        return state;
+      }
       return {
         ...state,
         activeWorkout: {
           ...state.activeWorkout,
           exercises: state.activeWorkout.exercises.map(exercise =>
             exercise.id === action.payload.exerciseId
-              ? { ...exercise, sets: [...exercise.sets, action.payload.set] }
+              ? {
+                  ...exercise,
+                  sets: [...(exercise.sets || []), action.payload.set]
+                }
               : exercise
           )
         }
@@ -122,7 +136,7 @@ const workoutReducer = (state, action) => {
                   ...exercise,
                   sets: exercise.sets.map(set =>
                     set.id === action.payload.setId
-                      ? { ...set, ...action.payload.updates }
+                      ? { ...set, ...action.payload.setData }
                       : set
                   )
                 }

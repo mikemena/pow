@@ -65,7 +65,6 @@ export const WorkoutProvider = ({ children }) => {
 
   // Update workout name
   const updateWorkoutName = useCallback(name => {
-    console.log('workout name in context', name);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT_NAME,
       payload: name
@@ -127,6 +126,11 @@ export const WorkoutProvider = ({ children }) => {
   const addSet = useCallback((exerciseId, setData) => {
     const newSet = {
       id: Crypto.randomUUID(),
+      weight: '',
+      reps: '',
+      order:
+        (state.activeWorkout?.exercises.find(e => e.id === exerciseId)?.sets
+          ?.length || 0) + 1,
       ...setData
     };
     dispatch({
@@ -135,10 +139,10 @@ export const WorkoutProvider = ({ children }) => {
     });
   }, []);
 
-  const updateSet = useCallback((exerciseId, setId, updates) => {
+  const updateSet = useCallback((exerciseId, setId, setData) => {
     dispatch({
       type: actionTypes.UPDATE_SET,
-      payload: { exerciseId, setId, updates }
+      payload: { exerciseId, setId, setData }
     });
   }, []);
 
@@ -208,15 +212,6 @@ export const WorkoutProvider = ({ children }) => {
           workoutData.programId = state.activeWorkout.programId;
         }
 
-        console.log('Sending workout data:', {
-          ...workoutData,
-          exerciseCount: workoutData.exercises.length,
-          totalSets: workoutData.exercises.reduce(
-            (acc, ex) => acc + ex.sets.length,
-            0
-          )
-        });
-
         const response = await fetch(`${API_URL_MOBILE}/api/workout/complete`, {
           method: 'POST',
           headers: {
@@ -227,7 +222,6 @@ export const WorkoutProvider = ({ children }) => {
         });
 
         const responseText = await response.text();
-        console.log('Server response:', responseText);
 
         if (!response.ok) {
           let errorMessage = 'Failed to save workout';

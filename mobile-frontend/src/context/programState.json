@@ -1,69 +1,23 @@
 {
-    "program": {
-        "createdAt": "2024-12-20T00:26:03.137Z",
-        "currentWorkoutIndex": 0,
-        "daysPerWeek": 5,
-        "durationUnit": "months",
-        "endDate": "2025-04-19T04:00:00.000Z",
-        "id": 127,
-        "isActive": true,
-        "lastWorkoutDate": null,
-        "mainGoal": "endurance",
-        "name": "Cuco el Cojo",
-        "programDuration": 4,
-        "programId": 316,
-        "startDate": "2024-12-19T05:00:00.000Z",
-        "updatedAt": "2024-12-20T00:26:03.137Z",
-        "userId": 2
-    },
-    "programs": [
+    "exercises": [
         {
-            "daysPerWeek": 5,
-            "durationUnit": "months",
-            "id": 316,
-            "mainGoal": "endurance",
-            "name": "Cuco el Cojo",
-            "programDuration": 4,
-            "userId": 2,
-            "workouts": [Array
-            ]
-        },
-        {
-            "daysPerWeek": 7,
-            "durationUnit": "months",
-            "id": 342,
-            "mainGoal": "hypertrophy",
-            "name": "Program 1A Edited",
-            "programDuration": 6,
-            "userId": 2,
-            "workouts": [Array
-            ]
-        },
-        {
-            "daysPerWeek": 6,
-            "durationUnit": "months",
-            "id": 290,
-            "mainGoal": "hypertrophy",
-            "name": "Massive Pump",
-            "programDuration": 6,
-            "userId": 2,
-            "workouts": [Array
-            ]
-        },
-        {
-            "daysPerWeek": 5,
-            "durationUnit": "weeks",
-            "id": 291,
-            "mainGoal": "strenght",
-            "name": "Sculpted Strength: The Ultimate 12 Week Bodybuilding Program",
-            "programDuration": 12,
-            "userId": 2,
-            "workouts": [Array
-            ]
+            "catalogExerciseId": 613,
+            "equipment": "Arm Blaster",
+            "id": 422,
+            "muscle": "Biceps",
+            "muscleGroup": "Arm",
+            "name": "Bicep Curl (Arm Blaster)",
+            "order": 1,
+            "sets": [Array
+            ],
+            "subcategory": "Upper Arm",
+            "workoutId": 358
         }
     ],
-    "workout": {
-        "activeWorkout": null,
-        "workouts": []
-    }
+    "id": 358,
+    "isCompleted": false,
+    "isStarted": false,
+    "name": "Biceps",
+    "order": 1,
+    "programId": 290
 }

@@ -19,6 +19,7 @@ import {
   Alert
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import * as Crypto from 'expo-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
 import PillButton from '../components/PillButton';
@@ -35,12 +36,17 @@ const StartWorkoutView = () => {
     state: workoutState,
     completeWorkout,
     removeExerciseFromWorkout,
+    addSet,
     updateExerciseSets,
     updateWorkoutName,
     startWorkout
   } = useContext(WorkoutContext);
 
   const activeWorkout = workoutState.activeWorkout;
+
+  // console.info('workoutState activeWorkout', workoutState.activeWorkout);
+
+  // console.log(JSON.stringify(workoutState.activeWorkout, null, 2));
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(
@@ -64,6 +70,9 @@ const StartWorkoutView = () => {
     themeState.theme,
     themeState.accentColor
   );
+
+  const currentExercise = activeWorkout.exercises[currentExerciseIndex];
+  const currentSets = activeWorkout.exercises[currentExerciseIndex]?.sets || [];
 
   // useEffect(() => {
   //   console.log('workoutState', workoutState.activeWorkout);
@@ -103,19 +112,6 @@ const StartWorkoutView = () => {
     return () => clearTimeout(timer);
   }, [showExerciseInfo]);
 
-  // Effect to update sets when exercise changes
-  useEffect(() => {
-    const currentSets =
-      activeWorkout.exercises[currentExerciseIndex]?.sets || [];
-    setSets(
-      currentSets.map((set, idx) => ({
-        ...set,
-        id: set.id || Math.random().toString(36).substr(2, 9),
-        order: idx + 1
-      }))
-    );
-  }, [currentExerciseIndex, activeWorkout.exercises]);
-
   // For exercise info auto-hide timer
 
   useEffect(() => {
@@ -129,11 +125,11 @@ const StartWorkoutView = () => {
     const currentExercise = activeWorkout.exercises[currentExerciseIndex];
     if (
       currentExercise &&
-      JSON.stringify(currentExercise.sets) !== JSON.stringify(sets)
+      JSON.stringify(currentExercise.sets) !== JSON.stringify(currentSets)
     ) {
-      updateExerciseSets(currentExercise.id, sets);
+      updateExerciseSets(currentExercise.id, currentSets);
     }
-  }, [sets, activeWorkout, currentExerciseIndex]);
+  }, [currentSets, activeWorkout, currentExerciseIndex]);
 
   // Dismiss keyboard when tapping outside
   const dismissKeyboard = () => {
@@ -160,19 +156,6 @@ const StartWorkoutView = () => {
       updateWorkoutName(workoutTitle.trim());
     }
   }, [workoutTitle, activeWorkout.name, updateWorkoutName]);
-
-  const [sets, setSets] = useState(() => {
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-
-    // console.log('current exercise', currentExercise);
-    const initialSets = currentExercise?.sets || [];
-
-    return initialSets.map((set, idx) => ({
-      ...set,
-      id: set.id || Math.random().toString(36).substr(2, 9),
-      order: idx + 1
-    }));
-  });
 
   const imageOverlayStyle = {
     position: 'absolute',
@@ -346,61 +329,42 @@ const StartWorkoutView = () => {
   const handleNextExercise = () => {
     if (currentExerciseIndex < activeWorkout.exercises.length - 1) {
       setCurrentExerciseIndex(prev => prev + 1);
-      const nextSets =
-        activeWorkout.exercises[currentExerciseIndex + 1]?.sets || [];
-      setSets(
-        nextSets.map((set, idx) => ({
-          ...set,
-          id: set.id || Math.random().toString(36).substr(2, 9),
-          order: idx + 1
-        }))
-      );
     }
   };
 
   const handlePreviousExercise = () => {
     if (currentExerciseIndex > 0) {
       setCurrentExerciseIndex(prev => prev - 1);
-      const prevSets =
-        activeWorkout.exercises[currentExerciseIndex - 1]?.sets || [];
-      setSets(
-        prevSets.map((set, idx) => ({
-          ...set,
-          id: set.id || Math.random().toString(36).substr(2, 9),
-          order: idx + 1
-        }))
-      );
     }
   };
 
   const handleAddSet = () => {
+    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
     const newSet = {
-      id: Math.random().toString(36).substr(2, 9),
+      id: Crypto.randomUUID(),
       weight: '0',
       reps: '0',
-      order: sets.length + 1
+      order: (currentSets.length || 0) + 1
     };
 
-    const updatedSets = [...sets, newSet];
-    setSets(updatedSets);
+    updateExerciseSets(currentExercise.id, [...currentSets, newSet]);
   };
 
   const handleSetChange = (index, field, value) => {
-    const updatedSets = sets.map(set =>
+    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
+    const updatedSets = currentSets.map(set =>
       set.order === index + 1 ? { ...set, [field]: value } : set
     );
-    setSets(updatedSets);
+    updateExerciseSets(currentExercise.id, updatedSets);
   };
 
   const handleDeleteSet = setId => {
-    const updatedSets = sets
+    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
+    const updatedSets = currentSets
       .filter(s => String(s.id) !== String(setId))
       .map((s, idx) => ({ ...s, order: idx + 1 }));
-
-    setSets(updatedSets);
+    updateExerciseSets(currentExercise.id, updatedSets);
   };
-
-  const currentExercise = activeWorkout.exercises[currentExerciseIndex];
 
   return (
     <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -686,7 +650,7 @@ const StartWorkoutView = () => {
               contentContainerStyle={styles.setsScrollContent}
               showsVerticalScrollIndicator={true}
             >
-              {sets.length === 0 && (
+              {currentSets.length === 0 && (
                 <Text
                   style={{
                     color: themedStyles.textColor,
@@ -699,12 +663,12 @@ const StartWorkoutView = () => {
                   No Sets
                 </Text>
               )}
-              {sets.map((set, index) => (
+              {currentSets.map((set, index) => (
                 <Set
                   key={set.id}
                   index={set.order - 1}
                   set={set}
-                  isLast={index === sets.length - 1}
+                  isLast={index === currentSets.length - 1}
                   onSetChange={handleSetChange}
                   onDelete={handleDeleteSet}
                   themedStyles={themedStyles}
