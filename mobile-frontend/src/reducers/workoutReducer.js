@@ -24,6 +24,7 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.UPDATE_WORKOUT_NAME:
+      console.info('Workout Name in reducer', action.payload);
       return {
         ...state,
         activeProgram: {
@@ -33,7 +34,11 @@ const workoutReducer = (state, action) => {
               ? { ...workout, name: action.payload }
               : workout
           )
-        }
+        },
+        // Also update activeWorkout if it exists
+        activeWorkout: state.activeWorkout
+          ? { ...state.activeWorkout, name: action.payload }
+          : null
       };
 
     case actionTypes.SET_ACTIVE_WORKOUT: {
@@ -169,9 +174,11 @@ const workoutReducer = (state, action) => {
     case actionTypes.COMPLETE_WORKOUT:
       return {
         ...state,
-        ...state.activeWorkout,
-        isComplete: true,
-        endTime: new Date()
+        activeWorkout: {
+          ...state.activeWorkout,
+          isComplete: true,
+          endTime: new Date()
+        }
       };
 
     case actionTypes.CLEAR_CURRENT_WORKOUT:

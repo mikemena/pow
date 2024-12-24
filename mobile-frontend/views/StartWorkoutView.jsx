@@ -43,7 +43,9 @@ const StartWorkoutView = () => {
   const activeWorkout = workoutState.activeWorkout;
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [workoutTitle, setWorkoutTitle] = useState(activeWorkout.name || '');
+  const [workoutTitle, setWorkoutTitle] = useState(
+    activeWorkout.name || 'Workout'
+  );
   const inputRef = useRef(null);
   const swipeableRef = useRef(null);
   const [isStarted, setIsStarted] = useState(false);
@@ -62,6 +64,10 @@ const StartWorkoutView = () => {
     themeState.theme,
     themeState.accentColor
   );
+
+  // useEffect(() => {
+  //   console.log('workoutState', workoutState.activeWorkout);
+  // });
 
   // useEffect(() => {
   //   const totalExercises = activeWorkout.exercises.length;
@@ -83,11 +89,18 @@ const StartWorkoutView = () => {
 
   // Effect to animate image opacity when showing exercise info
   useEffect(() => {
+    //Handle opacity animation
     Animated.timing(imageOpacity, {
       toValue: showExerciseInfo ? 0.3 : 1,
       duration: 200,
       useNativeDriver: true
     }).start();
+    // Handle auto-hide timer
+    let timer;
+    if (showExerciseInfo) {
+      timer = setTimeout(() => setShowExerciseInfo(false), 2000);
+    }
+    return () => clearTimeout(timer);
   }, [showExerciseInfo]);
 
   // Effect to update sets when exercise changes
@@ -106,19 +119,21 @@ const StartWorkoutView = () => {
   // For exercise info auto-hide timer
 
   useEffect(() => {
-    let timer;
-    if (showExerciseInfo) {
-      timer = setTimeout(() => setShowExerciseInfo(false), 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [showExerciseInfo]);
-
-  useEffect(() => {
     if (activeWorkout.exercises.length === 0) {
       navigation.goBack();
       return;
     }
   }, [activeWorkout.exercises, navigation]);
+
+  useEffect(() => {
+    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
+    if (
+      currentExercise &&
+      JSON.stringify(currentExercise.sets) !== JSON.stringify(sets)
+    ) {
+      updateExerciseSets(currentExercise.id, sets);
+    }
+  }, [sets, activeWorkout, currentExerciseIndex]);
 
   // Dismiss keyboard when tapping outside
   const dismissKeyboard = () => {
@@ -141,6 +156,7 @@ const StartWorkoutView = () => {
   const handleTitleSubmit = useCallback(() => {
     setIsEditingTitle(false);
     if (workoutTitle.trim() !== activeWorkout.name) {
+      console.log('workout name', workoutTitle.trim());
       updateWorkoutName(workoutTitle.trim());
     }
   }, [workoutTitle, activeWorkout.name, updateWorkoutName]);
@@ -215,21 +231,82 @@ const StartWorkoutView = () => {
       setIsStarted(false);
       setIsPaused(false);
 
-      // Calculate duration in minutes
-      const durationInMinutes = Math.floor(time / 60);
+      // Validate that we have an active workout
+      if (!activeWorkout) {
+        throw new Error('No active workout found');
+      }
 
-      // Complete workout with duration directly
+      // Ensure we're using the most current workout name
+      if (workoutTitle.trim() !== activeWorkout.name) {
+        await updateWorkoutName(workoutTitle.trim());
+      }
+
+      // Validate exercises
+      if (!activeWorkout.exercises || !Array.isArray(activeWorkout.exercises)) {
+        throw new Error('No exercises found in workout');
+      }
+
+      if (activeWorkout.exercises.length === 0) {
+        throw new Error('Workout must have at least one exercise');
+      }
+
+      // Validate sets
+      const exercisesWithSets = activeWorkout.exercises
+        .map(exercise => {
+          if (!exercise.sets || !Array.isArray(exercise.sets)) {
+            console.error('Invalid sets for exercise:', exercise.id);
+            return null;
+          }
+
+          const validSets = exercise.sets.filter(set => {
+            const weight = parseInt(set.weight);
+            const reps = parseInt(set.reps);
+            return !isNaN(weight) && !isNaN(reps);
+          });
+
+          return validSets.length > 0
+            ? {
+                ...exercise,
+                sets: validSets
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      if (exercisesWithSets.length === 0) {
+        throw new Error(
+          'At least one exercise must have valid sets with weight and reps'
+        );
+      }
+
+      // Calculate duration - ensure it's at least 1 minute
+      const durationInMinutes = Math.max(1, Math.floor(time / 60));
+      console.log('Validated workout data:', {
+        userId: 2,
+        name: workoutTitle.trim(),
+        duration: durationInMinutes,
+        exerciseCount: exercisesWithSets.length,
+        programId: activeWorkout.programId,
+        exercises: exercisesWithSets
+      });
+
+      // Complete workout with duration
       await completeWorkout(durationInMinutes);
 
       navigation.goBack();
     } catch (error) {
       console.error('Failed to complete workout:', error);
-      Alert.alert('Error', `Failed to save workout: ${error.message}`, [
-        {
-          text: 'OK',
-          onPress: () => navigation.goBack()
-        }
-      ]);
+      Alert.alert(
+        'Error',
+        error.message ||
+          'Failed to save workout. Please ensure all required fields are filled out.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.goBack()
+          }
+        ]
+      );
     }
   };
 
@@ -306,41 +383,14 @@ const StartWorkoutView = () => {
 
     const updatedSets = [...sets, newSet];
     setSets(updatedSets);
-
-    // Immediately update exercise sets in context
-    if (currentExercise) {
-      updateExerciseSets(currentExercise.id, updatedSets);
-    }
   };
-
-  useEffect(() => {
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-    if (currentExercise) {
-      updateExerciseSets(currentExercise.id, sets);
-    }
-  }, [sets]);
 
   const handleSetChange = (index, field, value) => {
     const updatedSets = sets.map(set =>
       set.order === index + 1 ? { ...set, [field]: value } : set
     );
     setSets(updatedSets);
-
-    // Immediately update exercise sets in context
-    if (currentExercise) {
-      updateExerciseSets(currentExercise.id, updatedSets);
-    }
   };
-
-  useEffect(() => {
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-    if (
-      currentExercise &&
-      JSON.stringify(currentExercise.sets) !== JSON.stringify(sets)
-    ) {
-      updateExerciseSets(currentExercise.id, sets);
-    }
-  }, [sets]);
 
   const handleDeleteSet = setId => {
     const updatedSets = sets
@@ -348,19 +398,7 @@ const StartWorkoutView = () => {
       .map((s, idx) => ({ ...s, order: idx + 1 }));
 
     setSets(updatedSets);
-
-    // Immediately update exercise sets in context
-    if (currentExercise) {
-      updateExerciseSets(currentExercise.id, updatedSets);
-    }
   };
-
-  useEffect(() => {
-    const currentExercise = activeWorkout.exercises[currentExerciseIndex];
-    if (currentExercise) {
-      updateExerciseSets(currentExercise.id, sets);
-    }
-  }, [sets, activeWorkout, currentExerciseIndex]);
 
   const currentExercise = activeWorkout.exercises[currentExerciseIndex];
 

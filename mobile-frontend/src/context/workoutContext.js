@@ -65,6 +65,7 @@ export const WorkoutProvider = ({ children }) => {
 
   // Update workout name
   const updateWorkoutName = useCallback(name => {
+    console.log('workout name in context', name);
     dispatch({
       type: actionTypes.UPDATE_WORKOUT_NAME,
       payload: name
@@ -167,108 +168,54 @@ export const WorkoutProvider = ({ children }) => {
           throw new Error('No active workout to complete');
         }
 
-        // Create workout data without program ID by default
+        // Ensure duration is at least 1 minute
+        const validDuration = Math.max(1, duration);
+
+        // Filter out invalid sets and exercises
+        const validExercises = state.activeWorkout.exercises
+          .map(exercise => ({
+            id: exercise.id,
+            sets: Array.isArray(exercise.sets)
+              ? exercise.sets
+                  .filter(set => {
+                    const weight = parseInt(set.weight);
+                    const reps = parseInt(set.reps);
+                    return (
+                      !isNaN(weight) && !isNaN(reps) && weight >= 0 && reps > 0
+                    );
+                  })
+                  .map(set => ({
+                    weight: parseInt(set.weight),
+                    reps: parseInt(set.reps),
+                    order: set.order || 1
+                  }))
+              : []
+          }))
+          .filter(exercise => exercise.sets.length > 0);
+
+        if (validExercises.length === 0) {
+          throw new Error('No valid exercises with completed sets found');
+        }
+
         const workoutData = {
           userId: 2,
-          name: state.activeWorkout.name,
-          duration: duration,
-          exercises: state.activeWorkout.exercises
-            .map(exercise => ({
-              id: exercise.id,
-              sets: Array.isArray(exercise.sets)
-                ? exercise.sets
-                    .filter(set => set && (set.weight || set.reps))
-                    .map(set => ({
-                      weight: parseInt(set.weight) || 0,
-                      reps: parseInt(set.reps) || 0,
-                      order: set.order || 1
-                    }))
-                : []
-            }))
-            .filter(exercise => exercise.sets.length > 0)
+          name: state.activeWorkout.name.trim(),
+          duration: validDuration,
+          exercises: validExercises
         };
 
-        // Only add programId if it's from a program workout
         if (state.activeWorkout.programId) {
           workoutData.programId = state.activeWorkout.programId;
         }
 
-        // Log raw data before validation
-        console.log('Raw workout data:', {
-          userId: workoutData.userId,
-          name: workoutData.name,
-          duration: workoutData.duration,
-          exerciseCount: workoutData.exercises?.length,
-          exercises: workoutData.exercises?.map(ex => ({
-            id: ex.id,
-            sets: ex.sets?.length,
-            setDetails: ex.sets
-          }))
+        console.log('Sending workout data:', {
+          ...workoutData,
+          exerciseCount: workoutData.exercises.length,
+          totalSets: workoutData.exercises.reduce(
+            (acc, ex) => acc + ex.sets.length,
+            0
+          )
         });
-
-        // Detailed validation logging
-        const validationChecks = {
-          userId: {
-            value: workoutData.userId,
-            valid: !!workoutData.userId,
-            type: typeof workoutData.userId
-          },
-          name: {
-            value: workoutData.name,
-            valid: !!workoutData.name,
-            type: typeof workoutData.name,
-            length: workoutData.name?.length
-          },
-          hasExercises: {
-            valid:
-              Array.isArray(workoutData.exercises) &&
-              workoutData.exercises.length > 0,
-            isArray: Array.isArray(workoutData.exercises),
-            length: workoutData.exercises?.length
-          },
-          duration: {
-            value: workoutData.duration,
-            valid:
-              typeof workoutData.duration === 'number' &&
-              !isNaN(workoutData.duration),
-            type: typeof workoutData.duration
-          },
-          exerciseDetails: workoutData.exercises?.map(ex => ({
-            id: ex.id,
-            setCount: ex.sets?.length,
-            firstSet: ex.sets?.[0]
-          }))
-        };
-
-        console.log(
-          'Detailed validation checks:',
-          JSON.stringify(validationChecks, null, 2)
-        );
-
-        // Separate validation checks for clearer debugging
-        const isUserIdValid = !!workoutData.userId;
-        const isNameValid = !!workoutData.name;
-        const isExercisesValid =
-          Array.isArray(workoutData.exercises) &&
-          workoutData.exercises.length > 0;
-        const isDurationValid =
-          typeof workoutData.duration === 'number' &&
-          !isNaN(workoutData.duration);
-
-        if (
-          !isUserIdValid ||
-          !isNameValid ||
-          !isExercisesValid ||
-          !isDurationValid
-        ) {
-          console.error('Validation failed:', {
-            isUserIdValid,
-            isNameValid,
-            isExercisesValid,
-            isDurationValid
-          });
-          throw new Error('Missing or invalid required fields');
-        }
 
         const response = await fetch(`${API_URL_MOBILE}/api/workout/complete`, {
           method: 'POST',
@@ -280,6 +227,7 @@ export const WorkoutProvider = ({ children }) => {
         });
 
         const responseText = await response.text();
+        console.log('Server response:', responseText);
 
         if (!response.ok) {
           let errorMessage = 'Failed to save workout';
@@ -295,15 +243,13 @@ export const WorkoutProvider = ({ children }) => {
         }
 
         dispatch({ type: actionTypes.COMPLETE_WORKOUT });
-        dispatch({ type: actionTypes.CLEAR_CURRENT_WORKOUT });
-
         return true;
       } catch (error) {
         console.error('Error completing workout:', error);
         throw error;
       }
     },
-    [state.activeWorkout, state.workoutDetails]
+    [state.activeWorkout]
   );
 
   const clearCurrentWorkout = useCallback(() => {
