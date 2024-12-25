@@ -264,14 +264,6 @@ const StartWorkoutView = () => {
 
       // Calculate duration - ensure it's at least 1 minute
       const durationInMinutes = Math.max(1, Math.floor(time / 60));
-      console.log('Validated workout data:', {
-        userId: 2,
-        name: workoutTitle.trim(),
-        duration: durationInMinutes,
-        exerciseCount: exercisesWithSets.length,
-        programId: activeWorkout.programId,
-        exercises: exercisesWithSets
-      });
 
       // Complete workout with duration
       await completeWorkout(durationInMinutes);

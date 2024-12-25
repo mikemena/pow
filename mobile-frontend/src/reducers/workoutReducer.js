@@ -2,10 +2,6 @@ import { actionTypes } from '../actions/actionTypes';
 import * as Crypto from 'expo-crypto';
 
 const workoutReducer = (state, action) => {
-  console.log('Reducer called with action:', action.type, {
-    payload: action.payload,
-    currentState: JSON.stringify(state.activeWorkout?.exercises, null, 2)
-  });
   switch (action.type) {
     case actionTypes.SET_ACTIVE_PROGRAM:
       return {
@@ -14,11 +10,15 @@ const workoutReducer = (state, action) => {
       };
 
     case actionTypes.INITIALIZE_FLEX_WORKOUT:
+      const workoutId = Crypto.randomUUID();
       return {
-        ...initialState,
-        workoutName: 'Flex Workout',
-        date: new Date(),
-        workout_id: Crypto.randomUUID()
+        ...state,
+        activeWorkout: {
+          id: workoutId,
+          name: 'Flex Workout',
+          date: new Date(),
+          exercises: []
+        }
       };
 
     case actionTypes.CLEAR_WORKOUT_DETAILS:

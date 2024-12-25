@@ -59,9 +59,9 @@ export const WorkoutProvider = ({ children }) => {
   }, []);
 
   // Initialize a new flex workout
-  const initializeFlexWorkout = () => {
+  const initializeFlexWorkout = useCallback(() => {
     dispatch({ type: actionTypes.INITIALIZE_FLEX_WORKOUT });
-  };
+  }, []);
 
   // Update workout name
   const updateWorkoutName = useCallback(name => {
