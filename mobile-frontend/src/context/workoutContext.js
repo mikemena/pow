@@ -92,7 +92,7 @@ export const WorkoutProvider = ({ children }) => {
     const newExercise = {
       id: exercise.id || Crypto.randomUUID(),
       workoutId: exercise.workoutId,
-      catalogExerciseId: exercise.catalogExerciseId || exercise.id,
+      catalogExerciseId: exercise.catalogExerciseId,
       order: exercise.order || 0,
       name: exercise.name,
       muscle: exercise.muscle,
@@ -178,7 +178,7 @@ export const WorkoutProvider = ({ children }) => {
         // Filter out invalid sets and exercises
         const validExercises = state.activeWorkout.exercises
           .map(exercise => ({
-            id: exercise.id,
+            catalogExerciseId: exercise.catalogExerciseId,
             sets: Array.isArray(exercise.sets)
               ? exercise.sets
                   .filter(set => {
@@ -211,6 +211,11 @@ export const WorkoutProvider = ({ children }) => {
         if (state.activeWorkout.programId) {
           workoutData.programId = state.activeWorkout.programId;
         }
+
+        console.log(
+          'Sending workout data:',
+          JSON.stringify(workoutData, null, 2)
+        );
 
         const response = await fetch(`${API_URL_MOBILE}/api/workout/complete`, {
           method: 'POST',

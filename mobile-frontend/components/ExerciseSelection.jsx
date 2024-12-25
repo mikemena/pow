@@ -347,6 +347,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       if (contextType === 'workout') {
         // Only add exercises to workout context
         standardizedExercises.forEach(exercise => {
+          console.log('selected exercise', exercise);
           addExerciseToWorkout(exercise);
         });
         navigation.navigate('StartWorkout');

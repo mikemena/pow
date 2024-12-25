@@ -190,29 +190,29 @@ router.post('/workout/complete', async (req, res) => {
       const exercise = exercises[i];
 
       // First get the catalog_exercise_id from the original exercise
-      const catalogExerciseQuery = await client.query(
-        `SELECT catalog_exercise_id
-         FROM exercises
-         WHERE id = $1`,
-        [exercise.id]
-      );
+      // const catalogExerciseQuery = await client.query(
+      //   `SELECT catalog_exercise_id
+      //    FROM exercises
+      //    WHERE id = $1`,
+      //   [exercise.id]
+      // );
 
-      const catalogExerciseId =
-        catalogExerciseQuery.rows[0]?.catalog_exercise_id;
+      // const catalogExerciseId =
+      //   catalogExerciseQuery.rows[0]?.catalog_exercise_id;
 
-      if (!catalogExerciseId) {
-        throw new Error(
-          `No catalog exercise found for exercise ID: ${exercise.id}`
-        );
-      }
+      // if (!catalogExerciseId) {
+      //   throw new Error(
+      //     `No catalog exercise found for exercise ID: ${exercise.id}`
+      //   );
+      // }
 
       // Insert exercise record with catalog_exercise_id
       const exerciseResult = await client.query(
         `INSERT INTO completed_exercises
-         (workout_id, exercise_id, catalog_exercise_id, "order")
-         VALUES ($1, $2, $3, $4)
+         (workout_id, catalog_exercise_id, "order")
+         VALUES ($1, $2, $3)
          RETURNING id`,
-        [workoutId, exercise.id, catalogExerciseId, i + 1]
+        [workoutId, exercise.catalogExerciseId, i + 1]
       );
 
       const completedExerciseId = exerciseResult.rows[0].id;

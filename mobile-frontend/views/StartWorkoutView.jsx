@@ -152,7 +152,6 @@ const StartWorkoutView = () => {
   const handleTitleSubmit = useCallback(() => {
     setIsEditingTitle(false);
     if (workoutTitle.trim() !== activeWorkout.name) {
-      console.log('workout name', workoutTitle.trim());
       updateWorkoutName(workoutTitle.trim());
     }
   }, [workoutTitle, activeWorkout.name, updateWorkoutName]);
@@ -264,7 +263,6 @@ const StartWorkoutView = () => {
 
       // Calculate duration - ensure it's at least 1 minute
       const durationInMinutes = Math.max(1, Math.floor(time / 60));
-
       // Complete workout with duration
       await completeWorkout(durationInMinutes);
 
