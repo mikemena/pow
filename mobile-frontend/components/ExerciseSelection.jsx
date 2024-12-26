@@ -245,16 +245,15 @@ const ExerciseSelection = ({ navigation, route }) => {
     }
   }, [currentPage, hasMore, isLoadingMore, isLoading]);
 
-  const toggleExerciseSelection = exercise => {
+  const toggleExerciseSelection = async exercise => {
     const isSelected = selectedExercises.some(
       e => e.catalogExerciseId === exercise.id
     );
 
-    if (isSelected) {
-      setSelectedExercises(prev =>
-        prev.filter(e => e.catalogExerciseId !== exercise.id)
-      );
-    } else {
+    if (!isSelected) {
+      // Cache image when selecting
+      await imageCacheService.cacheImage(exercise.id);
+
       const newExercise = {
         ...exercise,
         id: Crypto.randomUUID(),
@@ -262,6 +261,10 @@ const ExerciseSelection = ({ navigation, route }) => {
         sets: [{ id: Crypto.randomUUID(), weight: '0', reps: '0', order: 1 }]
       };
       setSelectedExercises(prev => [...prev, newExercise]);
+    } else {
+      setSelectedExercises(prev =>
+        prev.filter(e => e.catalogExerciseId !== exercise.id)
+      );
     }
   };
 
