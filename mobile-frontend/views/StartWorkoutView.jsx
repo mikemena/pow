@@ -30,6 +30,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
+import { getCachedImage } from '../src/utils/imageCache';
 
 const StartWorkoutView = () => {
   const {
@@ -87,6 +88,17 @@ const StartWorkoutView = () => {
   //   //   isNextDisabled: currentExerciseIndex === totalExercises - 1
   //   // });
   // }, [currentExerciseIndex]);
+
+  useEffect(() => {
+    if (currentExercise?.catalogExerciseId) {
+      const cachedUrl = getCachedImage(currentExercise.catalogExerciseId);
+      console.log(
+        `[StartWorkout] Current exercise ${
+          currentExercise.catalogExerciseId
+        }: ${cachedUrl ? 'using cached image' : 'no cached image'}`
+      );
+    }
+  }, [currentExercise]);
 
   // Add logging for important state changes
   useEffect(() => {
@@ -515,7 +527,21 @@ const StartWorkoutView = () => {
                     {currentExercise?.imageUrl ? (
                       <Animated.Image
                         source={{
-                          uri: currentExercise.imageUrl
+                          uri: (() => {
+                            const cachedUrl = getCachedImage(
+                              currentExercise.catalogExerciseId
+                            );
+                            const finalUrl =
+                              cachedUrl || currentExercise.imageUrl;
+                            console.log(
+                              `[StartWorkout] Rendering image for ${
+                                currentExercise.catalogExerciseId
+                              }: ${
+                                cachedUrl ? 'from cache' : 'from original url'
+                              }`
+                            );
+                            return finalUrl;
+                          })()
                         }}
                         style={[styles.exerciseGif, { opacity: imageOpacity }]}
                         resizeMode='contain'

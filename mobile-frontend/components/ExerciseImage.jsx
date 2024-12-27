@@ -2,18 +2,23 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, ActivityIndicator, Image, StyleSheet } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
-
-const IMAGE_CACHE = new Map();
+import {
+  IMAGE_CACHE,
+  cacheImage,
+  getCachedImage
+} from '../src/utils/imageCache';
 
 const ExerciseImage = ({ exercise }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
   const [imageUrl, setImageUrl] = useState(() => {
-    const cachedUrl = IMAGE_CACHE.get(exercise.id);
-    if (cachedUrl) {
-      return cachedUrl;
-    }
-    return exercise.imageUrl;
+    const cachedUrl = getCachedImage(exercise.id);
+    console.log(
+      `[ExerciseImage] Initial load for ${exercise.id}: ${
+        cachedUrl ? 'using cached' : 'using original'
+      }`
+    );
+    return cachedUrl || exercise.imageUrl;
   });
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -30,10 +35,9 @@ const ExerciseImage = ({ exercise }) => {
       const data = await response.json();
 
       if (data.imageUrl && isMounted.current) {
-        const newUrl = data.imageUrl;
-        IMAGE_CACHE.set(exercise.id, newUrl);
-        setImageUrl(newUrl);
-        return newUrl;
+        cacheImage(exercise.id, data.imageUrl);
+        setImageUrl(data.imageUrl);
+        return data.imageUrl;
       }
       return null;
     } catch (error) {
@@ -43,28 +47,45 @@ const ExerciseImage = ({ exercise }) => {
   };
 
   useEffect(() => {
-    isMounted.current = true;
-
     const cachedUrl = IMAGE_CACHE.get(exercise.id);
     if (cachedUrl) {
+      console.log(`[ExerciseImage] Using cached image for ${exercise.id}`);
       setImageUrl(cachedUrl);
       setIsLoading(false);
-    } else {
-      const url = exercise.imageUrl;
-      if (url) {
-        IMAGE_CACHE.set(exercise.id, url);
-        setImageUrl(url);
-      } else if (exercise.file_path) {
-        refreshImageUrl();
-      }
+    } else if (exercise.imageUrl) {
+      console.log(
+        `[ExerciseImage] No cache, loading from URL for ${exercise.id}`
+      );
+      // ... rest of your existing code
     }
-
-    return () => {
-      isMounted.current = false;
-    };
   }, [exercise]);
 
+  // useEffect(() => {
+  //   isMounted.current = true;
+
+  //   const cachedUrl = IMAGE_CACHE.get(exercise.id);
+  //   if (cachedUrl) {
+  //     setImageUrl(cachedUrl);
+  //     setIsLoading(false);
+  //   } else {
+  //     const url = exercise.imageUrl;
+  //     if (url) {
+  //       IMAGE_CACHE.set(exercise.id, url);
+  //       setImageUrl(url);
+  //     } else if (exercise.file_path) {
+  //       refreshImageUrl();
+  //     }
+  //   }
+
+  //   return () => {
+  //     isMounted.current = false;
+  //   };
+  // }, [exercise]);
+
   const handleImageError = useCallback(async () => {
+    console.log(
+      `[ExerciseImage] Image load error for ${exercise.id}, attempting refresh`
+    );
     if (!isMounted.current) return;
 
     try {

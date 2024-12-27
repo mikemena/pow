@@ -27,10 +27,7 @@ import { globalStyles, colors } from '../src/styles/globalStyles';
 import PillButton from './PillButton';
 import ExerciseFilter from './ExerciseFilter';
 import ExerciseImage from './ExerciseImage';
-
-// Constants moved outside component
-const CACHE_KEY = 'exercise_catalog';
-const CACHE_EXPIRY = 24 * 60 * 60 * 1000; // 24 hours
+import { cacheImage, debugCache } from '../src/utils/imageCache';
 
 const ExerciseSelection = ({ navigation, route }) => {
   const { addExercise, state: programState } = useContext(ProgramContext);
@@ -66,38 +63,6 @@ const ExerciseSelection = ({ navigation, route }) => {
     themeState.theme,
     themeState.accentColor
   );
-
-  // Cache functions
-  const getCachedExercises = async page => {
-    try {
-      const cached = await AsyncStorage.getItem(`${CACHE_KEY}_${page}`);
-      if (cached) {
-        const { data, timestamp } = JSON.parse(cached);
-        if (Date.now() - timestamp < CACHE_EXPIRY) {
-          return data;
-        }
-      }
-      return null;
-    } catch (error) {
-      console.error('Error reading cache:', error);
-      return null;
-    }
-  };
-
-  const setCachedExercises = async (page, data) => {
-    try {
-      const cacheData = {
-        data,
-        timestamp: Date.now()
-      };
-      await AsyncStorage.setItem(
-        `${CACHE_KEY}_${page}`,
-        JSON.stringify(cacheData)
-      );
-    } catch (error) {
-      console.error('Error setting cache:', error);
-    }
-  };
 
   // Fetch exercises function
   const fetchExercises = async (page = 1, shouldAppend = false) => {
@@ -251,8 +216,15 @@ const ExerciseSelection = ({ navigation, route }) => {
     );
 
     if (!isSelected) {
-      // Cache image when selecting
-      await imageCacheService.cacheImage(exercise.id);
+      console.log(`[Selection] Adding exercise ${exercise.id}`);
+      // Cache image and log result
+      const wasAdded = cacheImage(exercise.id, exercise.imageUrl);
+      console.log(
+        `[Selection] Image ${wasAdded ? 'was cached' : 'was already in cache'}`
+      );
+
+      // Debug current cache state
+      debugCache();
 
       const newExercise = {
         ...exercise,
@@ -262,6 +234,7 @@ const ExerciseSelection = ({ navigation, route }) => {
       };
       setSelectedExercises(prev => [...prev, newExercise]);
     } else {
+      console.log(`[Selection] Removing exercise ${exercise.id}`);
       setSelectedExercises(prev =>
         prev.filter(e => e.catalogExerciseId !== exercise.id)
       );
@@ -273,25 +246,25 @@ const ExerciseSelection = ({ navigation, route }) => {
   };
 
   // Utility function to compare exercises for equality
-  const areExercisesEqual = (exercise1, exercise2) => {
-    // Check for undefined or null exercises
-    if (!exercise1 || !exercise2) {
-      return false;
-    }
+  // const areExercisesEqual = (exercise1, exercise2) => {
+  //   // Check for undefined or null exercises
+  //   if (!exercise1 || !exercise2) {
+  //     return false;
+  //   }
 
-    // Primary comparison using catalogExerciseId
-    if (exercise1.catalogExerciseId && exercise2.catalogExerciseId) {
-      return exercise1.catalogExerciseId === exercise2.catalogExerciseId;
-    }
+  //   // Primary comparison using catalogExerciseId
+  //   if (exercise1.catalogExerciseId && exercise2.catalogExerciseId) {
+  //     return exercise1.catalogExerciseId === exercise2.catalogExerciseId;
+  //   }
 
-    // If either exercise is missing catalogExerciseId, use multiple criteria
-    const nameMatch = exercise1.name === exercise2.name;
-    const muscleMatch = exercise1.muscle === exercise2.muscle;
-    const equipmentMatch = exercise1.equipment === exercise2.equipment;
+  //   // If either exercise is missing catalogExerciseId, use multiple criteria
+  //   const nameMatch = exercise1.name === exercise2.name;
+  //   const muscleMatch = exercise1.muscle === exercise2.muscle;
+  //   const equipmentMatch = exercise1.equipment === exercise2.equipment;
 
-    // Consider exercises equal if they match on all three criteria
-    return nameMatch && muscleMatch && equipmentMatch;
-  };
+  //   // Consider exercises equal if they match on all three criteria
+  //   return nameMatch && muscleMatch && equipmentMatch;
+  // };
 
   const handleAdd = async () => {
     try {
