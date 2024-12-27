@@ -1,40 +1,55 @@
-# Program Testing Results
+-- Workouts this month --
 
-## Create Program
+SELECT COUNT(id) as count
+FROM public.completed_workouts
+WHERE date >= date_trunc('month', CURRENT_DATE)
+AND date < date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
+AND user_id = 2;
 
-| Scenario       | Details                                    | Name | Result |
-| -------------- | ------------------------------------------ | ---- | ------ |
-| Create Program | Add 1 workout with 1 exercise and 1 set    | CP1  | PASS   |
-| Create Program | Add 2 workouts with 3 exercises and 3 sets | CP2  | PASS   |
-| Create Program | Add 3 workouts with 3 exercises and 3 sets | CP3  | PASS   |
+-- Workouts this week --
 
-## Edit Program
+WITH RECURSIVE dates AS (
+SELECT date_trunc('week', CURRENT_DATE) as date -- Start of current week (Sunday)
+UNION ALL
+SELECT date + interval '1 day'
+FROM dates
+WHERE date < date_trunc('week', CURRENT_DATE) + interval '6 days' -- Until Saturday
+),
+daily_minutes AS (
+SELECT
+date_trunc('day', date) as workout_date,
+COALESCE(SUM(duration), 0) as total_minutes
+FROM completed_workouts
+WHERE
+user_id = :user_id
+AND is_completed = true
+AND date >= date_trunc('week', CURRENT_DATE)
+AND date < date_trunc('week', CURRENT_DATE) + interval '7 days'
+GROUP BY date_trunc('day', date)
+)
+SELECT
+dates.date as day,
+to_char(dates.date, 'Dy') as day_name, -- Gets day abbreviation (Sun, Mon, etc)
+COALESCE(daily_minutes.total_minutes, 0) as minutes
+FROM dates
+LEFT JOIN daily_minutes ON date_trunc('day', dates.date) = daily_minutes.workout_date
+ORDER BY dates.date;
 
-| Scenario     | Details                                                                                                | Name     | Result |
-| ------------ | ------------------------------------------------------------------------------------------------------ | -------- | ------ |
-| Edit Program | Change Program Name, workout Name and some main program properties                                     | EP1      | PASS   |
-| Edit Program | Remove a workout, and exercise                                                                         | EP2      | PASS   |
-| Edit Program | Add 1 workout (PASSED) and add 1 exercise (FAILED) and 1 set                                           | Cooper W | FAILED |
-| Edit Program | Modify workout name (PASSED), remove a workout (PASSED), add workout (PASSED) and add exercise(FAILED) | EP4      | FAILED |
+-- Pre-calculated stats (updated via trigger or background job)
+user_monthly_stats (
+user_id,
+month_date, -- e.g., '2024-04-01'
+total_workouts,
+total_minutes,
+updated_at
+)
 
-## Program Workout
-
-| Scenario        | Details                                            | Name | Result | Notes                                                                                |
-| --------------- | -------------------------------------------------- | ---- | ------ | ------------------------------------------------------------------------------------ |
-| Program Workout | Change workout Name and Add sets                   | PW1  | PASS   |                                                                                      |
-| Program Workout | Add exercises and sets                             | PW2  | FAILED | When adding an exercise, the new exercise array is duplicating the existing exercise |
-| Program Workout | Delete exercise and add sets to remaining exercise | PW3  | FAILED | Not deleting exercise                                                                |
-
-## Flex Workout
-
-| Scenario     | Details                                            | Name | Result | Notes                                                                   |
-| ------------ | -------------------------------------------------- | ---- | ------ | ----------------------------------------------------------------------- |
-| Flex Workout | Change workout Name and Add sets                   | FW1  | FAILED | Failed to complete workout: [Error: Missing or invalid required fields] |
-| Flex Workout | Add exercises and sets                             | FW2  |        |                                                                         |
-| Flex Workout | Delete exercise and add sets to remaining exercise | FW3  |        |                                                                         |
-
-## Delete Program
-
-| Scenario       | Details          | Name | Result |
-| -------------- | ---------------- | ---- | ------ |
-| Delete Program | Delete a program |      | FAILED |
+personal_records (
+user_id,
+exercise_id,
+weight,
+reps,
+workout_id,
+achieved_at,
+is_current_record
+)
