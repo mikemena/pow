@@ -1,55 +1,89 @@
--- Workouts this month --
+Production Preparation Checklist
 
-SELECT COUNT(id) as count
-FROM public.completed_workouts
-WHERE date >= date_trunc('month', CURRENT_DATE)
-AND date < date_trunc('month', CURRENT_DATE) + INTERVAL '1 month'
-AND user_id = 2;
+Backend:
 
--- Workouts this week --
+1. Environment Configuration
 
-WITH RECURSIVE dates AS (
-SELECT date_trunc('week', CURRENT_DATE) as date -- Start of current week (Sunday)
-UNION ALL
-SELECT date + interval '1 day'
-FROM dates
-WHERE date < date_trunc('week', CURRENT_DATE) + interval '6 days' -- Until Saturday
-),
-daily_minutes AS (
-SELECT
-date_trunc('day', date) as workout_date,
-COALESCE(SUM(duration), 0) as total_minutes
-FROM completed_workouts
-WHERE
-user_id = :user_id
-AND is_completed = true
-AND date >= date_trunc('week', CURRENT_DATE)
-AND date < date_trunc('week', CURRENT_DATE) + interval '7 days'
-GROUP BY date_trunc('day', date)
-)
-SELECT
-dates.date as day,
-to_char(dates.date, 'Dy') as day_name, -- Gets day abbreviation (Sun, Mon, etc)
-COALESCE(daily_minutes.total_minutes, 0) as minutes
-FROM dates
-LEFT JOIN daily_minutes ON date_trunc('day', dates.date) = daily_minutes.workout_date
-ORDER BY dates.date;
+   - Set up .env files for different environments
+   - Secure API keys and sensitive data
+   - Configure production database
 
--- Pre-calculated stats (updated via trigger or background job)
-user_monthly_stats (
-user_id,
-month_date, -- e.g., '2024-04-01'
-total_workouts,
-total_minutes,
-updated_at
-)
+2. Security
 
-personal_records (
-user_id,
-exercise_id,
-weight,
-reps,
-workout_id,
-achieved_at,
-is_current_record
-)
+   - Implement rate limiting
+   - Add request validation
+   - Set up proper CORS
+   - Use HTTPS
+   - Implement proper error handling
+
+3. Database
+
+   - Set up database backups
+   - Implement database indexing
+   - Configure connection pooling
+
+4. API
+   - Add input validation
+   - Implement proper error responses
+   - Add request logging
+   - Set up monitoring
+
+Frontend/Mobile:
+
+1. App Configuration
+
+   - Remove all hardcoded IDs and URLs
+   - Create configuration for different environments
+   - Set up proper error boundaries
+   - Implement crash reporting (e.g., Sentry)
+
+2. Performance
+
+   - Implement caching strategies
+   - Optimize images
+   - Add loading states
+   - Handle offline functionality
+
+3. Testing
+
+   - Add unit tests
+   - Add integration tests
+   - Perform UI testing
+   - Test on multiple devices
+
+4. App Store Preparation
+   - Create app icons
+   - Prepare screenshots
+   - Write app description
+   - Privacy policy
+   - Terms of service
+   - App Store screenshots
+   - TestFlight setup
+
+iOS Deployment:
+
+1. Apple Developer Account
+
+   - Sign up for Apple Developer Program ($99/year)
+   - Set up certificates and provisioning profiles
+
+2. App Store Connect
+
+   - Create new app
+   - Configure app information
+   - Add privacy policy URL
+   - Set up TestFlight
+
+3. Technical Requirements
+
+   - Update app.json/Info.plist
+   - Configure capabilities
+   - Add app icons
+   - Support iPhone and iPad layouts if needed
+   - Handle permissions properly
+
+4. Build and Submit
+   - Create production build
+   - Test with TestFlight
+   - Submit for App Store review
+   - Respond to reviewer questions
