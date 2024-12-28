@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, ActivityIndicator } from 'react-native';
 import * as Font from 'expo-font';
 import Navigation from './components/Navigation';
 import { ThemeProvider } from './src/context/themeContext';
 import { ProgramProvider } from './src/context/programContext';
 import { WorkoutProvider } from './src/context/workoutContext';
+import { AuthProvider, useAuth } from './src/context/authContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramsView';
@@ -22,11 +23,14 @@ import CurrentProgramView from './views/CurrentProgramView';
 import FlexWorkoutView from './views/FlexWorkoutView';
 import CurrentProgramDetailsView from './views/CurrentProgramDetailsView';
 import StartWorkoutView from './views/StartWorkoutView';
+import SignInView from './views/SignInView';
+import SignUpView from './views/SignUpView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
 const WorkoutStack = createStackNavigator();
 const RootStack = createStackNavigator();
+const AuthStack = createStackNavigator();
 
 const ProgramsStackScreen = () => (
   <ProgramsStack.Navigator screenOptions={{ headerShown: false }}>
@@ -82,6 +86,55 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
+const AuthNavigator = () => (
+  <AuthStack.Navigator
+    screenOptions={{ headerShown: false, gestureEnabled: false }}
+  >
+    <AuthStack.Screen
+      name='SignIn'
+      component={SignInView}
+      options={{
+        animationTypeForReplace: 'pop'
+      }}
+    />
+    <AuthStack.Screen name='SignUp' component={SignUpView} />
+  </AuthStack.Navigator>
+);
+
+// Create a loading screen component
+const LoadingScreen = () => (
+  <View style={styles.loadingContainer}>
+    <ActivityIndicator size='large' />
+  </View>
+);
+
+// Create a navigator that checks auth state
+const RootNavigator = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
+  return (
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      {!user ? (
+        // Show auth screens when no user
+        <RootStack.Screen name='Auth' component={AuthNavigator} />
+      ) : (
+        // Show main app screens when user exists
+        <>
+          <RootStack.Screen name='MainTabs' component={TabNavigator} />
+          <RootStack.Screen
+            name='ExerciseSelection'
+            component={ExerciseSelectionView}
+          />
+        </>
+      )}
+    </RootStack.Navigator>
+  );
+};
+
 const App = () => {
   const [fontsLoaded, setFontsLoaded] = useState(false);
 
@@ -103,29 +156,31 @@ const App = () => {
   }
 
   return (
-    <ProgramProvider>
-      <WorkoutProvider>
-        <ThemeProvider>
-          <View style={styles.container}>
-            <NavigationContainer>
-              <RootStack.Navigator screenOptions={{ headerShown: false }}>
-                <RootStack.Screen name='MainTabs' component={TabNavigator} />
-                <RootStack.Screen
-                  name='ExerciseSelection'
-                  component={ExerciseSelectionView}
-                />
-              </RootStack.Navigator>
-            </NavigationContainer>
-          </View>
-        </ThemeProvider>
-      </WorkoutProvider>
-    </ProgramProvider>
+    <AuthProvider>
+      <ProgramProvider>
+        <WorkoutProvider>
+          <ThemeProvider>
+            <View style={styles.container}>
+              <NavigationContainer>
+                <RootNavigator />
+              </NavigationContainer>
+            </View>
+          </ThemeProvider>
+        </WorkoutProvider>
+      </ProgramProvider>
+    </AuthProvider>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'black'
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     backgroundColor: 'black'
   }
 });
