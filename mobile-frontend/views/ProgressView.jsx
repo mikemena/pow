@@ -1,211 +1,270 @@
-import React, { useRef, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
-  Animated,
-  PanResponder,
-  Dimensions,
-  Alert
+  SafeAreaView,
+  ActivityIndicator
 } from 'react-native';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import { useTheme } from '../src/hooks/useTheme';
+import { getThemedStyles } from '../src/utils/themeUtils';
+import Header from '../components/Header';
+import { globalStyles, colors } from '../src/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 
-const CombinedWorkoutItem = () => {
-  const [workouts, setWorkouts] = useState([
-    { id: 1, title: 'Workout 1', type: 'panResponder' },
-    { id: 2, title: 'Workout 2', type: 'panResponder' },
-    { id: 3, title: 'Workout 3', type: 'panResponder' },
-    { id: 4, title: 'Workout 4', type: 'swipeable' },
-    { id: 5, title: 'Workout 5', type: 'swipeable' },
-    { id: 6, title: 'Workout 6', type: 'swipeable' }
-  ]);
+const ProgressView = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [progressData, setProgressData] = useState({
+    monthlyCount: 0,
+    weeklyWorkouts: []
+  });
+  const [error, setError] = useState(null);
 
-  const handleDelete = id => {
-    setWorkouts(workouts.filter(workout => workout.id !== id));
+  const { state: themeState } = useTheme();
+  const themedStyles = getThemedStyles(
+    themeState.theme,
+    themeState.accentColor
+  );
+
+  useEffect(() => {
+    fetchProgressData();
+  }, []);
+
+  const fetchProgressData = async () => {
+    try {
+      // TODO: Replace with actual user ID
+      const userId = 2;
+      const response = await fetch(
+        `http://localhost:9025/api/progress/summary/${userId}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch progress data');
+      }
+
+      const data = await response.json();
+      setProgressData(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.error('Error fetching progress data:', err);
+      setError(err.message);
+      setIsLoading(false);
+    }
   };
 
-  // First approach: Custom PanResponder
-  const WorkoutItemPanResponder = ({ title, onDelete }) => {
-    const [isDeleting, setIsDeleting] = useState(false);
-    const pan = useRef(new Animated.ValueXY()).current;
-    const deleteAnim = useRef(new Animated.Value(0)).current;
-    const { width } = Dimensions.get('window');
-    const SWIPE_THRESHOLD = -width * 0.3;
-
-    const panResponder = PanResponder.create({
-      onMoveShouldSetPanResponder: () => true,
-      onPanResponderMove: (_, gestureState) => {
-        if (gestureState.dx < 0) {
-          pan.x.setValue(gestureState.dx);
-        }
-      },
-      onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dx < SWIPE_THRESHOLD) {
-          Animated.parallel([
-            Animated.timing(pan.x, {
-              toValue: -width,
-              duration: 200,
-              useNativeDriver: false
-            }),
-            Animated.timing(deleteAnim, {
-              toValue: 1,
-              duration: 200,
-              useNativeDriver: false
-            })
-          ]).start(() => {
-            setIsDeleting(true);
-            setTimeout(onDelete, 500);
-          });
-        } else {
-          Animated.spring(pan.x, {
-            toValue: 0,
-            useNativeDriver: false
-          }).start();
-        }
-      }
-    });
-
-    if (isDeleting) return null;
+  const WeeklyBar = ({ minutes, day, maxHeight = 100 }) => {
+    // Calculate bar height as percentage of maximum minutes
+    const maxMinutes = Math.max(
+      ...progressData.weeklyWorkouts.map(w => w.minutes)
+    );
+    const height = Math.max((minutes / maxMinutes) * maxHeight, 20); // Minimum height of 20
 
     return (
-      <View style={styles.itemContainer}>
-        <Animated.View
+      <View style={styles.barContainer}>
+        <View style={styles.barLabelContainer}>
+          <Text style={[styles.barValue, { color: themedStyles.accentColor }]}>
+            {minutes}
+          </Text>
+        </View>
+        <View
           style={[
-            styles.deleteTextContainer,
+            styles.bar,
             {
-              opacity: pan.x.interpolate({
-                inputRange: [-width * 0.3, 0],
-                outputRange: [1, 0],
-                extrapolate: 'clamp'
-              })
+              height,
+              backgroundColor: themedStyles.accentColor
             }
           ]}
-        >
-          <Text style={styles.deleteText}>DELETE</Text>
-        </Animated.View>
-        <Animated.View
-          {...panResponder.panHandlers}
-          style={[styles.item, { transform: [{ translateX: pan.x }] }]}
-        >
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>
-            NO EXERCISES - <Text style={styles.addText}>ADD</Text>
-          </Text>
-        </Animated.View>
+        />
+        <Text style={[styles.dayLabel, { color: themedStyles.textColor }]}>
+          {day}
+        </Text>
       </View>
     );
   };
 
-  // Second approach: Using react-native-gesture-handler/Swipeable
-  const WorkoutItemSwipeable = ({ title, onDelete }) => {
-    const renderRightActions = () => {
-      return (
-        <TouchableOpacity style={styles.deleteAction} onPress={onDelete}>
-          <Ionicons name='trash-outline' size={24} color='#FFFFFF' />
-          <Text style={styles.deleteActionText}>Delete</Text>
-        </TouchableOpacity>
-      );
-    };
-
+  if (isLoading) {
     return (
-      <Swipeable renderRightActions={renderRightActions}>
-        <View style={styles.item}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.subtitle}>
-            NO EXERCISES - <Text style={styles.addText}>ADD</Text>
-          </Text>
-        </View>
-      </Swipeable>
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='Progress' />
+        <ActivityIndicator size='large' color={themedStyles.accentColor} />
+      </View>
     );
-  };
+  }
 
-  const renderWorkoutItem = workout => {
-    return workout.type === 'panResponder' ? (
-      <WorkoutItemPanResponder
-        key={workout.id}
-        title={workout.title}
-        onDelete={() => handleDelete(workout.id)}
-      />
-    ) : (
-      <WorkoutItemSwipeable
-        key={workout.id}
-        title={workout.title}
-        onDelete={() => handleDelete(workout.id)}
-      />
+  if (error) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { backgroundColor: themedStyles.primaryBackgroundColor }
+        ]}
+      >
+        <Header pageName='Progress' />
+        <Text style={[styles.errorText, { color: themedStyles.textColor }]}>
+          Error loading progress data
+        </Text>
+      </View>
     );
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionTitle}>PanResponder Approach:</Text>
-      {workouts.filter(w => w.type === 'panResponder').map(renderWorkoutItem)}
+    <SafeAreaView
+      style={[
+        globalStyles.container,
+        { backgroundColor: themedStyles.primaryBackgroundColor }
+      ]}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <Header pageName='Progress' />
 
-      <Text style={styles.sectionTitle}>Swipeable Approach:</Text>
-      {workouts.filter(w => w.type === 'swipeable').map(renderWorkoutItem)}
-    </View>
+      {/* Monthly Workouts Card */}
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <View style={styles.cardHeader}>
+          <Ionicons
+            name='calendar-outline'
+            size={24}
+            color={themedStyles.textColor}
+          />
+          <Text style={[styles.cardTitle, { color: themedStyles.textColor }]}>
+            WORKOUTS THIS MONTH
+          </Text>
+          <Text
+            style={[styles.monthlyCount, { color: themedStyles.accentColor }]}
+          >
+            {progressData.monthlyCount}
+          </Text>
+        </View>
+      </View>
+
+      {/* Weekly Minutes Card */}
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <View style={styles.cardHeader}>
+          <Ionicons
+            name='time-outline'
+            size={24}
+            color={themedStyles.textColor}
+          />
+          <Text style={[styles.cardTitle, { color: themedStyles.textColor }]}>
+            WORKOUTS THIS WEEK (MINUTES)
+          </Text>
+        </View>
+        <View style={styles.chartContainer}>
+          {progressData.weeklyWorkouts.map((workout, index) => (
+            <WeeklyBar
+              key={workout.day}
+              minutes={workout.minutes}
+              day={workout.day_name}
+            />
+          ))}
+        </View>
+      </View>
+
+      {/* Record Breakers Card */}
+      <View
+        style={[
+          styles.card,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <View style={styles.cardHeader}>
+          <Ionicons
+            name='barbell-outline'
+            size={24}
+            color={themedStyles.textColor}
+          />
+          <Text style={[styles.cardTitle, { color: themedStyles.textColor }]}>
+            RECORD BREAKERS THIS MONTH
+          </Text>
+        </View>
+        <Text style={[styles.placeholder, { color: themedStyles.textColor }]}>
+          Coming soon...
+        </Text>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#1E1E1E'
+    flex: 1
   },
-  itemContainer: {
-    position: 'relative',
-    marginBottom: 1
+  contentContainer: {
+    paddingBottom: 20
   },
-  item: {
-    padding: 20,
-    backgroundColor: '#2C2C2C',
-    zIndex: 1
+  card: {
+    borderRadius: 10,
+    marginHorizontal: 10,
+    marginTop: 10,
+    padding: 15
   },
-  title: {
-    color: '#A2E368',
-    fontSize: 18,
-    fontWeight: 'bold'
-  },
-  subtitle: {
-    color: '#FFFFFF',
-    fontSize: 14
-  },
-  addText: {
-    color: '#A2E368'
-  },
-  deleteTextContainer: {
-    position: 'absolute',
-    right: 0,
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    paddingRight: 20
-  },
-  deleteText: {
-    color: '#E74C3C',
-    fontWeight: 'bold',
-    fontSize: 16
-  },
-  deleteAction: {
-    backgroundColor: '#E74C3C',
-    justifyContent: 'center',
+  cardHeader: {
+    flexDirection: 'row',
     alignItems: 'center',
-    width: 100,
-    height: '100%'
+    marginBottom: 10
   },
-  deleteActionText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    marginTop: 5
-  },
-  sectionTitle: {
-    color: '#FFFFFF',
+  cardTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
-    padding: 10,
-    backgroundColor: '#1E1E1E'
+    fontFamily: 'Lexend',
+    marginLeft: 10,
+    flex: 1
+  },
+  monthlyCount: {
+    fontSize: 24,
+    fontFamily: 'Lexend'
+  },
+  chartContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-end',
+    height: 150,
+    marginTop: 10
+  },
+  barContainer: {
+    alignItems: 'center',
+    flex: 1
+  },
+  barLabelContainer: {
+    marginBottom: 5
+  },
+  barValue: {
+    fontSize: 12,
+    fontFamily: 'Lexend'
+  },
+  bar: {
+    width: 30,
+    borderRadius: 15
+  },
+  dayLabel: {
+    marginTop: 5,
+    fontSize: 12,
+    fontFamily: 'Lexend'
+  },
+  errorText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontFamily: 'Lexend'
+  },
+  placeholder: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontFamily: 'Lexend',
+    fontStyle: 'italic'
   }
 });
 
-export default CombinedWorkoutItem;
+export default ProgressView;
