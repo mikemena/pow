@@ -67,4 +67,58 @@ router.get('/progress/summary/:user_id', async (req, res) => {
   }
 });
 
+// get records - Epley formula to estimate one-rep max (1RM)
+
+router.get('/progress/records/:user_id', async (req, res) => {
+  const { user_id } = req.params;
+  const userId = parseInt(user_id, 10);
+
+  try {
+    const result = await pool.query(
+      `WITH max_lifts AS (
+          SELECT
+            e.catalog_exercise_id,
+            ec.name,
+            w.date,
+            s.weight,
+            s.reps,
+            -- Epley formula: weight * (1 + reps/30)
+            s.weight * (1 + s.reps/30.0) as estimated_1rm,
+            ROW_NUMBER() OVER (
+              PARTITION BY e.catalog_exercise_id
+              ORDER BY (s.weight * (1 + s.reps/30.0)) DESC
+            ) as rank
+          FROM completed_exercises e
+          JOIN completed_workouts w ON w.id = e.workout_id
+          JOIN completed_sets s ON e.id = s.exercise_id
+          JOIN exercise_catalog ec ON e.catalog_exercise_id = ec.id
+          WHERE
+            w.user_id = $1
+            AND w.date >= date_trunc('month', CURRENT_DATE)
+        )
+        SELECT
+          catalog_exercise_id,
+          name,
+          date,
+          weight,
+          reps,
+          estimated_1rm
+        FROM max_lifts
+        WHERE rank = 1
+        ORDER BY estimated_1rm DESC;`,
+      [userId]
+    );
+
+    res.json({
+      records: result.rows
+    });
+  } catch (err) {
+    console.error('Progress fetch error:', err);
+    res.status(500).json({
+      message: 'Server error',
+      error: err.message
+    });
+  }
+});
+
 module.exports = router;

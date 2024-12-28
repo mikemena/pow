@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
+  ScrollView,
   ActivityIndicator
 } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
@@ -18,6 +19,7 @@ const ProgressView = () => {
     monthlyCount: 0,
     weeklyWorkouts: []
   });
+  const [recordData, setRecordData] = useState([]);
   const [error, setError] = useState(null);
 
   const { state: themeState } = useTheme();
@@ -32,18 +34,21 @@ const ProgressView = () => {
 
   const fetchProgressData = async () => {
     try {
-      // TODO: Replace with actual user ID
       const userId = 2;
-      const response = await fetch(
-        `http://localhost:9025/api/progress/summary/${userId}`
-      );
+      const [summaryResponse, recordsResponse] = await Promise.all([
+        fetch(`http://localhost:9025/api/progress/summary/${userId}`),
+        fetch(`http://localhost:9025/api/progress/records/${userId}`)
+      ]);
 
-      if (!response.ok) {
+      if (!summaryResponse.ok || !recordsResponse.ok) {
         throw new Error('Failed to fetch progress data');
       }
 
-      const data = await response.json();
-      setProgressData(data);
+      const summaryData = await summaryResponse.json();
+      const recordsData = await recordsResponse.json();
+
+      setProgressData(summaryData);
+      setRecordData(recordsData.records);
       setIsLoading(false);
     } catch (err) {
       console.error('Error fetching progress data:', err);
@@ -175,7 +180,7 @@ const ProgressView = () => {
       </View>
 
       {/* Record Breakers Card */}
-      <View
+      <ScrollView
         style={[
           styles.card,
           { backgroundColor: themedStyles.secondaryBackgroundColor }
@@ -191,10 +196,41 @@ const ProgressView = () => {
             RECORD BREAKERS THIS MONTH
           </Text>
         </View>
-        <Text style={[styles.placeholder, { color: themedStyles.textColor }]}>
-          Coming soon...
-        </Text>
-      </View>
+        {recordData.length > 0 ? (
+          <View style={styles.recordsContainer}>
+            {recordData.map((record, index) => (
+              <View key={index} style={styles.recordItem}>
+                <Text
+                  style={[
+                    styles.exerciseName,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {record.name}
+                </Text>
+                <Text
+                  style={[
+                    styles.recordDetails,
+                    { color: themedStyles.textColor }
+                  ]}
+                >
+                  {new Date(record.date).toLocaleDateString('en-US', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                  {'  '}
+                  {record.weight} LBS | {record.reps} REPS
+                </Text>
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Text style={[styles.placeholder, { color: themedStyles.textColor }]}>
+            No records this month
+          </Text>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -264,6 +300,22 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontFamily: 'Lexend',
     fontStyle: 'italic'
+  },
+  recordsContainer: {
+    marginTop: 5
+  },
+  recordItem: {
+    marginBottom: 15
+  },
+  exerciseName: {
+    fontSize: 16,
+    fontFamily: 'Lexend',
+    marginBottom: 5
+  },
+  recordDetails: {
+    fontSize: 14,
+    fontFamily: 'Lexend',
+    opacity: 0.8
   }
 });
 
