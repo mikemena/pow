@@ -41,7 +41,7 @@ const SignUpView = ({ navigation }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ auth_provider: 'email', email, password })
       });
 
       const data = await response.json();
@@ -84,7 +84,7 @@ const SignUpView = ({ navigation }) => {
           },
           body: JSON.stringify({
             email: authData.email,
-            authProvider: provider,
+            auth_provider: provider,
             authProviderId: authData.id,
             name: authData.name
           })
