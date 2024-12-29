@@ -89,15 +89,16 @@ const TabNavigator = () => (
 const AuthNavigator = () => (
   <AuthStack.Navigator
     screenOptions={{ headerShown: false, gestureEnabled: false }}
+    initialRouteName='SignUp'
   >
     <AuthStack.Screen
-      name='SignIn'
-      component={SignInView}
+      name='SignUp'
+      component={SignUpView}
       options={{
         animationTypeForReplace: 'pop'
       }}
     />
-    <AuthStack.Screen name='SignUp' component={SignUpView} />
+    <AuthStack.Screen name='SignIn' component={SignInView} />
   </AuthStack.Navigator>
 );
 

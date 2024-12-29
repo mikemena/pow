@@ -1,61 +1,184 @@
 const express = require('express');
 const router = express.Router();
+const { pool } = require('../config/db');
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const jwt = require('jsonwebtoken');
 const db = require('../config/db');
+require('dotenv').config();
 
 // Endpoint to get all users
 
-router.get('/users', async (req, res) => {
-  try {
-    const { rows } = await db.query('SELECT * FROM users');
-    res.json(rows);
-  } catch (error) {
-    res.status(500).send(error.message);
-  }
-});
+// router.get('/users', async (req, res) => {
+//   try {
+//     const { rows } = await db.query('SELECT * FROM users');
+//     res.json(rows);
+//   } catch (error) {
+//     res.status(500).send(error.message);
+//   }
+// });
 
 // Endpoint to get a specific user by ID
 
-router.get('/users/:id', async (req, res) => {
-  const { id } = req.params; // Extract the ID from the route parameters
+// router.get('/users/:id', async (req, res) => {
+//   const { id } = req.params; // Extract the ID from the route parameters
 
+//   try {
+//     // Query to fetch the user with the specified ID
+//     const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [
+//       parseInt(id)
+//     ]);
+
+//     if (rows.length === 0) {
+//       // If no user is found with the given ID, return a 404 Not Found response
+//       return res.status(404).json({ message: 'User not found' });
+//     }
+
+//     // If a user is found, return it in the response
+//     res.json(rows[0]);
+//   } catch (error) {
+//     // Log the error and return a 500 Internal Server Error response if an error occurs
+//     console.error('Error fetching user:', error);
+//     res.status(500).json({ message: 'Error fetching user' });
+//   }
+// });
+
+// Endpoint to sign up a user
+
+router.post('/auth/signup', async (req, res) => {
   try {
-    // Query to fetch the user with the specified ID
-    const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [
-      parseInt(id)
-    ]);
+    if (!process.env.JWT_SECRET) {
+      throw new Error('JWT_SECRET is not configured');
+    }
+    const { auth_provider, email, password } = req.body;
 
-    if (rows.length === 0) {
-      // If no user is found with the given ID, return a 404 Not Found response
-      return res.status(404).json({ message: 'User not found' });
+    // Check if user already exists
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(400).json({ message: 'Email already registered' });
     }
 
-    // If a user is found, return it in the response
-    res.json(rows[0]);
+    // Hash password
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(password, saltRounds);
+
+    // Insert new user
+    const result = await pool.query(
+      'INSERT INTO users (auth_provider, email, password_hash, signup_date) VALUES ($1, $2, $3, CURRENT_TIMESTAMP) RETURNING id, auth_provider,email, signup_date',
+      [auth_provider, email, passwordHash]
+    );
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: result.rows[0].id },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    res.json({
+      token,
+      user: {
+        id: result.rows[0].id,
+        email: result.rows[0].email
+      }
+    });
   } catch (error) {
-    // Log the error and return a 500 Internal Server Error response if an error occurs
-    console.error('Error fetching user:', error);
-    res.status(500).json({ message: 'Error fetching user' });
+    console.error('Signup error:', error);
+    res.status(500).json({ message: 'Server error during signup' });
   }
 });
 
-// Endpoint to create a user
+// Endpoint to sign up with social authentication
 
-router.post('/users', async (req, res) => {
+router.post('/auth/social', async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { email, authProvider, authProviderId, name } = req.body;
 
-    // Hash the password
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-
-    const { rows } = await db.query(
-      'INSERT INTO users (username, email, password_hash, signup_date) VALUES ($1, $2, $3, $4) RETURNING *',
-      [username, email, passwordHash, new Date()]
+    // Check if user exists
+    const existingUser = await pool.query(
+      'SELECT * FROM users WHERE email = $1 OR (auth_provider = $2 AND auth_provider_id = $3)',
+      [email, authProvider, authProviderId]
     );
-    res.status(201).json(rows[0]);
+
+    let userId;
+
+    if (existingUser.rows.length > 0) {
+      // User exists - just return token
+      userId = existingUser.rows[0].id;
+    } else {
+      // Create new user
+      const result = await pool.query(
+        `INSERT INTO users (
+          email,
+          auth_provider,
+          auth_provider_id,
+          username,
+          signup_date
+        ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+        RETURNING id`,
+        [email, authProvider, authProviderId, name]
+      );
+      userId = result.rows[0].id;
+    }
+
+    // Generate token
+    const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
+      expiresIn: '7d'
+    });
+
+    res.json({ token, user: { id: userId, email } });
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error('Social auth error:', error);
+    res.status(500).json({ message: 'Server error during social auth' });
+  }
+});
+
+// Endpoint to sign in
+
+router.post('/auth/signin', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Find user
+    const userResult = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    const user = userResult.rows[0];
+
+    // Convert bytea to string before comparison
+    const passwordHashString = user.password_hash.toString('utf8');
+
+    // Verify password
+    const isValidPassword = await bcrypt.compare(password, passwordHashString);
+
+    if (!isValidPassword) {
+      return res.status(401).json({ message: 'Invalid credentials' });
+    }
+
+    // Generate token
+    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: '7d'
+    });
+
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email
+      }
+    });
+  } catch (error) {
+    console.error('Signin error:', error);
+    res.status(500).json({ message: 'Server error during signin' });
   }
 });
 

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
+import { useAuth } from '../src/context/authContext';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
@@ -23,8 +24,9 @@ const ProfileView = ({ route }) => {
     onSave = data => console.log('Saving profile data:', data)
   } = route?.params || {};
 
-  const [userName, setUserName] = useState(initialUserName);
-  const [email, setEmail] = useState(initialEmail);
+  const { user, signOut } = useAuth();
+  const [userName, setUserName] = useState(user?.username || '');
+  const [email, setEmail] = useState(user?.email || '');
   const [isEditing, setIsEditing] = useState(false);
   const [isProfileExpanded, setIsProfileExpanded] = useState(false);
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
@@ -69,6 +71,18 @@ const ProfileView = ({ route }) => {
     } else {
       setIsSettingsExpanded(!isSettingsExpanded);
       setIsProfileExpanded(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'Auth' }]
+      });
+    } catch (error) {
+      console.error('Error signing out:', error);
     }
   };
 
@@ -334,6 +348,28 @@ const ProfileView = ({ route }) => {
             </TouchableOpacity>
           </View>
         )}
+      </View>
+      <View
+        style={[
+          globalStyles.section,
+          { backgroundColor: themedStyles.secondaryBackgroundColor }
+        ]}
+      >
+        <TouchableOpacity
+          style={[
+            styles.signOutButton,
+            { backgroundColor: themedStyles.primaryBackgroundColor }
+          ]}
+          onPress={handleSignOut}
+        >
+          <Ionicons
+            name='log-out-outline'
+            style={[globalStyles.icon, { color: themedStyles.textColor }]}
+          />
+          <Text style={[styles.signOutText, { color: themedStyles.textColor }]}>
+            Sign Out
+          </Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

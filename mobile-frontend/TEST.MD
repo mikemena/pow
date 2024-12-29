@@ -1,5 +1,15 @@
 Production Preparation Checklist
 
+// TODO //
+
+- Add social authentication implementation
+- Add input validation patterns to email and password inputs
+- Add animation effects
+- Add eye on password input to see the actual characters typed (not masked)
+- Create a forgot password screen
+- Get detailed App Store submission guidelines
+- Add offline support implementation details
+
 Backend:
 
 1. Environment Configuration
@@ -14,7 +24,9 @@ Backend:
    - Add request validation
    - Set up proper CORS
    - Use HTTPS
+   - Store JWT_SECRET securely
    - Implement proper error handling
+   - Use secure session management
 
 3. Database
 

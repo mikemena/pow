@@ -59,6 +59,46 @@ const SignUpView = ({ navigation }) => {
     }
   };
 
+  const handleSocialSignUp = async provider => {
+    try {
+      let authData;
+
+      if (provider === 'google') {
+        // Use Google Sign-In SDK
+        authData = await Google.logInAsync({
+          // your config
+        });
+      } else if (provider === 'apple') {
+        // Use Apple Sign-In SDK
+        authData = await AppleAuthentication.signInAsync({
+          // your config
+        });
+      }
+
+      if (authData) {
+        // Send to your backend
+        const response = await fetch('http://localhost:9025/api/auth/social', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email: authData.email,
+            authProvider: provider,
+            authProviderId: authData.id,
+            name: authData.name
+          })
+        });
+
+        const data = await response.json();
+        // Handle the response similar to email signup
+        signIn(data.token, data.user);
+      }
+    } catch (error) {
+      console.error('Social auth error:', error);
+    }
+  };
+
   return (
     <SafeAreaView
       style={[
@@ -85,7 +125,7 @@ const SignUpView = ({ navigation }) => {
             styles.socialButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
-          onPress={() => {}}
+          onPress={handleSocialSignUp}
         >
           <Ionicons
             name='logo-google'
@@ -107,7 +147,7 @@ const SignUpView = ({ navigation }) => {
             styles.socialButton,
             { backgroundColor: themedStyles.secondaryBackgroundColor }
           ]}
-          onPress={() => {}}
+          onPress={handleSocialSignUp}
         >
           <Ionicons
             name='logo-apple'

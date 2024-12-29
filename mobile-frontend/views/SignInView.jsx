@@ -44,7 +44,19 @@ const SignInView = ({ navigation }) => {
         body: JSON.stringify({ email, password })
       });
 
-      const data = await response.json();
+      // Add these debug logs
+      console.log('Response status:', response.status);
+      const textResponse = await response.text(); // Get response as text first
+      console.log('Raw response:', textResponse);
+
+      let data;
+      try {
+        data = JSON.parse(textResponse); // Try to parse it as JSON
+      } catch (parseError) {
+        console.error('Parse error:', parseError);
+        setError('Server error - invalid response format');
+        return;
+      }
 
       if (!response.ok) {
         throw new Error(data.message || 'Sign in failed');
@@ -52,6 +64,7 @@ const SignInView = ({ navigation }) => {
 
       await signIn(data.token, data.user);
     } catch (err) {
+      console.error('Sign in error:', err);
       setError(err.message || 'Failed to sign in');
     } finally {
       setLoading(false);
