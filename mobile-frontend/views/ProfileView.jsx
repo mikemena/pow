@@ -35,6 +35,8 @@ const ProfileView = ({ route }) => {
   const { state, dispatch } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
+  console.log('user', user);
+
   const accentColors = [
     '#F99C57',
     '#A6E221',
@@ -43,6 +45,42 @@ const ProfileView = ({ route }) => {
     '#3F75DF',
     '#FC63D2'
   ];
+
+  const handleSavexx = async () => {
+    if (!email || !password) {
+      setError('Please fill in all fields');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+
+    try {
+      const response = await fetch(
+        `http://localhost:9025/api/settings/${user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ auth_provider: 'email', email, password })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Sign up failed');
+      }
+
+      // Auto sign-in after successful registration
+      await signIn(data.token, data.user);
+    } catch (err) {
+      setError(err.message || 'Failed to sign up');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSave = () => {
     onSave({ userName, email });
