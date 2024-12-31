@@ -23,7 +23,7 @@ router.get('/settings/:userId', async (req, res) => {
       // Insert default settings if none exist
       const defaultSettings = await db.query(
         `INSERT INTO user_settings (user_id, theme_mode, accent_color)
-                 VALUES ($1, 'light', '#000000')
+                 VALUES ($1, 'dark', '#D93B56')
                  RETURNING theme_mode, accent_color`,
         [userId]
       );

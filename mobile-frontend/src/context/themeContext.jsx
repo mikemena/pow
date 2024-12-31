@@ -1,30 +1,39 @@
 import React, { createContext, useReducer, useEffect } from 'react';
+import { useAuth } from '../context/authContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { themeReducer, initialState } from '../reducers/themeReducer';
 
 export const ThemeContext = createContext(undefined);
 
 export const ThemeProvider = ({ children }) => {
+  const { user } = useAuth();
   const [state, dispatch] = useReducer(themeReducer, initialState);
 
   useEffect(() => {
-    const loadTheme = async () => {
-      try {
-        const savedTheme = await AsyncStorage.getItem('theme');
-        const savedAccentColor = await AsyncStorage.getItem('accentColor');
-        if (savedTheme)
+    const fetchUserSettings = async () => {
+      if (user?.id) {
+        try {
+          const response = await fetch(
+            `http://localhost:9025/api/settings/${user.id}`
+          );
+          const settings = await response.json();
+
           dispatch({
             type: 'SET_THEME',
-            payload: savedTheme
+            payload: settings.theme_mode
           });
-        if (savedAccentColor)
-          dispatch({ type: 'SET_ACCENT_COLOR', payload: savedAccentColor });
-      } catch (e) {
-        console.error('Failed to load theme settings', e);
+          dispatch({
+            type: 'SET_ACCENT_COLOR',
+            payload: settings.accent_color
+          });
+        } catch (error) {
+          console.error('Error fetching user settings:', error);
+        }
       }
     };
-    loadTheme();
-  }, []);
+
+    fetchUserSettings();
+  }, [user]);
 
   useEffect(() => {
     const saveTheme = async () => {
