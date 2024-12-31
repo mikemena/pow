@@ -36,22 +36,40 @@ const SignUpView = ({ navigation }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:9025/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ auth_provider: 'email', email, password })
-      });
+      const signupResponse = await fetch(
+        'http://localhost:9025/api/auth/signup',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ auth_provider: 'email', email, password })
+        }
+      );
 
-      const data = await response.json();
+      const userData = await signupResponse.json();
 
-      if (!response.ok) {
-        throw new Error(data.message || 'Sign up failed');
+      if (!signupResponse.ok) {
+        throw new Error(userData.message || 'Sign up failed');
+      }
+
+      const settingsResponse = await fetch(
+        `http://localhost:9025/api/settings/${userData.user.id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ theme_mode: 'dark', accent_color: '#D93B56' })
+        }
+      );
+
+      if (!settingsResponse.ok) {
+        console.log('Failed to create default settings');
       }
 
       // Auto sign-in after successful registration
-      await signIn(data.token, data.user);
+      await signIn(userData.token, userData.user);
     } catch (err) {
       setError(err.message || 'Failed to sign up');
     } finally {

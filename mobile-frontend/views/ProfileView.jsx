@@ -32,59 +32,89 @@ const ProfileView = ({ route }) => {
   const [isSettingsExpanded, setIsSettingsExpanded] = useState(false);
   const [darkMode, setDarkMode] = useState(initialDarkMode);
   const [accentColor, setAccentColor] = useState(initialAccentColor);
+  const [userDataChanged, setUserDataChanged] = useState(false);
+  const [settingsChanged, setSettingsChanged] = useState(false);
   const { state, dispatch } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
   console.log('user', user);
 
   const accentColors = [
-    '#F99C57',
-    '#A6E221',
-    '#159651',
-    '#D93B56',
-    '#3F75DF',
-    '#FC63D2'
+    '#F99C57', //orange
+    '#A6E221', //volt green
+    '#159651', // green
+    '#D93B56', //red
+    '#3F75DF', //blue
+    '#FC63D2' //pink
   ];
 
-  const handleSavexx = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
-    try {
-      const response = await fetch(
-        `http://localhost:9025/api/settings/${user.id}`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ auth_provider: 'email', email, password })
-        }
-      );
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Sign up failed');
-      }
-
-      // Auto sign-in after successful registration
-      await signIn(data.token, data.user);
-    } catch (err) {
-      setError(err.message || 'Failed to sign up');
-    } finally {
-      setLoading(false);
-    }
+  // Update these when respective fields change
+  const handleUserNameChange = value => {
+    setUserName(value);
+    setUserDataChanged(true);
   };
 
-  const handleSave = () => {
-    onSave({ userName, email });
-    setIsEditing(false);
+  const handleEmailChange = value => {
+    setEmail(value);
+    setUserDataChanged(true);
+  };
+
+  const handleSave = async () => {
+    try {
+      const updates = [];
+
+      if (userDataChanged) {
+        console.log(`Updating user ${user.id}:`, { username: userName, email });
+        updates.push(
+          fetch(`http://localhost:9025/api/users/${user.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify({ username: userName, email })
+          })
+        );
+      }
+
+      if (settingsChanged) {
+        console.log(`Updating settings ${user.id}:`, {
+          theme_mode: darkMode ? 'dark' : 'light',
+          accent_color: accentColor
+        });
+        updates.push(
+          fetch(`http://localhost:9025/api/settings/${user.id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json'
+            },
+            body: JSON.stringify({
+              theme_mode: darkMode ? 'dark' : 'light',
+              accent_color: accentColor
+            })
+          })
+        );
+      }
+
+      const responses = await Promise.all(updates);
+
+      // Check if all responses were successful
+      for (const response of responses) {
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('Server response:', errorText);
+          throw new Error(`Server error: ${response.status}`);
+        }
+      }
+
+      setUserDataChanged(false);
+      setSettingsChanged(false);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('Error saving changes:', error);
+      // Add error handling UI feedback here
+    }
   };
 
   const handleCancel = () => {
@@ -96,10 +126,14 @@ const ProfileView = ({ route }) => {
   const handleDarkModeToggle = value => {
     setDarkMode(value);
     dispatch({ type: 'SET_THEME', payload: value ? 'dark' : 'light' });
+    setSettingsChanged(true);
   };
 
   const handleAccentColorChange = newColor => {
+    console.log('new color in handleAccentColorChange', newColor);
+    setAccentColor(newColor);
     dispatch({ type: 'SET_ACCENT_COLOR', payload: newColor });
+    setSettingsChanged(true);
   };
 
   const handleSectionToggle = section => {
@@ -196,7 +230,7 @@ const ProfileView = ({ route }) => {
                   { backgroundColor: themedStyles.primaryBackgroundColor }
                 ]}
                 value={userName}
-                onChangeText={setUserName}
+                onChangeText={handleUserNameChange}
                 editable={isEditing}
               />
               <Text
@@ -210,7 +244,7 @@ const ProfileView = ({ route }) => {
                   { backgroundColor: themedStyles.primaryBackgroundColor }
                 ]}
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleEmailChange}
                 editable={isEditing}
                 keyboardType='email-address'
               />

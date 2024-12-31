@@ -36,6 +36,34 @@ router.get('/settings/:userId', async (req, res) => {
   }
 });
 
+// Endpoint to create initial settings
+
+router.post('/settings/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const { theme_mode = 'dark', accent_color = '#D93B56' } = req.body;
+
+    const queryString = `
+        INSERT INTO user_settings (user_id, theme_mode, accent_color, updated_at)
+        VALUES ($1, $2, $3, CURRENT_TIMESTAMP)
+        RETURNING *`;
+
+    const { rows } = await db.query(queryString, [
+      userId,
+      theme_mode,
+      accent_color
+    ]);
+    res.status(201).json(rows[0]);
+  } catch (error) {
+    if (error.code === '23505') {
+      // unique violation
+      res.status(409).json({ error: 'Settings already exist for this user' });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+});
+
 // Endpoint to change settings
 
 router.put('/settings/:userId', async (req, res) => {
