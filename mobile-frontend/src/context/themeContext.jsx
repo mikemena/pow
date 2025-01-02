@@ -1,20 +1,20 @@
 import React, { createContext, useReducer, useEffect } from 'react';
-import { useAuth } from '../context/authContext';
+import { useUser } from '../context/userContext.js';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { themeReducer, initialState } from '../reducers/themeReducer';
 
 export const ThemeContext = createContext(undefined);
 
 export const ThemeProvider = ({ children }) => {
-  const { user } = useAuth();
+  const { userId } = useUser();
   const [state, dispatch] = useReducer(themeReducer, initialState);
 
   useEffect(() => {
     const fetchUserSettings = async () => {
-      if (user?.id) {
+      if (userId) {
         try {
           const response = await fetch(
-            `http://localhost:9025/api/settings/${user.id}`
+            `http://localhost:9025/api/settings/${userId}`
           );
           const settings = await response.json();
 
@@ -33,7 +33,7 @@ export const ThemeProvider = ({ children }) => {
     };
 
     fetchUserSettings();
-  }, [user]);
+  }, [userId]);
 
   useEffect(() => {
     const saveTheme = async () => {
