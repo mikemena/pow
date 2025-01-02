@@ -1,14 +1,20 @@
-import React, { createContext, useReducer, useCallback } from 'react';
+import React, {
+  createContext,
+  useReducer,
+  useCallback,
+  useEffect
+} from 'react';
 import * as Crypto from 'expo-crypto';
 import { actionTypes } from '../actions/actionTypes';
 import { workoutReducer } from '../reducers/workoutReducer';
-import { apiService } from '../services/api';
+import { getActiveProgram } from '../services/api';
 import { API_URL_MOBILE } from '@env';
+import { useUser } from '../context/userContext';
 
 // Initial state
 const initialState = {
   activeProgram: null,
-  userId: 2,
+  userId: null,
   activeWorkout: null
 };
 
@@ -17,7 +23,18 @@ export const WorkoutContext = createContext();
 
 // Create the provider component
 export const WorkoutProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(workoutReducer, initialState);
+  const { userId } = useUser();
+  console.log('Current user in WorkoutContext', userId);
+  const [state, dispatch] = useReducer(workoutReducer, {
+    ...initialState,
+    userId: userId
+  });
+
+  useEffect(() => {
+    if (userId) {
+      dispatch({ type: actionTypes.SET_USER_ID, payload: userId });
+    }
+  }, [userId]);
 
   const updateWorkoutDuration = useCallback(minutes => {
     dispatch({
@@ -30,22 +47,37 @@ export const WorkoutProvider = ({ children }) => {
 
   const fetchActiveProgram = useCallback(async () => {
     try {
-      const data = await apiService.getActiveProgram();
+      console.log('Fetching active program with userId:', userId);
+      const data = await getActiveProgram(userId);
+      console.log('Received data:', data);
 
-      if (data.activeProgram) {
+      if (!data?.activeProgram) {
+        console.log('No active program found');
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM,
-          payload: data.activeProgram
+          payload: null
         });
-
-        return true; // Program exists
+        return false;
       }
-      return false; // No active program
+
+      console.log('Setting active program:', data.activeProgram);
+      dispatch({
+        type: actionTypes.SET_ACTIVE_PROGRAM,
+        payload: data.activeProgram
+      });
+      return true;
     } catch (error) {
-      console.error('Error fetching active program details:', error);
+      console.error('Detailed error:', {
+        error: error.message,
+        stack: error.stack
+      });
+      dispatch({
+        type: actionTypes.SET_ACTIVE_PROGRAM,
+        payload: null
+      });
       return false;
     }
-  }, []);
+  }, [userId]);
 
   const setActiveProgram = useCallback(activeProgram => {
     dispatch({ type: actionTypes.SET_ACTIVE_PROGRAM, payload: activeProgram });
@@ -202,7 +234,7 @@ export const WorkoutProvider = ({ children }) => {
         }
 
         const workoutData = {
-          userId: 2,
+          userId: userId,
           name: state.activeWorkout.name.trim(),
           duration: validDuration,
           exercises: validExercises

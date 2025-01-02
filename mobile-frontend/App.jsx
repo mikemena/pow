@@ -9,6 +9,7 @@ import { ThemeProvider } from './src/context/themeContext';
 import { ProgramProvider } from './src/context/programContext';
 import { WorkoutProvider } from './src/context/workoutContext';
 import { AuthProvider, useAuth } from './src/context/authContext';
+import { UserProvider } from './src/context/userContext';
 
 // Import your view components
 import ProgramsView from './views/ProgramsView';
@@ -158,17 +159,19 @@ const App = () => {
 
   return (
     <AuthProvider>
-      <ProgramProvider>
-        <WorkoutProvider>
-          <ThemeProvider>
-            <View style={styles.container}>
-              <NavigationContainer>
-                <RootNavigator />
-              </NavigationContainer>
-            </View>
-          </ThemeProvider>
-        </WorkoutProvider>
-      </ProgramProvider>
+      <UserProvider>
+        <ProgramProvider>
+          <WorkoutProvider>
+            <ThemeProvider>
+              <View style={styles.container}>
+                <NavigationContainer>
+                  <RootNavigator />
+                </NavigationContainer>
+              </View>
+            </ThemeProvider>
+          </WorkoutProvider>
+        </ProgramProvider>
+      </UserProvider>
     </AuthProvider>
   );
 };

@@ -6,7 +6,7 @@ const workoutReducer = (state, action) => {
     case actionTypes.SET_ACTIVE_PROGRAM:
       return {
         ...state,
-        activeProgram: action.payload
+        activeProgram: action.payload || null
       };
 
     case actionTypes.INITIALIZE_FLEX_WORKOUT:

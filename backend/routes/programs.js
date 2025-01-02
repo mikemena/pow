@@ -6,6 +6,10 @@ const { pool } = require('../config/db');
 router.get('/users/:user_id/programs', async (req, res) => {
   const { user_id } = req.params;
 
+  if (!user_id || isNaN(parseInt(user_id))) {
+    return res.status(400).json({ error: 'Invalid user ID' });
+  }
+
   try {
     // Fetch programs for the user
     const programsResult = await pool.query(

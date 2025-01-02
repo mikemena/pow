@@ -12,6 +12,7 @@ import {
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useTheme } from '../src/hooks/useTheme';
 import { useAuth } from '../src/context/authContext';
+
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
@@ -20,8 +21,7 @@ const ProfileView = ({ route }) => {
     initialUserName = '',
     initialEmail = '',
     initialDarkMode = false,
-    initialAccentColor = '',
-    onSave = data => console.log('Saving profile data:', data)
+    initialAccentColor = ''
   } = route?.params || {};
 
   const { user, signOut } = useAuth();

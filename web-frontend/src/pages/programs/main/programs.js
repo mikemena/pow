@@ -15,6 +15,7 @@ import { useTheme } from '../../../contexts/themeContext';
 import { DURATION_TYPES, GOAL_TYPES } from '../../../utils/constants';
 import { toProperCase } from '../../../utils/stringUtils';
 import standardizePrograms from '../../../utils/standardizePrograms.js';
+
 import './programs.css';
 
 const ProgramPage = () => {

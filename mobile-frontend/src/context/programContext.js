@@ -3,12 +3,13 @@ import * as Crypto from 'expo-crypto';
 import { programService } from '../services/programService';
 import { actionTypes } from '../actions/actionTypes';
 import { programReducer } from '../reducers/programReducer.js';
-import { apiService } from '../services/api';
 import { currentProgram } from '../reducers/programInitialState.js';
+import { useUser } from '../context/userContext.js';
 
 export const ProgramContext = createContext();
 
 export const ProgramProvider = ({ children }) => {
+  const { userId } = useUser();
   const [state, dispatch] = useReducer(programReducer, {
     ...currentProgram,
     mode: 'view'
@@ -35,7 +36,7 @@ export const ProgramProvider = ({ children }) => {
     const newWorkoutId = Crypto.randomUUID();
 
     const newProgram = {
-      userId: 2,
+      userId: userId,
       id: newProgramId,
       name: 'Program 1',
       programDuration: 0,

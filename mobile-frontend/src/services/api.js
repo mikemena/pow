@@ -1,309 +1,234 @@
+// api.js
+import { API_URL_MOBILE } from '@env';
 import {
   transformRequestData,
   transformResponseData
 } from '../utils/apiTransformers';
-import { API_URL_MOBILE } from '@env';
 
-class ApiService {
-  // The transformation happens behind the scenes in the service layer
+let userId = null;
 
-  // GET all programs for a user
-  async getPrograms() {
-    const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`);
+export const setUser = id => {
+  userId = id;
+};
+
+export const getPrograms = async userId => {
+  if (!userId) return [];
+  try {
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/users/${userId}/programs`
+    );
+    if (response.status === 404) return [];
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
     const data = await response.json();
-    // Data transformation happens here, hidden from components
     return transformResponseData(data);
+  } catch (error) {
+    console.error('Error fetching programs:', error);
+    return [];
   }
+};
 
-  // Get active program
-  async getActiveProgram() {
-    try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/active-program/user/2`
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Error response:', errorText);
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      const rawData = await response.json();
-
-      const transformedData = transformResponseData(rawData);
-
-      return transformedData;
-    } catch (error) {
-      console.error(
-        'api.js getActiveProgram Error fetching active program:',
-        error
-      );
-      throw error;
+export const getActiveProgram = async userId => {
+  if (!userId) return null;
+  try {
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/active-program/user/${userId}`
+    );
+    if (response.status === 404) return null;
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
     }
+    const data = await response.json();
+    return data ? { activeProgram: data } : null;
+  } catch (error) {
+    console.error('Error fetching active program:', error);
+    return null;
   }
+};
 
-  // Get one program by program IDr
+export const getProgram = async programId => {
+  try {
+    const response = await fetch(`${API_URL_MOBILE}/api/programs/${programId}`);
 
-  async getProgram(programId) {
-    try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/programs/${programId}`
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Error response:', errorText);
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      const rawData = await response.json();
-
-      const transformedData = transformResponseData(rawData);
-
-      return transformedData;
-    } catch (error) {
-      console.error('Error api.js getProgram fetching active program:', error);
-      throw error;
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log('Error response:', errorText);
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
     }
+
+    const rawData = await response.json();
+
+    const transformedData = transformResponseData(rawData);
+
+    return transformedData;
+  } catch (error) {
+    console.error('Error api.js getProgram fetching active program:', error);
+    throw error;
+  }
+};
+
+export const createActiveProgram = async programData => {
+  if (!programData?.userId || !programData?.programId) {
+    throw new Error('Both userId and programId are required');
   }
 
-  // POST new active program
-  async createActiveProgram(programData) {
-    try {
-      // Validate using camelCase (frontend convention)
-      if (!programData?.userId || !programData?.programId) {
-        console.error('Validation failed:', {
-          hasUserId: !!programData?.userId,
-          hasProgramId: !!programData?.programId,
-          programData
-        });
-        throw new Error('Both userId and programId are required');
+  const backendData = transformRequestData({
+    userId: programData.userId,
+    programId: programData.programId
+  });
+
+  const response = await fetch(`${API_URL_MOBILE}/api/active-program`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json'
+    },
+    body: JSON.stringify(backendData)
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Server responded with ${response.status}: ${errorText}`);
+  }
+
+  return transformResponseData(await response.json());
+};
+
+export const deleteActiveProgram = async userId => {
+  try {
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/active-program/${userId}`,
+      {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json'
+        }
       }
+    );
 
-      // Create a clean object with just the required fields
-      const frontendData = {
-        userId: programData.userId,
-        programId: programData.programId
-      };
+    // First check if the response is ok
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
 
-      // Transform to snake_case for backend
-      const backendData = transformRequestData(frontendData);
+    // For successful responses, handle both 204 and 200
+    if (response.status === 204) {
+      return { message: 'Active program deleted successfully' };
+    }
 
-      const response = await fetch(`${API_URL_MOBILE}/api/active-program`, {
-        method: 'POST',
+    const data = await response.json();
+    return data; // Return the raw response data
+  } catch (error) {
+    console.error('API Error:', error);
+    // Make sure we're throwing the actual error object
+    throw error;
+  }
+};
+
+export const createProgram = async programData => {
+  try {
+    // Transform to snake_case for backend
+    const backendData = transformRequestData(programData);
+
+    const response = await fetch(`${API_URL_MOBILE}/api/programs`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+      },
+      body: JSON.stringify(backendData)
+    });
+
+    // Handle non-200 responses
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
+
+    const data = await response.json();
+    return transformResponseData(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
+  }
+};
+
+export const updateProgram = async programData => {
+  try {
+    // Transform to snake_case for backend
+    const backendData = transformRequestData(programData);
+
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/programs/${programData.id}`,
+      {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json'
         },
         body: JSON.stringify(backendData)
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
       }
+    );
 
-      const responseData = await response.json();
-
-      const transformedResponse = transformResponseData(responseData);
-
-      return transformedResponse;
-    } catch (error) {
-      console.error('Detailed error in createActiveProgram:', {
-        error,
-        originalData: programData,
-        message: error.message,
-        stack: error.stack
-      });
-      throw error;
+    // Handle non-200 responses
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
     }
-  }
 
-  // delete active program
-  async deleteActiveProgram(userId) {
-    try {
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/active-program/${userId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          }
-        }
-      );
+    const data = await response.json();
 
-      // First check if the response is ok
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      // For successful responses, handle both 204 and 200
-      if (response.status === 204) {
-        return { message: 'Active program deleted successfully' };
-      }
-
-      const data = await response.json();
-      return data; // Return the raw response data
-    } catch (error) {
-      console.error('API Error:', error);
-      // Make sure we're throwing the actual error object
-      throw error;
+    // If it's just a success message, return it directly
+    if (data.message) {
+      return data;
     }
+
+    // Otherwise, transform the response data
+    return transformResponseData(data);
+  } catch (error) {
+    console.error('API Error:', error);
+    throw error;
   }
+};
 
-  // POST new program
-  async createProgram(programData) {
-    try {
-      // Transform to snake_case for backend
-      const backendData = transformRequestData(programData);
+export const deleteProgram = async programId => {
+  try {
+    if (!programId) {
+      throw new Error('Program ID is required for deletion');
+    }
 
-      const response = await fetch(`${API_URL_MOBILE}/api/programs`, {
-        method: 'POST',
+    const response = await fetch(
+      `${API_URL_MOBILE}/api/programs/${programId}`,
+      {
+        method: 'DELETE',
         headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(backendData)
-      });
-
-      // Handle non-200 responses
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      const data = await response.json();
-      return transformResponseData(data);
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  }
-
-  // POST new active program
-  async createActiveProgram(programData) {
-    try {
-      // Transform to snake_case for backend
-      const backendData = transformRequestData(programData);
-
-      const response = await fetch(`${API_URL_MOBILE}/api/active-program`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json'
-        },
-        body: JSON.stringify(backendData)
-      });
-
-      // Handle non-200 responses
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      const data = await response.json();
-      return transformResponseData(data);
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
-    }
-  }
-
-  // Edit a program
-
-  async updateProgram(programData) {
-    try {
-      // Transform to snake_case for backend
-      const backendData = transformRequestData(programData);
-
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/programs/${programData.id}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json'
-          },
-          body: JSON.stringify(backendData)
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
         }
-      );
-
-      // Handle non-200 responses
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
       }
+    );
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log('Error response body:', errorText);
+      throw new Error(`Server responded with ${response.status}: ${errorText}`);
+    }
+
+    // If the backend returns data after deletion, transform it
+    if (response.status !== 204) {
+      // 204 means no content
       const data = await response.json();
-
-      // If it's just a success message, return it directly
-      if (data.message) {
-        return data;
-      }
-
-      // Otherwise, transform the response data
       return transformResponseData(data);
-    } catch (error) {
-      console.error('API Error:', error);
-      throw error;
     }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Delete API Error:', error);
+    throw error;
   }
-
-  // DELETE program
-  async deleteProgram(programId) {
-    try {
-      if (!programId) {
-        throw new Error('Program ID is required for deletion');
-      }
-
-      const response = await fetch(
-        `${API_URL_MOBILE}/api/programs/${programId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('Error response body:', errorText);
-        throw new Error(
-          `Server responded with ${response.status}: ${errorText}`
-        );
-      }
-
-      // If the backend returns data after deletion, transform it
-      if (response.status !== 204) {
-        // 204 means no content
-        const data = await response.json();
-        return transformResponseData(data);
-      }
-
-      return { success: true };
-    } catch (error) {
-      console.error('Delete API Error:', error);
-      throw error;
-    }
-  }
-}
-
-export const apiService = new ApiService();
+};

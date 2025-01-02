@@ -15,18 +15,19 @@ import {
   Modal
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useUser } from '../src/context/userContext';
 import { ProgramContext } from '../src/context/programContext';
 import { useTheme } from '../src/hooks/useTheme';
-import { apiService } from '../src/services/api';
+import { getPrograms } from '../src/services/api';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
-import { API_URL_MOBILE } from '@env';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
 import ProgramFilter from '../components/ProgramFilter';
 
 const ProgramsView = () => {
+  const { userId } = useUser();
   const navigation = useNavigation();
   const { setPrograms, clearProgram } = useContext(ProgramContext);
   const [programList, setProgramList] = useState({
@@ -48,26 +49,9 @@ const ProgramsView = () => {
   );
 
   const fetchPrograms = useCallback(async () => {
+    if (!userId) return;
     try {
-      // Add timeout and more detailed error logging
-      // const controller = new AbortController();
-      // const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-      // const response = await fetch(`${API_URL_MOBILE}/api/users/2/programs`, {
-      //   signal: controller.signal,
-      //   headers: {
-      //     Accept: 'application/json',
-      //     'Content-Type': 'application/json'
-      //   }
-      // });
-
-      // clearTimeout(timeoutId);
-
-      // if (!response.ok) {
-      //   throw new Error(`HTTP error! status: ${response.status}`);
-      // }
-
-      const programs = await apiService.getPrograms();
+      const programs = await getPrograms(userId);
 
       setProgramList({
         programs: programs,
@@ -78,11 +62,10 @@ const ProgramsView = () => {
       console.error('Detailed fetch error:', {
         message: error.message,
         name: error.name,
-        stack: error.stack,
-        url: `${API_URL_MOBILE}/api/users/2/programs`
+        stack: error.stack
       });
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     fetchPrograms();

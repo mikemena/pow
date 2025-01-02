@@ -22,12 +22,18 @@ import { useTheme } from '../src/hooks/useTheme';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
-import { apiService } from '../src/services/api';
+import {
+  getPrograms,
+  createActiveProgram,
+  deleteActiveProgram
+} from '../src/services/api';
 import PillButton from '../components/PillButton';
 import { Ionicons } from '@expo/vector-icons';
 import ProgramFilter from '../components/ProgramFilter';
+import { useUser } from '../src/context/userContext';
 
 const CurrentProgramView = () => {
+  const { userId } = useUser();
   const navigation = useNavigation();
   const { state: programState, setPrograms } = useContext(ProgramContext);
 
@@ -52,29 +58,10 @@ const CurrentProgramView = () => {
     themeState.accentColor
   );
 
-  // Fetch active program
-  // const fetchActiveProgram = useCallback(async () => {
-  //   try {
-  //     const data = await apiService.getActiveProgram();
-
-  //     if (data?.activeProgram?.programId) {
-  //       const programDetails = programs.find(
-  //         p => p.id === data.activeProgram.programId
-  //       );
-
-  //       if (programDetails) {
-  //         setActiveProgram(data.activeProgram);
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching active program:', error);
-  //   }
-  // }, [programs, setActiveProgram]);
-
   // Fetch users programs
   const fetchPrograms = useCallback(async () => {
     try {
-      const data = await apiService.getPrograms();
+      const data = await getPrograms();
       setPrograms(data);
     } catch (error) {
       console.error('Error fetching programs:', error);
@@ -85,13 +72,6 @@ const CurrentProgramView = () => {
   useEffect(() => {
     fetchPrograms();
   }, [fetchPrograms]);
-
-  // Then, fetch active program whenever programs changes
-  // useEffect(() => {
-  //   if (programs?.length > 0) {
-  //     fetchActiveProgram();
-  //   }
-  // }, [programs, fetchActiveProgram]);
 
   // Define fetchInitialData as a memoized callback
   const fetchInitialData = useCallback(async () => {
@@ -127,7 +107,7 @@ const CurrentProgramView = () => {
 
         // Delete existing active program
         try {
-          await apiService.deleteActiveProgram(2);
+          await deleteActiveProgram(userId);
         } catch (deleteError) {
           console.log('Error deleting active program:', deleteError);
         }
@@ -139,7 +119,7 @@ const CurrentProgramView = () => {
           startDate: new Date().toISOString().split('T')[0]
         };
 
-        const data = await apiService.createActiveProgram(payload);
+        const data = await createActiveProgram(payload);
 
         if (data?.activeProgram) {
           // Combine the API response with the full program details

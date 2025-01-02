@@ -1,6 +1,6 @@
 export const initialState = {
-  theme: 'light',
-  accentColor: '#90EE90'
+  theme: 'dark',
+  accentColor: '#D93B56' //red
 };
 
 export function themeReducer(state, action) {
