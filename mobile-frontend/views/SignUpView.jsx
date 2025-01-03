@@ -18,6 +18,7 @@ const SignUpView = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
   const { state: themeState } = useTheme();
@@ -216,20 +217,38 @@ const SignUpView = ({ navigation }) => {
           keyboardType='email-address'
         />
 
-        <TextInput
+        <View
           style={[
-            styles.input,
+            styles.inputContainer,
             {
-              backgroundColor: themedStyles.secondaryBackgroundColor,
-              color: themedStyles.textColor
+              backgroundColor: themedStyles.secondaryBackgroundColor
             }
           ]}
-          placeholder='Password'
-          placeholderTextColor={themedStyles.textColor}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        >
+          <TextInput
+            style={[
+              styles.passwordInput,
+              {
+                color: themedStyles.textColor
+              }
+            ]}
+            placeholder='Password'
+            placeholderTextColor={themedStyles.textColor}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={20}
+              color={themedStyles.textColor}
+            />
+          </TouchableOpacity>
+        </View>
 
         {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
@@ -361,6 +380,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontFamily: 'Lexend'
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 15
+  },
+  passwordInput: {
+    flex: 1,
+    height: '100%',
+    paddingHorizontal: 20,
+    fontSize: 16,
+    fontFamily: 'Lexend'
+  },
+  eyeIcon: {
+    padding: 10,
+    marginRight: 10
   }
 });
 

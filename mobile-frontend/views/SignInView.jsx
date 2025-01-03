@@ -18,6 +18,7 @@ const SignInView = ({ navigation }) => {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
   const { state: themeState } = useTheme();
@@ -44,13 +45,11 @@ const SignInView = ({ navigation }) => {
         body: JSON.stringify({ email, password })
       });
 
-      // Add these debug logs
-
-      const textResponse = await response.text(); // Get response as text first
+      const textResponse = await response.text();
 
       let data;
       try {
-        data = JSON.parse(textResponse); // Try to parse it as JSON
+        data = JSON.parse(textResponse);
       } catch (parseError) {
         console.error('Parse error:', parseError);
         setError('Server error - invalid response format');
@@ -179,20 +178,38 @@ const SignInView = ({ navigation }) => {
           keyboardType='email-address'
         />
 
-        <TextInput
+        <View
           style={[
-            styles.input,
+            styles.inputContainer,
             {
-              backgroundColor: themedStyles.secondaryBackgroundColor,
-              color: themedStyles.textColor
+              backgroundColor: themedStyles.secondaryBackgroundColor
             }
           ]}
-          placeholder='Password'
-          placeholderTextColor={themedStyles.textColor}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-        />
+        >
+          <TextInput
+            style={[
+              styles.passwordInput,
+              {
+                color: themedStyles.textColor
+              }
+            ]}
+            placeholder='Password'
+            placeholderTextColor={themedStyles.textColor}
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry={!showPassword}
+          />
+          <TouchableOpacity
+            style={styles.eyeIcon}
+            onPress={() => setShowPassword(!showPassword)}
+          >
+            <Ionicons
+              name={showPassword ? 'eye-off' : 'eye'}
+              size={20}
+              color={themedStyles.textColor}
+            />
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text
@@ -320,6 +337,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 14,
     fontFamily: 'Lexend'
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 50,
+    borderRadius: 25,
+    marginBottom: 15
+  },
+  passwordInput: {
+    flex: 1,
+    height: '100%',
+    paddingHorizontal: 20,
+    fontSize: 16,
+    fontFamily: 'Lexend'
+  },
+  eyeIcon: {
+    padding: 10,
+    marginRight: 10
   }
 });
 
