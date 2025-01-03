@@ -53,8 +53,11 @@ router.get('/progress/summary/:user_id', async (req, res) => {
 
     // Combine the results
     const response = {
-      monthlyCount: monthlyResult.rows[0].count,
-      weeklyWorkouts: weeklyResult.rows
+      monthlyCount: parseInt(monthlyResult.rows[0].count) || 0,
+      weeklyWorkouts:
+        weeklyResult.rows.length > 0
+          ? weeklyResult.rows
+          : Array(7).fill({ minutes: 0 })
     };
 
     res.json(response);

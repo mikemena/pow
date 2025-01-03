@@ -14,7 +14,6 @@ export const AuthProvider = ({ children }) => {
 
   const checkUser = async () => {
     try {
-      console.log('Checking user...');
       const userToken = await AsyncStorage.getItem('userToken');
       const userData = await AsyncStorage.getItem('userData');
 

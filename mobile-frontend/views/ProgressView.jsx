@@ -8,12 +8,14 @@ import {
   ActivityIndicator
 } from 'react-native';
 import { useTheme } from '../src/hooks/useTheme';
+import { useUser } from '../src/context/userContext';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 
 const ProgressView = () => {
+  const { userId } = useUser();
   const [isLoading, setIsLoading] = useState(true);
   const [progressData, setProgressData] = useState({
     monthlyCount: 0,
@@ -34,7 +36,6 @@ const ProgressView = () => {
 
   const fetchProgressData = async () => {
     try {
-      const userId = 2;
       const [summaryResponse, recordsResponse] = await Promise.all([
         fetch(`http://localhost:9025/api/progress/summary/${userId}`),
         fetch(`http://localhost:9025/api/progress/records/${userId}`)
@@ -56,19 +57,56 @@ const ProgressView = () => {
       setIsLoading(false);
     }
   };
+  const maxMinutes = Math.max(
+    ...progressData.weeklyWorkouts.map(w => w.minutes)
+  );
 
-  const WeeklyBar = ({ minutes, day, maxHeight = 100 }) => {
+  const WeeklyBar = ({ minutes = 0, day = '', maxHeight = 100 }) => {
     // Calculate bar height as percentage of maximum minutes
-    const maxMinutes = Math.max(
-      ...progressData.weeklyWorkouts.map(w => w.minutes)
-    );
-    const height = Math.max((minutes / maxMinutes) * maxHeight, 20); // Minimum height of 20
+
+    // const height = Math.max((minutes / maxMinutes) * maxHeight, 20);
+
+    const validMinutes = Number(minutes) || 0;
+    const validMaxMinutes = Number(maxMinutes) || 1;
+
+    // If there are no workouts at all, show minimal height bars
+    if (validMaxMinutes === 0) {
+      return (
+        <View style={styles.barContainer}>
+          <View style={styles.barLabelContainer}>
+            <Text
+              style={[styles.barValue, { color: themedStyles.accentColor }]}
+            >
+              0
+            </Text>
+          </View>
+          <View
+            style={[
+              styles.bar,
+              {
+                height: 20,
+                width: 30,
+                borderRadius: 15,
+                backgroundColor: themedStyles.accentColor,
+                opacity: 0.3
+              }
+            ]}
+          />
+          <Text style={[styles.dayLabel, { color: themedStyles.textColor }]}>
+            {day}
+          </Text>
+        </View>
+      );
+    }
+
+    // Calculate bar height as percentage of maximum minutes
+    const height = Math.max((validMinutes / validMaxMinutes) * maxHeight, 20);
 
     return (
       <View style={styles.barContainer}>
         <View style={styles.barLabelContainer}>
           <Text style={[styles.barValue, { color: themedStyles.accentColor }]}>
-            {minutes}
+            {validMinutes}
           </Text>
         </View>
         <View
@@ -76,6 +114,8 @@ const ProgressView = () => {
             styles.bar,
             {
               height,
+              width: 30,
+              borderRadius: 15,
               backgroundColor: themedStyles.accentColor
             }
           ]}
@@ -168,15 +208,22 @@ const ProgressView = () => {
             WORKOUTS THIS WEEK (MINUTES)
           </Text>
         </View>
-        <View style={styles.chartContainer}>
-          {progressData.weeklyWorkouts.map((workout, index) => (
-            <WeeklyBar
-              key={workout.day}
-              minutes={workout.minutes}
-              day={workout.day_name}
-            />
-          ))}
-        </View>
+        {progressData.weeklyWorkouts.length > 0 ? (
+          <View style={styles.chartContainer}>
+            {progressData.weeklyWorkouts.map((workout, index) => (
+              <WeeklyBar
+                key={workout.day || index}
+                minutes={workout.minutes || 0}
+                day={workout.day_name || ''}
+                maxMinutes={maxMinutes}
+              />
+            ))}
+          </View>
+        ) : (
+          <Text style={[styles.noDataText, { color: themedStyles.textColor }]}>
+            No workouts completed yet this week
+          </Text>
+        )}
       </View>
 
       {/* Record Breakers Card */}
