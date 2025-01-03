@@ -34,6 +34,9 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
+  console.log('program state in exercise selection', programState);
+  console.log('workout state in exercise selection', workoutState);
+
   const programAction = programState.mode;
   const contextType = route.params?.contextType;
   const programId = route.params?.programId;
@@ -266,6 +269,8 @@ const ExerciseSelection = ({ navigation, route }) => {
   //   return nameMatch && muscleMatch && equipmentMatch;
   // };
 
+  // In ExerciseSelection.jsx, update the handleAdd function:
+
   const handleAdd = async () => {
     try {
       if (!selectedExercises?.length) {
@@ -273,16 +278,25 @@ const ExerciseSelection = ({ navigation, route }) => {
         return;
       }
 
-      // Get the active workout ID
-      const activeWorkoutId = workoutState.activeWorkout?.id; // Simplified this
+      const activeWorkoutId =
+        contextType === 'workout'
+          ? workoutState.activeWorkout?.id
+          : programState.workout.activeWorkout;
+
+      console.log('Context type:', contextType);
+      console.log('Active workout ID:', activeWorkoutId);
 
       if (!activeWorkoutId) {
         console.error('No active workout selected');
         return;
       }
 
-      // Get current exercises directly from activeWorkout
-      const currentExercises = workoutState.activeWorkout?.exercises || [];
+      // Get current exercises based on context type
+      const currentExercises =
+        contextType === 'workout'
+          ? workoutState.activeWorkout?.exercises || []
+          : programState.workout.workouts.find(w => w.id === activeWorkoutId)
+              ?.exercises || [];
 
       // Enhanced duplicate detection
       const newExercises = selectedExercises.filter(newExercise => {
@@ -291,7 +305,7 @@ const ExerciseSelection = ({ navigation, route }) => {
             existingExercise.catalogExerciseId ===
               newExercise.catalogExerciseId ||
             (existingExercise.name === newExercise.name &&
-              existingExercise.muscle_group === newExercise.muscle_group)
+              existingExercise.muscle === newExercise.muscle)
         );
 
         if (isDuplicate) {
@@ -321,14 +335,13 @@ const ExerciseSelection = ({ navigation, route }) => {
       }));
 
       if (contextType === 'workout') {
-        // Only add exercises to workout context
         standardizedExercises.forEach(exercise => {
           console.log('selected exercise', exercise);
           addExerciseToWorkout(exercise);
         });
+        setSelectedExercises([]); // Reset selected exercises
         navigation.navigate('StartWorkout');
       } else if (contextType === 'program') {
-        // Only use addExercise for program context
         if (!programId) {
           console.error(
             'ExerciseSelection.js - Could not determine program ID'
@@ -336,6 +349,7 @@ const ExerciseSelection = ({ navigation, route }) => {
           return;
         }
         await addExercise(activeWorkoutId, standardizedExercises);
+        setSelectedExercises([]); // Reset selected exercises
 
         if (programAction === 'create') {
           navigation.navigate('CreateProgram');
@@ -350,6 +364,13 @@ const ExerciseSelection = ({ navigation, route }) => {
       console.error('Error in handleAdd:', error);
     }
   };
+
+  // Also add a cleanup effect to reset selected exercises when unmounting
+  useEffect(() => {
+    return () => {
+      setSelectedExercises([]);
+    };
+  }, []);
 
   const renderExerciseItem = ({ item }) => {
     return (

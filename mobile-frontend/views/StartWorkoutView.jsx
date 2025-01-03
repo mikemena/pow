@@ -22,6 +22,7 @@ import * as Haptics from 'expo-haptics';
 import * as Crypto from 'expo-crypto';
 import { useNavigation } from '@react-navigation/native';
 import { WorkoutContext } from '../src/context/workoutContext';
+import { ProgramContext } from '../src/context/programContext';
 import PillButton from '../components/PillButton';
 import SwipeableItemDeletion from '../components/SwipeableItemDeletion';
 import Header from '../components/Header';
@@ -37,11 +38,14 @@ const StartWorkoutView = () => {
     state: workoutState,
     completeWorkout,
     removeExerciseFromWorkout,
-    addSet,
+    setActiveWorkout,
     updateExerciseSets,
     updateWorkoutName,
     startWorkout
   } = useContext(WorkoutContext);
+
+  const { state: programState, setActiveWorkout: setActiveWorkoutProgram } =
+    useContext(ProgramContext);
 
   const activeWorkout = workoutState.activeWorkout;
 
@@ -74,20 +78,6 @@ const StartWorkoutView = () => {
 
   const currentExercise = activeWorkout.exercises[currentExerciseIndex];
   const currentSets = activeWorkout.exercises[currentExerciseIndex]?.sets || [];
-
-  // useEffect(() => {
-  //   console.log('workoutState', workoutState.activeWorkout);
-  // });
-
-  // useEffect(() => {
-  //   const totalExercises = activeWorkout.exercises.length;
-  //   // console.log({
-  //   //   currentExerciseIndex,
-  //   //   totalExercises,
-  //   //   isPrevDisabled: currentExerciseIndex === 0,
-  //   //   isNextDisabled: currentExerciseIndex === totalExercises - 1
-  //   // });
-  // }, [currentExerciseIndex]);
 
   useEffect(() => {
     if (currentExercise?.catalogExerciseId) {
@@ -307,6 +297,11 @@ const StartWorkoutView = () => {
   const handlePause = () => pauseTimer();
 
   const handleAddExercises = () => {
+    if (contextType === 'workout') {
+      setActiveWorkout(workoutState.activeProgram.id);
+    } else {
+      setActiveWorkoutProgram(programState.activeProgram.id);
+    }
     navigation.navigate('ExerciseSelection', {
       contextType: 'workout',
       isNewProgram: false,
