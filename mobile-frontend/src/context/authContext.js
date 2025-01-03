@@ -18,15 +18,18 @@ export const AuthProvider = ({ children }) => {
       const userData = await AsyncStorage.getItem('userData');
 
       if (userToken && userData) {
-        setUser(JSON.parse(userData));
+        const parsedUser = JSON.parse(userData);
+        setUser({
+          ...parsedUser,
+          id: Number(parsedUser.id)
+        });
       } else {
-        const defaultUser = { id: 'dev123', name: 'Dev User' };
-        await AsyncStorage.setItem('userToken', 'dev-token');
-        await AsyncStorage.setItem('userData', JSON.stringify(defaultUser));
-        setUser(defaultUser);
+        setUser(null);
       }
     } catch (error) {
       console.error('Error checking user:', error);
+      await AsyncStorage.multiRemove(['userToken', 'userData']);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -38,9 +41,21 @@ export const AuthProvider = ({ children }) => {
 
   const signIn = async (token, userData) => {
     try {
+      if (!userData || !userData.id) {
+        throw new Error('Invalid user data');
+      }
+
+      const normalizedUserData = {
+        ...userData,
+        id: Number(userData.id)
+      };
+
       await AsyncStorage.setItem('userToken', token);
-      await AsyncStorage.setItem('userData', JSON.stringify(userData));
-      setUser(userData);
+      await AsyncStorage.setItem(
+        'userData',
+        JSON.stringify(normalizedUserData)
+      );
+      setUser(normalizedUserData);
     } catch (error) {
       console.error('Error signing in:', error);
       throw error;
@@ -49,8 +64,7 @@ export const AuthProvider = ({ children }) => {
 
   const signOut = async () => {
     try {
-      await AsyncStorage.removeItem('userToken');
-      await AsyncStorage.removeItem('userData');
+      await AsyncStorage.multiRemove(['userToken', 'userData']);
       setUser(null);
     } catch (error) {
       console.error('Error signing out:', error);
