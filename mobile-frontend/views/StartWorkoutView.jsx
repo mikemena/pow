@@ -33,7 +33,7 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 import { getCachedImage } from '../src/utils/imageCache';
 
-const StartWorkoutView = () => {
+const StartWorkoutView = ({ route }) => {
   const {
     state: workoutState,
     completeWorkout,
@@ -48,6 +48,9 @@ const StartWorkoutView = () => {
     useContext(ProgramContext);
 
   const activeWorkout = workoutState.activeWorkout;
+  const contextType = route?.params?.contextType || 'workout';
+  console.log('route params in StartWorkoutView:', route?.params);
+  console.log('contextType in StartWorkoutView:', contextType);
 
   // console.info('workoutState activeWorkout', workoutState.activeWorkout);
 
@@ -297,14 +300,15 @@ const StartWorkoutView = () => {
   const handlePause = () => pauseTimer();
 
   const handleAddExercises = () => {
+    console.log('contextType in handleAddExercise', contextType);
     if (contextType === 'workout') {
-      setActiveWorkout(workoutState.activeProgram.id);
-    } else {
-      setActiveWorkoutProgram(programState.activeProgram.id);
+      setActiveWorkout(workoutState.activeWorkout.id);
+    } else if (contextType === 'program') {
+      setActiveWorkoutProgram(workoutState.activeWorkout.id);
     }
     navigation.navigate('ExerciseSelection', {
-      contextType: 'workout',
-      isNewProgram: false,
+      contextType: contextType,
+      isNewProgram: contextType === 'program',
       programId: workoutState.activeWorkout.id
     });
   };
@@ -481,7 +485,8 @@ const StartWorkoutView = () => {
               onDelete={() => handleDeleteExercise(currentExercise?.id)}
               onSwipeChange={setIsSwipeOpen}
             >
-              {workoutState.activeProgram.workouts[0].length === 0 ? (
+              {!activeWorkout.exercises ||
+              activeWorkout.exercises.length === 0 ? (
                 <View
                   style={[
                     styles.exerciseContainer,

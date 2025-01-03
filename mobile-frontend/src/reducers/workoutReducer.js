@@ -44,7 +44,31 @@ const workoutReducer = (state, action) => {
           : null
       };
 
+    // In workoutReducer.js, modify the SET_ACTIVE_WORKOUT case:
+
+    // In workoutReducer.js
     case actionTypes.SET_ACTIVE_WORKOUT: {
+      // For flex workouts (no active program or program with no workouts)
+      if (!state.activeProgram || !state.activeProgram.workouts) {
+        // If we already have an activeWorkout, just keep using it
+        if (state.activeWorkout && state.activeWorkout.id === action.payload) {
+          return state;
+        }
+
+        // Otherwise create a new workout structure
+        return {
+          ...state,
+          activeWorkout: {
+            id: action.payload || Crypto.randomUUID(),
+            name: 'Flex Workout',
+            exercises: [],
+            isStarted: false,
+            isCompleted: false
+          }
+        };
+      }
+
+      // For program workouts, find the workout in the active program
       const selectedWorkout = state.activeProgram.workouts.find(
         workout => workout.id === action.payload
       );
@@ -57,7 +81,14 @@ const workoutReducer = (state, action) => {
               isStarted: false,
               isCompleted: false
             }
-          : null
+          : {
+              // Fallback to creating a new workout if not found
+              id: action.payload || Crypto.randomUUID(),
+              name: 'Flex Workout',
+              exercises: [],
+              isStarted: false,
+              isCompleted: false
+            }
       };
     }
 
