@@ -173,7 +173,8 @@ router.post('/auth/signin', async (req, res) => {
       token,
       user: {
         id: user.id,
-        email: user.email
+        email: user.email,
+        username: user.username
       }
     });
   } catch (error) {

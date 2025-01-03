@@ -16,7 +16,7 @@ import { useAuth } from '../src/context/authContext';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import { globalStyles, colors } from '../src/styles/globalStyles';
 
-const ProfileView = ({ route }) => {
+const ProfileView = ({ navigation, route }) => {
   const {
     initialUserName = '',
     initialEmail = '',
@@ -36,6 +36,8 @@ const ProfileView = ({ route }) => {
   const [settingsChanged, setSettingsChanged] = useState(false);
   const { state, dispatch } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
+
+  console.log('Full user object in ProfileView:', user);
 
   const accentColors = [
     '#F99C57', //orange

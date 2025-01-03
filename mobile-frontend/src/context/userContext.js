@@ -17,6 +17,7 @@ const userReducer = (state, action) => {
         ...state,
         userId: action.payload.id,
         email: action.payload.email,
+        username: action.payload.username,
         isLoading: false
       };
     case 'CLEAR_USER_DATA':
@@ -33,6 +34,7 @@ export const useUser = () => {
   }
   return {
     userId: context.userId,
+    userName: context.userName,
     email: context.email
   };
 };
@@ -42,6 +44,7 @@ export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   useEffect(() => {
+    console.log('User data in UserProvider:', user);
     if (user?.id) {
       dispatch({ type: 'SET_USER_DATA', payload: user });
     } else {
@@ -49,9 +52,16 @@ export const UserProvider = ({ children }) => {
     }
   }, [user]);
 
+  console.log('User state in UserContext:', state);
+
   return (
     <UserContext.Provider
-      value={{ userId: state.userId, email: state.email, dispatch }}
+      value={{
+        userId: state.userId,
+        email: state.email,
+        username: state.username,
+        dispatch
+      }}
     >
       {children}
     </UserContext.Provider>

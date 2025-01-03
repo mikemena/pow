@@ -249,7 +249,9 @@ const ProgramsView = () => {
             </Text>
           </View>
         )}
-        <View style={globalStyles.centeredButtonContainer}>
+        <View
+          style={[globalStyles.centeredButtonContainer, styles.btnContainer]}
+        >
           <TouchableOpacity
             style={[
               globalStyles.button,
@@ -321,6 +323,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 24
+  },
+  btnContainer: {
+    marginBottom: 15
   }
 });
 
