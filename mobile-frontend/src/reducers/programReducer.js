@@ -8,7 +8,10 @@ function programReducer(state = currentProgram, action) {
     case actionTypes.INITIALIZE_EDIT_PROGRAM_STATE:
       return {
         ...state,
-        program: action.payload.program,
+        program: {
+          ...action.payload.program,
+          userId: action.payload.program.userId
+        },
         workout: {
           workouts: action.payload.workouts,
           activeWorkout: action.payload.activeWorkout

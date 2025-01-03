@@ -49,12 +49,6 @@ const StartWorkoutView = ({ route }) => {
 
   const activeWorkout = workoutState.activeWorkout;
   const contextType = route?.params?.contextType || 'workout';
-  console.log('route params in StartWorkoutView:', route?.params);
-  console.log('contextType in StartWorkoutView:', contextType);
-
-  // console.info('workoutState activeWorkout', workoutState.activeWorkout);
-
-  // console.log(JSON.stringify(workoutState.activeWorkout, null, 2));
 
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [workoutTitle, setWorkoutTitle] = useState(

@@ -1,4 +1,4 @@
-import { apiService } from './api';
+import { createProgram as apiCreateProgram } from './api';
 
 export const programService = {
   async createProgram(programData) {
@@ -31,7 +31,7 @@ export const programService = {
           })
         }))
       };
-      const response = await apiService.createProgram(validatedData);
+      const response = await apiCreateProgram(validatedData);
       return response;
     } catch (error) {
       const enhancedError = new Error(

@@ -45,9 +45,8 @@ const SignInView = ({ navigation }) => {
       });
 
       // Add these debug logs
-      console.log('Response status:', response.status);
+
       const textResponse = await response.text(); // Get response as text first
-      console.log('Raw response:', textResponse);
 
       let data;
       try {

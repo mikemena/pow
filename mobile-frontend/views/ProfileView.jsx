@@ -37,8 +37,6 @@ const ProfileView = ({ route }) => {
   const { state, dispatch } = useTheme();
   const themedStyles = getThemedStyles(state.theme, state.accentColor);
 
-  console.log('user', user);
-
   const accentColors = [
     '#F99C57', //orange
     '#A6E221', //volt green
@@ -64,7 +62,6 @@ const ProfileView = ({ route }) => {
       const updates = [];
 
       if (userDataChanged) {
-        console.log(`Updating user ${user.id}:`, { username: userName, email });
         updates.push(
           fetch(`http://localhost:9025/api/users/${user.id}`, {
             method: 'PUT',
@@ -78,10 +75,6 @@ const ProfileView = ({ route }) => {
       }
 
       if (settingsChanged) {
-        console.log(`Updating settings ${user.id}:`, {
-          theme_mode: darkMode ? 'dark' : 'light',
-          accent_color: accentColor
-        });
         updates.push(
           fetch(`http://localhost:9025/api/settings/${user.id}`, {
             method: 'PUT',
@@ -130,7 +123,6 @@ const ProfileView = ({ route }) => {
   };
 
   const handleAccentColorChange = newColor => {
-    console.log('new color in handleAccentColorChange', newColor);
     setAccentColor(newColor);
     dispatch({ type: 'SET_ACCENT_COLOR', payload: newColor });
     setSettingsChanged(true);
@@ -227,8 +219,10 @@ const ProfileView = ({ route }) => {
               <TextInput
                 style={[
                   globalStyles.input,
-                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                  { backgroundColor: themedStyles.primaryBackgroundColor },
+                  { color: themedStyles.textColor }
                 ]}
+                autoCapitalize='none'
                 value={userName}
                 onChangeText={handleUserNameChange}
                 editable={isEditing}
@@ -241,7 +235,8 @@ const ProfileView = ({ route }) => {
               <TextInput
                 style={[
                   globalStyles.input,
-                  { backgroundColor: themedStyles.primaryBackgroundColor }
+                  { backgroundColor: themedStyles.primaryBackgroundColor },
+                  { color: themedStyles.textColor }
                 ]}
                 value={email}
                 onChangeText={handleEmailChange}
@@ -421,27 +416,20 @@ const ProfileView = ({ route }) => {
           </View>
         )}
       </View>
-      <View
-        style={[
-          globalStyles.section,
-          { backgroundColor: themedStyles.secondaryBackgroundColor }
-        ]}
-      >
-        <TouchableOpacity
-          style={[
-            styles.signOutButton,
-            { backgroundColor: themedStyles.primaryBackgroundColor }
-          ]}
-          onPress={handleSignOut}
-        >
-          <Ionicons
-            name='log-out-outline'
-            style={[globalStyles.icon, { color: themedStyles.textColor }]}
-          />
-          <Text style={[styles.signOutText, { color: themedStyles.textColor }]}>
-            Sign Out
-          </Text>
-        </TouchableOpacity>
+      <View style={[globalStyles.section]}>
+        <View style={globalStyles.centeredButtonContainer}>
+          <TouchableOpacity
+            style={[
+              globalStyles.button,
+              { backgroundColor: themedStyles.accentColor }
+            ]}
+            onPress={handleSignOut}
+          >
+            <Text style={[globalStyles.buttonText, { color: colors.black }]}>
+              SIGN OUT
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

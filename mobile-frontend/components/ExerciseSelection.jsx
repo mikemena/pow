@@ -34,9 +34,6 @@ const ExerciseSelection = ({ navigation, route }) => {
   const { addExerciseToWorkout, state: workoutState } =
     useContext(WorkoutContext);
 
-  console.log('program state in exercise selection', programState);
-  console.log('workout state in exercise selection', workoutState);
-
   const programAction = programState.mode;
   const contextType = route.params?.contextType;
   const programId = route.params?.programId;
@@ -219,12 +216,8 @@ const ExerciseSelection = ({ navigation, route }) => {
     );
 
     if (!isSelected) {
-      console.log(`[Selection] Adding exercise ${exercise.id}`);
       // Cache image and log result
       const wasAdded = cacheImage(exercise.id, exercise.imageUrl);
-      console.log(
-        `[Selection] Image ${wasAdded ? 'was cached' : 'was already in cache'}`
-      );
 
       // Debug current cache state
       debugCache();
@@ -237,7 +230,6 @@ const ExerciseSelection = ({ navigation, route }) => {
       };
       setSelectedExercises(prev => [...prev, newExercise]);
     } else {
-      console.log(`[Selection] Removing exercise ${exercise.id}`);
       setSelectedExercises(prev =>
         prev.filter(e => e.catalogExerciseId !== exercise.id)
       );
@@ -282,9 +274,6 @@ const ExerciseSelection = ({ navigation, route }) => {
         contextType === 'workout'
           ? workoutState.activeWorkout?.id
           : programState.workout.activeWorkout;
-
-      console.log('Context type:', contextType);
-      console.log('Active workout ID:', activeWorkoutId);
 
       if (!activeWorkoutId) {
         console.error('No active workout selected');
@@ -336,7 +325,6 @@ const ExerciseSelection = ({ navigation, route }) => {
 
       if (contextType === 'workout') {
         standardizedExercises.forEach(exercise => {
-          console.log('selected exercise', exercise);
           addExerciseToWorkout(exercise);
         });
         setSelectedExercises([]); // Reset selected exercises

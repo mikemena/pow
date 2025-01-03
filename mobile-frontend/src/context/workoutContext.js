@@ -24,7 +24,6 @@ export const WorkoutContext = createContext();
 // Create the provider component
 export const WorkoutProvider = ({ children }) => {
   const { userId } = useUser();
-  console.log('Current user in WorkoutContext', userId);
   const [state, dispatch] = useReducer(workoutReducer, {
     ...initialState,
     userId: userId
@@ -47,12 +46,9 @@ export const WorkoutProvider = ({ children }) => {
 
   const fetchActiveProgram = useCallback(async () => {
     try {
-      console.log('Fetching active program with userId:', userId);
       const data = await getActiveProgram(userId);
-      console.log('Received data:', data);
 
       if (!data?.activeProgram) {
-        console.log('No active program found');
         dispatch({
           type: actionTypes.SET_ACTIVE_PROGRAM,
           payload: null
@@ -60,7 +56,6 @@ export const WorkoutProvider = ({ children }) => {
         return false;
       }
 
-      console.log('Setting active program:', data.activeProgram);
       dispatch({
         type: actionTypes.SET_ACTIVE_PROGRAM,
         payload: data.activeProgram

@@ -62,7 +62,7 @@ export const ProgramProvider = ({ children }) => {
         activeWorkout: null
       }
     });
-  }, [dispatch]);
+  }, [userId, dispatch]);
 
   // Memoized function to initialize state for editing a program
 
@@ -132,8 +132,14 @@ export const ProgramProvider = ({ children }) => {
       return isNaN(num) ? value : num;
     };
 
+    if (!program.userId) {
+      console.error('No userId found in program data:', program);
+      throw new Error('userId is required');
+    }
+
     return {
       ...program,
+      userId: program.userId,
       programDuration: formatValue(program.programDuration),
       daysPerWeek: formatValue(program.daysPerWeek),
       workouts: workouts.map(workout => ({
@@ -157,11 +163,16 @@ export const ProgramProvider = ({ children }) => {
 
   const saveProgram = async () => {
     try {
+      if (!state.program.userId) {
+        console.error('No userId found in program state:', state.program);
+        throw new Error('userId is required to save program');
+      }
       const formattedProgram = formatProgramData(
         state.program,
         state.workout.workouts
       );
       validateProgramData(formattedProgram);
+
       const savedProgram = await programService.createProgram(formattedProgram);
 
       dispatch({
