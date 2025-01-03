@@ -11,7 +11,7 @@ import { useTheme } from '../src/hooks/useTheme';
 import { useUser } from '../src/context/userContext';
 import { getThemedStyles } from '../src/utils/themeUtils';
 import Header from '../components/Header';
-import { globalStyles, colors } from '../src/styles/globalStyles';
+import { globalStyles } from '../src/styles/globalStyles';
 import { Ionicons } from '@expo/vector-icons';
 
 const ProgressView = () => {
