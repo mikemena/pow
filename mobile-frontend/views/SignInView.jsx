@@ -17,7 +17,8 @@ const SignInView = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [generalError, setGeneralError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
@@ -27,9 +28,28 @@ const SignInView = ({ navigation }) => {
     themeState.accentColor
   );
 
+  // Email validation pattern
+  const validateEmail = email => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!email) {
+      return 'Email is required';
+    }
+    if (!emailPattern.test(email)) {
+      return 'Enter a valid email address';
+    }
+    return '';
+  };
+
+  const handleEmailChange = text => {
+    setEmail(text);
+    setEmailError(validateEmail(text));
+  };
+
   const handleSignIn = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    // Clear any previous general error
+    setGeneralError('');
+    if (!password) {
+      setGeneralError('Enter a password');
       return;
     }
 
@@ -173,10 +193,11 @@ const SignInView = ({ navigation }) => {
           placeholder='Email'
           placeholderTextColor={themedStyles.textColor}
           value={email}
-          onChangeText={setEmail}
+          onChangeText={handleEmailChange}
           autoCapitalize='none'
           keyboardType='email-address'
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
         <View
           style={[
@@ -210,6 +231,9 @@ const SignInView = ({ navigation }) => {
             />
           </TouchableOpacity>
         </View>
+        {generalError ? (
+          <Text style={styles.errorText}>{generalError}</Text>
+        ) : null}
 
         <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')}>
           <Text
@@ -218,8 +242,6 @@ const SignInView = ({ navigation }) => {
             Forgot password?
           </Text>
         </TouchableOpacity>
-
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
         <TouchableOpacity
           style={[
@@ -325,9 +347,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend'
   },
   errorText: {
-    color: '#ff4444',
-    textAlign: 'center',
-    marginTop: 10,
+    color: '#D93B56',
+    fontSize: 14,
+    marginLeft: 20,
+    marginTop: -10,
+    marginBottom: 10,
     fontFamily: 'Lexend'
   },
   switchAuthButton: {

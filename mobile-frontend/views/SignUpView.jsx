@@ -36,7 +36,7 @@ const SignUpView = ({ navigation }) => {
       return 'Email is required';
     }
     if (!emailPattern.test(email)) {
-      return 'Please enter a valid email address';
+      return 'Enter a valid email address';
     }
     return '';
   };
