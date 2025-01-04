@@ -1,12 +1,22 @@
-// services/emailService.js
+const formData = require('form-data');
+const Mailgun = require('mailgun.js');
+const mailgun = new Mailgun(formData);
+require('dotenv').config();
+
 const sendPasswordResetEmail = async (email, resetToken) => {
   // For development in simulator/device
   const resetUrl = `wrkt://reset-password?token=${resetToken}`;
   const webUrl = `http://localhost:8081/reset-password?token=${resetToken}`;
 
+  const mg = mailgun.client({
+    username: 'api',
+    key: process.env.MAILGUN_API_KEY,
+    domain: process.env.MAILGUN_DOMAIN
+  });
+
   try {
-    const response = await mg.messages.create(MAILGUN_SANDBOX_DOMAIN, {
-      from: `WRKT App <mailgun@${MAILGUN_SANDBOX_DOMAIN}>`,
+    const response = await mg.messages.create(process.env.MAILGUN_DOMAIN, {
+      from: `WRKT App <mailgun@${process.env.MAILGUN_DOMAIN}>`,
       to: [email],
       subject: 'Reset Your Password - WRKT',
       html: `
@@ -51,4 +61,8 @@ const sendPasswordResetEmail = async (email, resetToken) => {
     console.error('Error sending email:', error);
     throw new Error('Failed to send reset email');
   }
+};
+
+module.exports = {
+  sendPasswordResetEmail
 };
