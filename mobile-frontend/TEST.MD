@@ -3,7 +3,6 @@ Production Preparation Checklist
 // TODO //
 
 - Add social authentication implementation
-- Add input validation patterns to email and password inputs
 - Get detailed App Store submission guidelines
 - Add offline support implementation details
 
