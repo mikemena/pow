@@ -5,42 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../config/db');
 require('dotenv').config();
-
-// Endpoint to get all users
-
-// router.get('/users', async (req, res) => {
-//   try {
-//     const { rows } = await db.query('SELECT * FROM users');
-//     res.json(rows);
-//   } catch (error) {
-//     res.status(500).send(error.message);
-//   }
-// });
-
-// Endpoint to get a specific user by ID
-
-// router.get('/users/:id', async (req, res) => {
-//   const { id } = req.params; // Extract the ID from the route parameters
-
-//   try {
-//     // Query to fetch the user with the specified ID
-//     const { rows } = await db.query('SELECT * FROM users WHERE id = $1', [
-//       parseInt(id)
-//     ]);
-
-//     if (rows.length === 0) {
-//       // If no user is found with the given ID, return a 404 Not Found response
-//       return res.status(404).json({ message: 'User not found' });
-//     }
-
-//     // If a user is found, return it in the response
-//     res.json(rows[0]);
-//   } catch (error) {
-//     // Log the error and return a 500 Internal Server Error response if an error occurs
-//     console.error('Error fetching user:', error);
-//     res.status(500).json({ message: 'Error fetching user' });
-//   }
-// });
+const { sendPasswordResetEmail } = require('../services/emailService');
 
 // Endpoint to sign up a user
 
@@ -180,6 +145,101 @@ router.post('/auth/signin', async (req, res) => {
   } catch (error) {
     console.error('Signin error:', error);
     res.status(500).json({ message: 'Server error during signin' });
+  }
+});
+
+// Endpoint for a forgotten password
+
+router.post('/auth/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Check if user exists
+    const userResult = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+    console.log('user email match?', userResult);
+
+    if (userResult.rows.length === 0) {
+      // For security, don't reveal if email exists or not
+      return res.json({
+        message:
+          'If an account exists with this email, you will receive a password reset link.'
+      });
+    }
+
+    const user = userResult.rows[0];
+
+    // Generate reset token
+    const resetToken = jwt.sign(
+      { userId: user.id, purpose: 'password-reset' },
+      process.env.JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+
+    // Store reset token and expiry in database
+    await pool.query(
+      "UPDATE users SET reset_token = $1, reset_token_expires = NOW() + INTERVAL '1 hour' WHERE id = $2",
+      [resetToken, user.id]
+    );
+
+    // Send the reset email
+    await sendPasswordResetEmail(email, resetToken);
+
+    // For demo purposes, we'll just return the token
+    res.json({
+      message:
+        'If an account exists with this email, you will receive a password reset link.',
+      debug_token:
+        process.env.NODE_ENV === 'development' ? resetToken : undefined
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    res
+      .status(500)
+      .json({ message: 'Server error during password reset request' });
+  }
+});
+
+// Endpoint for password reset
+router.post('/auth/reset-password', async (req, res) => {
+  try {
+    const { token, newPassword } = req.body;
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (decoded.purpose !== 'password-reset') {
+      return res.status(400).json({ message: 'Invalid reset token' });
+    }
+
+    // Check if token is still valid in database
+    const userResult = await pool.query(
+      'SELECT * FROM users WHERE id = $1 AND reset_token = $2 AND reset_token_expires > NOW()',
+      [decoded.userId, token]
+    );
+
+    if (userResult.rows.length === 0) {
+      return res
+        .status(400)
+        .json({ message: 'Invalid or expired reset token' });
+    }
+
+    // Hash new password
+    const saltRounds = 10;
+    const passwordHash = await bcrypt.hash(newPassword, saltRounds);
+
+    // Update password and clear reset token
+    await pool.query(
+      'UPDATE users SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL WHERE id = $2',
+      [passwordHash, decoded.userId]
+    );
+
+    res.json({ message: 'Password successfully reset' });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ message: 'Server error during password reset' });
   }
 });
 

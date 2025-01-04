@@ -26,6 +26,8 @@ import CurrentProgramDetailsView from './views/CurrentProgramDetailsView';
 import StartWorkoutView from './views/StartWorkoutView';
 import SignInView from './views/SignInView';
 import SignUpView from './views/SignUpView';
+import ForgotPasswordView from './views/ForgotPasswordView';
+import ResetPasswordView from './views/ResetPasswordView';
 
 const Tab = createBottomTabNavigator();
 const ProgramsStack = createStackNavigator();
@@ -87,6 +89,24 @@ const TabNavigator = () => (
   </Tab.Navigator>
 );
 
+const linking = {
+  prefixes: ['wrkt://', 'http://localhost:8081', 'exp://'],
+  config: {
+    screens: {
+      Auth: {
+        screens: {
+          ResetPassword: {
+            path: 'reset-password',
+            parse: {
+              token: token => token
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 const AuthNavigator = () => (
   <AuthStack.Navigator
     screenOptions={{ headerShown: false, gestureEnabled: false }}
@@ -100,6 +120,14 @@ const AuthNavigator = () => (
       }}
     />
     <AuthStack.Screen name='SignIn' component={SignInView} />
+    <AuthStack.Screen name='ForgotPassword' component={ForgotPasswordView} />
+    <AuthStack.Screen
+      name='ResetPassword'
+      component={ResetPasswordView}
+      options={{
+        path: 'reset-password' // for web routing
+      }}
+    />
   </AuthStack.Navigator>
 );
 
@@ -164,7 +192,7 @@ const App = () => {
           <WorkoutProvider>
             <ThemeProvider>
               <View style={styles.container}>
-                <NavigationContainer>
+                <NavigationContainer linking={linking}>
                   <RootNavigator />
                 </NavigationContainer>
               </View>

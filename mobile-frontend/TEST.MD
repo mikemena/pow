@@ -5,7 +5,6 @@ Production Preparation Checklist
 - Add social authentication implementation
 - Add input validation patterns to email and password inputs
 - Add animation effects
-- Add eye on password input to see the actual characters typed (not masked)
 - Create a forgot password screen
 - Get detailed App Store submission guidelines
 - Add offline support implementation details
