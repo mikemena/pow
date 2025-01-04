@@ -17,7 +17,7 @@ const SignUpView = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState({ email: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
@@ -27,14 +27,72 @@ const SignUpView = ({ navigation }) => {
     themeState.accentColor
   );
 
+  // Email validation pattern
+  const validateEmail = email => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!email) {
+      return 'Email is required';
+    }
+    if (!emailPattern.test(email)) {
+      return 'Please enter a valid email address';
+    }
+    return '';
+  };
+
+  // Password validation pattern
+  const validatePassword = password => {
+    if (!password) {
+      return 'Password is required';
+    }
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    if (!/[!@#$%^&*]/.test(password)) {
+      return 'Password must contain at least one special character (!@#$%^&*)';
+    }
+    return '';
+  };
+
+  const handleEmailChange = text => {
+    setEmail(text);
+    setErrors(prev => ({
+      ...prev,
+      email: validateEmail(text)
+    }));
+  };
+
+  const handlePasswordChange = text => {
+    setPassword(text);
+    setErrors(prev => ({
+      ...prev,
+      password: validatePassword(text)
+    }));
+  };
+
   const handleSignUp = async () => {
-    if (!email || !password) {
-      setError('Please fill in all fields');
+    // Validate both fields before submission
+    const emailError = validateEmail(email);
+    const passwordError = validatePassword(password);
+
+    setErrors({
+      email: emailError,
+      password: passwordError
+    });
+
+    if (emailError || passwordError) {
       return;
     }
 
     setLoading(true);
-    setError('');
 
     try {
       const signupResponse = await fetch(
