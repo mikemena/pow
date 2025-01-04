@@ -289,7 +289,7 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#ff4444',
     textAlign: 'center',
-    marginTop: 10,
+    marginTop: 15,
     fontFamily: 'Lexend'
   },
   successText: {

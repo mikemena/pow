@@ -14,8 +14,10 @@ import { getThemedStyles } from '../src/utils/themeUtils';
 const ForgotPasswordView = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [emailError, setEmailError] = useState('');
+  const [generalError, setGeneralError] = useState('');
   const [success, setSuccess] = useState('');
+  const [isResetButtonVisible, setIsResetButtonVisible] = useState(true);
 
   const { state: themeState } = useTheme();
   const themedStyles = getThemedStyles(
@@ -23,14 +25,36 @@ const ForgotPasswordView = ({ navigation }) => {
     themeState.accentColor
   );
 
-  const handleResetPassword = async () => {
+  // Email validation pattern
+  const validateEmail = email => {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!email) {
-      setError('Please enter your email address');
+      return 'Email is required';
+    }
+    if (!emailPattern.test(email)) {
+      return 'Enter a valid email address';
+    }
+    return '';
+  };
+
+  const handleEmailChange = text => {
+    setEmail(text);
+    setEmailError(validateEmail(text));
+  };
+
+  const handleResetPassword = async () => {
+    // Clear any previous general error
+    setGeneralError('');
+
+    const newEmailError = validateEmail(email);
+
+    setEmailError(newEmailError);
+
+    if (newEmailError) {
       return;
     }
 
     setLoading(true);
-    setError('');
     setSuccess('');
 
     try {
@@ -52,9 +76,10 @@ const ForgotPasswordView = ({ navigation }) => {
       }
 
       setSuccess(data.message);
-      // In a real app, you would show a message asking the user to check their email
+      setIsResetButtonVisible(false);
     } catch (err) {
-      setError(err.message || 'Failed to request password reset');
+      setGeneralError(err.message || 'Failed to request password reset');
+      setIsResetButtonVisible(false);
     } finally {
       setLoading(false);
     }
@@ -97,12 +122,12 @@ const ForgotPasswordView = ({ navigation }) => {
           placeholder='Email'
           placeholderTextColor={themedStyles.textColor}
           value={email}
-          onChangeText={setEmail}
+          onChangeText={handleEmailChange}
           autoCapitalize='none'
           keyboardType='email-address'
         />
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
         {success ? (
           <Text
             style={[styles.successText, { color: themedStyles.accentColor }]}
@@ -111,21 +136,26 @@ const ForgotPasswordView = ({ navigation }) => {
           </Text>
         ) : null}
 
-        <TouchableOpacity
-          style={[
-            styles.resetButton,
-            { opacity: loading ? 0.7 : 1 },
-            { backgroundColor: themedStyles.accentColor }
-          ]}
-          onPress={handleResetPassword}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color='#000' />
-          ) : (
-            <Text style={styles.resetButtonText}>RESET PASSWORD</Text>
-          )}
-        </TouchableOpacity>
+        {isResetButtonVisible ? (
+          <TouchableOpacity
+            style={[
+              styles.resetButton,
+              { opacity: loading ? 0.7 : 1 },
+              { backgroundColor: themedStyles.accentColor }
+            ]}
+            onPress={handleResetPassword}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color='#000' />
+            ) : (
+              <Text style={styles.resetButtonText}>RESET PASSWORD</Text>
+            )}
+          </TouchableOpacity>
+        ) : null}
+        {generalError ? (
+          <Text style={styles.errorText}>{generalError}</Text>
+        ) : null}
 
         <TouchableOpacity
           style={styles.backButton}
@@ -191,14 +221,16 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   resetButtonText: {
-    color: '#000',
+    color: '#2A2A2A',
     fontSize: 16,
     fontFamily: 'Lexend'
   },
   errorText: {
-    color: '#ff4444',
-    textAlign: 'center',
+    color: '#D93B56',
+    fontSize: 14,
+    marginLeft: 20,
     marginTop: 10,
+    marginBottom: 10,
     fontFamily: 'Lexend'
   },
   successText: {

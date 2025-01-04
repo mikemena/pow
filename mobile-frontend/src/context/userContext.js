@@ -44,15 +44,12 @@ export const UserProvider = ({ children }) => {
   const [state, dispatch] = useReducer(userReducer, initialState);
 
   useEffect(() => {
-    console.log('User data in UserProvider:', user);
     if (user?.id) {
       dispatch({ type: 'SET_USER_DATA', payload: user });
     } else {
       dispatch({ type: 'CLEAR_USER_DATA' });
     }
   }, [user]);
-
-  console.log('User state in UserContext:', state);
 
   return (
     <UserContext.Provider

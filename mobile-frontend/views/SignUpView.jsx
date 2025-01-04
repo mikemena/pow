@@ -427,7 +427,7 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   signInButtonText: {
-    color: '#000',
+    color: '#2A2A2A',
     fontSize: 16,
     fontFamily: 'Lexend'
   },
