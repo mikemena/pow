@@ -17,7 +17,9 @@ const SignUpView = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState({ email: '', password: '' });
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [generalError, setGeneralError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const { signIn } = useAuth();
@@ -64,31 +66,26 @@ const SignUpView = ({ navigation }) => {
 
   const handleEmailChange = text => {
     setEmail(text);
-    setErrors(prev => ({
-      ...prev,
-      email: validateEmail(text)
-    }));
+    setEmailError(validateEmail(text));
   };
 
   const handlePasswordChange = text => {
     setPassword(text);
-    setErrors(prev => ({
-      ...prev,
-      password: validatePassword(text)
-    }));
+    setPasswordError(validatePassword(text));
   };
 
   const handleSignUp = async () => {
+    // Clear any previous general error
+    setGeneralError('');
+
     // Validate both fields before submission
-    const emailError = validateEmail(email);
-    const passwordError = validatePassword(password);
+    const newEmailError = validateEmail(email);
+    const newPasswordError = validatePassword(password);
 
-    setErrors({
-      email: emailError,
-      password: passwordError
-    });
+    setEmailError(newEmailError);
+    setPasswordError(newPasswordError);
 
-    if (emailError || passwordError) {
+    if (newEmailError || newPasswordError) {
       return;
     }
 
@@ -130,7 +127,7 @@ const SignUpView = ({ navigation }) => {
       // Auto sign-in after successful registration
       await signIn(userData.token, userData.user);
     } catch (err) {
-      setError(err.message || 'Failed to sign up');
+      setGeneralError(err.message || 'Failed to sign up');
     } finally {
       setLoading(false);
     }
@@ -264,16 +261,19 @@ const SignUpView = ({ navigation }) => {
             styles.input,
             {
               backgroundColor: themedStyles.secondaryBackgroundColor,
-              color: themedStyles.textColor
+              color: themedStyles.textColor,
+              borderColor: emailError ? '#ff4444' : 'transparent',
+              borderWidth: 1
             }
           ]}
           placeholder='Email'
           placeholderTextColor={themedStyles.textColor}
           value={email}
-          onChangeText={setEmail}
+          onChangeText={handleEmailChange}
           autoCapitalize='none'
           keyboardType='email-address'
         />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
         <View
           style={[
@@ -293,7 +293,7 @@ const SignUpView = ({ navigation }) => {
             placeholder='Password'
             placeholderTextColor={themedStyles.textColor}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             secureTextEntry={!showPassword}
           />
           <TouchableOpacity
@@ -308,7 +308,13 @@ const SignUpView = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
+
+        {generalError ? (
+          <Text style={styles.errorText}>{generalError}</Text>
+        ) : null}
 
         <TouchableOpacity
           style={[
@@ -426,9 +432,11 @@ const styles = StyleSheet.create({
     fontFamily: 'Lexend'
   },
   errorText: {
-    color: '#ff4444',
-    textAlign: 'center',
-    marginTop: 10,
+    color: '#D93B56',
+    fontSize: 14,
+    marginLeft: 20,
+    marginTop: -10,
+    marginBottom: 10,
     fontFamily: 'Lexend'
   },
   switchAuthButton: {
